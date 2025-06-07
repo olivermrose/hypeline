@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
-	import Smiley from "~icons/ph/smiley";
 	import Warning from "~icons/ph/warning";
 	import XCircle from "~icons/ph/x-circle";
+	import { app } from "$lib/app.svelte";
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
 	import type { Chat } from "$lib/models/chat.svelte";
@@ -164,15 +164,16 @@
 	<div class="relative">
 		<Input
 			class={[
-				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
+				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0 disabled:cursor-not-allowed",
 				(chat.replyTarget || error) && "rounded-t-none",
 				className,
 			]}
 			type="text"
+			disabled={app.user?.banned}
 			autocapitalize="off"
 			autocorrect="off"
 			maxlength={500}
-			placeholder="Send a message"
+			placeholder={app.user?.banned ? "You are banned from the channel" : "Send a message"}
 			oninput={() => completer?.search()}
 			onkeydown={send}
 			onmousedown={() => completer?.reset()}
