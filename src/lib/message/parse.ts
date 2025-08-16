@@ -53,6 +53,7 @@ export type Node = TextNode | LinkNode | MentionNode | CheerNode | EmoteNode;
 
 export function parse(message: UserMessage): Node[] {
 	const nodes: Node[] = [];
+	const ircEmotes = [...message.data.emotes];
 
 	for (const match of message.text.matchAll(/\S+|\s+/g)) {
 		const prevNode = nodes.at(-1);
@@ -81,10 +82,14 @@ export function parse(message: UserMessage): Node[] {
 		const url = URL.parse(`https://${part.replace(/^https?:\/\/|\.$/i, "")}`);
 		const result = url ? parseTld(url.hostname) : null;
 
-		const cheermote = app.joined?.cheermotes.find((c) =>
-			part.toLowerCase().startsWith(c.prefix.toLowerCase()),
-		);
-		const ircEmote = message.data.emotes.find((e) => e.code === part);
+		const cheermote = app.joined?.cheermotes.find((c) => {
+			const hasPrefix = part.toLowerCase().startsWith(c.prefix.toLowerCase());
+			const hasBits = /\d+$/.test(part);
+
+			return hasPrefix && hasBits;
+		});
+
+		const ircEmote = ircEmotes.find((e) => e.code === part);
 		const emote = app.joined?.emotes.get(part);
 
 		if (url && result?.domain && result.isIcann) {
@@ -149,6 +154,9 @@ export function parse(message: UserMessage): Node[] {
 					layers: [],
 				},
 			});
+
+			const foundIdx = ircEmotes.indexOf(ircEmote);
+			ircEmotes.splice(foundIdx, 1);
 		} else if (emote) {
 			if (emote.zero_width && prevNode?.type === "emote") {
 				prevNode.data.layers.push(emote);
