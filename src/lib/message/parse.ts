@@ -55,11 +55,12 @@ export function parse(message: UserMessage): Node[] {
 	const nodes: Node[] = [];
 
 	const parts = message.text.split(/\s+/);
-	let prevNode: Node | undefined;
 
 	for (let i = 0; i < parts.length; i++) {
 		const part = parts[i];
-		const start = message.text.indexOf(part, i === 0 ? 0 : (prevNode?.end ?? 0));
+		const prevNode = nodes.at(-1);
+
+		const start = message.text.indexOf(part, prevNode?.end ?? 0);
 
 		const base: BaseNode = {
 			start,
@@ -152,6 +153,10 @@ export function parse(message: UserMessage): Node[] {
 					},
 				});
 			}
+		} else if (prevNode?.type === "text") {
+			prevNode.end = base.end;
+			prevNode.value += ` ${part}`;
+			prevNode.data += ` ${part}`;
 		} else {
 			nodes.push({
 				...base,
@@ -159,30 +164,7 @@ export function parse(message: UserMessage): Node[] {
 				data: part,
 			});
 		}
-
-		prevNode = nodes.at(-1);
 	}
 
-	return mergeTextNodes(nodes);
-}
-
-function mergeTextNodes(nodes: Node[]): Node[] {
-	if (nodes.length < 2) return nodes;
-
-	const merged: Node[] = [];
-
-	for (const node of nodes) {
-		const prevNode = merged.at(-1);
-
-		if (prevNode?.type === "text" && node.type === "text") {
-			prevNode.end = node.end;
-			prevNode.value += ` ${node.value}`;
-			prevNode.data += ` ${node.data}`;
-			prevNode.marked ||= node.marked;
-		} else {
-			merged.push(node);
-		}
-	}
-
-	return merged;
+	return nodes;
 }
