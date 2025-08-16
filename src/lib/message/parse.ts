@@ -54,17 +54,26 @@ export type Node = TextNode | LinkNode | MentionNode | CheerNode | EmoteNode;
 export function parse(message: UserMessage): Node[] {
 	const nodes: Node[] = [];
 
-	const parts = message.text.split(/\s+/);
-
-	for (let i = 0; i < parts.length; i++) {
-		const part = parts[i];
+	for (const match of message.text.matchAll(/\S+|\s+/g)) {
 		const prevNode = nodes.at(-1);
 
-		const start = message.text.indexOf(part, prevNode?.end ?? 0);
+		const part = match[0];
+		const start = match.index;
+		const end = start + part.length;
+
+		if (/^\s+$/.test(part)) {
+			if (prevNode?.type === "text") {
+				prevNode.end = end;
+				prevNode.value += part;
+				prevNode.data += part;
+			}
+
+			continue;
+		}
 
 		const base: BaseNode = {
 			start,
-			end: start + part.length,
+			end,
 			value: part,
 			marked: false,
 		};
@@ -154,9 +163,9 @@ export function parse(message: UserMessage): Node[] {
 				});
 			}
 		} else if (prevNode?.type === "text") {
-			prevNode.end = base.end;
-			prevNode.value += ` ${part}`;
-			prevNode.data += ` ${part}`;
+			prevNode.end = end;
+			prevNode.value += part;
+			prevNode.data += part;
 		} else {
 			nodes.push({
 				...base,
