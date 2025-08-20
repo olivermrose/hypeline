@@ -90,7 +90,7 @@ render properly without an extra space in between. -->
 					class="font-semibold break-words"
 					style={getMentionStyle(node)}
 				>
-					@{node.data.user?.displayName ?? node.value}
+					@{node.data.user?.displayName ?? node.value.slice(1)}
 				</svelte:element>
 			{/if}
 		{:else if node.type === "cheer"}
