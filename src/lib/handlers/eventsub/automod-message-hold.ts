@@ -38,7 +38,7 @@ export default defineHandler({
 			}
 		}
 
-		message.addAutoModMetadata({
+		message.setAutoMod({
 			category: reason,
 			level: isAutoMod ? data.automod.level : Number.NaN,
 			boundaries,
