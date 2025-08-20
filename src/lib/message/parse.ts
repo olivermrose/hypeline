@@ -2,6 +2,7 @@ import { parse as parseTld } from "tldts";
 import { app } from "$lib/state.svelte";
 import type { Emote } from "$lib/tauri";
 import type { CheermoteTier } from "$lib/twitch/api";
+import type { Range } from "$lib/twitch/irc";
 import type { User } from "$lib/user.svelte";
 import { find } from "$lib/util";
 import type { UserMessage } from "./user-message";
@@ -53,30 +54,30 @@ export type Node = TextNode | LinkNode | MentionNode | CheerNode | EmoteNode;
 
 export function parse(message: UserMessage): Node[] {
 	const nodes: Node[] = [];
+
 	const ircEmotes = [...message.data.emotes];
+	const boundaries = translateBoundaries(message);
 
 	for (const match of message.text.matchAll(/\S+|\s+/g)) {
 		const prevNode = nodes.at(-1);
+		let marked = false;
 
 		const part = match[0];
 		const start = match.index;
 		const end = start + part.length;
 
-		if (/^\s+$/.test(part)) {
-			if (prevNode?.type === "text") {
-				prevNode.end = end;
-				prevNode.value += part;
-				prevNode.data += part;
+		for (const boundary of boundaries) {
+			if (end > boundary.start && start <= boundary.end) {
+				marked = true;
+				break;
 			}
-
-			continue;
 		}
 
 		const base: BaseNode = {
 			start,
 			end,
 			value: part,
-			marked: false,
+			marked,
 		};
 
 		const url = URL.parse(`https://${part.replace(/^https?:\/\/|\.$/i, "")}`);
@@ -133,13 +134,20 @@ export function parse(message: UserMessage): Node[] {
 				}
 			}
 		} else if (ircEmote) {
+			for (const boundary of boundaries) {
+				if (ircEmote.range.end > boundary.start && ircEmote.range.start <= boundary.end) {
+					marked = true;
+					break;
+				}
+			}
+
 			const baseUrl = "https://static-cdn.jtvnw.net/emoticons/v2";
 
 			nodes.push({
 				start: ircEmote.range.start,
 				end: ircEmote.range.end,
 				value: ircEmote.code,
-				marked: false,
+				marked,
 				type: "emote",
 				data: {
 					emote: {
@@ -170,10 +178,6 @@ export function parse(message: UserMessage): Node[] {
 					},
 				});
 			}
-		} else if (prevNode?.type === "text") {
-			prevNode.end = end;
-			prevNode.value += part;
-			prevNode.data += part;
 		} else {
 			nodes.push({
 				...base,
@@ -183,5 +187,38 @@ export function parse(message: UserMessage): Node[] {
 		}
 	}
 
-	return nodes;
+	const merged: Node[] = [];
+
+	for (const node of nodes) {
+		const prevNode = merged.at(-1);
+
+		if (node.type === "text" && prevNode?.type === "text" && node.marked === prevNode.marked) {
+			prevNode.end = node.end;
+			prevNode.value += node.value;
+			prevNode.data += node.data;
+		} else {
+			merged.push(node);
+		}
+	}
+
+	return merged;
+}
+
+function translateBoundaries(message: UserMessage): Range[] {
+	if (!message.autoMod?.boundaries) return [];
+
+	const map = [0];
+	let index = 0;
+
+	const segmenter = new Intl.Segmenter(navigator.language, { granularity: "grapheme" });
+
+	for (const data of segmenter.segment(message.text)) {
+		index += data.segment.length;
+		map.push(index);
+	}
+
+	return message.autoMod.boundaries.map((b) => ({
+		start: map[b.start_pos],
+		end: map[b.end_pos],
+	}));
 }

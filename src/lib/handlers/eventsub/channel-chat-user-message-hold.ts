@@ -12,7 +12,7 @@ export default defineHandler({
 			name: data.user_name,
 		});
 
-		message.addAutoModMetadata({
+		message.setAutoMod({
 			category: "msg_hold",
 			level: Number.NaN,
 			boundaries: [],

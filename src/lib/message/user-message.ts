@@ -13,8 +13,7 @@ import type { Node } from "./";
 export class UserMessage extends Message {
 	#author: User;
 	#autoMod: AutoModMetadata | null = null;
-
-	public readonly nodes: Node[];
+	#nodes: Node[] = [];
 
 	public constructor(public readonly data: PrivmsgMessage | UserNoticeMessage) {
 		super(data);
@@ -26,7 +25,6 @@ export class UserMessage extends Message {
 		}
 
 		this.#author = user;
-		this.nodes = parse(this).sort((a, b) => a.start - b.start);
 	}
 
 	public static from(message: StructuredMessage, sender: BasicUser) {
@@ -94,6 +92,13 @@ export class UserMessage extends Message {
 	}
 
 	/**
+	 * The user who sent the message.
+	 */
+	public get author() {
+		return this.#author;
+	}
+
+	/**
 	 * The AutoMod metadata attached to the message if it was caught by AutoMod.
 	 */
 	public get autoMod() {
@@ -142,6 +147,14 @@ export class UserMessage extends Message {
 		return "event" in this.data ? this.data.event : null;
 	}
 
+	public get nodes() {
+		if (!this.#nodes.length) {
+			this.#nodes = parse(this).sort((a, b) => a.start - b.start);
+		}
+
+		return this.#nodes;
+	}
+
 	/**
 	 * The metadata for the parent and thread starter messages if the message
 	 * is a reply.
@@ -150,14 +163,7 @@ export class UserMessage extends Message {
 		return "reply" in this.data ? this.data.reply : null;
 	}
 
-	/**
-	 * The user who sent the message.
-	 */
-	public get author() {
-		return this.#author;
-	}
-
-	public addAutoModMetadata(metadata: AutoModMetadata) {
+	public setAutoMod(metadata: AutoModMetadata) {
 		this.#autoMod = metadata;
 		return this;
 	}
