@@ -7,15 +7,18 @@ export interface EmoteHost {
 	files: HostFile[];
 }
 
-export interface EmoteData {
+export interface Emote {
+	name: string;
+	listed: boolean;
 	flags: number;
 	host: EmoteHost;
+	owner: User;
 }
 
-export interface Emote {
+export interface EmoteChange {
 	id: string;
 	name: string;
-	data: EmoteData;
+	data: Emote;
 }
 
 export interface EmoteSet {
@@ -128,9 +131,9 @@ export interface ChangeMap {
 	id: string;
 	kind: number;
 	actor: User;
-	pushed?: { value: Emote }[];
-	pulled?: { old_value: Emote }[];
-	updated?: { value: Emote; old_value: Emote }[];
+	pushed?: { value: EmoteChange }[];
+	pulled?: { old_value: EmoteChange }[];
+	updated?: { value: EmoteChange; old_value: EmoteChange }[];
 }
 
 export interface DispatchPayload {

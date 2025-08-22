@@ -7,10 +7,13 @@
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
+	import Embed from "./Embed.svelte";
 
 	const { message }: { message: UserMessage } = $props();
 
 	const badges = $state<Badge[]>([]);
+
+	const embeddableDomains = ["7tv.app", "old.7tv.app"];
 
 	for (const badge of message.badges) {
 		const chatBadge = app.joined?.badges.get(badge.name)?.[badge.version];
@@ -120,13 +123,16 @@ render properly without an extra space in between. -->
 				{node.value}
 			</svelte:element>
 		{/if}
-
-		{#if i < message.nodes.length - 1}
-			<!-- eslint-disable-next-line svelte/no-useless-mustaches -->
-			<span>{" "}</span>
-		{/if}
 	{/each}
 </p>
+
+<div class="mt-2 flex gap-2">
+	{#each message.nodes as node}
+		{#if node.type === "link" && embeddableDomains.includes(node.data.url.hostname)}
+			<Embed url={node.data.url} />
+		{/if}
+	{/each}
+</div>
 
 <style>
 	mark {
