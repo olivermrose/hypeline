@@ -26,7 +26,7 @@
 </script>
 
 {#if url.hostname === "7tv.app" || url.hostname === "old.7tv.app"}
-	<div class="bg-sidebar flex h-12 w-full gap-2 overflow-hidden rounded-md border">
+	<div class="bg-sidebar flex h-12 w-full max-w-2/3 gap-2 overflow-hidden rounded-md border">
 		{#await fetchEmote()}
 			<div class="bg-muted size-12 animate-pulse"></div>
 
@@ -37,7 +37,7 @@
 			</div>
 		{:then emote}
 			{#if emote}
-				<div class="relative h-full">
+				<div class="relative h-full shrink-0">
 					<img
 						class="h-full w-auto"
 						srcset={getSrcset(emote.host)}
@@ -51,21 +51,23 @@
 							aria-label="Click to view"
 							onclick={() => (blurred = false)}
 						>
-							<span class="iconify lucide--eye-off size-5"></span>
+							<span class="iconify lucide--eye-off mt-1 size-5"></span>
 						</button>
 					{/if}
 				</div>
 
-				<div class="flex flex-col gap-0.5">
-					<div class="mt-0.5 flex items-center text-sm font-medium">
-						{emote.name}
+				<div class="flex flex-col overflow-hidden pr-1">
+					<div class="mt-1 flex items-center text-sm font-medium">
+						<span class="truncate" title={emote.name}>{emote.name}</span>
 
 						{#if !emote.listed}
 							<span class="ml-1 text-xs text-red-400">(unlisted)</span>
 						{/if}
 					</div>
 
-					<span class="text-muted-foreground text-xs">by {emote.owner.display_name}</span>
+					<span class="text-muted-foreground text-xs">
+						by {emote.owner.display_name}
+					</span>
 				</div>
 			{/if}
 		{/await}
