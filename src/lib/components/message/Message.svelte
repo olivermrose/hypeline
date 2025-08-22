@@ -13,8 +13,6 @@
 
 	const badges = $state<Badge[]>([]);
 
-	const embeddableDomains = ["7tv.app", "old.7tv.app"];
-
 	for (const badge of message.badges) {
 		const chatBadge = app.joined?.badges.get(badge.name)?.[badge.version];
 		const globalBadge = app.globalBadges.get(badge.name)?.[badge.version];
@@ -128,7 +126,7 @@ render properly without an extra space in between. -->
 
 <div class="mt-2 flex gap-2">
 	{#each message.nodes as node}
-		{#if node.type === "link" && embeddableDomains.includes(node.data.url.hostname)}
+		{#if node.type === "link"}
 			<Embed url={node.data.url} />
 		{/if}
 	{/each}
