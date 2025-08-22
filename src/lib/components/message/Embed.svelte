@@ -42,7 +42,7 @@
 </script>
 
 <div class="w-full max-w-[400px]">
-	{#if url.hostname === "7tv.app" || url.hostname === "old.7tv.app"}
+	{#if tld.domain === "7tv.app"}
 		{#await fetchEmote() then emote}
 			<div class="bg-sidebar flex h-14 gap-2 overflow-hidden rounded-md border">
 				{#if emote}
@@ -94,7 +94,7 @@
 				sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
 			></iframe>
 		</div>
-	{:else if tld.domain === "twitch.tv" || url.hostname === "clips.twitch.tv"}
+	{:else if tld.domain === "twitch.tv"}
 		{#await fetchClip() then clip}
 			{#if clip}
 				<div class="bg-sidebar flex h-18 gap-2 overflow-hidden rounded-md border">
