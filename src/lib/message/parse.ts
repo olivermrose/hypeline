@@ -114,7 +114,7 @@ export function parse(message: UserMessage): Node[] {
 			if (amount > 0) {
 				let selectedTier: CheermoteTier | undefined;
 
-				for (const tier of cheermote.tiers.sort((a, b) => b.min_bits - a.min_bits)) {
+				for (const tier of cheermote.tiers.toSorted((a, b) => b.min_bits - a.min_bits)) {
 					if (amount >= tier.min_bits) {
 						selectedTier = tier;
 						break;
