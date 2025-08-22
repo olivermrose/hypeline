@@ -21,3 +21,12 @@ export interface StreamMarker {
 	position_seconds: number;
 	description: string;
 }
+
+export interface Clip {
+	title: string;
+	url: string;
+	creator_name: string;
+	created_at: string;
+	view_count: number;
+	thumbnail_url: string;
+}

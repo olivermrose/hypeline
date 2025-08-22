@@ -180,6 +180,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::streams::get_stream,
         api::streams::get_streams,
         api::streams::create_marker,
+        api::streams::get_clip,
         api::users::get_user_from_id,
         api::users::get_user_from_login,
         api::users::get_user_emotes,

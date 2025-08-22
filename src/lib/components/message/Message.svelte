@@ -127,7 +127,7 @@ render properly without an extra space in between. -->
 <div class="mt-2 flex gap-2">
 	{#each message.nodes as node}
 		{#if node.type === "link"}
-			<Embed url={node.data.url} />
+			<Embed {...node.data} />
 		{/if}
 	{/each}
 </div>
