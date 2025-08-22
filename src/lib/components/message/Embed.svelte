@@ -26,7 +26,7 @@
 </script>
 
 {#if url.hostname === "7tv.app" || url.hostname === "old.7tv.app"}
-	<div class="bg-sidebar flex h-12 w-full max-w-2/3 gap-2 overflow-hidden rounded-md border">
+	<div class="bg-sidebar flex h-12 w-full max-w-sm gap-2 overflow-hidden rounded-md border">
 		{#await fetchEmote()}
 			<div class="bg-muted size-12 animate-pulse"></div>
 
@@ -71,5 +71,16 @@
 				</div>
 			{/if}
 		{/await}
+	</div>
+{:else if url.hostname === "open.spotify.com"}
+	<div class="w-full max-w-sm overflow-hidden rounded-xl">
+		<iframe
+			title="Spotify Web Player"
+			src="https://open.spotify.com/embed{url.pathname.replace(/\/intl-\w+\//, '/')}"
+			width="100%"
+			height="80"
+			allow="clipboard-write"
+			sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+		></iframe>
 	</div>
 {/if}
