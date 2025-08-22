@@ -57,7 +57,14 @@
 				</div>
 
 				<div class="flex flex-col gap-0.5">
-					<div class="mt-0.5 text-sm font-medium">{emote.name}</div>
+					<div class="mt-0.5 flex items-center text-sm font-medium">
+						{emote.name}
+
+						{#if !emote.listed}
+							<span class="ml-1 text-xs text-red-400">(unlisted)</span>
+						{/if}
+					</div>
+
 					<span class="text-muted-foreground text-xs">by {emote.owner.display_name}</span>
 				</div>
 			{/if}
