@@ -12,6 +12,7 @@
 	const { message }: { message: UserMessage } = $props();
 
 	const badges = $state<Badge[]>([]);
+	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
 
 	for (const badge of message.badges) {
 		const chatBadge = app.joined?.badges.get(badge.name)?.[badge.version];
@@ -124,13 +125,13 @@ render properly without an extra space in between. -->
 	{/each}
 </p>
 
-<div class="mt-2 flex gap-2">
-	{#each message.nodes as node}
-		{#if node.type === "link"}
+{#if linkNodes.length}
+	<div class="mt-2 flex gap-2">
+		{#each linkNodes as node}
 			<Embed {...node.data} />
-		{/if}
-	{/each}
-</div>
+		{/each}
+	</div>
+{/if}
 
 <style>
 	mark {
