@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invoke } from "@tauri-apps/api/core";
+	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
 	import type { Emote, EmoteHost } from "$lib/seventv";
 	import type { Clip } from "$lib/twitch/api";
@@ -38,6 +39,10 @@
 			`https:${host.url}/3x.webp 3x`,
 			`https:${host.url}/4x.webp 4x`,
 		].join(", ");
+	}
+
+	async function openClip(url: string) {
+		await openUrl(url);
 	}
 </script>
 
@@ -101,7 +106,13 @@
 					<img src={clip.thumbnail_url} alt={clip.title} decoding="async" />
 
 					<div class="flex flex-col gap-0.5 overflow-hidden py-1 pr-1">
-						<span class="truncate text-sm font-medium">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<span
+							class="text-twitch-link truncate text-sm font-medium hover:cursor-pointer"
+							role="link"
+							tabindex="-1"
+							onclick={() => openClip(clip.url)}
+						>
 							{clip.title}
 						</span>
 
