@@ -84,7 +84,7 @@
 				{/if}
 			</div>
 		{/await}
-	{:else if url.hostname === "open.spotify.com"}
+	{:else if tld.hostname === "open.spotify.com"}
 		<div class="overflow-hidden rounded-xl">
 			<iframe
 				title="Spotify Web Player"
