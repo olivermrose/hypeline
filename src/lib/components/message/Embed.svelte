@@ -40,10 +40,6 @@
 			`https:${host.url}/4x.webp 4x`,
 		].join(", ");
 	}
-
-	async function openClip(url: string) {
-		await openUrl(url);
-	}
 </script>
 
 <div class="w-full max-w-[400px]">
@@ -111,7 +107,7 @@
 							class="text-twitch-link truncate text-sm font-medium hover:cursor-pointer"
 							role="link"
 							tabindex="-1"
-							onclick={() => openClip(clip.url)}
+							onclick={() => openUrl(clip.url)}
 						>
 							{clip.title}
 						</span>
