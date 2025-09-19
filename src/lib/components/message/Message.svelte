@@ -9,6 +9,8 @@
 	import Tooltip from "../ui/Tooltip.svelte";
 	import Embed from "./Embed.svelte";
 
+	const embeddableHosts = ["7tv.app", "open.spotify.com", "twitch.tv"];
+
 	const { message }: { message: UserMessage } = $props();
 
 	const badges = $state<Badge[]>([]);
@@ -125,7 +127,7 @@ render properly without an extra space in between. -->
 	{/each}
 </p>
 
-{#if linkNodes.length}
+{#if linkNodes.some((node) => embeddableHosts.includes(node.data.url.host))}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed {...node.data} />
