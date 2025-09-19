@@ -1,3 +1,10 @@
+<script lang="ts" module>
+	export interface MessageProps {
+		message: UserMessage;
+		onEmbedLoad?: () => void;
+	}
+</script>
+
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import type { Node, UserMessage } from "$lib/message";
@@ -11,7 +18,7 @@
 
 	const embeddableHosts = ["7tv.app", "open.spotify.com", "twitch.tv"];
 
-	const { message }: { message: UserMessage } = $props();
+	const { message, onEmbedLoad }: MessageProps = $props();
 
 	const badges = $state<Badge[]>([]);
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
@@ -130,7 +137,7 @@ render properly without an extra space in between. -->
 {#if linkNodes.some((node) => embeddableHosts.includes(node.data.url.host))}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
-			<Embed {...node.data} />
+			<Embed onLoad={onEmbedLoad} {...node.data} />
 		{/each}
 	</div>
 {/if}

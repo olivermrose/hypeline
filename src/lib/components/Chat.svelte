@@ -113,7 +113,7 @@
 			{:else if message.autoMod}
 				<AutoMod {message} metadata={message.autoMod} />
 			{:else}
-				<UserMessage {message} />
+				<UserMessage {message} onEmbedLoad={scrollToEnd} />
 			{/if}
 
 			{@const next = app.joined?.messages.at(i + 1)}

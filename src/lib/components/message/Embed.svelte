@@ -8,9 +8,10 @@
 	interface Props {
 		url: URL;
 		tld: ReturnType<typeof import("tldts").parse>;
+		onLoad?: () => void;
 	}
 
-	const { url, tld }: Props = $props();
+	const { url, tld, onLoad }: Props = $props();
 
 	let blurred = $state(true);
 
@@ -18,6 +19,7 @@
 		const response = await fetch(`https://7tv.io/v3/emotes/${url.pathname.split("/")[2]}`);
 		if (!response.ok) return;
 
+		onLoad?.();
 		return response.json() as Promise<Emote>;
 	}
 
@@ -29,6 +31,8 @@
 		}
 
 		const clip = await invoke<Clip | null>("get_clip", { id: slug });
+
+		onLoad?.();
 		return clip;
 	}
 
