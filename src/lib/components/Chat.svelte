@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Separator } from "bits-ui";
 	import { VList } from "virtua/svelte";
-	import type { Message } from "$lib/message";
 	import { app } from "$lib/state.svelte";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
@@ -78,11 +77,11 @@
 	<VList
 		class="{className} overflow-y-auto text-sm"
 		data={app.joined?.messages ?? []}
-		getKey={(msg: Message) => msg.id}
+		getKey={(msg) => msg.id}
 		onscroll={handleScroll}
 		bind:this={list}
 	>
-		{#snippet children(message: Message, i)}
+		{#snippet children(message, i)}
 			{@const prev = app.joined?.messages[i - 1]}
 			{@const isNewDay = prev && prev?.timestamp.getDate() !== message.timestamp.getDate()}
 
