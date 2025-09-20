@@ -7,19 +7,19 @@ import type { User } from "$lib/user.svelte";
 import { find } from "$lib/util";
 import type { UserMessage } from "./user-message";
 
-interface BaseNode {
+export interface BaseNode {
 	start: number;
 	end: number;
 	value: string;
 	marked: boolean;
 }
 
-interface TextNode extends BaseNode {
+export interface TextNode extends BaseNode {
 	type: "text";
 	data: string;
 }
 
-interface LinkNode extends BaseNode {
+export interface LinkNode extends BaseNode {
 	type: "link";
 	data: {
 		url: URL;
@@ -27,14 +27,14 @@ interface LinkNode extends BaseNode {
 	};
 }
 
-interface MentionNode extends BaseNode {
+export interface MentionNode extends BaseNode {
 	type: "mention";
 	data: {
 		user: User | undefined;
 	};
 }
 
-interface CheerNode extends BaseNode {
+export interface CheerNode extends BaseNode {
 	type: "cheer";
 	data: {
 		prefix: string;
@@ -43,7 +43,7 @@ interface CheerNode extends BaseNode {
 	};
 }
 
-interface EmoteNode extends BaseNode {
+export interface EmoteNode extends BaseNode {
 	type: "emote";
 	data: {
 		layers: Emote[];

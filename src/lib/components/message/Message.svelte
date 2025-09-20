@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
-	import type { Node, UserMessage } from "$lib/message";
+	import type { LinkNode, MentionNode, UserMessage } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
 	import type { Badge } from "$lib/twitch/api";
@@ -15,8 +15,6 @@
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
 	import Embed from "./Embed.svelte";
-
-	const embeddableHosts = ["7tv.app", "open.spotify.com", "twitch.tv"];
 
 	const { message, onEmbedLoad }: MessageProps = $props();
 
@@ -38,7 +36,7 @@
 		badges.push(message.author.badge);
 	}
 
-	function getMentionStyle(node: Extract<Node, { type: "mention" }>) {
+	function getMentionStyle(node: MentionNode) {
 		if (node.marked) return null;
 
 		switch (settings.state.chat.mentionStyle) {
@@ -49,6 +47,15 @@
 			case "painted":
 				return node.data.user?.style;
 		}
+	}
+
+	function canEmbed(node: LinkNode) {
+		return (
+			node.data.tld.domain === "7tv.app" ||
+			node.data.tld.hostname === "open.spotify.com" ||
+			node.data.tld.hostname === "clips.twitch.tv" ||
+			(node.data.tld.domain === "twitch.tv" && node.data.url.pathname.includes("/clip/"))
+		);
 	}
 </script>
 
@@ -134,7 +141,7 @@ render properly without an extra space in between. -->
 	{/each}
 </p>
 
-{#if linkNodes.some((node) => embeddableHosts.includes(node.data.url.host))}
+{#if linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed onLoad={onEmbedLoad} {...node.data} />
