@@ -1,9 +1,9 @@
 import { SystemMessage } from "$lib/message";
-import type { Emote } from "$lib/seventv";
+import type { EmoteChange } from "$lib/seventv";
 import { User } from "$lib/user.svelte";
 import { defineHandler } from "../helper";
 
-function reparse(emote: Emote) {
+function reparse(emote: EmoteChange) {
 	let width = 28;
 	let height = 28;
 	const srcset: string[] = [];

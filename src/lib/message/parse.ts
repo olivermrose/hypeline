@@ -7,33 +7,34 @@ import type { User } from "$lib/user.svelte";
 import { find } from "$lib/util";
 import type { UserMessage } from "./user-message";
 
-interface BaseNode {
+export interface BaseNode {
 	start: number;
 	end: number;
 	value: string;
 	marked: boolean;
 }
 
-interface TextNode extends BaseNode {
+export interface TextNode extends BaseNode {
 	type: "text";
 	data: string;
 }
 
-interface LinkNode extends BaseNode {
+export interface LinkNode extends BaseNode {
 	type: "link";
 	data: {
 		url: URL;
+		tld: ReturnType<typeof parseTld>;
 	};
 }
 
-interface MentionNode extends BaseNode {
+export interface MentionNode extends BaseNode {
 	type: "mention";
 	data: {
 		user: User | undefined;
 	};
 }
 
-interface CheerNode extends BaseNode {
+export interface CheerNode extends BaseNode {
 	type: "cheer";
 	data: {
 		prefix: string;
@@ -42,7 +43,7 @@ interface CheerNode extends BaseNode {
 	};
 }
 
-interface EmoteNode extends BaseNode {
+export interface EmoteNode extends BaseNode {
 	type: "emote";
 	data: {
 		layers: Emote[];
@@ -81,7 +82,7 @@ export function parse(message: UserMessage): Node[] {
 		};
 
 		const url = URL.parse(`https://${part.replace(/^https?:\/\/|\.$/i, "")}`);
-		const result = url ? parseTld(url.hostname) : null;
+		const tld = url ? parseTld(url.hostname) : null;
 
 		const cheermote = app.joined?.cheermotes.find((c) => {
 			const hasPrefix = part.toLowerCase().startsWith(c.prefix.toLowerCase());
@@ -93,11 +94,11 @@ export function parse(message: UserMessage): Node[] {
 		const ircEmote = ircEmotes.find((e) => e.code === part);
 		const emote = app.joined?.emotes.get(part);
 
-		if (url && result?.domain && result.isIcann) {
+		if (url && tld?.domain && tld.isIcann) {
 			nodes.push({
 				...base,
 				type: "link",
-				data: { url },
+				data: { url, tld },
 			});
 		} else if (/^@\w{4,24}$/.test(part)) {
 			const name = part.slice(1).toLowerCase();

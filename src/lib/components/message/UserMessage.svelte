@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { UserMessage } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
@@ -7,8 +6,9 @@
 	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
+	import type { MessageProps } from "./Message.svelte";
 
-	const { message }: { message: UserMessage } = $props();
+	const { message, onEmbedLoad }: MessageProps = $props();
 
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();
@@ -89,7 +89,7 @@
 
 	{#if message.highlighted}
 		<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={app.joined?.user.color}>
-			<Message {message} />
+			<Message {message} {onEmbedLoad} />
 		</div>
 	{:else if highlights.enabled}
 		{#if hlType && highlights[hlType].enabled}
@@ -130,6 +130,6 @@
 			</div>
 		{/if}
 
-		<Message {message} />
+		<Message {message} {onEmbedLoad} />
 	</div>
 {/snippet}
