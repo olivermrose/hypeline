@@ -13,8 +13,13 @@
 	{#if settings.state.lastJoined}
 		<Channel username={settings.state.lastJoined} />
 	{:else}
-		<div class="flex size-full items-center justify-center">
-			<p class="text-center">Select a channel from your following list to start chatting</p>
+		<div class="flex size-full flex-col items-center justify-center p-6 text-center">
+			<span class="iconify lucide--ghost mb-4 size-8"></span>
+
+			<span class="text-lg font-medium">No Channel Selected</span>
+			<p class="text-muted-foreground">
+				Select a channel from your following list to start chatting
+			</p>
 		</div>
 	{/if}
 {/await}
