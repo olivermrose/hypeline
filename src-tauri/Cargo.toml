@@ -24,7 +24,7 @@ tauri-plugin-clipboard-manager = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-os = "2"
-tauri-plugin-svelte = "2"
+tauri-plugin-svelte = "3"
 
 anyhow = "1.0.97"
 either = "1.15.0"
