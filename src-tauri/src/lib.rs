@@ -22,6 +22,7 @@ mod irc;
 mod log;
 mod providers;
 mod server;
+mod util;
 
 const CLIENT_ID: &str = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 
@@ -194,6 +195,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         providers::fetch_recent_messages,
         providers::seventv::connect_seventv,
         providers::seventv::send_presence,
-        server::start_server
+        server::start_server,
+        util::extract_seo,
     ]
 }
