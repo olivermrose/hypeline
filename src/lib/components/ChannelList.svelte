@@ -3,11 +3,9 @@
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
 	import { log } from "$lib/log";
-	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
 	import type { Stream } from "$lib/twitch/api";
-	import { User } from "$lib/user.svelte";
-	import Tooltip from "./ui/Tooltip.svelte";
+	import ChannelIcon from "./ChannelIcon.svelte";
 
 	const groups = $derived.by(() => {
 		const sorted = app.channels.toSorted((a, b) => {
@@ -47,7 +45,7 @@
 
 <!-- TODO: include stream with user -->
 {#if app.user}
-	{@render channelIcon(app.user, null)}
+	<ChannelIcon user={app.user} stream={null} />
 {/if}
 
 {#each Object.entries(groups)
@@ -57,49 +55,7 @@
 
 	{#each channels as channel (channel.user.id)}
 		<div class="flex" animate:flip={{ duration: 500 }}>
-			{@render channelIcon(channel.user, channel.stream)}
+			<ChannelIcon user={channel.user} stream={channel.stream} />
 		</div>
 	{/each}
 {/each}
-
-{#snippet channelIcon(user: User, stream: Stream | null)}
-	<Tooltip class="max-w-64" side="right" sideOffset={18}>
-		{#snippet trigger()}
-			<button
-				class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full border"
-				type="button"
-				onclick={() => {
-					settings.state.lastJoined = user.username;
-				}}
-			>
-				<img
-					class={["object-cover", !stream && "grayscale"]}
-					src={user.avatarUrl}
-					alt={user.displayName}
-					width="300"
-					height="300"
-				/>
-			</button>
-		{/snippet}
-
-		{#if stream}
-			<div class="space-y-0.5">
-				<div class="text-twitch-link overflow-hidden overflow-ellipsis whitespace-nowrap">
-					{user.displayName} &bullet; {stream.game_name}
-				</div>
-
-				<p class="line-clamp-2">{stream.title}</p>
-
-				<div class="text-muted-foreground flex items-center">
-					<span class="lucide--users iconify mr-1 size-3"></span>
-
-					<p class="text-xs">
-						{stream.viewer_count} viewers
-					</p>
-				</div>
-			</div>
-		{:else}
-			{user.displayName}
-		{/if}
-	</Tooltip>
-{/snippet}
