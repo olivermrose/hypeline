@@ -1,16 +1,20 @@
-<script lang="ts">
-	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
-	import { settings } from "$lib/settings";
+<script lang="ts" module>
 	import type { Stream } from "$lib/twitch/api";
 	import type { User } from "$lib/user.svelte";
-	import Tooltip from "./ui/Tooltip.svelte";
 
-	interface Props {
+	export interface ChannelIconProps {
 		user: User;
 		stream: Stream | null;
 	}
+</script>
 
-	const { user, stream }: Props = $props();
+<script lang="ts">
+	import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
+	import { settings } from "$lib/settings";
+	import { app } from "$lib/state.svelte";
+	import Tooltip from "./ui/Tooltip.svelte";
+
+	const { user, stream }: ChannelIconProps = $props();
 
 	let menu: Menu | null = null;
 
@@ -21,7 +25,7 @@
 			item: "Separator",
 		});
 
-		const joinItem = await MenuItem.new({
+		const join = await MenuItem.new({
 			id: "join",
 			text: "Join",
 			action() {
@@ -29,9 +33,31 @@
 			},
 		});
 
-		joinItem.setEnabled(settings.state.lastJoined !== user.username);
+		join.setEnabled(settings.state.lastJoined !== user.username);
 
-		const leaveItem = await MenuItem.new({
+		const pin = await CheckMenuItem.new({
+			id: "pin",
+			text: "Pin",
+			action() {
+				const pinned = settings.state.pinnedChannels.findIndex((c) => c.id === user.id);
+
+				if (pinned !== -1) {
+					const channel = app.channels.find((c) => c.id === user.id);
+					channel?.setPinned(false);
+
+					settings.state.pinnedChannels = settings.state.pinnedChannels.splice(pinned, 1);
+				} else {
+					const channel = app.channels.find((c) => c.id === user.id);
+					channel?.setPinned(true);
+
+					settings.state.pinnedChannels.push({ id: user.id, order: Date.now() });
+				}
+			},
+		});
+
+		pin.setChecked(settings.state.pinnedChannels.some((c) => c.id === user.id));
+
+		const leave = await MenuItem.new({
 			id: "leave",
 			text: "Leave",
 			action() {
@@ -39,10 +65,10 @@
 			},
 		});
 
-		leaveItem.setEnabled(settings.state.lastJoined === user.username);
+		leave.setEnabled(settings.state.lastJoined === user.username);
 
 		menu = await Menu.new({
-			items: [joinItem, separator, leaveItem],
+			items: [join, pin, separator, leave],
 		});
 
 		return menu;
@@ -57,8 +83,9 @@
 </script>
 
 <Tooltip class="max-w-64" side="right" sideOffset={18}>
-	{#snippet trigger()}
+	{#snippet trigger(props)}
 		<button
+			{...props}
 			class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full border"
 			type="button"
 			onclick={() => {
@@ -72,6 +99,7 @@
 				alt={user.displayName}
 				width="300"
 				height="300"
+				draggable="false"
 			/>
 		</button>
 	{/snippet}

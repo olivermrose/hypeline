@@ -4,7 +4,7 @@
 	import { cn } from "$lib/util";
 
 	interface Props extends Tooltip.ContentProps {
-		trigger: Snippet;
+		trigger: Snippet<[Record<string, unknown>]>;
 		triggerClass?: string;
 		open?: boolean;
 	}
@@ -20,7 +20,11 @@
 </script>
 
 <Tooltip.Root bind:open>
-	<Tooltip.Trigger class={triggerClass}>{@render trigger()}</Tooltip.Trigger>
+	<Tooltip.Trigger class={triggerClass}>
+		{#snippet child({ props })}
+			{@render trigger(props)}
+		{/snippet}
+	</Tooltip.Trigger>
 
 	<Tooltip.Portal>
 		<Tooltip.Content

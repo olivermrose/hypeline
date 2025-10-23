@@ -39,6 +39,11 @@ export class Channel {
 	public ephemeral = false;
 
 	/**
+	 * Whether the channel is pinned.
+	 */
+	public pinned = $state(false);
+
+	/**
 	 * The active 7TV emote set for the channel if any.
 	 */
 	public emoteSet = $state<EmoteSet>();
@@ -70,6 +75,8 @@ export class Channel {
 
 		this.#lastHitSpdAt = now - RATE_LIMIT_WINDOW * 2;
 		this.#lastHitAmtAt = now - RATE_LIMIT_WINDOW * 2;
+
+		this.pinned = settings.state.pinnedChannels.some((c) => c.id === user.id);
 	}
 
 	public static async join(login: string) {
@@ -95,6 +102,10 @@ export class Channel {
 		channel.emoteSet = joined.emote_set ?? undefined;
 
 		return channel;
+	}
+
+	public get id() {
+		return this.user.id;
 	}
 
 	/**
@@ -250,13 +261,18 @@ export class Channel {
 		}
 	}
 
-	public setStream(stream: Stream | null) {
-		this.#stream = stream;
+	public setEphemeral() {
+		this.ephemeral = true;
 		return this;
 	}
 
-	public setEphemeral() {
-		this.ephemeral = true;
+	public setPinned(pinned: boolean) {
+		this.pinned = pinned;
+		return this;
+	}
+
+	public setStream(stream: Stream | null) {
+		this.#stream = stream;
 		return this;
 	}
 

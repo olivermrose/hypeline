@@ -58,6 +58,7 @@ export interface Settings {
 	// Internal
 	user: { id: string; token: string } | null;
 	lastJoined: string | null;
+	pinnedChannels: { id: string; order: number }[];
 
 	// User
 	appearance: AppearanceSettings;
@@ -79,6 +80,7 @@ export const defaultHighlightTypes: Record<HighlightType, HighlightTypeSettings>
 export const settings = new RuneStore<Settings>("settings", {
 	user: null,
 	lastJoined: null,
+	pinnedChannels: [],
 	appearance: {
 		timestamps: {
 			show: true,

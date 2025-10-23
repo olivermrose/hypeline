@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { DragDropProvider, DragOverlay } from "@dnd-kit-svelte/svelte";
+	import { RestrictToVerticalAxis } from "@dnd-kit/abstract/modifiers";
+	import { move } from "@dnd-kit/helpers";
 	import { invoke } from "@tauri-apps/api/core";
 	import { onMount } from "svelte";
-	import { flip } from "svelte/animate";
+	import { Channel } from "$lib/channel.svelte";
 	import { log } from "$lib/log";
 	import { app } from "$lib/state.svelte";
 	import type { Stream } from "$lib/twitch/api";
 	import ChannelIcon from "./ChannelIcon.svelte";
+	import Droppable from "./Droppable.svelte";
+	import PinnedChannelIcon from "./PinnedChannelIcon.svelte";
 
 	const groups = $derived.by(() => {
 		const sorted = app.channels.toSorted((a, b) => {
@@ -19,7 +24,12 @@
 			return a.user.username.localeCompare(b.user.username);
 		});
 
-		return Object.groupBy(sorted, (channel) => (channel.ephemeral ? "a" : "b"));
+		return Object.groupBy(sorted, (channel) => {
+			if (channel.ephemeral) return "ephemeral";
+			if (channel.pinned) return "pinned";
+
+			return "default";
+		});
 	});
 
 	onMount(() => {
@@ -43,19 +53,63 @@
 	});
 </script>
 
-<!-- TODO: include stream with user -->
-{#if app.user}
-	<ChannelIcon user={app.user} stream={null} />
-{/if}
+<DragDropProvider
+	modifiers={[
+		// @ts-ignore
+		RestrictToVerticalAxis,
+	]}
+	onDragOver={(event) => {
+		if (groups.pinned) {
+			groups.pinned = move(groups.pinned, event);
+		}
+	}}
+>
+	<!-- TODO: include stream with user -->
+	{#if app.user}
+		<ChannelIcon user={app.user} stream={null} />
+	{/if}
 
-{#each Object.entries(groups)
-	.sort((a, b) => a[0].localeCompare(b[0]))
-	.map((e) => e[1]) as channels}
+	{@render channelGroup(groups.ephemeral)}
+
 	<div class="bg-border h-px" role="separator"></div>
 
-	{#each channels as channel (channel.user.id)}
-		<div class="flex" animate:flip={{ duration: 500 }}>
+	{#if groups.pinned}
+		<Droppable id="pinned-channels" class="space-y-4">
+			{@render channelGroup(groups.pinned)}
+		</Droppable>
+
+		<DragOverlay>
+			{#snippet children(source)}
+				{@const channel = groups.pinned?.find((c) => c.id === source.id)}
+
+				<img
+					class={["rounded-full object-cover", !channel?.stream && "grayscale"]}
+					src={channel?.user.avatarUrl}
+					alt=""
+					width="300"
+					height="300"
+					draggable="false"
+				/>
+			{/snippet}
+		</DragOverlay>
+
+		<div class="bg-border h-px" role="separator"></div>
+	{/if}
+
+	{@render channelGroup(groups.default)}
+</DragDropProvider>
+
+{#snippet channelGroup(group: Channel[] = [])}
+	{#each group as channel, i (channel.id)}
+		{#if channel.pinned}
+			<PinnedChannelIcon
+				id={channel.id}
+				index={i}
+				user={channel.user}
+				stream={channel.stream}
+			/>
+		{:else}
 			<ChannelIcon user={channel.user} stream={channel.stream} />
-		</div>
+		{/if}
 	{/each}
-{/each}
+{/snippet}
