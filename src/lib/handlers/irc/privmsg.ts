@@ -8,7 +8,7 @@ export default defineHandler({
 		const message = new UserMessage(data);
 
 		message.author.setUsername(data.sender.login);
-		message.author.setDisplayName(data.sender.login);
+		message.author.setDisplayName(data.sender.name);
 
 		if (message.viewer) {
 			message.viewer.isBroadcaster = message.badges.some((b) => b.name === "broadcaster");

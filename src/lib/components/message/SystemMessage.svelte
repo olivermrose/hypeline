@@ -151,7 +151,7 @@
 {#snippet roleStatus(ctx: RoleStatusContext)}
 	{@html colorizeName(ctx.broadcaster)}
 	{ctx.added ? "added" : "removed"}
-	{@html colorizeName(ctx.user)} as a {ctx.role}.
+	{@html colorizeName(ctx.viewer)} as a {ctx.role}.
 {/snippet}
 
 {#snippet streamStatus(ctx: StreamStatusContext)}
