@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { invoke } from "@tauri-apps/api/core";
-	import { SystemMessage } from "$lib/message";
-	import type { UserMessage } from "$lib/message";
+	import { SystemMessage, UserMessage } from "$lib/message";
 	import { app } from "$lib/state.svelte";
 	import type { AutoModMetadata } from "$lib/twitch/eventsub";
 	import Message from "./Message.svelte";

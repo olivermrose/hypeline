@@ -2,28 +2,19 @@
 	import { invoke } from "@tauri-apps/api/core";
 	import { Separator, Toolbar } from "bits-ui";
 	import { input, replyTarget } from "$lib/components/ChatInput.svelte";
-	import type { UserMessage } from "$lib/message";
+	import type { Message } from "$lib/message";
 	import { app } from "$lib/state.svelte";
 	import { cn } from "$lib/util";
 
 	interface Props {
 		class?: string;
-		message: UserMessage;
+		message: Message;
 	}
 
 	const { class: className, message }: Props = $props();
 
 	async function copy() {
 		await navigator.clipboard.writeText(message.text);
-	}
-
-	async function deleteMessage() {
-		if (!app.user || !app.joined) return;
-
-		await invoke("delete_message", {
-			broadcasterId: app.joined.user.id,
-			messageId: message.id,
-		});
 	}
 
 	async function ban(duration?: number) {
@@ -63,7 +54,7 @@
 		<Toolbar.Button
 			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1 text-blue-400"
 			title="Delete message"
-			onclick={deleteMessage}
+			onclick={() => message.delete()}
 		>
 			<span class="iconify lucide--trash size-4"></span>
 		</Toolbar.Button>

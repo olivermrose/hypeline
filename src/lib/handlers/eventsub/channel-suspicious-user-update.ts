@@ -1,38 +1,41 @@
 import { SystemMessage } from "$lib/message";
-import { User } from "$lib/user.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.suspicious_user.update",
-	handle(data, channel) {
-		const message = new SystemMessage();
-		const status = data.low_trust_status;
+	async handle(data, channel) {
+		const viewer = await channel.viewers.fetch(data.user_id);
+		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
-		const user = User.fromBasic(data);
+		const status = data.low_trust_status;
 
 		// Only update status if the user is not already monitored or
 		// restricted.
-		if (!user.monitored && !user.restricted) {
+		if (!viewer.monitored && !viewer.restricted) {
 			// No previous information available so it doesn't make sense to
 			// send the message since we don't know what changed.
 			if (status === "no_treatment") return;
 
-			user.monitored = status === "active_monitoring";
-			user.restricted = status === "restricted";
+			viewer.monitored = status === "active_monitoring";
+			viewer.restricted = status === "restricted";
 		}
 
 		channel.addMessage(
-			message.setContext({
+			SystemMessage.fromContext({
 				type: "suspicionStatus",
 				active: status !== "no_treatment",
-				previous: user.monitored ? "monitoring" : user.restricted ? "restricting" : null,
-				user,
-				moderator: User.fromModerator(data),
+				previous: viewer.monitored
+					? "monitoring"
+					: viewer.restricted
+						? "restricting"
+						: null,
+				viewer,
+				moderator,
 			}),
 		);
 
 		// Update AFTER message is sent so the previous status is available.
-		user.monitored = status === "active_monitoring";
-		user.restricted = status === "restricted";
+		viewer.monitored = status === "active_monitoring";
+		viewer.restricted = status === "restricted";
 	},
 });

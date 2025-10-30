@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -16,7 +15,7 @@ export default defineCommand({
 		}
 
 		try {
-			await invoke("raid", { fromId: channel.user.id, toId: target.id });
+			await channel.raid(target.id);
 		} catch (error) {
 			if (typeof error !== "string") return;
 

@@ -1,12 +1,11 @@
 import { SystemMessage } from "$lib/message";
-import { User } from "$lib/user.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.moderate",
-	handle(data, channel) {
+	async handle(data, channel) {
 		const message = new SystemMessage();
-		const moderator = User.fromModerator(data);
+		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
 		switch (data.action) {
 			case "emoteonly":
@@ -68,10 +67,12 @@ export default defineHandler({
 			}
 
 			case "delete": {
+				const viewer = await channel.viewers.fetch(data.delete.user_id);
+
 				message.setContext({
 					type: "delete",
 					text: data.delete.message_body,
-					user: User.fromBasic(data.delete),
+					viewer,
 					moderator,
 				});
 
@@ -87,10 +88,12 @@ export default defineHandler({
 			}
 
 			case "warn": {
+				const viewer = await channel.viewers.fetch(data.warn.user_id);
+
 				message.setContext({
 					type: "warn",
 					warning: data.warn,
-					user: User.fromBasic(data.warn),
+					viewer,
 					moderator,
 				});
 
@@ -98,6 +101,7 @@ export default defineHandler({
 			}
 
 			case "timeout": {
+				const viewer = await channel.viewers.fetch(data.timeout.user_id);
 				channel.clearMessages(data.timeout.user_id);
 
 				const expiration = new Date(data.timeout.expires_at);
@@ -107,7 +111,7 @@ export default defineHandler({
 					type: "timeout",
 					seconds: Math.ceil(duration / 1000),
 					reason: data.timeout.reason,
-					user: User.fromBasic(data.timeout),
+					viewer,
 					moderator,
 				});
 
@@ -115,9 +119,11 @@ export default defineHandler({
 			}
 
 			case "untimeout": {
+				const viewer = await channel.viewers.fetch(data.untimeout.user_id);
+
 				message.setContext({
 					type: "untimeout",
-					user: User.fromBasic(data.untimeout),
+					viewer,
 					moderator,
 				});
 
@@ -127,6 +133,7 @@ export default defineHandler({
 			case "ban":
 			case "unban": {
 				const isBan = data.action === "ban";
+				const viewer = await channel.viewers.fetch((isBan ? data.ban : data.unban).user_id);
 
 				if (isBan) {
 					channel.clearMessages(data.ban.user_id);
@@ -136,7 +143,7 @@ export default defineHandler({
 					type: "banStatus",
 					banned: isBan,
 					reason: isBan ? data.ban.reason : null,
-					user: User.fromBasic(isBan ? data.ban : data.unban),
+					viewer,
 					moderator,
 				});
 
@@ -146,12 +153,13 @@ export default defineHandler({
 			case "mod":
 			case "unmod": {
 				const added = data.action === "mod";
+				const viewer = await channel.viewers.fetch((added ? data.mod : data.unmod).user_id);
 
 				message.setContext({
 					type: "roleStatus",
 					role: "moderator",
 					added,
-					user: User.fromBasic(added ? data.mod : data.unmod),
+					viewer,
 					broadcaster: moderator,
 				});
 
@@ -161,12 +169,13 @@ export default defineHandler({
 			case "vip":
 			case "unvip": {
 				const added = data.action === "vip";
+				const viewer = await channel.viewers.fetch((added ? data.vip : data.unvip).user_id);
 
 				message.setContext({
 					type: "roleStatus",
 					role: "VIP",
 					added,
-					user: User.fromBasic(added ? data.vip : data.unvip),
+					viewer,
 					broadcaster: moderator,
 				});
 
@@ -174,10 +183,12 @@ export default defineHandler({
 			}
 
 			case "raid": {
+				const viewer = await channel.viewers.fetch(data.raid.user_id);
+
 				message.setContext({
 					type: "raid",
 					viewers: data.raid.viewer_count,
-					user: User.fromBasic(data.raid),
+					user: viewer.user,
 					moderator,
 				});
 
@@ -185,9 +196,11 @@ export default defineHandler({
 			}
 
 			case "unraid": {
+				const viewer = await channel.viewers.fetch(data.unraid.user_id);
+
 				message.setContext({
 					type: "unraid",
-					user: User.fromBasic(data.unraid),
+					user: viewer.user,
 					moderator,
 				});
 

@@ -1,10 +1,37 @@
+import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type { Badge, BasicUser, PrivmsgMessage, UserNoticeMessage } from "$lib/twitch/irc";
 import { User } from "$lib/user.svelte";
 import { extractEmotes } from "$lib/util";
-import { Message, parse } from "./";
-import type { Node } from "./";
+import { Viewer } from "$lib/viewer.svelte";
+import { Message } from "./message.svelte";
+import { parse } from ".";
+import type { Node } from ".";
+
+function createMinimalUser(sender: BasicUser, color: string) {
+	const user = new User({
+		data: {
+			id: sender.id,
+			created_at: "0",
+			login: sender.login,
+			display_name: sender.name,
+			description: "",
+			profile_image_url: "",
+			offline_image_url: "",
+			type: "",
+			broadcaster_type: "",
+		},
+		color: color ?? null,
+	});
+
+	if (app.joined) {
+		const viewer = new Viewer(app.joined, user);
+		app.joined.viewers.set(user.id, viewer);
+	}
+
+	return user;
+}
 
 /**
  * User messages are either messages received by `PRIVMSG` commands or
@@ -12,26 +39,26 @@ import type { Node } from "./";
  */
 export class UserMessage extends Message {
 	#author: User;
+	#viewer?: Viewer;
+
 	#autoMod: AutoModMetadata | null = null;
+
 	#nodes: Node[] = [];
 
 	public constructor(public readonly data: PrivmsgMessage | UserNoticeMessage) {
 		super(data);
 
-		let user = app.joined?.viewers.get(this.data.sender.id);
+		const viewer = app.joined?.viewers.get(data.sender.id);
 
-		if (!user) {
-			user = User.fromBare(this.data.sender, this.data.name_color);
-		}
-
-		this.#author = user;
+		this.#author = viewer?.user ?? createMinimalUser(data.sender, data.name_color);
+		this.#viewer = viewer;
 	}
 
 	public static from(message: StructuredMessage, sender: BasicUser) {
 		const isAction = /^\x01ACTION.*$/.test(message.text);
 		const text = isAction ? message.text.slice(8, -1) : message.text;
 
-		return new UserMessage({
+		return new this({
 			type: "privmsg",
 			badge_info: [],
 			badges: [],
@@ -58,11 +85,11 @@ export class UserMessage extends Message {
 		});
 	}
 
-	public override get id() {
+	public get id() {
 		return this.data.message_id;
 	}
 
-	public override get text() {
+	public get text() {
 		// message_text should only be possibly null if it's a USERNOTICE, in
 		// which case we can assume system_message is present
 		return this.data.message_text ?? (this.data as UserNoticeMessage).system_message;
@@ -87,7 +114,7 @@ export class UserMessage extends Message {
 		return (
 			app.user.moderating.has(app.joined.user.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
-			(app.user.id === this.author.id || !this.author.isMod)
+			(app.user.id === this.author.id || !this.viewer?.isMod)
 		);
 	}
 
@@ -96,6 +123,13 @@ export class UserMessage extends Message {
 	 */
 	public get author() {
 		return this.#author;
+	}
+
+	/**
+	 * The viewer who sent the message if it was sent in a channel.
+	 */
+	public get viewer() {
+		return this.#viewer ?? null;
 	}
 
 	/**
@@ -115,7 +149,7 @@ export class UserMessage extends Message {
 	/**
 	 * The amount of bits sent with the message if it was a cheer.
 	 */
-	public get bits(): number {
+	public get bits() {
 		return "bits" in this.data ? (this.data.bits ?? 0) : 0;
 	}
 
@@ -161,6 +195,15 @@ export class UserMessage extends Message {
 	 */
 	public get reply() {
 		return "reply" in this.data ? this.data.reply : null;
+	}
+
+	public async delete() {
+		if (!app.user || !app.joined) return;
+
+		await invoke("delete_message", {
+			broadcasterId: app.joined.user.id,
+			messageId: this.id,
+		});
 	}
 
 	public setAutoMod(metadata: AutoModMetadata) {

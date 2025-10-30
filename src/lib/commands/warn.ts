@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -19,11 +18,7 @@ export default defineCommand({
 		}
 
 		try {
-			await invoke("warn", {
-				broadcasterId: channel.user.id,
-				userId: target.id,
-				reason,
-			});
+			await target.warn(reason);
 		} catch (error) {
 			if (typeof error !== "string") return;
 

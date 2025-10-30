@@ -1,168 +1,11 @@
-import type { Emote } from "$lib/tauri";
-import type {
-	AutoModMessageStatus,
-	AutoModTermsMetadata,
-	ChannelUnbanRequestCreate,
-	ChannelUnbanRequestResolve,
-	WarnMetadata,
-} from "$lib/twitch/eventsub";
-import type { User } from "$lib/user.svelte";
 import { Message } from "./message.svelte";
+import type { MessageContext } from "./context";
 
 export interface SystemMessageData {
 	deleted: boolean;
 	is_recent: boolean;
 	server_timestamp: number;
 }
-
-export interface AutoModContext {
-	type: "autoMod";
-	status: AutoModMessageStatus;
-	user: User;
-	moderator: User;
-}
-
-export interface BanStatusContext {
-	type: "banStatus";
-	banned: boolean;
-	reason: string | null;
-	user: User;
-	moderator?: User;
-}
-
-export interface BlockStatusContext {
-	type: "blockStatus";
-	blocked: boolean;
-	user: User;
-}
-
-export interface ClearContext {
-	type: "clear";
-	moderator?: User;
-}
-
-export interface DeleteContext {
-	type: "delete";
-	text: string;
-	user: User;
-	moderator?: User;
-}
-
-export interface EmoteSetUpdateContext {
-	type: "emoteSetUpdate";
-	action: "added" | "removed" | "renamed";
-	oldName?: string;
-	emote: Emote;
-	actor: User;
-}
-
-export interface JoinContext {
-	type: "join";
-	channel: User;
-}
-
-export interface ModeContext {
-	type: "mode";
-	mode: string;
-	enabled: boolean;
-	seconds: number;
-	moderator: User;
-}
-
-export interface RaidContext {
-	type: "raid";
-	viewers: number;
-	user: User;
-	moderator: User;
-}
-
-export interface RoleStatusContext {
-	type: "roleStatus";
-	role: string;
-	added: boolean;
-	user: User;
-	broadcaster: User;
-}
-
-export interface StreamStatusContext {
-	type: "streamStatus";
-	online: boolean;
-	broadcaster: User;
-}
-
-export interface SuspicionStatusContext {
-	type: "suspicionStatus";
-	active: boolean;
-	previous: "monitoring" | "restricting" | null;
-	user: User;
-	moderator: User;
-}
-
-export interface TermContext {
-	type: "term";
-	data: AutoModTermsMetadata;
-	moderator: User;
-}
-
-export interface TimeoutContext {
-	type: "timeout";
-	seconds: number;
-	reason: string | null;
-	user: User;
-	moderator?: User;
-}
-
-export interface UnbanRequestContext {
-	type: "unbanRequest";
-	request: ChannelUnbanRequestCreate | ChannelUnbanRequestResolve;
-	user: User;
-	moderator?: User;
-}
-
-export interface UnraidContext {
-	type: "unraid";
-	user: User;
-	moderator: User;
-}
-
-export interface UntimeoutContext {
-	type: "untimeout";
-	user: User;
-	moderator: User;
-}
-
-export interface WarnContext {
-	type: "warn";
-	warning: WarnMetadata;
-	user: User;
-	moderator: User;
-}
-
-export interface WarnAckContext {
-	type: "warnAck";
-	user: User;
-}
-
-export type SystemMessageContext =
-	| AutoModContext
-	| BanStatusContext
-	| BlockStatusContext
-	| ClearContext
-	| DeleteContext
-	| EmoteSetUpdateContext
-	| JoinContext
-	| ModeContext
-	| RaidContext
-	| RoleStatusContext
-	| StreamStatusContext
-	| SuspicionStatusContext
-	| TermContext
-	| TimeoutContext
-	| UnbanRequestContext
-	| UnraidContext
-	| UntimeoutContext
-	| WarnContext
-	| WarnAckContext;
 
 /**
  * System messages are messages constructed internally and sent to relay
@@ -172,7 +15,7 @@ export class SystemMessage extends Message {
 	#id = crypto.randomUUID();
 	#text = "";
 
-	public context: SystemMessageContext | null = null;
+	#context: MessageContext | null = null;
 
 	public constructor(data: Partial<SystemMessageData> = {}) {
 		const prepared: SystemMessageData = {
@@ -184,21 +27,34 @@ export class SystemMessage extends Message {
 		super(prepared, true);
 	}
 
-	public static joined(channel: User) {
-		const message = new SystemMessage();
-		return message.setContext({ type: "join", channel });
+	public static fromContext(context: MessageContext) {
+		const message = new this();
+		return message.setContext(context);
 	}
 
+	/**
+	 * The id (stored as a UUID) of the message.
+	 */
 	public override get id() {
 		return this.#id;
 	}
 
+	/**
+	 * The text content of the message.
+	 */
 	public override get text() {
 		return this.#text;
 	}
 
-	public setContext(context: SystemMessageContext) {
-		this.context = context;
+	/**
+	 * The context associated with the message.
+	 */
+	public get context() {
+		return this.#context;
+	}
+
+	public setContext(context: MessageContext) {
+		this.#context = context;
 		return this;
 	}
 

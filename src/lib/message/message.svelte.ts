@@ -1,5 +1,5 @@
 import type { BaseUserMessage } from "$lib/twitch/irc";
-import type { SystemMessageData, UserMessage } from ".";
+import type { SystemMessage, SystemMessageData, UserMessage } from ".";
 
 export type MessageData = BaseUserMessage | SystemMessageData;
 
@@ -37,6 +37,10 @@ export abstract class Message {
 	 */
 	public get isRecent() {
 		return this.data.is_recent;
+	}
+
+	public isSystem(): this is SystemMessage {
+		return this.#system;
 	}
 
 	public isUser(): this is UserMessage {

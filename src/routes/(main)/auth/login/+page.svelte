@@ -44,7 +44,7 @@
 				token: event.payload.access_token,
 			};
 
-			app.user = await User.from(event.payload.user_id);
+			app.user = await app.fetchUser(event.payload.user_id);
 
 			await tick();
 			await settings.save();

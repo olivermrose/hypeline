@@ -1,11 +1,15 @@
+import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
+import { settings } from "./settings";
+import { User } from "./user.svelte";
+import { Viewer } from "./viewer.svelte";
 import type { Channel } from "./channel.svelte";
 import type { Paint } from "./seventv";
-import type { Emote } from "./tauri";
+import type { Emote, UserWithColor } from "./tauri";
 import type { Badge } from "./twitch/api";
-import type { User } from "./user.svelte";
 
 class AppState {
+	#requests = new Map<string, Promise<User>>();
 	#joined = $state<Channel | null>(null);
 
 	public connected = $state(false);
@@ -45,6 +49,35 @@ class AppState {
 	 */
 	public get joined() {
 		return this.#joined;
+	}
+
+	public async fetchUser(id: string) {
+		const inProgress = this.#requests.get(id);
+		if (inProgress) return await inProgress;
+
+		const request = (async () => {
+			try {
+				const data = await invoke<UserWithColor>("get_user_from_id", { id });
+				const user = new User(data);
+
+				if (id === settings.state.user?.id) {
+					const channels = await invoke<[string, string][]>("get_moderated_channels");
+					channels.forEach(([id, name]) => user.moderating.set(id, name));
+				}
+
+				if (this.joined) {
+					const viewer = new Viewer(this.joined, user);
+					this.joined.viewers.set(user.id, viewer);
+				}
+
+				return user;
+			} finally {
+				this.#requests.delete(id);
+			}
+		})();
+
+		this.#requests.set(id, request);
+		return await request;
 	}
 
 	public setJoined(channel: Channel | null) {

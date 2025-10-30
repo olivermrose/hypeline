@@ -104,20 +104,21 @@
 				</div>
 			{/if}
 
-			{#if !message.isUser()}
-				{/* @ts-expect-error */ null}
+			{#if message.isSystem()}
 				<SystemMessage {message} context={message.context} />
-			{:else if message.event}
-				<Notification {message} />
-			{:else if message.autoMod}
-				<AutoMod {message} metadata={message.autoMod} />
-			{:else}
-				<UserMessage
-					{message}
-					onEmbedLoad={() => {
-						if (!scrollingPaused) scrollToEnd();
-					}}
-				/>
+			{:else if message.isUser()}
+				{#if message.event}
+					<Notification {message} />
+				{:else if message.autoMod}
+					<AutoMod {message} metadata={message.autoMod} />
+				{:else}
+					<UserMessage
+						{message}
+						onEmbedLoad={() => {
+							if (!scrollingPaused) scrollToEnd();
+						}}
+					/>
+				{/if}
 			{/if}
 
 			{@const next = app.joined?.messages.at(i + 1)}

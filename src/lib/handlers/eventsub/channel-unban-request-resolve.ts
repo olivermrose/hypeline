@@ -1,24 +1,23 @@
 import { SystemMessage } from "$lib/message";
-import type { WithModerator } from "$lib/twitch/eventsub";
-import { User } from "$lib/user.svelte";
+import type { Viewer } from "$lib/viewer.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.unban_request.resolve",
-	handle(data, channel) {
-		const message = new SystemMessage();
+	async handle(data, channel) {
+		const viewer = await channel.viewers.fetch(data.user_id);
 
-		let moderator: User | undefined;
+		let moderator: Viewer | undefined;
 
 		if (data.moderator_user_id) {
-			moderator = User.fromModerator(data as WithModerator);
+			moderator = await channel.viewers.fetch(data.moderator_user_id);
 		}
 
 		channel.addMessage(
-			message.setContext({
+			SystemMessage.fromContext({
 				type: "unbanRequest",
 				request: data,
-				user: User.fromBasic(data),
+				viewer,
 				moderator,
 			}),
 		);

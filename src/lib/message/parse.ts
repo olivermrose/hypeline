@@ -102,12 +102,12 @@ export function parse(message: UserMessage): Node[] {
 			});
 		} else if (/^@\w{4,24}$/.test(part)) {
 			const name = part.slice(1).toLowerCase();
-			const user = find(app.joined?.viewers ?? [], (u) => u.username === name);
+			const viewer = find(app.joined?.viewers ?? [], (u) => u.username === name);
 
 			nodes.push({
 				...base,
 				type: "mention",
-				data: { user },
+				data: { user: viewer?.user },
 			});
 		} else if (cheermote) {
 			const amount = Number(part.slice(cheermote.prefix.length));

@@ -10,9 +10,11 @@ export default defineHandler({
 			name: data.user_name,
 		});
 
-		message.author.monitored = data.low_trust_status === "active_monitoring";
-		message.author.restricted = data.low_trust_status === "restricted";
-		message.author.banEvasion = data.ban_evasion_evaluation;
+		if (message.viewer) {
+			message.viewer.monitored = data.low_trust_status === "active_monitoring";
+			message.viewer.restricted = data.low_trust_status === "restricted";
+			message.viewer.banEvasion = data.ban_evasion_evaluation;
+		}
 
 		channel.addMessage(message);
 	},

@@ -6,12 +6,12 @@ export default defineHandler({
 	name: "join",
 	async handle(data, channel) {
 		// Channel should always have itself in its viewers map
-		const user = find(channel.viewers, (user) => user.username === data.channel_login);
-		if (!user) return;
+		const viewer = find(channel.viewers, (user) => user.username === data.channel_login);
+		if (!viewer) return;
 
-		user.isBroadcaster = true;
-		user.isMod = true;
+		viewer.isBroadcaster = true;
+		viewer.isMod = true;
 
-		channel.messages.push(SystemMessage.joined(user));
+		channel.messages.push(SystemMessage.fromContext({ type: "join", channel: viewer.user }));
 	},
 });

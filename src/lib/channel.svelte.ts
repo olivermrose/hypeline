@@ -2,17 +2,19 @@ import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { commands } from "./commands";
-import type { Command } from "./commands/util";
 import { log } from "./log";
+import { ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
-import type { Message } from "./message";
 import { settings } from "./settings";
-import type { EmoteSet } from "./seventv";
 import { app } from "./state.svelte";
-import type { Emote, JoinedChannel } from "./tauri";
-import type { Badge, BadgeSet, Cheermote, Stream } from "./twitch/api";
 import { User } from "./user.svelte";
 import { find } from "./util";
+import { Viewer } from "./viewer.svelte";
+import type { Command } from "./commands/util";
+import type { Message } from "./message";
+import type { EmoteSet } from "./seventv";
+import type { Emote, JoinedChannel } from "./tauri";
+import type { Badge, BadgeSet, Cheermote, Stream } from "./twitch/api";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
@@ -31,7 +33,11 @@ export class Channel {
 	public readonly commands = new SvelteMap<string, Command>();
 	public readonly emotes = new SvelteMap<string, Emote>();
 	public readonly cheermotes = $state<Cheermote[]>([]);
-	public readonly viewers = new SvelteMap<string, User>();
+
+	/**
+	 * The viewers in the channel.
+	 */
+	public readonly viewers = new ViewerManager(this);
 
 	/**
 	 * Whether the channel is ephemeral.
@@ -63,8 +69,10 @@ export class Channel {
 	) {
 		this.#stream = stream;
 
-		this.user.isBroadcaster = true;
-		this.viewers.set(user.id, user);
+		const viewer = new Viewer(this, this.user);
+		viewer.isBroadcaster = true;
+
+		this.viewers.set(user.id, viewer);
 
 		const now = performance.now();
 
@@ -176,20 +184,32 @@ export class Channel {
 		}
 	}
 
+	public async raid(to: string) {
+		await invoke("raid", { fromId: this.user.id, toId: to });
+	}
+
+	public async unraid() {
+		await invoke("cancel_raid", { broadcasterId: this.user.id });
+	}
+
+	public shoutout(to: string) {
+		return invoke("shoutout", { fromId: this.user.id, toId: to });
+	}
+
 	public async send(message: string, replyId?: string) {
 		if (!app.user) return;
-		const user = this.viewers.get(app.user.id) ?? app.user;
 
-		const elevated = user.isMod || user.isVip;
+		const viewer = this.viewers.get(app.user.id) ?? new Viewer(this, app.user);
+		const elevated = viewer.isMod || viewer.isVip;
 
 		if (message.startsWith("/")) {
 			const [name, ...args] = message.slice(1).split(" ");
 
 			const command = this.commands.get(name);
-			if (!command || (command.modOnly && !user.isMod)) return;
+			if (!command || (command.modOnly && !viewer.isMod)) return;
 
 			try {
-				await command.exec(args, this, user);
+				await command.exec(args, this, viewer.user);
 			} catch (error) {
 				log.error(
 					`Error executing command ${name} in channel ${this.user.username}: ${error}`,
@@ -225,7 +245,7 @@ export class Channel {
 			},
 			body: JSON.stringify({
 				broadcaster_id: this.user.id,
-				sender_id: user.id,
+				sender_id: viewer.id,
 				reply_parent_message_id: replyId,
 				message,
 			}),
