@@ -2,9 +2,10 @@ import chroma from "chroma-js";
 import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Viewer } from "./viewer.svelte";
 import type { Fragment } from "./twitch/eventsub";
 import type { Emote } from "./twitch/irc";
-import type { PartialUser } from "./user.svelte";
+import type { User } from "./user.svelte";
 
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
@@ -51,10 +52,10 @@ export function formatDuration(seconds: number) {
 	return parts.join(" ");
 }
 
-export function colorizeName(user: PartialUser) {
-	return html`<span class="font-semibold" style="color: ${user.color};"
-		>${user.displayName}</span
-	>`;
+export function colorizeName(data: Viewer | User) {
+	const color = data instanceof Viewer ? data.user.color : data.color;
+
+	return html`<span class="font-semibold" style="color: ${color};">${data.displayName}</span>`;
 }
 
 export function extractEmotes(fragments: Fragment[]): Emote[] {
