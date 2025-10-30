@@ -1,11 +1,11 @@
-import { Message } from "$lib/message";
+import { UserMessage } from "$lib/message";
 import { app } from "$lib/state.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "privmsg",
 	handle(data, channel) {
-		const message = new Message(data);
+		const message = new UserMessage(data);
 
 		message.author.setUsername(data.sender.login);
 		message.author.setDisplayName(data.sender.login);

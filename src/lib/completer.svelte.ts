@@ -1,9 +1,8 @@
 import { commands } from "./commands";
+import { app } from "./state.svelte";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";
-import { app } from "./state.svelte";
 import type { Emote } from "./tauri";
-import type { User } from "./user.svelte";
 import type { Viewer } from "./viewer.svelte";
 
 interface SearchOptions<T> {
@@ -134,9 +133,9 @@ export class Completer {
 					return false;
 				}
 
-				if (suggestion.broadcasterOnly && !app.user?.isBroadcaster) {
-					return false;
-				}
+				// if (suggestion.broadcasterOnly && !app.user?.isBroadcaster) {
+				// 	return false;
+				// }
 
 				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.user.id)) {
 					return false;

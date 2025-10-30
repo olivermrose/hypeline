@@ -10,7 +10,6 @@
 	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
 	import { SCOPES } from "$lib/twitch";
-	import { User } from "$lib/user.svelte";
 
 	interface TokenInfo {
 		user_id: string;
