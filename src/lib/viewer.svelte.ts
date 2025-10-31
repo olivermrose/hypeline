@@ -1,7 +1,11 @@
 import type { Channel } from "./channel.svelte";
-import type { TimeoutOptions } from "./managers";
 import type { BanEvasionEvaluation } from "./twitch/eventsub";
 import type { User } from "./user.svelte";
+
+export interface TimeoutOptions {
+	duration: number;
+	reason?: string;
+}
 
 export class Viewer {
 	/**

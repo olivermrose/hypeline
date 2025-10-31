@@ -1,13 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
-import type { Channel } from "$lib/channel.svelte";
-import { app } from "$lib/state.svelte";
-import { Viewer } from "$lib/viewer.svelte";
-
-export interface TimeoutOptions {
-	duration: number;
-	reason?: string;
-}
+import { app } from "./state.svelte";
+import { Viewer } from "./viewer.svelte";
+import type { Channel } from "./channel.svelte";
+import type { TimeoutOptions } from "./viewer.svelte";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
 	public constructor(public readonly channel: Channel) {
