@@ -21,6 +21,7 @@ const RATE_LIMIT_GRACE = 1000;
 
 export class Channel {
 	#stream = $state<Stream | null>(null);
+
 	#bypassNext = false;
 	#lastRecentAt: number | null = null;
 
@@ -103,6 +104,10 @@ export class Channel {
 		channel.emoteSet = joined.emote_set ?? undefined;
 
 		return channel;
+	}
+
+	public get id() {
+		return this.user.id;
 	}
 
 	/**

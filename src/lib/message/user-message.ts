@@ -112,7 +112,7 @@ export class UserMessage extends Message {
 		const diff = Math.abs(now - this.timestamp.getTime());
 
 		return (
-			app.user.moderating.has(app.joined.user.id) &&
+			app.user.moderating.has(app.joined.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
 			(app.user.id === this.author.id || !this.viewer?.isMod)
 		);
@@ -201,7 +201,7 @@ export class UserMessage extends Message {
 		if (!app.user || !app.joined) return;
 
 		await invoke("delete_message", {
-			broadcasterId: app.joined.user.id,
+			broadcasterId: app.joined.id,
 			messageId: this.id,
 		});
 	}

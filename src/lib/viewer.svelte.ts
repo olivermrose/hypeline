@@ -3,7 +3,14 @@ import type { BanEvasionEvaluation } from "./twitch/eventsub";
 import type { User } from "./user.svelte";
 
 export interface TimeoutOptions {
+	/**
+	 * The duration of the timeout in seconds.
+	 */
 	duration: number;
+
+	/**
+	 * The reason for the timeout.
+	 */
 	reason?: string;
 }
 

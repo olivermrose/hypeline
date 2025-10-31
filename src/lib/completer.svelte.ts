@@ -133,11 +133,11 @@ export class Completer {
 					return false;
 				}
 
-				// if (suggestion.broadcasterOnly && !app.user?.isBroadcaster) {
-				// 	return false;
-				// }
+				if (suggestion.broadcasterOnly && app.joined.id !== app.user?.id) {
+					return false;
+				}
 
-				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.user.id)) {
+				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.id)) {
 					return false;
 				}
 
