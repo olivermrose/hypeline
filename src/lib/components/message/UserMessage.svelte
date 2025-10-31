@@ -57,7 +57,7 @@
 		const likelihood = message.viewer.banEvasion;
 
 		if (message.viewer.monitored) {
-			info = "Montioring";
+			info = "Monitoring";
 		} else if (message.viewer.restricted) {
 			info = "Restricted";
 		} else if (likelihood !== "unknown") {
