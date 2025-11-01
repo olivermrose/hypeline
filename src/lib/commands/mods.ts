@@ -62,11 +62,10 @@ export default defineCommand({
 			moderators.push(user?.displayName ?? node.displayName);
 		}
 
-		const message = new SystemMessage();
-		message.setText(
-			`Channel moderators (${moderators.length}): ${moderators.sort().join(", ")}`,
+		channel.addMessage(
+			new SystemMessage(
+				`Channel moderators (${moderators.length}): ${moderators.sort().join(", ")}`,
+			),
 		);
-
-		channel.addMessage(message);
 	},
 });

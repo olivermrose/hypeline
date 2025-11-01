@@ -33,7 +33,7 @@
 
 				for (const channel of app.channels) {
 					const stream = streams.find((s) => s.user_id === channel.user.id);
-					channel.setStream(stream ?? null);
+					channel.stream = stream ?? null;
 				}
 			},
 			5 * 60 * 1000,

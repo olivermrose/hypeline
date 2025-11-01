@@ -41,7 +41,7 @@
 			app.joined = channel;
 
 			if (username.startsWith("ephemeral:")) {
-				channel.setEphemeral();
+				channel.ephemeral = true;
 				app.channels.push(channel);
 			}
 

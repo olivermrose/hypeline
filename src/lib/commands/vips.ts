@@ -62,9 +62,8 @@ export default defineCommand({
 			vips.push(user?.displayName ?? node.displayName);
 		}
 
-		const message = new SystemMessage();
-		message.setText(`Channel VIPs (${vips.length}): ${vips.sort().join(", ")}`);
-
-		channel.addMessage(message);
+		channel.addMessage(
+			new SystemMessage(`Channel VIPs (${vips.length}): ${vips.sort().join(", ")}`),
+		);
 	},
 });
