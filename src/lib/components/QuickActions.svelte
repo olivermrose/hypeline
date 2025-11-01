@@ -27,7 +27,7 @@
 
 	<Toolbar.Button
 		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1"
-		title="Reply to {message.viewer?.displayName}"
+		title="Reply to {message.author.displayName}"
 		onclick={() => {
 			replyTarget.value = message;
 			input.value?.focus();
@@ -57,7 +57,7 @@
 
 		<Toolbar.Button
 			class="hover:bg-muted-foreground/50 text-destructive flex items-center justify-center rounded-[4px] p-1"
-			title="Ban {message.viewer?.displayName}"
+			title="Ban {message.author.displayName}"
 			onclick={() => message.viewer?.ban()}
 		>
 			<span class="iconify lucide--ban size-4"></span>
