@@ -66,11 +66,6 @@ export class UserMessage extends Message {
 	public readonly action: boolean;
 
 	/**
-	 * Whether the message is the user's first message sent in the channel.
-	 */
-	public readonly first: boolean;
-
-	/**
 	 * Whether channel points were used to highlight the message.
 	 */
 	public readonly highlighted: boolean;
@@ -116,7 +111,6 @@ export class UserMessage extends Message {
 		this.viewer = viewer ?? null;
 
 		this.action = "is_action" in data && data.is_action;
-		this.first = "is_first_msg" in data && data.is_first_msg;
 		this.highlighted = "is_highlighted" in data && data.is_highlighted;
 
 		this.badges = data.badges;

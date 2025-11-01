@@ -36,7 +36,7 @@
 	if (message.viewer) {
 		if (hasMention) {
 			hlType = "mention";
-		} else if (message.first) {
+		} else if (message.viewer.new) {
 			hlType = "new";
 		} else if (message.viewer.returning) {
 			hlType = "returning";

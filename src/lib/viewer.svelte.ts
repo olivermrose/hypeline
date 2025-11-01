@@ -48,6 +48,12 @@ export class Viewer {
 	public returning = $state(false);
 
 	/**
+	 * Whether the viewer is new to the channel. This is only `true` for the
+	 * first message they send.
+	 */
+	public new = $state(false);
+
+	/**
 	 * Whether the viewer's messages are being monitored. This is mutually
 	 * exclusive with `restricted`.
 	 */
