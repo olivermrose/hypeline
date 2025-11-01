@@ -2,7 +2,7 @@
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
-	import type { User } from "$lib/user.svelte";
+	import type { Viewer } from "$lib/viewer.svelte";
 	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
@@ -33,30 +33,32 @@
 	const isSelf = message.author.id === app.user?.id;
 	const hasMention = message.text.toLowerCase().includes(`@${app.user?.username}`);
 
-	if (hasMention) {
-		hlType = "mention";
-	} else if (message.isFirst) {
-		hlType = "new";
-	} else if (message.author.isReturning) {
-		hlType = "returning";
-	} else if (message.author.isBroadcaster) {
-		hlType = "broadcaster";
-	} else if (message.author.isMod) {
-		hlType = "moderator";
-	} else if (message.author.isSuspicious) {
-		hlType = "suspicious";
-	} else if (message.author.isVip) {
-		hlType = "vip";
-	} else if (message.author.isSub) {
-		hlType = "subscriber";
+	if (message.viewer) {
+		if (hasMention) {
+			hlType = "mention";
+		} else if (message.viewer.new) {
+			hlType = "new";
+		} else if (message.viewer.returning) {
+			hlType = "returning";
+		} else if (message.viewer.broadcaster) {
+			hlType = "broadcaster";
+		} else if (message.viewer.moderator) {
+			hlType = "moderator";
+		} else if (message.viewer.suspicious) {
+			hlType = "suspicious";
+		} else if (message.viewer.vip) {
+			hlType = "vip";
+		} else if (message.viewer.subscriber) {
+			hlType = "subscriber";
+		}
 	}
 
-	const likelihood = message.author.banEvasion;
+	if (message.viewer?.suspicious) {
+		const likelihood = message.viewer.banEvasion;
 
-	if (message.author.isSuspicious) {
-		if (message.author.monitored) {
-			info = "Montioring";
-		} else if (message.author.restricted) {
+		if (message.viewer.monitored) {
+			info = "Monitoring";
+		} else if (message.viewer.restricted) {
 			info = "Restricted";
 		} else if (likelihood !== "unknown") {
 			const status = likelihood[0].toUpperCase() + likelihood.slice(1);
@@ -64,14 +66,14 @@
 		}
 	}
 
-	function getMentionStyle(user?: User) {
+	function getMentionStyle(viewer?: Viewer) {
 		switch (settings.state.chat.mentionStyle) {
 			case "none":
 				return null;
 			case "colored":
-				return `color: ${user?.color}`;
+				return `color: ${viewer?.user.color}`;
 			case "painted":
-				return user?.style;
+				return viewer?.user.style;
 		}
 	}
 </script>

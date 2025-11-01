@@ -3,6 +3,7 @@ import type { Channel } from "$lib/channel.svelte";
 import type { UserWithColor } from "$lib/tauri";
 import { User } from "$lib/user.svelte";
 import { find } from "$lib/util";
+import { Viewer } from "$lib/viewer.svelte";
 
 export interface Command {
 	name: string;
@@ -25,7 +26,7 @@ export async function getTarget(username: string, channel: Channel) {
 
 	username = username.toLowerCase();
 
-	let target = find(channel.viewers, (user) => user.username === username);
+	let target = find(channel.viewers, (v) => v.username === username);
 
 	if (!target) {
 		const fetched = await invoke<UserWithColor | null>("get_user_from_login", {
@@ -33,7 +34,7 @@ export async function getTarget(username: string, channel: Channel) {
 		});
 
 		if (fetched) {
-			target = new User(fetched);
+			target = new Viewer(channel, new User(fetched));
 			channel.viewers.set(target.id, target);
 		}
 	}

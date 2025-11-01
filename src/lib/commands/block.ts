@@ -12,12 +12,10 @@ export default defineCommand({
 
 		await invoke("block", { userId: target.id });
 
-		const message = new SystemMessage();
-
-		message.setContext({
+		const message = SystemMessage.fromContext({
 			type: "blockStatus",
 			blocked: true,
-			user: target,
+			user: target.user,
 		});
 
 		channel.addMessage(message);

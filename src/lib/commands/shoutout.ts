@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -20,6 +19,6 @@ export default defineCommand({
 			return;
 		}
 
-		await invoke("shoutout", { fromId: channel.user.id, toId: target.id });
+		await channel.shoutout(target.id);
 	},
 });

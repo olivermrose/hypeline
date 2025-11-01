@@ -31,7 +31,9 @@ export default defineHandler({
 					.replace("This room", "The chat")
 					.replace("s-only", "-only");
 
-				channel.addMessage(message.setText(text));
+				message.text = text;
+				channel.addMessage(message);
+
 				break;
 			}
 		}

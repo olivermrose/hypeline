@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { invoke } from "@tauri-apps/api/core";
-	import { SystemMessage } from "$lib/message";
-	import type { UserMessage } from "$lib/message";
+	import { SystemMessage, UserMessage } from "$lib/message";
 	import { app } from "$lib/state.svelte";
 	import type { AutoModMetadata } from "$lib/twitch/eventsub";
 	import Message from "./Message.svelte";
@@ -22,14 +21,13 @@
 		} catch (error) {
 			if (typeof error === "string" && error.includes("already set")) {
 				const sysmsg = new SystemMessage();
-				sysmsg.setText(
-					"Failed to update AutoMod message status. It may have already been updated or expired.",
-				);
+				sysmsg.text =
+					"Failed to update AutoMod message status. It may have already been updated or expired.";
 
 				app.joined?.addMessage(sysmsg);
 			}
 		} finally {
-			message.setDeleted();
+			message.deleted = true;
 		}
 	}
 </script>

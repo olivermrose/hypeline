@@ -7,11 +7,8 @@ export default defineHandler({
 		if (data.status === "invalid") return;
 
 		const message = channel.messages.find((m) => m.id === data.message_id);
-		message?.setDeleted();
+		if (message) message.deleted = true;
 
-		const sysmsg = new SystemMessage();
-		sysmsg.setText(`A moderator ${data.status} your message.`);
-
-		channel.addMessage(sysmsg);
+		channel.addMessage(new SystemMessage(`A moderator ${data.status} your message.`));
 	},
 });

@@ -1,80 +1,64 @@
-import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { settings } from "./settings";
+import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
-import { app } from "./state.svelte";
 import type { UserWithColor } from "./tauri";
 import type { Badge, User as HelixUser } from "./twitch/api";
-import type {
-	BanEvasionEvaluation,
-	WithBasicUser,
-	WithBroadcaster,
-	WithModerator,
-} from "./twitch/eventsub";
-import type { BasicUser } from "./twitch/irc";
-import { makeReadable } from "./util";
 
 export interface PartialUser {
 	id: string;
-	color?: string;
+	color?: string | null;
 	username: string;
 	displayName: string;
 }
-
-const requests = new Map<string, Promise<User>>();
 
 export class User implements PartialUser {
 	readonly #data: HelixUser;
 
 	#color: string | null = null;
-	#username: string;
 	#displayName: string;
 
-	/**
-	 * Whether the user is the broadcaster.
-	 */
-	public isBroadcaster = $state(false);
+	public readonly id: string;
 
 	/**
-	 * Whether the user is a moderator in the channel.
+	 * The date the user's account was created.
 	 */
-	public isMod = $state(false);
+	public readonly createdAt: Date;
 
 	/**
-	 * Whether the user is a subscriber to the channel.
+	 * Whether the user is Twitch staff.
 	 */
-	public isSub = $state(false);
+	public readonly staff: boolean;
 
 	/**
-	 * Whether the user is a VIP in the channel.
+	 * Whether the user is a Twitch affiliate.
 	 */
-	public isVip = $state(false);
+	public readonly affiliated: boolean;
 
 	/**
-	 * Whether the user is a returning user to the channel.
-	 *
-	 * Returning users are new users who have chatted at least twice in the
-	 * last 30 days.
+	 * Whether the user is a Twitch partner.
 	 */
-	public isReturning = $state(false);
+	public readonly partnered: boolean;
 
 	/**
-	 * Whether the user's messages are being monitored. This is mutually
-	 * exclusive with `restricted`.
+	 * The bio of the user.
 	 */
-	public monitored = $state(false);
+	public readonly bio: string;
 
 	/**
-	 * Whether the user's messages are being restricted. This is mutually
-	 * exclusive with `monitored`.
+	 * The URL of the user's avatar image.
 	 */
-	public restricted = $state(false);
+	public readonly avatarUrl: string;
 
 	/**
-	 * The likelihood that the user is ban evading if they are considered a
-	 * suspicious user.
+	 * The URL of the user's banner image seen when they are offline.
 	 */
-	public banEvasion = $state<BanEvasionEvaluation>("unknown");
+	public readonly bannerUrl: string;
+
+	/**
+	 * The username of the user.
+	 */
+	public username: string;
 
 	/**
 	 * The 7TV badge for the user if they have one set.
@@ -96,99 +80,22 @@ export class User implements PartialUser {
 	public constructor(data: UserWithColor) {
 		this.#data = data.data;
 
-		this.#username = this.#data.login;
-		this.#displayName = this.#data.display_name;
 		this.#color = data.color;
+		this.#displayName = this.#data.display_name;
+
+		this.id = this.#data.id;
+		this.username = this.#data.login;
+		this.createdAt = new Date(this.#data.created_at);
+
+		this.staff = this.#data.type === "staff";
+		this.affiliated = this.#data.broadcaster_type === "affiliate";
+		this.partnered = this.#data.broadcaster_type === "partner";
+
+		this.bio = this.#data.description;
+		this.avatarUrl = this.#data.profile_image_url;
+		this.bannerUrl = this.#data.offline_image_url;
 
 		this.moderating.set(this.id, this.username);
-	}
-
-	public static async from(id: string) {
-		const cached = app.joined?.viewers.get(id);
-		if (cached) return cached;
-
-		const inProgress = requests.get(id);
-		if (inProgress) return await inProgress;
-
-		const request = (async () => {
-			try {
-				const data = await invoke<UserWithColor>("get_user_from_id", { id });
-				const user = new User(data);
-
-				if (id === settings.state.user?.id) {
-					const channels = await invoke<[string, string][]>("get_moderated_channels");
-					channels.forEach(([id, name]) => user.moderating.set(id, name));
-				}
-
-				app.joined?.viewers.set(user.id, user);
-
-				return user;
-			} finally {
-				requests.delete(id);
-			}
-		})();
-
-		requests.set(id, request);
-		return await request;
-	}
-
-	public static fromBare(data: BasicUser, color?: string) {
-		const cached = app.joined?.viewers.get(data.id);
-		if (cached) return cached;
-
-		const user = new User({
-			data: {
-				id: data.id,
-				created_at: "0",
-				login: data.login,
-				display_name: data.name,
-				description: "",
-				profile_image_url: "",
-				offline_image_url: "",
-				type: "",
-				broadcaster_type: "",
-			},
-			color: color ?? null,
-		});
-
-		app.joined?.viewers.set(user.id, user);
-
-		return user;
-	}
-
-	public static fromBasic(data: WithBasicUser) {
-		return this.fromBare({
-			id: data.user_id,
-			login: data.user_login,
-			name: data.user_name,
-		});
-	}
-
-	public static fromModerator(data: WithModerator) {
-		return this.fromBare({
-			id: data.moderator_user_id,
-			login: data.moderator_user_login,
-			name: data.moderator_user_name,
-		});
-	}
-
-	public static fromBroadcaster(data: WithBroadcaster) {
-		return this.fromBare({
-			id: data.broadcaster_user_id,
-			login: data.broadcaster_user_login,
-			name: data.broadcaster_user_name,
-		});
-	}
-
-	public get id() {
-		return this.#data.id;
-	}
-
-	/**
-	 * The date the user's account was created.
-	 */
-	public get createdAt() {
-		return new Date(this.#data.created_at);
 	}
 
 	/**
@@ -203,6 +110,10 @@ export class User implements PartialUser {
 		return this.#color ?? "inherit";
 	}
 
+	public set color(color: string | null) {
+		this.#color = color;
+	}
+
 	/**
 	 * The CSS style for the user's name.
 	 */
@@ -210,10 +121,6 @@ export class User implements PartialUser {
 		const color = `color: ${this.color};`;
 
 		return this.paint ? `${this.paint.css}; ${color}` : color;
-	}
-
-	public get username() {
-		return this.#data.login;
 	}
 
 	/**
@@ -229,7 +136,11 @@ export class User implements PartialUser {
 			return `${this.localizedName} (${this.username})`;
 		}
 
-		return this.#data.display_name;
+		return this.#displayName;
+	}
+
+	public set displayName(displayName: string) {
+		this.#displayName = displayName;
 	}
 
 	/**
@@ -237,65 +148,6 @@ export class User implements PartialUser {
 	 * language set to Chinese, Japanese, or Korean.
 	 */
 	public get localizedName() {
-		return this.#data.login !== this.#data.display_name.toLowerCase()
-			? this.#data.display_name
-			: null;
-	}
-
-	public get bio() {
-		return this.#data.description;
-	}
-
-	public get avatarUrl() {
-		return this.#data.profile_image_url;
-	}
-
-	public get bannerUrl() {
-		return this.#data.offline_image_url;
-	}
-
-	/**
-	 * Whether the user is Twitch staff.
-	 */
-	public get isStaff() {
-		return this.#data.type === "staff";
-	}
-
-	/**
-	 * Whether the user is a Twitch affiliate.
-	 */
-	public get isAffiliate() {
-		return this.#data.broadcaster_type === "affiliate";
-	}
-
-	/**
-	 * Whether the user is a Twitch partner.
-	 */
-	public get isPartner() {
-		return this.#data.broadcaster_type === "partner";
-	}
-
-	/**
-	 * Whether the user is considered suspicious in a channel i.e. their
-	 * messages are being monitored or restricted, or they are suspected of ban
-	 * evasion.
-	 */
-	public get isSuspicious() {
-		return this.monitored || this.restricted || this.banEvasion !== "unknown";
-	}
-
-	public setColor(color: string | null) {
-		this.#color = color;
-		return this;
-	}
-
-	public setUsername(username: string) {
-		this.#username = username;
-		return this;
-	}
-
-	public setDisplayName(displayName: string) {
-		this.#displayName = displayName;
-		return this;
+		return this.username !== this.#displayName.toLowerCase() ? this.#displayName : null;
 	}
 }

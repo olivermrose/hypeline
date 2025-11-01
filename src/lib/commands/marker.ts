@@ -30,10 +30,10 @@ export default defineCommand({
 		const duration = dayjs.duration(marker.position_seconds, "s");
 		const format = duration.asHours() > 0 ? "H[h] mm[m] ss[s]" : "mm[m] ss[s]";
 
-		const message = new SystemMessage();
 		const echo = description ? `: ${description}` : "";
-
-		message.setText(`Stream marker created at ${duration.format(format) + echo}`);
+		const message = new SystemMessage(
+			`Stream marker created at ${duration.format(format) + echo}`,
+		);
 
 		channel.addMessage(message);
 	},

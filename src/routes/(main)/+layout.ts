@@ -11,7 +11,7 @@ export async function load({ parent }) {
 
 	if (!settings.state.user) return;
 
-	app.user = await User.from(settings.state.user.id);
+	app.user = await app.fetchUser(settings.state.user.id);
 
 	if (settings.state.lastJoined?.startsWith("ephemeral:")) {
 		settings.state.lastJoined = null;

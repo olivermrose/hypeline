@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -11,12 +10,7 @@ export default defineCommand({
 		if (!target) return;
 
 		try {
-			await invoke("ban", {
-				broadcasterId: channel.user.id,
-				userId: target.id,
-				duration: null,
-				reason: args.slice(1).join(" ") || null,
-			});
+			await target.ban(args.slice(1).join(" "));
 		} catch (error) {
 			if (typeof error !== "string") return;
 

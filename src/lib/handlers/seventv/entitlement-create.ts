@@ -1,6 +1,5 @@
 import { log } from "$lib/log";
 import { app } from "$lib/state.svelte";
-import { User } from "$lib/user.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -9,7 +8,7 @@ export default defineHandler({
 		const twitch = data.user.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
 
-		const user = await User.from(twitch.id);
+		const user = await app.fetchUser(twitch.id);
 
 		switch (data.kind) {
 			case "BADGE": {

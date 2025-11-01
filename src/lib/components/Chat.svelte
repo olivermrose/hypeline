@@ -104,25 +104,26 @@
 				</div>
 			{/if}
 
-			{#if !message.isUser()}
-				{/* @ts-expect-error */ null}
+			{#if message.isSystem()}
 				<SystemMessage {message} context={message.context} />
-			{:else if message.event}
-				<Notification {message} />
-			{:else if message.autoMod}
-				<AutoMod {message} metadata={message.autoMod} />
-			{:else}
-				<UserMessage
-					{message}
-					onEmbedLoad={() => {
-						if (!scrollingPaused) scrollToEnd();
-					}}
-				/>
+			{:else if message.isUser()}
+				{#if message.event}
+					<Notification {message} />
+				{:else if message.autoMod}
+					<AutoMod {message} metadata={message.autoMod} />
+				{:else}
+					<UserMessage
+						{message}
+						onEmbedLoad={() => {
+							if (!scrollingPaused) scrollToEnd();
+						}}
+					/>
+				{/if}
 			{/if}
 
 			{@const next = app.joined?.messages.at(i + 1)}
 
-			{#if message.isRecent && !next?.isRecent}
+			{#if message.recent && !next?.recent}
 				<div class="text-twitch relative px-3.5">
 					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
 

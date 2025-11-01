@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -11,10 +10,7 @@ export default defineCommand({
 		if (!target) return;
 
 		try {
-			await invoke("add_moderator", {
-				broadcasterId: channel.user.id,
-				userId: target.id,
-			});
+			await channel.viewers.mod(target.id);
 		} catch (error) {
 			if (typeof error !== "string") return;
 

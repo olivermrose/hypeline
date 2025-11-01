@@ -1,6 +1,5 @@
 import { SystemMessage } from "$lib/message";
 import { app } from "$lib/state.svelte";
-import { User } from "$lib/user.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -16,28 +15,30 @@ export default defineHandler({
 
 		if (data.action.type === "clear") {
 			channel.clearMessages();
-			channel.addMessage(message.setContext({ type: "clear" }));
+
+			message.context = { type: "clear" };
+			channel.addMessage(message);
+
 			return;
 		}
 
-		const target = await User.from(data.action.user_id);
-
+		const target = await channel.viewers.fetch(data.action.user_id);
 		channel.clearMessages(target.id);
 
 		if (data.action.type === "ban") {
-			message.setContext({
+			message.context = {
 				type: "banStatus",
 				banned: true,
 				reason: null,
-				user: target,
-			});
+				viewer: target,
+			};
 		} else {
-			message.setContext({
+			message.context = {
 				type: "timeout",
 				seconds: data.action.duration.secs,
 				reason: null,
-				user: target,
-			});
+				viewer: target,
+			};
 		}
 
 		channel.addMessage(message);

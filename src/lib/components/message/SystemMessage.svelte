@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { SystemMessage } from "$lib/message";
 	import type {
 		AutoModContext,
 		BanStatusContext,
 		ClearContext,
 		DeleteContext,
 		EmoteSetUpdateContext,
+		MessageContext,
 		ModeContext,
 		RoleStatusContext,
 		StreamStatusContext,
 		SuspicionStatusContext,
-		SystemMessageContext,
+		SystemMessage,
 		TermContext,
 		TimeoutContext,
 		UnbanRequestContext,
@@ -22,7 +22,7 @@
 
 	interface Props {
 		message: SystemMessage;
-		context: SystemMessageContext | null;
+		context: MessageContext | null;
 	}
 
 	const { message, context: ctx }: Props = $props();
@@ -34,8 +34,8 @@
 	let restricted = false;
 
 	if (ctx?.type === "suspicionStatus") {
-		monitored = ctx.user.monitored;
-		restricted = ctx.user.restricted;
+		monitored = ctx.viewer.monitored;
+		restricted = ctx.viewer.restricted;
 	}
 
 	const snippetMap = {
@@ -73,10 +73,10 @@
 				)}.
 			{:else if ctx.type === "untimeout"}
 				{@html colorizeName(ctx.moderator)} removed timeout on {@html colorizeName(
-					ctx.user,
+					ctx.viewer,
 				)}.
 			{:else if ctx.type === "warnAck"}
-				{@html colorizeName(ctx.user)} acknowledged their warning.
+				{@html colorizeName(ctx.viewer)} acknowledged their warning.
 			{:else}
 				{@render snippetMap[ctx.type](ctx as never)}
 			{/if}
@@ -87,7 +87,7 @@
 </div>
 
 {#snippet autoMod(ctx: AutoModContext)}
-	{@const target = colorizeName(ctx.user)}
+	{@const target = colorizeName(ctx.viewer)}
 
 	{#if ctx.status === "expired"}
 		{@html target}'s message expired and was not shown in chat.
@@ -97,7 +97,7 @@
 {/snippet}
 
 {#snippet banStatus(ctx: BanStatusContext)}
-	{@const target = colorizeName(ctx.user)}
+	{@const target = colorizeName(ctx.viewer)}
 	{@const action = ctx.banned ? "banned" : "unbanned"}
 
 	{#if ctx.moderator}
@@ -118,7 +118,7 @@
 {/snippet}
 
 {#snippet deleteMsg(ctx: DeleteContext)}
-	{@const target = colorizeName(ctx.user)}
+	{@const target = colorizeName(ctx.viewer)}
 
 	{#if ctx.moderator}
 		{@html colorizeName(ctx.moderator)} deleted {@html target}'s message: {ctx.text}
@@ -151,7 +151,7 @@
 {#snippet roleStatus(ctx: RoleStatusContext)}
 	{@html colorizeName(ctx.broadcaster)}
 	{ctx.added ? "added" : "removed"}
-	{@html colorizeName(ctx.user)} as a {ctx.role}.
+	{@html colorizeName(ctx.viewer)} as a {ctx.role}.
 {/snippet}
 
 {#snippet streamStatus(ctx: StreamStatusContext)}
@@ -162,7 +162,7 @@
 	{@html colorizeName(ctx.moderator)}
 	{ctx.active ? "started" : "stopped"}
 	{monitored ? "monitoring" : restricted ? "restricting" : ctx.previous}
-	{@html colorizeName(ctx.user)}'s messages.
+	{@html colorizeName(ctx.viewer)}'s messages.
 {/snippet}
 
 {#snippet term(ctx: TermContext)}
@@ -179,7 +179,7 @@
 {/snippet}
 
 {#snippet timeout(ctx: TimeoutContext)}
-	{@const target = colorizeName(ctx.user)}
+	{@const target = colorizeName(ctx.viewer)}
 	{@const duration = formatDuration(ctx.seconds)}
 
 	{#if ctx.moderator}
@@ -190,7 +190,7 @@
 {/snippet}
 
 {#snippet unbanRequest(ctx: UnbanRequestContext)}
-	{@const target = colorizeName(ctx.user)}
+	{@const target = colorizeName(ctx.viewer)}
 
 	{#if "status" in ctx.request}
 		{#if !ctx.moderator}
@@ -212,5 +212,5 @@
 		.filter((r) => r !== null)
 		.join(", ")}
 
-	{@html colorizeName(ctx.moderator)} warned {@html colorizeName(ctx.user)}: {reasons}
+	{@html colorizeName(ctx.moderator)} warned {@html colorizeName(ctx.viewer)}: {reasons}
 {/snippet}

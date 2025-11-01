@@ -1,9 +1,9 @@
 import { commands } from "./commands";
+import { app } from "./state.svelte";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";
-import { app } from "./state.svelte";
 import type { Emote } from "./tauri";
-import type { User } from "./user.svelte";
+import type { Viewer } from "./viewer.svelte";
 
 interface SearchOptions<T> {
 	source: () => T[];
@@ -17,7 +17,7 @@ export class Completer {
 
 	#commandOptions: SearchOptions<Command>;
 	#emoteOptions: SearchOptions<Emote>;
-	#viewerOptions: SearchOptions<User>;
+	#viewerOptions: SearchOptions<Viewer>;
 
 	public query = "";
 	public prefixed = false;
@@ -58,7 +58,7 @@ export class Completer {
 				type: "user" as const,
 				value: item.username,
 				display: item.displayName,
-				style: item.style,
+				style: item.user.style,
 			}),
 		};
 	}
@@ -133,11 +133,11 @@ export class Completer {
 					return false;
 				}
 
-				if (suggestion.broadcasterOnly && !app.user?.isBroadcaster) {
+				if (suggestion.broadcasterOnly && app.joined.id !== app.user?.id) {
 					return false;
 				}
 
-				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.user.id)) {
+				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.id)) {
 					return false;
 				}
 
