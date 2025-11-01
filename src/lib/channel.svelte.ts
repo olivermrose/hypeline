@@ -1,20 +1,18 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
-import { commands } from "./commands";
 import { log } from "./log";
 import { SystemMessage } from "./message";
 import { settings } from "./settings";
 import { app } from "./state.svelte";
-import { User } from "./user.svelte";
-import { find } from "./util";
 import { ViewerManager } from "./viewer-manager";
 import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
-import type { Emote, JoinedChannel } from "./tauri";
+import type { Emote } from "./tauri";
 import type { Badge, BadgeSet, Cheermote, Stream } from "./twitch/api";
+import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
@@ -85,31 +83,6 @@ export class Channel {
 		viewer.broadcaster = true;
 
 		this.viewers.set(user.id, viewer);
-	}
-
-	public static async join(login: string) {
-		const joined = await invoke<JoinedChannel>("join", {
-			login,
-			isMod: app.user ? !!find(app.user.moderating, (name) => name === login) : false,
-		});
-
-		let channel = app.channels.find((c) => c.user.username === login);
-
-		if (!channel) {
-			const user = new User(joined.user);
-			channel = new Channel(user);
-		}
-
-		channel = channel
-			.addBadges(joined.badges)
-			.addCommands(commands)
-			.addEmotes(joined.emotes)
-			.addCheermotes(joined.cheermotes);
-
-		channel.stream = joined.stream;
-		channel.emoteSet = joined.emote_set ?? undefined;
-
-		return channel;
 	}
 
 	public async leave() {

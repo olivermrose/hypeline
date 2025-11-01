@@ -3,7 +3,6 @@
 	import { listen } from "@tauri-apps/api/event";
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { onDestroy, onMount } from "svelte";
-	import { Channel } from "$lib/channel.svelte";
 	import Chat from "$lib/components/Chat.svelte";
 	import ChatInput from "$lib/components/ChatInput.svelte";
 	import { handlers } from "$lib/handlers";
@@ -37,8 +36,7 @@
 
 	async function join() {
 		try {
-			const channel = await Channel.join(username.replace(/^ephemeral:/, ""));
-			app.joined = channel;
+			const channel = await app.joinChannel(username.replace(/^ephemeral:/, ""));
 
 			if (username.startsWith("ephemeral:")) {
 				channel.ephemeral = true;

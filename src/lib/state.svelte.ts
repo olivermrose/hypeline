@@ -1,11 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
+import { Channel } from "./channel.svelte";
+import { commands } from "./commands";
 import { settings } from "./settings";
 import { User } from "./user.svelte";
+import { find } from "./util";
 import { Viewer } from "./viewer.svelte";
-import type { Channel } from "./channel.svelte";
 import type { Paint } from "./seventv";
-import type { Emote, UserWithColor } from "./tauri";
+import type { Emote, JoinedChannel, UserWithColor } from "./tauri";
 import type { Badge } from "./twitch/api";
 
 class AppState {
@@ -74,6 +76,32 @@ class AppState {
 
 		this.#requests.set(id, request);
 		return await request;
+	}
+
+	public async joinChannel(username: string) {
+		const joined = await invoke<JoinedChannel>("join", {
+			login: username,
+			isMod: this.user ? !!find(this.user.moderating, (name) => name === username) : false,
+		});
+
+		let channel = this.channels.find((c) => c.user.username === username);
+
+		if (!channel) {
+			const user = new User(joined.user);
+			channel = new Channel(user);
+		}
+
+		channel = channel
+			.addBadges(joined.badges)
+			.addCommands(commands)
+			.addEmotes(joined.emotes)
+			.addCheermotes(joined.cheermotes);
+
+		channel.stream = joined.stream;
+		channel.emoteSet = joined.emote_set ?? undefined;
+
+		this.joined = channel;
+		return channel;
 	}
 }
 
