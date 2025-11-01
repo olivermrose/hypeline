@@ -10,8 +10,11 @@ import type { Badge } from "./twitch/api";
 
 class AppState {
 	#requests = new Map<string, Promise<User>>();
-	#joined = $state<Channel | null>(null);
 
+	/**
+	 * The currently joined channel.
+	 */
+	public joined = $state<Channel | null>(null);
 	public connected = $state(false);
 
 	/**
@@ -44,13 +47,6 @@ class AppState {
 	public readonly u2b = new Map<string, Badge | undefined>();
 	public readonly u2p = new Map<string, Paint | undefined>();
 
-	/**
-	 * The currently joined channel.
-	 */
-	public get joined() {
-		return this.#joined;
-	}
-
 	public async fetchUser(id: string) {
 		const inProgress = this.#requests.get(id);
 		if (inProgress) return await inProgress;
@@ -78,11 +74,6 @@ class AppState {
 
 		this.#requests.set(id, request);
 		return await request;
-	}
-
-	public setJoined(channel: Channel | null) {
-		this.#joined = channel;
-		return this;
 	}
 }
 

@@ -11,18 +11,17 @@ export default defineHandler({
 		);
 		if (!message) return;
 
-		message.setDeleted();
+		message.deleted = true;
 
 		if (data.is_recent || (!data.is_recent && !app.user?.moderating.has(channel.user.id))) {
 			const sysmsg = new SystemMessage(data);
+			sysmsg.context = {
+				type: "delete",
+				text: data.message_text,
+				viewer: message.viewer!,
+			};
 
-			channel.addMessage(
-				sysmsg.setContext({
-					type: "delete",
-					text: data.message_text,
-					viewer: message.viewer!,
-				}),
-			);
+			channel.addMessage(sysmsg);
 		}
 	},
 });

@@ -20,8 +20,6 @@ const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
 
 export class Channel {
-	#stream = $state<Stream | null>(null);
-
 	#bypassNext = false;
 	#lastRecentAt: number | null = null;
 
@@ -29,6 +27,8 @@ export class Channel {
 	#lastMessageElevated: number[] = [];
 	#lastHitSpdAt: number;
 	#lastHitAmtAt: number;
+
+	public readonly id: string;
 
 	public readonly badges = new SvelteMap<string, Record<string, Badge>>();
 	public readonly commands = new SvelteMap<string, Command>();
@@ -39,6 +39,11 @@ export class Channel {
 	 * The viewers in the channel.
 	 */
 	public readonly viewers = new ViewerManager(this);
+
+	/**
+	 * The stream associated with the channel if it's currently live.
+	 */
+	public stream = $state<Stream | null>(null);
 
 	/**
 	 * Whether the channel is ephemeral.
@@ -68,17 +73,18 @@ export class Channel {
 		public readonly user: User,
 		stream: Stream | null = null,
 	) {
-		this.#stream = stream;
-
-		const viewer = new Viewer(this, this.user);
-		viewer.isBroadcaster = true;
-
-		this.viewers.set(user.id, viewer);
-
 		const now = performance.now();
 
 		this.#lastHitSpdAt = now - RATE_LIMIT_WINDOW * 2;
 		this.#lastHitAmtAt = now - RATE_LIMIT_WINDOW * 2;
+
+		this.id = user.id;
+		this.stream = stream;
+
+		const viewer = new Viewer(this, user);
+		viewer.broadcaster = true;
+
+		this.viewers.set(user.id, viewer);
 	}
 
 	public static async join(login: string) {
@@ -98,23 +104,12 @@ export class Channel {
 			.addBadges(joined.badges)
 			.addCommands(commands)
 			.addEmotes(joined.emotes)
-			.addCheermotes(joined.cheermotes)
-			.setStream(joined.stream);
+			.addCheermotes(joined.cheermotes);
 
+		channel.stream = joined.stream;
 		channel.emoteSet = joined.emote_set ?? undefined;
 
 		return channel;
-	}
-
-	public get id() {
-		return this.user.id;
-	}
-
-	/**
-	 * The stream associated with the channel if it's currently streaming.
-	 */
-	public get stream() {
-		return this.#stream;
 	}
 
 	public async leave() {
@@ -166,7 +161,7 @@ export class Channel {
 			return this;
 		}
 
-		if (message.isRecent) {
+		if (message.recent) {
 			if (this.#lastRecentAt === null) {
 				this.messages.unshift(message);
 				this.#lastRecentAt = 0;
@@ -184,7 +179,7 @@ export class Channel {
 	public clearMessages(id?: string) {
 		for (const message of this.messages) {
 			if (message.isUser() && (!id || message.author.id === id)) {
-				message.setDeleted();
+				message.deleted = true;
 			}
 		}
 	}
@@ -205,13 +200,13 @@ export class Channel {
 		if (!app.user) return;
 
 		const viewer = this.viewers.get(app.user.id) ?? new Viewer(this, app.user);
-		const elevated = viewer.isMod || viewer.isVip;
+		const elevated = viewer.moderator || viewer.vip;
 
 		if (message.startsWith("/")) {
 			const [name, ...args] = message.slice(1).split(" ");
 
 			const command = this.commands.get(name);
-			if (!command || (command.modOnly && !viewer.isMod)) return;
+			if (!command || (command.modOnly && !viewer.moderator)) return;
 
 			try {
 				await command.exec(args, this, viewer.user);
@@ -257,11 +252,10 @@ export class Channel {
 		});
 
 		const body = await response.json();
-		const sysmsg = new SystemMessage();
 
 		if (body.status === 429) {
 			log.warn(`Rate limit exceeded: ${body.message}`);
-			this.addMessage(sysmsg.setText(body.message));
+			this.addMessage(new SystemMessage(body.message));
 		} else if (response.ok) {
 			if (body.data[0].is_sent) {
 				log.info("Message sent");
@@ -270,19 +264,9 @@ export class Channel {
 				const reason = body.data[0].drop_reason.message;
 
 				log.warn(`Message dropped: ${reason}`);
-				this.addMessage(sysmsg.setText(reason));
+				this.addMessage(new SystemMessage(reason));
 			}
 		}
-	}
-
-	public setStream(stream: Stream | null) {
-		this.#stream = stream;
-		return this;
-	}
-
-	public setEphemeral() {
-		this.ephemeral = true;
-		return this;
 	}
 
 	#checkRateLimit(elevated: boolean) {

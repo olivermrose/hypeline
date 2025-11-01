@@ -123,7 +123,7 @@
 
 			{@const next = app.joined?.messages.at(i + 1)}
 
-			{#if message.isRecent && !next?.isRecent}
+			{#if message.recent && !next?.recent}
 				<div class="text-twitch relative px-3.5">
 					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
 

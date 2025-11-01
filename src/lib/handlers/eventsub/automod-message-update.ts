@@ -8,7 +8,7 @@ export default defineHandler({
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
 		const message = channel.messages.find((m) => m.id === data.message_id);
-		message?.setDeleted();
+		if (message) message.deleted = true;
 
 		channel.addMessage(
 			SystemMessage.fromContext({

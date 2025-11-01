@@ -38,7 +38,7 @@
 	async function join() {
 		try {
 			const channel = await Channel.join(username.replace(/^ephemeral:/, ""));
-			app.setJoined(channel);
+			app.joined = channel;
 
 			if (username.startsWith("ephemeral:")) {
 				channel.setEphemeral();
@@ -54,7 +54,7 @@
 
 			channel.addEmotes(app.globalEmotes);
 		} catch (err) {
-			app.setJoined(null);
+			app.joined = null;
 			settings.state.lastJoined = null;
 		}
 	}

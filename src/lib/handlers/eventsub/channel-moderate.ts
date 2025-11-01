@@ -20,20 +20,20 @@ export default defineHandler({
 						? "unique-mode"
 						: "subscriber-only";
 
-				message.setContext({
+				message.context = {
 					type: "mode",
 					mode,
 					enabled: !data.action.includes("off"),
 					seconds: Number.NaN,
 					moderator,
-				});
+				};
 
 				break;
 			}
 
 			case "followers":
 			case "followersoff": {
-				message.setContext({
+				message.context = {
 					type: "mode",
 					mode: "follower-only",
 					enabled: !data.action.includes("off"),
@@ -41,27 +41,27 @@ export default defineHandler({
 						? data.followers.follow_duration_minutes * 60
 						: Number.NaN,
 					moderator,
-				});
+				};
 
 				break;
 			}
 
 			case "slow":
 			case "slowoff": {
-				message.setContext({
+				message.context = {
 					type: "mode",
 					mode: "slow",
 					enabled: data.slow !== null,
 					seconds: data.slow?.wait_time_seconds ?? Number.NaN,
 					moderator,
-				});
+				};
 
 				break;
 			}
 
 			case "clear": {
 				channel.clearMessages();
-				message.setContext({ type: "clear", moderator });
+				message.context = { type: "clear", moderator };
 
 				break;
 			}
@@ -69,12 +69,12 @@ export default defineHandler({
 			case "delete": {
 				const viewer = await channel.viewers.fetch(data.delete.user_id);
 
-				message.setContext({
+				message.context = {
 					type: "delete",
 					text: data.delete.message_body,
 					viewer,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -83,19 +83,19 @@ export default defineHandler({
 			case "add_permitted_term":
 			case "remove_blocked_term":
 			case "remove_permitted_term": {
-				message.setContext({ type: "term", data: data.automod_terms, moderator });
+				message.context = { type: "term", data: data.automod_terms, moderator };
 				break;
 			}
 
 			case "warn": {
 				const viewer = await channel.viewers.fetch(data.warn.user_id);
 
-				message.setContext({
+				message.context = {
 					type: "warn",
 					warning: data.warn,
 					viewer,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -107,13 +107,13 @@ export default defineHandler({
 				const expiration = new Date(data.timeout.expires_at);
 				const duration = expiration.getTime() - message.timestamp.getTime();
 
-				message.setContext({
+				message.context = {
 					type: "timeout",
 					seconds: Math.ceil(duration / 1000),
 					reason: data.timeout.reason,
 					viewer,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -121,11 +121,11 @@ export default defineHandler({
 			case "untimeout": {
 				const viewer = await channel.viewers.fetch(data.untimeout.user_id);
 
-				message.setContext({
+				message.context = {
 					type: "untimeout",
 					viewer,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -139,13 +139,13 @@ export default defineHandler({
 					channel.clearMessages(data.ban.user_id);
 				}
 
-				message.setContext({
+				message.context = {
 					type: "banStatus",
 					banned: isBan,
 					reason: isBan ? data.ban.reason : null,
 					viewer,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -155,13 +155,13 @@ export default defineHandler({
 				const added = data.action === "mod";
 				const viewer = await channel.viewers.fetch((added ? data.mod : data.unmod).user_id);
 
-				message.setContext({
+				message.context = {
 					type: "roleStatus",
 					role: "moderator",
 					added,
 					viewer,
 					broadcaster: moderator,
-				});
+				};
 
 				break;
 			}
@@ -171,13 +171,13 @@ export default defineHandler({
 				const added = data.action === "vip";
 				const viewer = await channel.viewers.fetch((added ? data.vip : data.unvip).user_id);
 
-				message.setContext({
+				message.context = {
 					type: "roleStatus",
 					role: "VIP",
 					added,
 					viewer,
 					broadcaster: moderator,
-				});
+				};
 
 				break;
 			}
@@ -185,12 +185,12 @@ export default defineHandler({
 			case "raid": {
 				const viewer = await channel.viewers.fetch(data.raid.user_id);
 
-				message.setContext({
+				message.context = {
 					type: "raid",
 					viewers: data.raid.viewer_count,
 					user: viewer.user,
 					moderator,
-				});
+				};
 
 				break;
 			}
@@ -198,11 +198,11 @@ export default defineHandler({
 			case "unraid": {
 				const viewer = await channel.viewers.fetch(data.unraid.user_id);
 
-				message.setContext({
+				message.context = {
 					type: "unraid",
 					user: viewer.user,
 					moderator,
-				});
+				};
 
 				break;
 			}

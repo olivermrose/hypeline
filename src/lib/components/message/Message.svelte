@@ -81,11 +81,11 @@
 render properly without an extra space in between. -->
 <span class="font-semibold break-words" style={message.author.style}>
 	{message.author.displayName}
-</span>{#if !message.isAction}:{/if}
+</span>{#if !message.action}:{/if}
 
 <p
-	class={["inline", message.isAction && "italic"]}
-	style:color={message.isAction ? message.author.color : null}
+	class={["inline", message.action && "italic"]}
+	style:color={message.action ? message.author.color : null}
 >
 	{#each message.nodes as node, i}
 		{#if node.type === "link"}

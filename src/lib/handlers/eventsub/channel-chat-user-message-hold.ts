@@ -12,11 +12,11 @@ export default defineHandler({
 			name: data.user_name,
 		});
 
-		message.setAutoMod({
+		message.autoMod = {
 			category: "msg_hold",
 			level: Number.NaN,
 			boundaries: [],
-		});
+		};
 
 		channel.addMessage(message);
 	},

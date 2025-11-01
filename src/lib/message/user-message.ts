@@ -1,7 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
-import type { Badge, BasicUser, PrivmsgMessage, UserNoticeMessage } from "$lib/twitch/irc";
+import type {
+	Badge,
+	BasicUser,
+	PrivmsgMessage,
+	Reply,
+	UserNoticeEvent,
+	UserNoticeMessage,
+} from "$lib/twitch/irc";
 import { User } from "$lib/user.svelte";
 import { extractEmotes } from "$lib/util";
 import { Viewer } from "$lib/viewer.svelte";
@@ -38,20 +45,84 @@ function createMinimalUser(sender: BasicUser, color: string) {
  * notifications received by `USERNOTICE` commands.
  */
 export class UserMessage extends Message {
-	#author: User;
-	#viewer?: Viewer;
-
-	#autoMod: AutoModMetadata | null = null;
-
 	#nodes: Node[] = [];
+
+	public override readonly id: string;
+	public override readonly text: string;
+
+	/**
+	 * The user who sent the message.
+	 */
+	public readonly author: User;
+
+	/**
+	 * The viewer who sent the message if it was sent in a channel.
+	 */
+	public readonly viewer: Viewer | null = null;
+
+	/**
+	 * Whether the message is an action i.e. sent with `/me`.
+	 */
+	public readonly action: boolean;
+
+	/**
+	 * Whether the message is the user's first message sent in the channel.
+	 */
+	public readonly first: boolean;
+
+	/**
+	 * Whether channel points were used to highlight the message.
+	 */
+	public readonly highlighted: boolean;
+
+	/**
+	 * The badges sent with the message.
+	 */
+	public readonly badges: Badge[];
+
+	/**
+	 * The amount of bits sent with the message if it was a cheer.
+	 */
+	public readonly bits: number;
+
+	/**
+	 * The event associated with the message if it's a `USERNOTICE` message.
+	 */
+	public readonly event: UserNoticeEvent | null;
+
+	/**
+	 * The metadata for the parent and thread starter messages if the message
+	 * is a reply.
+	 */
+	public readonly reply: Reply | null;
+
+	/**
+	 * The AutoMod metadata attached to the message if it was caught by AutoMod.
+	 */
+	public autoMod: AutoModMetadata | null = null;
 
 	public constructor(public readonly data: PrivmsgMessage | UserNoticeMessage) {
 		super(data);
 
 		const viewer = app.joined?.viewers.get(data.sender.id);
 
-		this.#author = viewer?.user ?? createMinimalUser(data.sender, data.name_color);
-		this.#viewer = viewer;
+		this.id = data.message_id;
+
+		// message_text should only be possibly null if it's a USERNOTICE, in
+		// which case we can assume system_message is present
+		this.text = data.message_text ?? (data as UserNoticeMessage).system_message;
+
+		this.author = viewer?.user ?? createMinimalUser(data.sender, data.name_color);
+		this.viewer = viewer ?? null;
+
+		this.action = "is_action" in data && data.is_action;
+		this.first = "is_first_msg" in data && data.is_first_msg;
+		this.highlighted = "is_highlighted" in data && data.is_highlighted;
+
+		this.badges = data.badges;
+		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
+		this.event = "event" in data ? data.event : null;
+		this.reply = "reply" in data ? data.reply : null;
 	}
 
 	public static from(message: StructuredMessage, sender: BasicUser) {
@@ -85,16 +156,6 @@ export class UserMessage extends Message {
 		});
 	}
 
-	public get id() {
-		return this.data.message_id;
-	}
-
-	public get text() {
-		// message_text should only be possibly null if it's a USERNOTICE, in
-		// which case we can assume system_message is present
-		return this.data.message_text ?? (this.data as UserNoticeMessage).system_message;
-	}
-
 	/**
 	 * Whether the current user can perform mod actions on the message.
 	 *
@@ -114,71 +175,8 @@ export class UserMessage extends Message {
 		return (
 			app.user.moderating.has(app.joined.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
-			(app.user.id === this.author.id || !this.viewer?.isMod)
+			(app.user.id === this.author.id || !this.viewer?.moderator)
 		);
-	}
-
-	/**
-	 * The user who sent the message.
-	 */
-	public get author() {
-		return this.#author;
-	}
-
-	/**
-	 * The viewer who sent the message if it was sent in a channel.
-	 */
-	public get viewer() {
-		return this.#viewer ?? null;
-	}
-
-	/**
-	 * The AutoMod metadata attached to the message if it was caught by AutoMod.
-	 */
-	public get autoMod() {
-		return this.#autoMod;
-	}
-
-	/**
-	 * The badges sent with the message.
-	 */
-	public get badges(): Badge[] {
-		return this.data.badges;
-	}
-
-	/**
-	 * The amount of bits sent with the message if it was a cheer.
-	 */
-	public get bits() {
-		return "bits" in this.data ? (this.data.bits ?? 0) : 0;
-	}
-
-	/**
-	 * Whether channel points were used to highlight the message.
-	 */
-	public get highlighted() {
-		return "is_highlighted" in this.data && this.data.is_highlighted;
-	}
-
-	/**
-	 * Whether the message is an action i.e. sent with `/me`.
-	 */
-	public get isAction() {
-		return "is_action" in this.data && this.data.is_action;
-	}
-
-	/**
-	 * Whether the message is the user's first message sent in the channel.
-	 */
-	public get isFirst() {
-		return "is_first_msg" in this.data && this.data.is_first_msg;
-	}
-
-	/**
-	 * The event associated with the message if it's a `USERNOTICE` message.
-	 */
-	public get event() {
-		return "event" in this.data ? this.data.event : null;
 	}
 
 	public get nodes() {
@@ -189,14 +187,6 @@ export class UserMessage extends Message {
 		return this.#nodes;
 	}
 
-	/**
-	 * The metadata for the parent and thread starter messages if the message
-	 * is a reply.
-	 */
-	public get reply() {
-		return "reply" in this.data ? this.data.reply : null;
-	}
-
 	public async delete() {
 		if (!app.user || !app.joined) return;
 
@@ -204,10 +194,5 @@ export class UserMessage extends Message {
 			broadcasterId: app.joined.id,
 			messageId: this.id,
 		});
-	}
-
-	public setAutoMod(metadata: AutoModMetadata) {
-		this.#autoMod = metadata;
-		return this;
 	}
 }

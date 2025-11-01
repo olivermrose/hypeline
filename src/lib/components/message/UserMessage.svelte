@@ -36,24 +36,24 @@
 	if (message.viewer) {
 		if (hasMention) {
 			hlType = "mention";
-		} else if (message.isFirst) {
+		} else if (message.first) {
 			hlType = "new";
-		} else if (message.viewer.isReturning) {
+		} else if (message.viewer.returning) {
 			hlType = "returning";
-		} else if (message.viewer.isBroadcaster) {
+		} else if (message.viewer.broadcaster) {
 			hlType = "broadcaster";
-		} else if (message.viewer.isMod) {
+		} else if (message.viewer.moderator) {
 			hlType = "moderator";
-		} else if (message.viewer.isSuspicious) {
+		} else if (message.viewer.suspicious) {
 			hlType = "suspicious";
-		} else if (message.viewer.isVip) {
+		} else if (message.viewer.vip) {
 			hlType = "vip";
-		} else if (message.viewer.isSub) {
+		} else if (message.viewer.subscriber) {
 			hlType = "subscriber";
 		}
 	}
 
-	if (message.viewer?.isSuspicious) {
+	if (message.viewer?.suspicious) {
 		const likelihood = message.viewer.banEvasion;
 
 		if (message.viewer.monitored) {

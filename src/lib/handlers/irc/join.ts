@@ -9,8 +9,8 @@ export default defineHandler({
 		const viewer = find(channel.viewers, (user) => user.username === data.channel_login);
 		if (!viewer) return;
 
-		viewer.isBroadcaster = true;
-		viewer.isMod = true;
+		viewer.broadcaster = true;
+		viewer.moderator = true;
 
 		channel.messages.push(SystemMessage.fromContext({ type: "join", channel: viewer.user }));
 	},

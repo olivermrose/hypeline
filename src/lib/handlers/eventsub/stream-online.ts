@@ -9,7 +9,8 @@ export default defineHandler({
 		const broadcaster = await channel.viewers.fetch(data.broadcaster_user_id);
 		const stream = await invoke<Stream | null>("get_stream", { id: data.broadcaster_user_id });
 
-		channel.setStream(stream).addMessage(
+		channel.stream = stream;
+		channel.addMessage(
 			SystemMessage.fromContext({
 				type: "streamStatus",
 				online: true,

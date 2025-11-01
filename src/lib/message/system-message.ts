@@ -12,54 +12,35 @@ export interface SystemMessageData {
  * information to the user.
  */
 export class SystemMessage extends Message {
-	#id = crypto.randomUUID();
-	#text = "";
-
-	#context: MessageContext | null = null;
-
-	public constructor(data: Partial<SystemMessageData> = {}) {
-		const prepared: SystemMessageData = {
-			deleted: data.deleted ?? false,
-			is_recent: data.is_recent ?? false,
-			server_timestamp: data.server_timestamp ?? Date.now(),
-		};
-
-		super(prepared, true);
-	}
-
-	public static fromContext(context: MessageContext) {
-		const message = new this();
-		return message.setContext(context);
-	}
-
-	/**
-	 * The id (stored as a UUID) of the message.
-	 */
-	public override get id() {
-		return this.#id;
-	}
-
-	/**
-	 * The text content of the message.
-	 */
-	public override get text() {
-		return this.#text;
-	}
+	public override readonly id = crypto.randomUUID();
+	public override text = "";
 
 	/**
 	 * The context associated with the message.
 	 */
-	public get context() {
-		return this.#context;
+	public context: MessageContext | null = null;
+
+	public constructor(data?: string | Partial<SystemMessageData>) {
+		data = typeof data === "string" ? undefined : (data ?? {});
+
+		super(
+			{
+				deleted: data?.deleted ?? false,
+				is_recent: data?.is_recent ?? false,
+				server_timestamp: data?.server_timestamp ?? Date.now(),
+			},
+			true,
+		);
+
+		if (typeof data === "string") {
+			this.text = data;
+		}
 	}
 
-	public setContext(context: MessageContext) {
-		this.#context = context;
-		return this;
-	}
+	public static fromContext(context: MessageContext) {
+		const message = new this();
+		message.context = context;
 
-	public setText(text: string) {
-		this.#text = text;
-		return this;
+		return message;
 	}
 }

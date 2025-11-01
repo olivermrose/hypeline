@@ -51,23 +51,23 @@ export default defineHandler({
 		for (const change of data.pushed ?? []) {
 			const emote = reparse(change.value);
 
-			message.setContext({
+			message.context = {
 				type: "emoteSetUpdate",
 				action: "added",
 				emote,
 				actor,
-			});
+			};
 
 			channel.emotes.set(emote.name, emote);
 		}
 
 		for (const change of data.pulled ?? []) {
-			message.setContext({
+			message.context = {
 				type: "emoteSetUpdate",
 				action: "removed",
 				emote: channel.emotes.get(change.old_value.name)!,
 				actor,
-			});
+			};
 
 			channel.emotes.delete(change.old_value!.name);
 		}
@@ -75,13 +75,13 @@ export default defineHandler({
 		for (const change of data.updated ?? []) {
 			const old = channel.emotes.get(change.old_value.name)!;
 
-			message.setContext({
+			message.context = {
 				type: "emoteSetUpdate",
 				action: "renamed",
 				oldName: old.name,
 				emote: old,
 				actor,
-			});
+			};
 
 			old.name = change.value.name;
 

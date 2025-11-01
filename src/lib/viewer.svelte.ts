@@ -15,25 +15,29 @@ export interface TimeoutOptions {
 }
 
 export class Viewer {
+	public readonly id: string;
+	public readonly username: string;
+	public readonly displayName: string;
+
 	/**
 	 * Whether the viewer is the broadcaster.
 	 */
-	public isBroadcaster = $state(false);
+	public broadcaster = $state(false);
 
 	/**
 	 * Whether the viewer is a moderator in the channel.
 	 */
-	public isMod = $state(false);
+	public moderator = $state(false);
 
 	/**
 	 * Whether the viewer is a subscriber in the channel.
 	 */
-	public isSub = $state(false);
+	public subscriber = $state(false);
 
 	/**
 	 * Whether the viewer is a VIP in the channel.
 	 */
-	public isVip = $state(false);
+	public vip = $state(false);
 
 	/**
 	 * Whether the viewer is returning to the channel.
@@ -41,7 +45,7 @@ export class Viewer {
 	 * Returning viewers are those who have chatted at least twice in the
 	 * last 30 days.
 	 */
-	public isReturning = $state(false);
+	public returning = $state(false);
 
 	/**
 	 * Whether the viewer's messages are being monitored. This is mutually
@@ -57,7 +61,7 @@ export class Viewer {
 
 	/**
 	 * The likelihood that the viewer is ban evading if they are considered
-	 * {@link isSuspicious suspicious}.
+	 * {@link suspicious}.
 	 */
 	public banEvasion = $state<BanEvasionEvaluation>("unknown");
 
@@ -71,18 +75,10 @@ export class Viewer {
 		 * The user representing the viewer.
 		 */
 		public readonly user: User,
-	) {}
-
-	public get id() {
-		return this.user.id;
-	}
-
-	public get username() {
-		return this.user.username;
-	}
-
-	public get displayName() {
-		return this.user.displayName;
+	) {
+		this.id = user.id;
+		this.username = user.username;
+		this.displayName = user.displayName;
 	}
 
 	/**
@@ -90,7 +86,7 @@ export class Viewer {
 	 * messages are being monitored or restricted, or they are suspected of ban
 	 * evasion.
 	 */
-	public get isSuspicious() {
+	public get suspicious() {
 		return this.monitored || this.restricted || this.banEvasion !== "unknown";
 	}
 

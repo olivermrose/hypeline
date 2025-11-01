@@ -7,15 +7,15 @@ export default defineHandler({
 	handle(data, channel) {
 		const message = new UserMessage(data);
 
-		message.author.setUsername(data.sender.login);
-		message.author.setDisplayName(data.sender.name);
+		message.author.username = data.sender.login;
+		message.author.displayName = data.sender.name;
 
 		if (message.viewer) {
-			message.viewer.isBroadcaster = message.badges.some((b) => b.name === "broadcaster");
-			message.viewer.isMod = message.viewer.isBroadcaster || data.is_mod;
-			message.viewer.isSub = data.is_subscriber;
-			message.viewer.isVip = message.badges.some((b) => b.name === "vip");
-			message.viewer.isReturning = data.is_returning_chatter;
+			message.viewer.broadcaster = message.badges.some((b) => b.name === "broadcaster");
+			message.viewer.moderator = message.viewer.broadcaster || data.is_mod;
+			message.viewer.subscriber = data.is_subscriber;
+			message.viewer.vip = message.badges.some((b) => b.name === "vip");
+			message.viewer.returning = data.is_returning_chatter;
 		}
 
 		message.author.badge = app.u2b.get(message.author.id);

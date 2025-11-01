@@ -38,11 +38,11 @@ export default defineHandler({
 			}
 		}
 
-		message.setAutoMod({
+		message.autoMod = {
 			category: reason,
 			level: isAutoMod ? data.automod.level : Number.NaN,
 			boundaries,
-		});
+		};
 
 		channel.addMessage(message);
 	},

@@ -7,19 +7,58 @@ import type { Badge, User as HelixUser } from "./twitch/api";
 
 export interface PartialUser {
 	id: string;
-	color?: string;
+	color?: string | null;
 	username: string;
 	displayName: string;
 }
-
-const requests = new Map<string, Promise<User>>();
 
 export class User implements PartialUser {
 	readonly #data: HelixUser;
 
 	#color: string | null = null;
-	#username: string;
 	#displayName: string;
+
+	public readonly id: string;
+
+	/**
+	 * The date the user's account was created.
+	 */
+	public readonly createdAt: Date;
+
+	/**
+	 * Whether the user is Twitch staff.
+	 */
+	public readonly staff: boolean;
+
+	/**
+	 * Whether the user is a Twitch affiliate.
+	 */
+	public readonly affiliated: boolean;
+
+	/**
+	 * Whether the user is a Twitch partner.
+	 */
+	public readonly partnered: boolean;
+
+	/**
+	 * The bio of the user.
+	 */
+	public readonly bio: string;
+
+	/**
+	 * The URL of the user's avatar image.
+	 */
+	public readonly avatarUrl: string;
+
+	/**
+	 * The URL of the user's banner image seen when they are offline.
+	 */
+	public readonly bannerUrl: string;
+
+	/**
+	 * The username of the user.
+	 */
+	public username: string;
 
 	/**
 	 * The 7TV badge for the user if they have one set.
@@ -41,22 +80,22 @@ export class User implements PartialUser {
 	public constructor(data: UserWithColor) {
 		this.#data = data.data;
 
-		this.#username = this.#data.login;
-		this.#displayName = this.#data.display_name;
 		this.#color = data.color;
+		this.#displayName = this.#data.display_name;
+
+		this.id = this.#data.id;
+		this.username = this.#data.login;
+		this.createdAt = new Date(this.#data.created_at);
+
+		this.staff = this.#data.type === "staff";
+		this.affiliated = this.#data.broadcaster_type === "affiliate";
+		this.partnered = this.#data.broadcaster_type === "partner";
+
+		this.bio = this.#data.description;
+		this.avatarUrl = this.#data.profile_image_url;
+		this.bannerUrl = this.#data.offline_image_url;
 
 		this.moderating.set(this.id, this.username);
-	}
-
-	public get id() {
-		return this.#data.id;
-	}
-
-	/**
-	 * The date the user's account was created.
-	 */
-	public get createdAt() {
-		return new Date(this.#data.created_at);
 	}
 
 	/**
@@ -71,6 +110,10 @@ export class User implements PartialUser {
 		return this.#color ?? "inherit";
 	}
 
+	public set color(color: string | null) {
+		this.#color = color;
+	}
+
 	/**
 	 * The CSS style for the user's name.
 	 */
@@ -78,10 +121,6 @@ export class User implements PartialUser {
 		const color = `color: ${this.color};`;
 
 		return this.paint ? `${this.paint.css}; ${color}` : color;
-	}
-
-	public get username() {
-		return this.#username;
 	}
 
 	/**
@@ -100,59 +139,15 @@ export class User implements PartialUser {
 		return this.#displayName;
 	}
 
+	public set displayName(displayName: string) {
+		this.#displayName = displayName;
+	}
+
 	/**
 	 * The localized display name of the user if they have their Twitch
 	 * language set to Chinese, Japanese, or Korean.
 	 */
 	public get localizedName() {
-		return this.#username !== this.#displayName.toLowerCase() ? this.#displayName : null;
-	}
-
-	public get bio() {
-		return this.#data.description;
-	}
-
-	public get avatarUrl() {
-		return this.#data.profile_image_url;
-	}
-
-	public get bannerUrl() {
-		return this.#data.offline_image_url;
-	}
-
-	/**
-	 * Whether the user is Twitch staff.
-	 */
-	public get isStaff() {
-		return this.#data.type === "staff";
-	}
-
-	/**
-	 * Whether the user is a Twitch affiliate.
-	 */
-	public get isAffiliate() {
-		return this.#data.broadcaster_type === "affiliate";
-	}
-
-	/**
-	 * Whether the user is a Twitch partner.
-	 */
-	public get isPartner() {
-		return this.#data.broadcaster_type === "partner";
-	}
-
-	public setColor(color: string | null) {
-		this.#color = color;
-		return this;
-	}
-
-	public setUsername(username: string) {
-		this.#username = username;
-		return this;
-	}
-
-	public setDisplayName(displayName: string) {
-		this.#displayName = displayName;
-		return this;
+		return this.username !== this.#displayName.toLowerCase() ? this.#displayName : null;
 	}
 }
