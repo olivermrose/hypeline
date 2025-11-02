@@ -133,7 +133,7 @@
 
 					{#if suggestions.length}
 						<Combobox.Content
-							class="bg-card mt-2 max-h-72 w-[var(--bits-combobox-anchor-width)] min-w-[var(--bits-combobox-anchor-width)] overflow-y-auto rounded-lg border p-1"
+							class="bg-card mt-2 max-h-72 w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border p-1"
 						>
 							{#each suggestions as suggestion (suggestion.id)}
 								<Combobox.Item

@@ -79,7 +79,7 @@
 
 <!-- Formatting is ugly here, but it needs to be in order for the colon to
 render properly without an extra space in between. -->
-<span class="font-semibold break-words" style={message.author.style}>
+<span class="font-semibold wrap-break-word" style={message.author.style}>
 	{message.author.displayName}
 </span>{#if !message.action}:{/if}
 
@@ -105,7 +105,7 @@ render properly without an extra space in between. -->
 			{#if !message.reply || (message.reply && i > 0)}
 				<svelte:element
 					this={node.marked ? "mark" : "span"}
-					class="font-semibold break-words"
+					class="font-semibold wrap-break-word"
 					style={getMentionStyle(node)}
 				>
 					@{node.data.user?.displayName ?? node.value.slice(1)}
