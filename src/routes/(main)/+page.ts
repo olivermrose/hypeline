@@ -8,6 +8,6 @@ export async function load({ parent }) {
 
 	if (!settings.state.user) {
 		log.info("User not authenticated, redirecting to login");
-		return redirect(302, "/auth/login");
+		redirect(302, "/auth/login");
 	}
 }

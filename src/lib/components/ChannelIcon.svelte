@@ -58,13 +58,12 @@
 
 <Tooltip class="max-w-64" side="right" sideOffset={18}>
 	{#snippet trigger()}
-		<button
+		<a
 			class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full border"
 			type="button"
-			onclick={() => {
-				settings.state.lastJoined = user.username;
-			}}
+			href="/channels/{user.username}"
 			oncontextmenu={openContextMenu}
+			data-sveltekit-preload-data="tap"
 		>
 			<img
 				class={["object-cover", !stream && "grayscale"]}
@@ -73,7 +72,7 @@
 				width="300"
 				height="300"
 			/>
-		</button>
+		</a>
 	{/snippet}
 
 	{#if stream}

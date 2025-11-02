@@ -13,14 +13,18 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
+	import type { Channel } from "$lib/channel.svelte";
 	import { Completer } from "$lib/completer.svelte";
-	import { app } from "$lib/state.svelte";
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";
 	import Input from "./ui/Input.svelte";
 
-	const { class: className, ...rest }: HTMLInputAttributes = $props();
+	interface Props extends HTMLInputAttributes {
+		channel: Channel;
+	}
+
+	const { class: className, channel, ...rest }: Props = $props();
 
 	let chatInput = $state<HTMLInputElement | null>(null);
 	let anchor = $state<HTMLElement>();
@@ -38,11 +42,11 @@
 	});
 
 	$effect(() => {
-		void app.joined?.error;
+		void channel.error;
 
 		const timeout = setTimeout(() => {
-			if (app.joined?.error) {
-				app.joined.error = "";
+			if (channel.error) {
+				channel.error = "";
 			}
 		}, 5000);
 
@@ -50,7 +54,7 @@
 	});
 
 	const send: KeyboardEventHandler<HTMLInputElement> = async (event) => {
-		if (!app.joined || !completer) return;
+		if (!channel || !completer) return;
 
 		const input = event.currentTarget;
 
@@ -64,15 +68,15 @@
 				event.preventDefault();
 				completer.prev();
 			} else {
-				if (!app.joined.history.length) return;
+				if (!channel.history.length) return;
 
 				if (historyIdx === -1) {
-					historyIdx = app.joined.history.length - 1;
+					historyIdx = channel.history.length - 1;
 				} else if (historyIdx > 0) {
 					historyIdx--;
 				}
 
-				input.value = app.joined.history[historyIdx];
+				input.value = channel.history[historyIdx];
 
 				setTimeout(() => {
 					input.setSelectionRange(input.value.length, input.value.length);
@@ -85,9 +89,9 @@
 			} else {
 				if (historyIdx === -1) return;
 
-				if (historyIdx < app.joined.history.length - 1) {
+				if (historyIdx < channel.history.length - 1) {
 					historyIdx++;
-					input.value = app.joined.history[historyIdx];
+					input.value = channel.history[historyIdx];
 				} else {
 					historyIdx = -1;
 					input.value = "";
@@ -110,8 +114,8 @@
 				replyTarget.value = null;
 				historyIdx = -1;
 
-				app.joined.history.push(message);
-				await app.joined.send(message, replyId);
+				channel.history.push(message);
+				await channel.send(message, replyId);
 			}
 		} else if (completer.suggestions.length) {
 			completer.reset();
@@ -151,7 +155,7 @@
 			<Message message={replyTarget.value} />
 		</div>
 	</div>
-{:else if app.joined?.error}
+{:else if channel.error}
 	<div
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 py-2.5 text-sm transition-colors duration-200"
 	>
@@ -159,7 +163,7 @@
 			<span class="iconify lucide--triangle-alert mt-px size-4 shrink-0 text-yellow-400">
 			</span>
 
-			<p class="text-muted-foreground">{app.joined.error}</p>
+			<p class="text-muted-foreground">{channel.error}</p>
 		</div>
 	</div>
 {/if}
@@ -168,7 +172,7 @@
 	<Input
 		class={[
 			"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
-			(replyTarget.value || app.joined?.error) && "rounded-t-none",
+			(replyTarget.value || channel.error) && "rounded-t-none",
 			className,
 		]}
 		type="text"

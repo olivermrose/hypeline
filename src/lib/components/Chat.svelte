@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Separator } from "bits-ui";
 	import { VList } from "virtua/svelte";
-	import { app } from "$lib/state.svelte";
+	import type { Channel } from "$lib/channel.svelte";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
 	import SystemMessage from "./message/SystemMessage.svelte";
@@ -9,35 +9,34 @@
 
 	interface Props {
 		class?: string;
+		channel: Channel;
 	}
 
 	// Arbitrary; corresponds to how much of the bottom of the chat needs to be
 	// visible (smaller = more, larger = less).
 	const TOLERANCE = 15;
 
-	const { class: className }: Props = $props();
+	const { class: className, channel }: Props = $props();
 
 	let list = $state<VList<any>>();
 	let scrollingPaused = $state(false);
 	let countSnapshot = $state(0);
 
 	const newMessageCount = $derived.by(() => {
-		if (!list || !app.joined) return "0";
+		if (!list) return "0";
 
-		const total = app.joined.messages.length - countSnapshot;
+		const total = channel.messages.length - countSnapshot;
 		return total > 99 ? "99+" : Math.max(total, 0).toString();
 	});
 
 	$effect(() => {
-		if (app.joined?.messages.length && !scrollingPaused) {
+		if (channel.messages.length && !scrollingPaused) {
 			scrollToEnd();
 		}
 	});
 
 	function scrollToEnd() {
-		if (app.joined) {
-			list?.scrollToIndex(app.joined.messages.length - 1, { align: "end" });
-		}
+		list?.scrollToIndex(channel.messages.length - 1, { align: "end" });
 	}
 
 	function handleScroll(offset: number) {
@@ -46,7 +45,7 @@
 		const atBottom = offset >= list.getScrollSize() - list.getViewportSize() - TOLERANCE;
 
 		if (!atBottom && !scrollingPaused) {
-			countSnapshot = app.joined?.messages.length ?? 0;
+			countSnapshot = channel.messages.length;
 		}
 
 		scrollingPaused = !atBottom;
@@ -74,66 +73,69 @@
 		</button>
 	{/if}
 
-	<VList
-		class="{className} overflow-y-auto text-sm"
-		data={app.joined?.messages ?? []}
-		getKey={(msg) => msg.id}
-		onscroll={handleScroll}
-		bind:this={list}
-	>
-		{#snippet children(message, i)}
-			{@const prev = app.joined?.messages[i - 1]}
-			{@const isNewDay = prev && prev?.timestamp.getDate() !== message.timestamp.getDate()}
+	{#if channel.messages.length}
+		<VList
+			class="{className} overflow-y-auto text-sm"
+			data={channel.messages}
+			getKey={(message) => message.id}
+			onscroll={handleScroll}
+			bind:this={list}
+		>
+			{#snippet children(message, i)}
+				{@const prev = channel.messages[i - 1]}
+				{@const isNewDay =
+					prev && prev?.timestamp.getDate() !== message.timestamp.getDate()}
 
-			{#if isNewDay}
-				<div class="relative px-3.5">
-					<Separator.Root class="bg-muted my-4 h-px w-full rounded-full" />
+				{#if isNewDay}
+					<div class="relative px-3.5">
+						<Separator.Root class="bg-muted my-4 h-px w-full rounded-full" />
 
-					<div
-						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
-					>
-						<time
-							class="text-muted-foreground/90"
-							datetime={message.timestamp.toISOString()}
+						<div
+							class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
 						>
-							{message.timestamp.toLocaleDateString(navigator.languages, {
-								dateStyle: "long",
-							})}
-						</time>
+							<time
+								class="text-muted-foreground/90"
+								datetime={message.timestamp.toISOString()}
+							>
+								{message.timestamp.toLocaleDateString(navigator.languages, {
+									dateStyle: "long",
+								})}
+							</time>
+						</div>
 					</div>
-				</div>
-			{/if}
-
-			{#if message.isSystem()}
-				<SystemMessage {message} context={message.context} />
-			{:else if message.isUser()}
-				{#if message.event}
-					<Notification {message} />
-				{:else if message.autoMod}
-					<AutoMod {message} metadata={message.autoMod} />
-				{:else}
-					<UserMessage
-						{message}
-						onEmbedLoad={() => {
-							if (!scrollingPaused) scrollToEnd();
-						}}
-					/>
 				{/if}
-			{/if}
 
-			{@const next = app.joined?.messages.at(i + 1)}
+				{#if message.isSystem()}
+					<SystemMessage {message} context={message.context} />
+				{:else if message.isUser()}
+					{#if message.event}
+						<Notification {message} />
+					{:else if message.autoMod}
+						<AutoMod {message} metadata={message.autoMod} />
+					{:else}
+						<UserMessage
+							{message}
+							onEmbedLoad={() => {
+								if (!scrollingPaused) scrollToEnd();
+							}}
+						/>
+					{/if}
+				{/if}
 
-			{#if message.recent && !next?.recent}
-				<div class="text-twitch relative px-3.5">
-					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
+				{@const next = channel.messages.at(i + 1)}
 
-					<div
-						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
-					>
-						Live messages
+				{#if message.recent && !next?.recent}
+					<div class="text-twitch relative px-3.5">
+						<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
+
+						<div
+							class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
+						>
+							Live messages
+						</div>
 					</div>
-				</div>
-			{/if}
-		{/snippet}
-	</VList>
+				{/if}
+			{/snippet}
+		</VList>
+	{/if}
 </div>
