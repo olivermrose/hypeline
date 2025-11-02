@@ -91,6 +91,13 @@ class AppState {
 			channel = new Channel(user);
 		}
 
+		if (!channel.viewers.has(channel.id)) {
+			const viewer = new Viewer(channel, channel.user);
+			viewer.broadcaster = true;
+
+			channel.viewers.set(channel.id, viewer);
+		}
+
 		channel = channel
 			.addBadges(joined.badges)
 			.addCommands(commands)
