@@ -73,69 +73,66 @@
 		</button>
 	{/if}
 
-	{#if channel.messages.length}
-		<VList
-			class="{className} overflow-y-auto text-sm"
-			data={channel.messages}
-			getKey={(message) => message.id}
-			onscroll={handleScroll}
-			bind:this={list}
-		>
-			{#snippet children(message, i)}
-				{@const prev = channel.messages[i - 1]}
-				{@const isNewDay =
-					prev && prev?.timestamp.getDate() !== message.timestamp.getDate()}
+	<VList
+		class="{className} overflow-y-auto text-sm"
+		data={channel.messages}
+		getKey={(message) => message.id}
+		onscroll={handleScroll}
+		bind:this={list}
+	>
+		{#snippet children(message, i)}
+			{@const prev = channel.messages[i - 1]}
+			{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
-				{#if isNewDay}
-					<div class="relative px-3.5">
-						<Separator.Root class="bg-muted my-4 h-px w-full rounded-full" />
+			{#if isNewDay}
+				<div class="relative px-3.5">
+					<Separator.Root class="bg-muted my-4 h-px w-full rounded-full" />
 
-						<div
-							class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
+					<div
+						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
+					>
+						<time
+							class="text-muted-foreground/90"
+							datetime={message.timestamp.toISOString()}
 						>
-							<time
-								class="text-muted-foreground/90"
-								datetime={message.timestamp.toISOString()}
-							>
-								{message.timestamp.toLocaleDateString(navigator.languages, {
-									dateStyle: "long",
-								})}
-							</time>
-						</div>
+							{message.timestamp.toLocaleDateString(navigator.languages, {
+								dateStyle: "long",
+							})}
+						</time>
 					</div>
+				</div>
+			{/if}
+
+			{#if message.isSystem()}
+				<SystemMessage {message} context={message.context} />
+			{:else if message.isUser()}
+				{#if message.event}
+					<Notification {message} />
+				{:else if message.autoMod}
+					<AutoMod {message} metadata={message.autoMod} />
+				{:else}
+					<UserMessage
+						{message}
+						onEmbedLoad={() => {
+							if (!scrollingPaused) scrollToEnd();
+						}}
+					/>
 				{/if}
+			{/if}
 
-				{#if message.isSystem()}
-					<SystemMessage {message} context={message.context} />
-				{:else if message.isUser()}
-					{#if message.event}
-						<Notification {message} />
-					{:else if message.autoMod}
-						<AutoMod {message} metadata={message.autoMod} />
-					{:else}
-						<UserMessage
-							{message}
-							onEmbedLoad={() => {
-								if (!scrollingPaused) scrollToEnd();
-							}}
-						/>
-					{/if}
-				{/if}
+			{@const next = channel.messages.at(i + 1)}
 
-				{@const next = channel.messages.at(i + 1)}
+			{#if message.recent && !next?.recent}
+				<div class="text-twitch relative px-3.5">
+					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
 
-				{#if message.recent && !next?.recent}
-					<div class="text-twitch relative px-3.5">
-						<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
-
-						<div
-							class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
-						>
-							Live messages
-						</div>
+					<div
+						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
+					>
+						Live messages
 					</div>
-				{/if}
-			{/snippet}
-		</VList>
-	{/if}
+				</div>
+			{/if}
+		{/snippet}
+	</VList>
 </div>
