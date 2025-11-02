@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Channel } from "$lib/channel.svelte";
 import type { UserWithColor } from "$lib/tauri";
 import { User } from "$lib/user.svelte";
-import { find } from "$lib/util";
 import { Viewer } from "$lib/viewer.svelte";
 
 export interface Command {
@@ -26,7 +25,7 @@ export async function getTarget(username: string, channel: Channel) {
 
 	username = username.toLowerCase();
 
-	let target = find(channel.viewers, (v) => v.username === username);
+	let target = channel.viewers.values().find((v) => v.username === username);
 
 	if (!target) {
 		const fetched = await invoke<UserWithColor | null>("get_user_from_login", {

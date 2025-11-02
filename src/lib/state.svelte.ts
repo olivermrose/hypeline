@@ -4,7 +4,6 @@ import { Channel } from "./channel.svelte";
 import { commands } from "./commands";
 import { settings } from "./settings";
 import { User } from "./user.svelte";
-import { find } from "./util";
 import { Viewer } from "./viewer.svelte";
 import type { Paint } from "./seventv";
 import type { Emote, JoinedChannel, UserWithColor } from "./tauri";
@@ -81,7 +80,10 @@ class AppState {
 	public async joinChannel(username: string) {
 		const joined = await invoke<JoinedChannel>("join", {
 			login: username,
-			isMod: this.user ? !!find(this.user.moderating, (name) => name === username) : false,
+			isMod: this.user
+				? // eslint-disable-next-line unicorn/prefer-includes
+					this.user.moderating.values().some((name) => name === username)
+				: false,
 		}).catch(() => null);
 
 		if (!joined) return null;

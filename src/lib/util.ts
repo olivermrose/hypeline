@@ -119,15 +119,6 @@ export function makeReadable(foreground: string) {
 	return adjusted;
 }
 
-export function find<V>(
-	collection: { values: () => Iterable<V> },
-	predicate: (value: V) => unknown,
-): V | undefined {
-	for (const value of collection.values()) {
-		if (predicate(value)) return value;
-	}
-}
-
 export function debounce<F extends (...args: Parameters<F>) => ReturnType<F>>(
 	fn: F,
 	timeout: number,

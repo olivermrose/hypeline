@@ -3,7 +3,6 @@ import type { Emote } from "$lib/tauri";
 import type { CheermoteTier } from "$lib/twitch/api";
 import type { Range } from "$lib/twitch/irc";
 import type { User } from "$lib/user.svelte";
-import { find } from "$lib/util";
 import type { UserMessage } from "./user-message";
 
 export interface BaseNode {
@@ -101,7 +100,7 @@ export function parse(message: UserMessage): Node[] {
 			});
 		} else if (/^@\w{4,24}$/.test(part)) {
 			const name = part.slice(1).toLowerCase();
-			const viewer = find(message.channel.viewers, (u) => u.username === name);
+			const viewer = message.channel.viewers.values().find((u) => u.username === name);
 
 			nodes.push({
 				...base,

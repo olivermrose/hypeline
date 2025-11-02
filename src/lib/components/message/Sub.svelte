@@ -7,7 +7,7 @@
 		SubMysteryGiftEvent,
 		SubOrResubEvent,
 	} from "$lib/twitch/irc";
-	import { colorizeName, find } from "$lib/util";
+	import { colorizeName } from "$lib/util";
 	import Message from "./Message.svelte";
 
 	interface Props {
@@ -106,7 +106,9 @@
 				</p>
 			</div>
 		{:else if sub.type === "gift_paid_upgrade"}
-			{@const gifter = find(message.channel.viewers, (v) => v.username === sub.gifter_login)}
+			{@const gifter = message.channel.viewers
+				.values()
+				.find((v) => v.username === sub.gifter_login)}
 
 			<div class="flex flex-col gap-0.5">
 				{@html colorizeName(message.author)}
