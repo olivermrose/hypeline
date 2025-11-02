@@ -4,7 +4,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "channel.suspicious_user.message",
 	handle(data, channel) {
-		const message = UserMessage.from(data.message, {
+		const message = UserMessage.from(channel, data.message, {
 			id: data.user_id,
 			login: data.user_login,
 			name: data.user_name,

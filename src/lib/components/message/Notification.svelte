@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { UserMessage } from "$lib/message";
-	import { app } from "$lib/state.svelte";
 	import { colorizeName } from "$lib/util";
 	import Message from "./Message.svelte";
 	import Sub from "./Sub.svelte";
 
 	const { message }: { message: UserMessage } = $props();
 
-	const primary = app.joined?.user.color ?? "inherit";
+	const primary = message.channel.user.color ?? "inherit";
 
 	const colors: Record<string, string[]> = {
 		PRIMARY: [primary, primary],
@@ -39,7 +38,10 @@
 	{:else if type === "sub_or_resub" || type === "sub_mystery_gift" || type === "sub_gift" || type === "prime_paid_upgrade" || type === "gift_paid_upgrade"}
 		<Sub {message} sub={message.event} />
 	{:else}
-		<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={app.joined?.user.color}>
+		<div
+			class="bg-muted/50 my-0.5 border-l-4 p-2"
+			style:border-color={message.channel.user.color}
+		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">
 					<span class="iconify lucide--party-popper mt-px size-4 shrink-0"></span>
@@ -56,7 +58,7 @@
 					</div>
 				{/if}
 			{:else if type === "community_pay_forward"}
-				{@const gifter = app.joined?.viewers.get(message.event.gifter.id)}
+				{@const gifter = message.channel.viewers.get(message.event.gifter.id)}
 
 				<p>
 					{@html colorizeName(message.author)}

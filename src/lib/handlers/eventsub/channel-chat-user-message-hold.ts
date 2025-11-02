@@ -6,7 +6,7 @@ export default defineHandler({
 	handle(data, channel) {
 		data.message.message_id = data.message_id;
 
-		const message = UserMessage.from(data.message, {
+		const message = UserMessage.from(channel, data.message, {
 			id: data.user_id,
 			login: data.user_login,
 			name: data.user_name,

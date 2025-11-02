@@ -22,7 +22,7 @@
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
 
 	for (const badge of message.badges) {
-		const chatBadge = app.joined?.badges.get(badge.name)?.[badge.version];
+		const chatBadge = message.channel.badges.get(badge.name)?.[badge.version];
 		const globalBadge = app.globalBadges.get(badge.name)?.[badge.version];
 
 		const resolved = chatBadge ?? globalBadge;

@@ -90,7 +90,10 @@
 	{/if}
 
 	{#if message.highlighted}
-		<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={app.joined?.user.color}>
+		<div
+			class="bg-muted/50 my-0.5 border-l-4 p-2"
+			style:border-color={message.channel.user.color}
+		>
 			<Message {message} {onEmbedLoad} />
 		</div>
 	{:else if highlights.enabled}
@@ -113,7 +116,7 @@
 {#snippet innerMessage(bordered: boolean)}
 	<div class={["not-group-aria-disabled:hover:bg-muted/50 py-2", bordered ? "px-1.5" : "px-3"]}>
 		{#if message.reply}
-			{@const user = app.joined?.viewers.get(message.reply.parent.user.id)}
+			{@const user = message.channel.viewers.get(message.reply.parent.user.id)}
 
 			<div class="mb-1 flex items-center gap-2">
 				<div

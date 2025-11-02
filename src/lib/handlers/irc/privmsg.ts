@@ -5,7 +5,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "privmsg",
 	handle(data, channel) {
-		const message = new UserMessage(data);
+		const message = new UserMessage(channel, data);
 
 		message.author.username = data.sender.login;
 		message.author.displayName = data.sender.name;

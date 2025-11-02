@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { UserMessage } from "$lib/message";
-	import { app } from "$lib/state.svelte";
 	import type {
 		GiftPaidUpgradeEvent,
 		PrimePaidUpgradeEvent,
@@ -24,7 +23,7 @@
 	const { message, sub }: Props = $props();
 </script>
 
-<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={app.joined?.user.color}>
+<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={message.channel.user.color}>
 	<div class="flex gap-1">
 		{#if sub.type === "sub_or_resub" || sub.type === "prime_paid_upgrade" || sub.type === "gift_paid_upgrade"}
 			{#if sub.type === "sub_or_resub" && sub.sub_plan === "Prime"}
@@ -107,10 +106,7 @@
 				</p>
 			</div>
 		{:else if sub.type === "gift_paid_upgrade"}
-			{@const gifter = find(
-				app.joined?.viewers ?? [],
-				(u) => u.username === sub.gifter_login,
-			)}
+			{@const gifter = find(message.channel.viewers, (v) => v.username === sub.gifter_login)}
 
 			<div class="flex flex-col gap-0.5">
 				{@html colorizeName(message.author)}
@@ -124,7 +120,7 @@
 				</p>
 			</div>
 		{:else}
-			{@const recipient = app.joined?.viewers.get(sub.recipient.id)}
+			{@const recipient = message.channel.viewers.get(sub.recipient.id)}
 
 			{#snippet tier()}
 				<span class="font-semibold">Tier {sub.sub_plan[0]}</span>

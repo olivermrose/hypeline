@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { Channel } from "$lib/channel.svelte";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
@@ -16,7 +17,7 @@ import { Message } from "./message.svelte";
 import { parse } from ".";
 import type { Node } from ".";
 
-function createMinimalUser(sender: BasicUser, color: string) {
+function createMinimalUser(channel: Channel, sender: BasicUser, color: string) {
 	const user = new User({
 		data: {
 			id: sender.id,
@@ -32,10 +33,8 @@ function createMinimalUser(sender: BasicUser, color: string) {
 		color: color ?? null,
 	});
 
-	if (app.joined) {
-		const viewer = new Viewer(app.joined, user);
-		app.joined.viewers.set(user.id, viewer);
-	}
+	const viewer = new Viewer(channel, user);
+	channel.viewers.set(user.id, viewer);
 
 	return user;
 }
@@ -96,10 +95,16 @@ export class UserMessage extends Message {
 	 */
 	public autoMod: AutoModMetadata | null = null;
 
-	public constructor(public readonly data: PrivmsgMessage | UserNoticeMessage) {
+	public constructor(
+		/**
+		 * The channel the message was sent in.
+		 */
+		public readonly channel: Channel,
+		public readonly data: PrivmsgMessage | UserNoticeMessage,
+	) {
 		super(data);
 
-		const viewer = app.joined?.viewers.get(data.sender.id);
+		const viewer = channel.viewers.get(data.sender.id);
 
 		this.id = data.message_id;
 
@@ -107,7 +112,7 @@ export class UserMessage extends Message {
 		// which case we can assume system_message is present
 		this.text = data.message_text ?? (data as UserNoticeMessage).system_message;
 
-		this.author = viewer?.user ?? createMinimalUser(data.sender, data.name_color);
+		this.author = viewer?.user ?? createMinimalUser(channel, data.sender, data.name_color);
 		this.viewer = viewer ?? null;
 
 		this.action = "is_action" in data && data.is_action;
@@ -119,11 +124,11 @@ export class UserMessage extends Message {
 		this.reply = "reply" in data ? data.reply : null;
 	}
 
-	public static from(message: StructuredMessage, sender: BasicUser) {
+	public static from(channel: Channel, message: StructuredMessage, sender: BasicUser) {
 		const isAction = /^\x01ACTION.*$/.test(message.text);
 		const text = isAction ? message.text.slice(8, -1) : message.text;
 
-		return new this({
+		return new this(channel, {
 			type: "privmsg",
 			badge_info: [],
 			badges: [],
@@ -161,13 +166,13 @@ export class UserMessage extends Message {
 	 * moderator
 	 */
 	public get actionable() {
-		if (!app.user || !app.joined) return false;
+		if (!app.user) return false;
 
 		const now = Date.now();
 		const diff = Math.abs(now - this.timestamp.getTime());
 
 		return (
-			app.user.moderating.has(app.joined.id) &&
+			app.user.moderating.has(this.channel.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
 			(app.user.id === this.author.id || !this.viewer?.moderator)
 		);
@@ -182,10 +187,10 @@ export class UserMessage extends Message {
 	}
 
 	public async delete() {
-		if (!app.user || !app.joined) return;
+		if (!app.user) return;
 
 		await invoke("delete_message", {
-			broadcasterId: app.joined.id,
+			broadcasterId: this.channel.id,
 			messageId: this.id,
 		});
 	}
