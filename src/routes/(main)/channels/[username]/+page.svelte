@@ -14,8 +14,6 @@
 
 	onMount(async () => {
 		unlisten = await listen<IrcMessage[]>("recentmessages", async (event) => {
-			if (!data.channel) return;
-
 			for (const message of event.payload) {
 				const handler = handlers.get(message.type);
 				await handler?.handle(message, data.channel);
