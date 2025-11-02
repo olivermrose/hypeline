@@ -24,7 +24,7 @@
 	</div>
 {:else}
 	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<span class="iconify lucide--ghost mb-4 size-8"></span>
+		<span class="iconify lucide--message-square-more mb-4 size-8"></span>
 
 		<span class="text-lg font-medium">No Channel Selected</span>
 		<p class="text-muted-foreground">
