@@ -1,5 +1,4 @@
 import { parse as parseTld } from "tldts";
-import { app } from "$lib/state.svelte";
 import type { Emote } from "$lib/tauri";
 import type { CheermoteTier } from "$lib/twitch/api";
 import type { Range } from "$lib/twitch/irc";
@@ -84,7 +83,7 @@ export function parse(message: UserMessage): Node[] {
 		const url = URL.parse(`https://${part.replace(/^https?:\/\/|\.$/i, "")}`);
 		const tld = url ? parseTld(url.hostname) : null;
 
-		const cheermote = app.joined?.cheermotes.find((c) => {
+		const cheermote = message.channel.cheermotes.find((c) => {
 			const hasPrefix = part.toLowerCase().startsWith(c.prefix.toLowerCase());
 			const hasBits = /\d+$/.test(part);
 
@@ -92,7 +91,7 @@ export function parse(message: UserMessage): Node[] {
 		});
 
 		const ircEmote = ircEmotes.find((e) => e.code === part);
-		const emote = app.joined?.emotes.get(part);
+		const emote = message.channel.emotes.get(part);
 
 		if (url && tld?.domain && tld.isIcann) {
 			nodes.push({
@@ -102,7 +101,7 @@ export function parse(message: UserMessage): Node[] {
 			});
 		} else if (/^@\w{4,24}$/.test(part)) {
 			const name = part.slice(1).toLowerCase();
-			const viewer = find(app.joined?.viewers ?? [], (u) => u.username === name);
+			const viewer = find(message.channel.viewers, (u) => u.username === name);
 
 			nodes.push({
 				...base,
