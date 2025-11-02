@@ -18,6 +18,7 @@ export async function load({ params }) {
 	});
 
 	channel.addEmotes(app.globalEmotes);
+	settings.state.lastJoined = channel.ephemeral ? null : channel.user.username;
 
 	return { channel };
 }

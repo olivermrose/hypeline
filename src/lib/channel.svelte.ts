@@ -87,6 +87,9 @@ export class Channel {
 
 	public async leave() {
 		await invoke("leave", { channel: this.user.username });
+
+		app.joined = null;
+		settings.state.lastJoined = null;
 	}
 
 	public addBadges(badges: BadgeSet[]) {
