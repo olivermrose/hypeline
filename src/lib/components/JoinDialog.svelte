@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Combobox, Dialog } from "bits-ui";
-	import { settings } from "$lib/settings";
+	import { goto } from "$app/navigation";
 	import { app } from "$lib/state.svelte";
 	import { debounce } from "$lib/util";
 	import Input from "./ui/Input.svelte";
@@ -78,8 +78,9 @@
 		const input = form.elements.namedItem("name") as HTMLInputElement;
 
 		const existing = app.channels.find((c) => c.user.username === input.value.toLowerCase());
+		const param = existing?.user.username ?? `ephemeral:${input.value}`;
 
-		settings.state.lastJoined = existing?.user.username ?? `ephemeral:${input.value}`;
+		await goto(`/channels/${param}`);
 		open = false;
 	}
 </script>
@@ -132,7 +133,7 @@
 
 					{#if suggestions.length}
 						<Combobox.Content
-							class="bg-card mt-2 max-h-72 w-[var(--bits-combobox-anchor-width)] min-w-[var(--bits-combobox-anchor-width)] overflow-y-auto rounded-lg border p-1"
+							class="bg-card mt-2 max-h-72 w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border p-1"
 						>
 							{#each suggestions as suggestion (suggestion.id)}
 								<Combobox.Item

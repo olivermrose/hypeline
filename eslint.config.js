@@ -7,6 +7,7 @@ export default antfu({
 		"no-console": "off",
 		"no-control-regex": "off",
 		"no-unused-vars": "off",
+		"antfu/no-top-level-await": "off",
 		"import/order": "off",
 		"perfectionist/sort-imports": [
 			"error",

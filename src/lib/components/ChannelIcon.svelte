@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
+	import { goto } from "$app/navigation";
 	import { settings } from "$lib/settings";
+	import { app } from "$lib/state.svelte";
 	import type { Stream } from "$lib/twitch/api";
 	import type { User } from "$lib/user.svelte";
 	import Tooltip from "./ui/Tooltip.svelte";
@@ -12,11 +14,7 @@
 
 	const { user, stream }: Props = $props();
 
-	let menu: Menu | null = null;
-
 	async function createMenu() {
-		if (menu) return menu;
-
 		const separator = await PredefinedMenuItem.new({
 			item: "Separator",
 		});
@@ -24,8 +22,8 @@
 		const joinItem = await MenuItem.new({
 			id: "join",
 			text: "Join",
-			action() {
-				settings.state.lastJoined = user.username;
+			async action() {
+				await goto(`/channels/${user.username}`);
 			},
 		});
 
@@ -34,18 +32,17 @@
 		const leaveItem = await MenuItem.new({
 			id: "leave",
 			text: "Leave",
-			action() {
-				settings.state.lastJoined = null;
+			async action() {
+				await app.joined?.leave();
+				await goto("/");
 			},
 		});
 
 		leaveItem.setEnabled(settings.state.lastJoined === user.username);
 
-		menu = await Menu.new({
+		return Menu.new({
 			items: [joinItem, separator, leaveItem],
 		});
-
-		return menu;
 	}
 
 	async function openContextMenu(event: MouseEvent) {
@@ -58,13 +55,12 @@
 
 <Tooltip class="max-w-64" side="right" sideOffset={18}>
 	{#snippet trigger()}
-		<button
+		<a
 			class="bg-muted flex size-10 items-center justify-center overflow-hidden rounded-full border"
 			type="button"
-			onclick={() => {
-				settings.state.lastJoined = user.username;
-			}}
+			href="/channels/{user.username}"
 			oncontextmenu={openContextMenu}
+			data-sveltekit-preload-data="off"
 		>
 			<img
 				class={["object-cover", !stream && "grayscale"]}
@@ -73,7 +69,7 @@
 				width="300"
 				height="300"
 			/>
-		</button>
+		</a>
 	{/snippet}
 
 	{#if stream}

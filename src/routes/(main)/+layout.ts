@@ -13,10 +13,6 @@ export async function load({ parent }) {
 
 	app.user = await app.fetchUser(settings.state.user.id);
 
-	if (settings.state.lastJoined?.startsWith("ephemeral:")) {
-		settings.state.lastJoined = null;
-	}
-
 	if (!app.channels.length) {
 		const channels = await invoke<FullChannel[]>("get_followed_channels");
 

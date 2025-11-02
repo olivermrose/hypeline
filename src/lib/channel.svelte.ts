@@ -78,15 +78,12 @@ export class Channel {
 
 		this.id = user.id;
 		this.stream = stream;
-
-		const viewer = new Viewer(this, user);
-		viewer.broadcaster = true;
-
-		this.viewers.set(user.id, viewer);
 	}
 
 	public async leave() {
 		await invoke("leave", { channel: this.user.username });
+
+		settings.state.lastJoined = null;
 	}
 
 	public addBadges(badges: BadgeSet[]) {
@@ -147,6 +144,18 @@ export class Channel {
 		}
 
 		return this;
+	}
+
+	public reset() {
+		this.#bypassNext = false;
+		this.#lastRecentAt = null;
+
+		this.history = [];
+		this.messages = [];
+
+		this.badges.clear();
+		this.emotes.clear();
+		this.viewers.clear();
 	}
 
 	public clearMessages(id?: string) {
