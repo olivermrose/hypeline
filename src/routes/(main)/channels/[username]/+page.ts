@@ -1,3 +1,4 @@
+import { error } from "@sveltejs/kit";
 import { invoke } from "@tauri-apps/api/core";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
@@ -6,6 +7,7 @@ export async function load({ params }) {
 	await app.joined?.leave();
 
 	const channel = await app.joinChannel(params.username.replace(/^ephemeral:/, ""));
+	if (!channel) error(404);
 
 	if (params.username.startsWith("ephemeral:")) {
 		channel.ephemeral = true;

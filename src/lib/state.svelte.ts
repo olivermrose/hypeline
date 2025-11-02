@@ -82,7 +82,9 @@ class AppState {
 		const joined = await invoke<JoinedChannel>("join", {
 			login: username,
 			isMod: this.user ? !!find(this.user.moderating, (name) => name === username) : false,
-		});
+		}).catch(() => null);
+
+		if (!joined) return null;
 
 		let channel = this.channels.find((c) => c.user.username === username);
 
