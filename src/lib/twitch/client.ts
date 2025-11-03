@@ -120,15 +120,19 @@ export class TwitchApiClient {
 		return response.json();
 	}
 
-	public async get<T>(path: `/${string}`, params?: QueryParams) {
+	public get<T>(path: `/${string}`, params?: QueryParams) {
 		return this.fetch<T>("GET", path, { params });
 	}
 
-	public async post<T>(path: `/${string}`, options?: FetchOptions) {
+	public post<T>(path: `/${string}`, options?: FetchOptions) {
 		return this.fetch<T>("POST", path, options);
 	}
 
-	public async delete(path: `/${string}`, params?: QueryParams) {
+	public put<T>(path: `/${string}`, options?: FetchOptions) {
+		return this.fetch<T>("PUT", path, options);
+	}
+
+	public delete(path: `/${string}`, params?: QueryParams) {
 		return this.fetch<void>("DELETE", path, { params });
 	}
 
@@ -163,8 +167,12 @@ export class TwitchApiClient {
 				"Content-Type": "application/json",
 			},
 			body: options.body ? JSON.stringify(options.body) : undefined,
-		}).then((response) => response.json());
+		});
 
-		return response;
+		if (response.status === 204 || response.headers.get("Content-Length") === "0") {
+			return undefined as T;
+		}
+
+		return response.json();
 	}
 }

@@ -5,7 +5,6 @@ use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
 use twitch_api::HelixClient;
 use twitch_api::eventsub::EventType;
-use twitch_api::extra::AnnouncementColor;
 use twitch_api::helix::bits::{Cheermote, GetCheermotesRequest};
 use twitch_api::helix::chat::{BadgeSet, get_channel_chat_badges, get_global_chat_badges};
 use twitch_api::helix::streams::Stream;
@@ -269,32 +268,4 @@ pub async fn fetch_channel_badges(
             Ok(vec![])
         }
     }
-}
-
-#[tracing::instrument(skip(state))]
-#[tauri::command]
-pub async fn announce(
-    state: State<'_, Mutex<AppState>>,
-    broadcaster_id: String,
-    message: String,
-) -> Result<(), Error> {
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    // Discard instead of try because the error type is different from all the
-    // rest for some reason
-    let _ = state
-        .helix
-        .send_chat_announcement(
-            broadcaster_id,
-            &token.user_id,
-            &*message,
-            AnnouncementColor::Primary,
-            token,
-        )
-        .await;
-
-    tracing::debug!("Announcement sent");
-
-    Ok(())
 }

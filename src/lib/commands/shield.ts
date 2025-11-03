@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, parseBool } from "./util";
 
 export default defineCommand({
@@ -14,9 +13,6 @@ export default defineCommand({
 			return;
 		}
 
-		await invoke("shield", {
-			broadcasterId: channel.user.id,
-			active: enabled,
-		});
+		await channel.setShieldMode(enabled);
 	},
 });

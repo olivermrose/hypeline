@@ -1,7 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { Channel } from "$lib/channel.svelte";
-import type { UserWithColor } from "$lib/tauri";
-import { User } from "$lib/user.svelte";
+import { app } from "$lib/state.svelte";
+import type { User } from "$lib/user.svelte";
 import { Viewer } from "$lib/viewer.svelte";
 
 export interface Command {
@@ -28,12 +27,10 @@ export async function getTarget(username: string, channel: Channel) {
 	let target = channel.viewers.values().find((v) => v.username === username);
 
 	if (!target) {
-		const fetched = await invoke<UserWithColor | null>("get_user_from_login", {
-			login: username,
-		});
+		const user = await app.twitch.users.fetch(username, "login");
 
-		if (fetched) {
-			target = new Viewer(channel, new User(fetched));
+		if (user) {
+			target = new Viewer(channel, user);
 			channel.viewers.set(target.id, target);
 		}
 	}

@@ -38,7 +38,7 @@ export class Channel {
 	/**
 	 * The viewers in the channel.
 	 */
-	public readonly viewers = new ViewerManager(this);
+	public readonly viewers: ViewerManager;
 
 	/**
 	 * The ids of the moderators in the channel.
@@ -88,6 +88,7 @@ export class Channel {
 		this.id = user.id;
 		this.stream = stream;
 
+		this.viewers = new ViewerManager(client, this);
 		this.moderators.add(user.id);
 	}
 
@@ -177,12 +178,12 @@ export class Channel {
 		}
 	}
 
-	public announce(message: string) {
+	public async announce(message: string) {
 		if (!app.user || !this.moderators.has(app.user.id)) {
 			return;
 		}
 
-		return this.client.post("/chat/announcements", {
+		await this.client.post("/chat/announcements", {
 			params: {
 				broadcaster_id: this.user.id,
 				moderator_id: app.user.id,
@@ -193,12 +194,12 @@ export class Channel {
 		});
 	}
 
-	public raid(to: string) {
+	public async raid(to: string) {
 		if (!app.user || !this.moderators.has(app.user.id)) {
 			return;
 		}
 
-		return this.client.post("/raids", {
+		await this.client.post("/raids", {
 			params: {
 				from_broadcaster_id: this.user.id,
 				to_broadcaster_id: to,
@@ -206,24 +207,51 @@ export class Channel {
 		});
 	}
 
-	public unraid() {
+	public async unraid() {
 		if (!app.user || !this.moderators.has(app.user.id)) {
 			return;
 		}
 
-		return this.client.delete("/raids", { broadcaster_id: this.user.id });
+		await this.client.delete("/raids", { broadcaster_id: this.user.id });
 	}
 
-	public shoutout(to: string) {
+	public async shoutout(to: string) {
 		if (!app.user || !this.moderators.has(app.user.id)) {
 			return;
 		}
 
-		return this.client.post("/chat/shoutouts", {
+		await this.client.post("/chat/shoutouts", {
 			params: {
 				from_broadcaster_id: this.user.id,
 				to_broadcaster_id: to,
 				moderator_id: app.user.id,
+			},
+		});
+	}
+
+	public async clearChat() {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		await this.client.delete("/moderation/chat", {
+			broadcaster_id: this.user.id,
+			moderator_id: app.user.id,
+		});
+	}
+
+	public async setShieldMode(active = true) {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		await this.client.put("/moderation/shield_mode", {
+			params: {
+				broadcaster_id: this.user.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				is_active: active,
 			},
 		});
 	}

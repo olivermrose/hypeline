@@ -1,5 +1,4 @@
 import { SvelteMap } from "svelte/reactivity";
-// import { app } from "$lib/state.svelte";
 import type { TwitchApiClient } from "$lib/twitch/client";
 import { userQuery } from "$lib/twitch/gql";
 import { User } from "$lib/user.svelte";

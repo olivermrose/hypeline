@@ -1,17 +1,16 @@
-import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
+import type { Channel } from "$lib/channel.svelte";
+import { app } from "$lib/state.svelte";
 import type { TwitchApiClient } from "$lib/twitch/client";
-import { Viewer } from "../viewer.svelte";
-import type { Channel } from "../channel.svelte";
-import type { TimeoutOptions } from "../viewer.svelte";
+import { Viewer } from "$lib/viewer.svelte";
+import type { TimeoutOptions } from "$lib/viewer.svelte";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
-	public readonly client: TwitchApiClient;
-
-	public constructor(public readonly channel: Channel) {
+	public constructor(
+		public readonly client: TwitchApiClient,
+		public readonly channel: Channel,
+	) {
 		super();
-
-		this.client = channel.client;
 	}
 
 	public async fetch(id: string, force = false) {
@@ -28,63 +27,96 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	}
 
 	public async vip(id: string) {
-		await invoke("add_vip", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
+		await this.client.post("/channels/vips", {
+			params: {
+				broadcaster_id: this.channel.user.id,
+				user_id: id,
+			},
 		});
 	}
 
 	public async unvip(id: string) {
-		await invoke("remove_vip", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
+		await this.client.delete("/channels/vips", {
+			broadcaster_id: this.channel.user.id,
+			user_id: id,
 		});
 	}
 
 	public async mod(id: string) {
-		await invoke("add_moderator", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
+		await this.client.post("/moderation/moderators", {
+			params: {
+				broadcaster_id: this.channel.user.id,
+				user_id: id,
+			},
 		});
 	}
 
 	public async unmod(id: string) {
-		await invoke("remove_moderator", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
+		await this.client.delete("/moderation/moderators", {
+			broadcaster_id: this.channel.user.id,
+			user_id: id,
 		});
 	}
 
 	public async warn(id: string, reason: string) {
-		await invoke("warn", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
-			reason,
+		if (!app.user) return;
+
+		await this.client.post("/moderation/warnings", {
+			params: {
+				broadcaster_id: this.channel.user.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				data: {
+					user_id: id,
+					reason,
+				},
+			},
 		});
 	}
 
 	public async timeout(id: string, options: TimeoutOptions) {
-		await invoke("ban", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
-			duration: options.duration,
-			reason: options.reason || null,
+		if (!app.user) return;
+
+		await this.client.post("/moderation/bans", {
+			params: {
+				broadcaster_id: this.channel.user.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				data: {
+					user_id: id,
+					duration: options.duration,
+					reason: options.reason,
+				},
+			},
 		});
 	}
 
 	public async ban(id: string, reason?: string) {
-		await invoke("ban", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
-			duration: null,
-			reason: reason || null,
+		if (!app.user) return;
+
+		await this.client.post("/moderation/bans", {
+			params: {
+				broadcaster_id: this.channel.user.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				data: {
+					user_id: id,
+					reason,
+				},
+			},
 		});
 	}
 
 	public async unban(id: string) {
-		await invoke("unban", {
-			broadcasterId: this.channel.user.id,
-			userId: id,
+		if (!app.user) return;
+
+		await this.client.delete("/moderation/bans", {
+			broadcaster_id: this.channel.user.id,
+			moderator_id: app.user.id,
+			user_id: id,
 		});
 	}
 }
