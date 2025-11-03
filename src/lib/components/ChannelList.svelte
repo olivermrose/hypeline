@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { invoke } from "@tauri-apps/api/core";
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
 	import { log } from "$lib/log";
 	import { app } from "$lib/state.svelte";
-	import type { Stream } from "$lib/twitch/api";
 	import ChannelIcon from "./ChannelIcon.svelte";
 
 	const groups = $derived.by(() => {
 		const sorted = app.channels.toSorted((a, b) => {
 			if (a.stream && b.stream) {
-				return b.stream.viewer_count - a.stream.viewer_count;
+				return (b.stream.viewersCount ?? 0) - (a.stream.viewersCount ?? 0);
 			}
 
 			if (a.stream && !b.stream) return -1;
@@ -27,12 +25,11 @@
 			async () => {
 				log.info("Updating streams");
 
-				const streams = await invoke<Stream[]>("get_streams", {
-					ids: app.channels.map((c) => c.user.id),
-				});
+				const ids = app.channels.map((c) => c.user.id);
+				const streams = await app.twitch.fetchStreams(ids);
 
 				for (const channel of app.channels) {
-					const stream = streams.find((s) => s.user_id === channel.user.id);
+					const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
 					channel.stream = stream ?? null;
 				}
 			},

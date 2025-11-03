@@ -4,7 +4,8 @@ import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { UserManager } from "$lib/managers";
 import { app } from "$lib/state.svelte";
 import { gql, streamDetailsFragment, userDetailsFragment } from "./gql";
-import type { GqlResponse } from "./gql";
+import type { Stream as HelixStream } from "./api";
+import type { GqlResponse, Stream } from "./gql";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;
 
@@ -51,6 +52,52 @@ export class TwitchApiClient {
 		);
 
 		return data.user!.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
+	}
+
+	/**
+	 * Retrieves the stream of the specified channel if it's live.
+	 */
+	public async fetchStream(id: string) {
+		const { data } = await this.send(
+			gql(
+				`query GetStream($id: ID!) {
+					user(id: $id) {
+						stream {
+							...StreamDetails
+						}
+					}
+				}`,
+				[streamDetailsFragment],
+			),
+			{ id },
+		);
+
+		if (!data.user) {
+			throw new Error("User not found");
+		}
+
+		return data.user.stream;
+	}
+
+	public async fetchStreams(ids: string[]): Promise<Stream[]> {
+		const response = await this.get<{ data: HelixStream[] }>("/streams", { user_id: ids });
+		const streams: Stream[] = [];
+
+		for (const stream of response.data) {
+			streams.push({
+				broadcaster: {
+					id: stream.user_id,
+				},
+				title: stream.title,
+				game: {
+					displayName: stream.game_name,
+				},
+				viewersCount: stream.viewer_count,
+				createdAt: stream.started_at,
+			});
+		}
+
+		return streams;
 	}
 
 	// General HTTP helpers

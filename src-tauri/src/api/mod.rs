@@ -7,7 +7,6 @@ use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 use crate::AppState;
 use crate::error::Error;
 
-pub mod channels;
 pub mod chat;
 pub mod moderation;
 pub mod streams;

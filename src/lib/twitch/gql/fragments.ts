@@ -3,12 +3,15 @@ import { gql } from "./function";
 
 export const streamDetailsFragment = gql(`
 	fragment StreamDetails on Stream {
-		createdAt
-		viewersCount
+		broadcaster {
+			id
+		}
 		title
 		game {
 			displayName
 		}
+		viewersCount
+		createdAt
 	}
 `);
 

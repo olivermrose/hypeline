@@ -157,7 +157,6 @@ async fn detach_settings(app_handle: AppHandle) {
 fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
         detach_settings,
-        api::channels::get_followed_channels,
         api::chat::join,
         api::chat::leave,
         api::chat::fetch_global_badges,
@@ -174,7 +173,6 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::moderation::add_vip,
         api::moderation::remove_vip,
         api::streams::get_stream,
-        api::streams::get_streams,
         api::streams::create_marker,
         api::streams::get_clip,
         api::users::get_user_from_id,

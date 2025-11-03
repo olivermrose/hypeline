@@ -13,26 +13,16 @@ pub async fn get_stream(
     state: State<'_, Mutex<AppState>>,
     id: String,
 ) -> Result<Option<Stream>, Error> {
-    let mut streams = get_streams(state, vec![id]).await?;
-
-    Ok(streams.pop())
-}
-
-#[tauri::command]
-pub async fn get_streams(
-    state: State<'_, Mutex<AppState>>,
-    ids: Vec<String>,
-) -> Result<Vec<Stream>, Error> {
     let state = state.lock().await;
     let token = get_access_token(&state)?;
 
-    let streams = state
+    let stream = state
         .helix
-        .get_streams_from_ids(&ids.into(), token)
-        .try_collect()
+        .get_streams_from_ids(&[id][..].into(), token)
+        .try_next()
         .await?;
 
-    Ok(streams)
+    Ok(stream)
 }
 
 #[tauri::command]
