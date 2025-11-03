@@ -1,5 +1,5 @@
 import type { EmoteSet } from "./seventv";
-import type { BadgeSet, Cheermote, User as HelixUser, Stream } from "./twitch/api";
+import type { BadgeSet, Cheermote, Stream } from "./twitch/api";
 
 export interface Emote {
 	name: string;
@@ -20,7 +20,8 @@ export interface UserEmote {
 }
 
 export interface UserWithColor {
-	data: HelixUser;
+	// TODO: stopgap
+	data: any;
 	color: string | null;
 }
 
