@@ -1,13 +1,17 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
-import { app } from "./state.svelte";
-import { Viewer } from "./viewer.svelte";
-import type { Channel } from "./channel.svelte";
-import type { TimeoutOptions } from "./viewer.svelte";
+import type { TwitchApiClient } from "$lib/twitch/client";
+import { Viewer } from "../viewer.svelte";
+import type { Channel } from "../channel.svelte";
+import type { TimeoutOptions } from "../viewer.svelte";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
+	public readonly client: TwitchApiClient;
+
 	public constructor(public readonly channel: Channel) {
 		super();
+
+		this.client = channel.client;
 	}
 
 	public async fetch(id: string, force = false) {
@@ -16,7 +20,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 			if (cached) return cached;
 		}
 
-		const user = await app.fetchUser(id);
+		const user = await this.client.users.fetch(id);
 		const viewer = new Viewer(this.channel, user);
 
 		this.set(id, viewer);

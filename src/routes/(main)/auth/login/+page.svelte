@@ -43,7 +43,7 @@
 				token: event.payload.access_token,
 			};
 
-			app.user = await app.fetchUser(event.payload.user_id);
+			app.user = await app.twitch.users.fetch(event.payload.user_id);
 
 			await tick();
 			await settings.save();

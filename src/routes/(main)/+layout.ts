@@ -2,25 +2,29 @@ import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
-import type { Emote, FullChannel } from "$lib/tauri";
+import type { Emote } from "$lib/tauri";
 import type { Badge, BadgeSet } from "$lib/twitch/api";
 import { User } from "$lib/user.svelte";
 
-export async function load({ parent }) {
+export async function load({ parent, fetch }) {
 	await parent();
 
 	if (!settings.state.user) return;
 
-	app.user = await app.fetchUser(settings.state.user.id);
+	app.twitch.token = settings.state.user.token;
+	app.user = await app.twitch.users.fetch(settings.state.user.id);
+
+	// TODO: stopgap
+	await invoke("set_seventv_id");
 
 	if (!app.channels.length) {
-		const channels = await invoke<FullChannel[]>("get_followed_channels");
+		const following = await app.twitch.fetchFollowing();
 
-		for (const channel of channels) {
-			const user = new User(channel.user);
-			const chan = new Channel(user, channel.stream);
+		for (const followed of following) {
+			const user = new User(followed);
+			const channel = new Channel(app.twitch, user, followed.stream);
 
-			app.channels.push(chan);
+			app.channels.push(channel);
 		}
 	}
 

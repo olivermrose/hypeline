@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { Channel } from "$lib/channel.svelte";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
@@ -19,18 +18,15 @@ import type { Node } from ".";
 
 function createMinimalUser(channel: Channel, sender: BasicUser, color: string) {
 	const user = new User({
-		data: {
-			id: sender.id,
-			created_at: "0",
-			login: sender.login,
-			display_name: sender.name,
-			description: "",
-			profile_image_url: "",
-			offline_image_url: "",
-			type: "",
-			broadcaster_type: "",
-		},
-		color: color ?? null,
+		id: sender.id,
+		createdAt: "0",
+		login: sender.login,
+		displayName: sender.name,
+		description: "",
+		chatColor: color,
+		profileImageURL: "",
+		bannerImageURL: "",
+		roles: null,
 	});
 
 	const viewer = new Viewer(channel, user);
@@ -187,11 +183,14 @@ export class UserMessage extends Message {
 	}
 
 	public async delete() {
-		if (!app.user) return;
+		if (!app.user || !this.channel.moderators.has(app.user.id)) {
+			return;
+		}
 
-		await invoke("delete_message", {
-			broadcasterId: this.channel.id,
-			messageId: this.id,
+		await this.channel.client.delete(`/moderation/chat`, {
+			broadcaster_id: this.channel.id,
+			moderator_id: app.user.id,
+			message_id: this.id,
 		});
 	}
 }

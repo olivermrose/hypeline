@@ -2,15 +2,15 @@ import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { Channel } from "./channel.svelte";
 import { commands } from "./commands";
-import { settings } from "./settings";
+import { TwitchApiClient } from "./twitch/client";
 import { User } from "./user.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Paint } from "./seventv";
-import type { Emote, JoinedChannel, UserWithColor } from "./tauri";
+import type { Emote, JoinedChannel } from "./tauri";
 import type { Badge } from "./twitch/api";
 
 class AppState {
-	#requests = new Map<string, Promise<User>>();
+	public readonly twitch = new TwitchApiClient();
 
 	/**
 	 * The currently joined channel.
@@ -48,35 +48,6 @@ class AppState {
 	public readonly u2b = new Map<string, Badge | undefined>();
 	public readonly u2p = new Map<string, Paint | undefined>();
 
-	public async fetchUser(id: string) {
-		const inProgress = this.#requests.get(id);
-		if (inProgress) return await inProgress;
-
-		const request = (async () => {
-			try {
-				const data = await invoke<UserWithColor>("get_user_from_id", { id });
-				const user = new User(data);
-
-				if (id === settings.state.user?.id) {
-					const channels = await invoke<[string, string][]>("get_moderated_channels");
-					channels.forEach(([id, name]) => user.moderating.set(id, name));
-				}
-
-				if (this.joined) {
-					const viewer = new Viewer(this.joined, user);
-					this.joined.viewers.set(user.id, viewer);
-				}
-
-				return user;
-			} finally {
-				this.#requests.delete(id);
-			}
-		})();
-
-		this.#requests.set(id, request);
-		return await request;
-	}
-
 	public async joinChannel(username: string) {
 		const joined = await invoke<JoinedChannel>("join", {
 			login: username,
@@ -91,8 +62,23 @@ class AppState {
 		let channel = this.channels.find((c) => c.user.username === username);
 
 		if (!channel) {
-			const user = new User(joined.user);
-			channel = new Channel(user);
+			const user = new User({
+				id: joined.user.data.id,
+				login: joined.user.data.login,
+				displayName: joined.user.data.display_name,
+				chatColor: joined.user.color,
+				createdAt: joined.user.data.created_at,
+				roles: {
+					isStaff: joined.user.data.type === "staff",
+					isAffiliate: joined.user.data.broadcaster_type === "affiliate",
+					isPartner: joined.user.data.broadcaster_type === "partner",
+				},
+				description: "",
+				profileImageURL: joined.user.data.profile_image_url,
+				bannerImageURL: joined.user.data.offline_image_url,
+			});
+
+			channel = new Channel(this.twitch, user);
 		}
 
 		if (!channel.viewers.has(channel.id)) {
@@ -108,7 +94,7 @@ class AppState {
 			.addEmotes(joined.emotes)
 			.addCheermotes(joined.cheermotes);
 
-		channel.stream = joined.stream;
+		// channel.stream = joined.stream;
 		channel.emoteSet = joined.emote_set ?? undefined;
 
 		this.joined = channel;

@@ -1,17 +1,19 @@
 import { invoke } from "@tauri-apps/api/core";
-import { SvelteMap } from "svelte/reactivity";
+import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { log } from "./log";
+import { ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
 import { settings } from "./settings";
 import { app } from "./state.svelte";
-import { ViewerManager } from "./viewer-manager";
 import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
 import type { Emote } from "./tauri";
-import type { Badge, BadgeSet, Cheermote, Stream } from "./twitch/api";
+import type { Badge, BadgeSet, Cheermote } from "./twitch/api";
+import type { TwitchApiClient } from "./twitch/client";
+import type { Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
@@ -37,6 +39,11 @@ export class Channel {
 	 * The viewers in the channel.
 	 */
 	public readonly viewers = new ViewerManager(this);
+
+	/**
+	 * The ids of the moderators in the channel.
+	 */
+	public readonly moderators = new SvelteSet<string>();
 
 	/**
 	 * The stream associated with the channel if it's currently live.
@@ -65,6 +72,8 @@ export class Channel {
 	public error = $state<string>("");
 
 	public constructor(
+		public readonly client: TwitchApiClient,
+
 		/**
 		 * The user for the channel.
 		 */
@@ -78,6 +87,8 @@ export class Channel {
 
 		this.id = user.id;
 		this.stream = stream;
+
+		this.moderators.add(user.id);
 	}
 
 	public async leave() {
@@ -166,16 +177,55 @@ export class Channel {
 		}
 	}
 
-	public async raid(to: string) {
-		await invoke("raid", { fromId: this.user.id, toId: to });
+	public announce(message: string) {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		return this.client.post("/chat/announcements", {
+			params: {
+				broadcaster_id: this.user.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				message,
+			},
+		});
 	}
 
-	public async unraid() {
-		await invoke("cancel_raid", { broadcasterId: this.user.id });
+	public raid(to: string) {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		return this.client.post("/raids", {
+			params: {
+				from_broadcaster_id: this.user.id,
+				to_broadcaster_id: to,
+			},
+		});
+	}
+
+	public unraid() {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		return this.client.delete("/raids", { broadcaster_id: this.user.id });
 	}
 
 	public shoutout(to: string) {
-		return invoke("shoutout", { fromId: this.user.id, toId: to });
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		return this.client.post("/chat/shoutouts", {
+			params: {
+				from_broadcaster_id: this.user.id,
+				to_broadcaster_id: to,
+				moderator_id: app.user.id,
+			},
+		});
 	}
 
 	public async send(message: string, replyId?: string) {

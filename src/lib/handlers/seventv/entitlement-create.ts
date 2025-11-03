@@ -8,7 +8,7 @@ export default defineHandler({
 		const twitch = data.user.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
 
-		const user = await app.fetchUser(twitch.id);
+		const user = await app.twitch.users.fetch(twitch.id);
 
 		switch (data.kind) {
 			case "BADGE": {

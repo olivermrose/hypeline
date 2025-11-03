@@ -158,14 +158,10 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
         detach_settings,
         api::channels::get_followed_channels,
-        api::channels::raid,
-        api::channels::cancel_raid,
-        api::channels::shoutout,
         api::chat::join,
         api::chat::leave,
         api::chat::fetch_global_badges,
         api::chat::announce,
-        api::moderation::delete_message,
         api::moderation::clear_chat,
         api::moderation::update_held_message,
         api::moderation::ban,
@@ -193,6 +189,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         log::log,
         providers::fetch_recent_messages,
         providers::seventv::connect_seventv,
+        providers::seventv::set_seventv_id,
         providers::seventv::send_presence,
         server::start_server
     ]
