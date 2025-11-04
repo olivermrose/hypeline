@@ -6,7 +6,6 @@ use tokio::sync::Mutex;
 use twitch_api::HelixClient;
 use twitch_api::eventsub::EventType;
 use twitch_api::helix::bits::{Cheermote, GetCheermotesRequest};
-use twitch_api::helix::chat::{BadgeSet, get_channel_chat_badges, get_global_chat_badges};
 use twitch_api::helix::streams::Stream;
 use twitch_api::twitch_oauth2::UserToken;
 
@@ -26,7 +25,6 @@ pub struct JoinedChannel {
     emotes: EmoteMap,
     emote_set: Option<EmoteSet>,
     cheermotes: Vec<Cheermote>,
-    badges: Vec<BadgeSet>,
 }
 
 #[tracing::instrument(skip(state, is_mod))]
@@ -64,12 +62,11 @@ pub async fn join(
     let broadcaster_id = user.data.id.as_str();
     let login = user.data.login.to_string();
 
-    let (stream, mut emotes, emote_set, cheermotes, badges) = tokio::try_join!(
+    let (stream, mut emotes, emote_set, cheermotes) = tokio::try_join!(
         get_stream(state.clone(), user.data.id.to_string()),
         fetch_user_emotes(broadcaster_id),
         fetch_active_emote_set(broadcaster_id),
-        get_cheermotes(&helix, &token, broadcaster_id.to_string()),
-        fetch_channel_badges(&helix, &token, login),
+        get_cheermotes(&helix, &token, broadcaster_id.to_string())
     )?;
 
     let stv_emotes = match emote_set {
@@ -163,7 +160,6 @@ pub async fn join(
         emotes,
         emote_set,
         cheermotes,
-        badges,
     })
 }
 
@@ -205,66 +201,6 @@ pub async fn get_cheermotes(
         }
         Err(err) => {
             tracing::error!(%err, "Failed to fetch cheermotes");
-            Ok(vec![])
-        }
-    }
-}
-
-#[tracing::instrument(skip_all)]
-#[tauri::command]
-pub async fn fetch_global_badges(
-    state: State<'_, Mutex<AppState>>,
-) -> Result<Vec<BadgeSet>, Error> {
-    tracing::info!("Fetching global badges");
-
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    match state
-        .helix
-        .req_get(
-            get_global_chat_badges::GetGlobalChatBadgesRequest::new(),
-            token,
-        )
-        .await
-    {
-        Ok(response) => {
-            tracing::info!("Fetched {} global badge sets", response.data.len());
-            Ok(response.data)
-        }
-        Err(err) => {
-            tracing::error!(%err, "Failed to fetch global badges");
-            Ok(vec![])
-        }
-    }
-}
-
-#[tracing::instrument(skip(helix, token))]
-pub async fn fetch_channel_badges(
-    helix: &HelixClient<'static, reqwest::Client>,
-    token: &UserToken,
-    channel: String,
-) -> Result<Vec<BadgeSet>, Error> {
-    tracing::info!("Fetching channel badges");
-
-    let Some(user) = helix.get_user_from_login(&channel, token).await? else {
-        tracing::error!("User not found");
-        return Ok(vec![]);
-    };
-
-    match helix
-        .req_get(
-            get_channel_chat_badges::GetChannelChatBadgesRequest::broadcaster_id(&user.id),
-            token,
-        )
-        .await
-    {
-        Ok(response) => {
-            tracing::info!("Fetched {} badge sets", response.data.len());
-            Ok(response.data)
-        }
-        Err(err) => {
-            tracing::error!(%err, "Failed to fetch channel badges");
             Ok(vec![])
         }
     }

@@ -5,7 +5,6 @@ import { gql } from "./function";
 export const globalBadgesQuery = gql(
 	`query {
 		badges {
-			id
 			title
 			description
 			imageURL1x: imageURL(size: NORMAL)

@@ -159,7 +159,6 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         detach_settings,
         api::chat::join,
         api::chat::leave,
-        api::chat::fetch_global_badges,
         api::moderation::update_held_message,
         api::moderation::update_chat_settings,
         api::streams::get_stream,

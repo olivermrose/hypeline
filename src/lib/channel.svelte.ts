@@ -11,7 +11,7 @@ import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
 import type { Emote } from "./tauri";
-import type { Cheermote } from "./twitch/api";
+import type { BadgeSet, Cheermote } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
 import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
@@ -168,6 +168,26 @@ export class Channel {
 		for (const message of this.messages) {
 			if (message.isUser() && (!id || message.author.id === id)) {
 				message.deleted = true;
+			}
+		}
+	}
+
+	public async fetchBadges() {
+		const response = await this.client.get<{ data: BadgeSet[] }>("/chat/badges", {
+			broadcaster_id: this.user.id,
+		});
+
+		for (const badge of response.data) {
+			for (const version of badge.versions) {
+				this.badges.set(`${badge.set_id}:${version.id}`, {
+					title: version.title,
+					description: version.description,
+					imageURL1x: version.image_url_1x,
+					imageURL2x: version.image_url_2x,
+					imageURL4x: version.image_url_4x,
+					setID: badge.set_id,
+					version: version.id,
+				});
 			}
 		}
 	}

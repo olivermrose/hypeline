@@ -88,8 +88,9 @@ class AppState {
 			channel.viewers.set(channel.id, viewer);
 		}
 
+		await channel.fetchBadges();
+
 		channel = channel
-			// .addBadges(joined.badges)
 			.addCommands(commands)
 			.addEmotes(joined.emotes)
 			.addCheermotes(joined.cheermotes);
