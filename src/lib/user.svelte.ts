@@ -1,4 +1,3 @@
-import { SvelteMap } from "svelte/reactivity";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
@@ -68,13 +67,6 @@ export class User implements PartialUser {
 	 */
 	public paint = $state<Paint>();
 
-	/**
-	 * A map of channel ids to usernames that the user is a moderator in. This will
-	 * always include the user's own id, and will only include other ids for
-	 * the current user.
-	 */
-	public readonly moderating = new SvelteMap<string, string>();
-
 	public constructor(data: ApiUser) {
 		this.#color = data.chatColor;
 		this.#displayName = data.displayName;
@@ -90,8 +82,6 @@ export class User implements PartialUser {
 		this.bio = data.description ?? "";
 		this.avatarUrl = data.profileImageURL ?? "";
 		this.bannerUrl = data.bannerImageURL ?? "";
-
-		this.moderating.set(this.id, this.username);
 	}
 
 	/**

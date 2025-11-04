@@ -8,7 +8,6 @@ use twitch_api::helix::users::User as HelixUser;
 use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
 use crate::AppState;
-use crate::api::get_access_token;
 use crate::error::Error;
 
 #[derive(Serialize)]
@@ -121,53 +120,4 @@ pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<Us
         .collect();
 
     Ok(user_emotes)
-}
-
-#[tauri::command]
-pub async fn get_moderated_channels(
-    state: State<'_, Mutex<AppState>>,
-) -> Result<Vec<(String, String)>, Error> {
-    let state = state.lock().await;
-
-    let Some(token) = state.token.as_ref() else {
-        return Ok(vec![]);
-    };
-
-    let channels: Vec<_> = state
-        .helix
-        .get_moderated_channels(token.user_id.clone(), token)
-        .try_collect()
-        .await?;
-
-    let pairs = channels
-        .into_iter()
-        .map(|ch| {
-            (
-                ch.broadcaster_id.to_string(),
-                ch.broadcaster_login.to_string(),
-            )
-        })
-        .collect();
-
-    Ok(pairs)
-}
-
-#[tauri::command]
-pub async fn block(state: State<'_, Mutex<AppState>>, user_id: String) -> Result<(), Error> {
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    state.helix.block_user(&user_id, token).await?;
-
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn unblock(state: State<'_, Mutex<AppState>>, user_id: String) -> Result<(), Error> {
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    state.helix.unblock_user(&user_id, token).await?;
-
-    Ok(())
 }

@@ -51,4 +51,18 @@ export class UserManager extends SvelteMap<string, User> {
 		this.#requests.set(idOrLogin, request);
 		return request;
 	}
+
+	public async block(id: string) {
+		await this.client.put("/users/blocks", {
+			params: {
+				target_user_id: id,
+			},
+		});
+	}
+
+	public async unblock(id: string) {
+		await this.client.delete("/users/blocks", {
+			target_user_id: id,
+		});
+	}
 }

@@ -167,7 +167,7 @@ export class UserMessage extends Message {
 		const diff = Math.abs(now - this.timestamp.getTime());
 
 		return (
-			app.user.moderating.has(this.channel.id) &&
+			this.channel.moderators.has(app.user.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
 			(app.user.id === this.author.id || !this.viewer?.moderator)
 		);

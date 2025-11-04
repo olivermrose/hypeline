@@ -1,6 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
 import { SystemMessage } from "$lib/message";
 import { defineCommand, getTarget } from "./util";
+import { app } from "$lib/state.svelte";
 
 export default defineCommand({
 	name: "block",
@@ -10,7 +10,7 @@ export default defineCommand({
 		const target = await getTarget(args[0], channel);
 		if (!target) return;
 
-		await invoke("block", { userId: target.id });
+		await app.twitch.users.block(target.id);
 
 		const message = SystemMessage.fromContext({
 			type: "blockStatus",

@@ -51,10 +51,8 @@ class AppState {
 	public async joinChannel(username: string) {
 		const joined = await invoke<JoinedChannel>("join", {
 			login: username,
-			isMod: this.user
-				? // eslint-disable-next-line unicorn/prefer-includes
-					this.user.moderating.values().some((name) => name === username)
-				: false,
+			// TODO: stopgap
+			isMod: true,
 		}).catch(() => null);
 
 		if (!joined) return null;

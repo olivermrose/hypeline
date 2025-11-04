@@ -13,7 +13,10 @@ export default defineHandler({
 
 		message.deleted = true;
 
-		if (data.is_recent || (!data.is_recent && !app.user?.moderating.has(channel.user.id))) {
+		if (
+			data.is_recent ||
+			(!data.is_recent && app.user && channel.moderators.has(app.user.id))
+		) {
 			const sysmsg = new SystemMessage(data);
 			sysmsg.context = {
 				type: "delete",
