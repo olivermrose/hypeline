@@ -2,11 +2,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
-import type { Emote } from "$lib/tauri";
-import { globalBadgesQuery } from "$lib/twitch/gql";
 import { User } from "$lib/user.svelte";
 
-export async function load({ parent, fetch }) {
+export async function load({ parent }) {
 	await parent();
 
 	if (!settings.state.user) return;
@@ -29,19 +27,10 @@ export async function load({ parent, fetch }) {
 	}
 
 	if (!app.globalEmotes.size) {
-		const emotes = await invoke<Emote[]>("fetch_global_emotes");
-
-		for (const emote of emotes) {
-			app.globalEmotes.set(emote.name, emote);
-		}
+		await app.twitch.fetchEmotes();
 	}
 
 	if (!app.globalBadges.size) {
-		const { data } = await app.twitch.send(globalBadgesQuery);
-		const badges = data.badges?.filter((b) => b != null) ?? [];
-
-		for (const badge of badges) {
-			app.globalBadges.set(`${badge.setID}:${badge.version}`, badge);
-		}
+		await app.twitch.fetchBadges();
 	}
 }

@@ -1,9 +1,11 @@
+import { invoke } from "@tauri-apps/api/core";
 import type { TadaDocumentNode } from "gql.tada";
 import { print } from "graphql-web-lite";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { UserManager } from "$lib/managers";
 import { app } from "$lib/state.svelte";
-import { gql, streamDetailsFragment, userDetailsFragment } from "./gql";
+import type { Emote } from "$lib/tauri";
+import { globalBadgesQuery, gql, streamDetailsFragment, userDetailsFragment } from "./gql";
 import type { Stream as HelixStream } from "./api";
 import type { GqlResponse, Stream } from "./gql";
 
@@ -21,6 +23,34 @@ export class TwitchApiClient {
 	public token: string | null = null;
 
 	public readonly users = new UserManager(this);
+
+	/**
+	 * Retrieves the list of global badges and caches them for later use.
+	 */
+	public async fetchBadges() {
+		const { data } = await app.twitch.send(globalBadgesQuery);
+		const badges = data.badges?.filter((b) => b != null) ?? [];
+
+		for (const badge of badges) {
+			app.globalBadges.set(`${badge.setID}:${badge.version}`, badge);
+		}
+
+		return badges;
+	}
+
+	/**
+	 * Retrieves the list of global emotes, including those from FFZ, BTTV, and 7TV,
+	 * and caches them for later use.
+	 */
+	public async fetchEmotes() {
+		const emotes = await invoke<Emote[]>("fetch_global_emotes");
+
+		for (const emote of emotes) {
+			app.globalEmotes.set(emote.name, emote);
+		}
+
+		return emotes;
+	}
 
 	/**
 	 * Retrieves the list of channels the current user is following.
@@ -79,7 +109,10 @@ export class TwitchApiClient {
 		return data.user.stream;
 	}
 
-	public async fetchStreams(ids: string[]): Promise<Stream[]> {
+	/**
+	 * Retrieves the streams of the specified channels if they're live.
+	 */
+	public async fetchStreams(ids: string[]) {
 		const response = await this.get<{ data: HelixStream[] }>("/streams", { user_id: ids });
 		const streams: Stream[] = [];
 

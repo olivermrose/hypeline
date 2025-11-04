@@ -60,7 +60,6 @@ pub async fn join(
     };
 
     let broadcaster_id = user.data.id.as_str();
-    let login = user.data.login.to_string();
 
     let (stream, mut emotes, emote_set, cheermotes) = tokio::try_join!(
         get_stream(state.clone(), user.data.id.to_string()),

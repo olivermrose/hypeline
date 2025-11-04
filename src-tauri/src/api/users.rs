@@ -31,54 +31,6 @@ pub struct User {
 
 #[tracing::instrument(skip(state))]
 #[tauri::command]
-pub async fn get_user_from_id(
-    state: State<'_, Mutex<AppState>>,
-    id: String,
-) -> Result<Option<User>, Error> {
-    tracing::debug!("Fetching user by id");
-
-    let mut state = state.lock().await;
-
-    let Some(ref token) = state.token else {
-        return Ok(None);
-    };
-
-    let (helix_user, color_user) = tokio::try_join!(
-        state.helix.get_user_from_id(&id, token),
-        state.helix.get_user_chat_color(&id, token),
-    )?;
-
-    if id == token.user_id.to_string() {
-        let stv_user = HTTP
-            .get(format!("https://7tv.io/v3/users/twitch/{id}"))
-            .send()
-            .await?
-            .json::<serde_json::Value>()
-            .await;
-
-        state.seventv_id = stv_user
-            .ok()
-            .and_then(|u| Some(u["user"]["id"].as_str()?.to_string()));
-    }
-
-    let user = match helix_user {
-        Some(user) => {
-            tracing::debug!("Fetched user");
-            user
-        }
-        None => {
-            tracing::debug!("User not found");
-            return Ok(None);
-        }
-    };
-
-    let color = color_user.and_then(|u| u.color.map(|c| c.into()));
-
-    Ok(Some(User { data: user, color }))
-}
-
-#[tracing::instrument(skip(state))]
-#[tauri::command]
 pub async fn get_user_from_login(
     state: State<'_, Mutex<AppState>>,
     login: String,
