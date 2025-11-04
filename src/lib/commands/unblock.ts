@@ -1,6 +1,6 @@
 import { SystemMessage } from "$lib/message";
-import { defineCommand, getTarget } from "./util";
 import { app } from "$lib/state.svelte";
+import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
 	name: "unblock",

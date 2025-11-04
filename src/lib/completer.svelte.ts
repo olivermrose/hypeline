@@ -1,10 +1,10 @@
 import { commands } from "./commands";
 import { app } from "./state.svelte";
+import type { Channel } from "./channel.svelte";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";
 import type { Emote } from "./tauri";
 import type { Viewer } from "./viewer.svelte";
-import type { Channel } from "./channel.svelte";
 
 interface SearchOptions<T> {
 	source: () => T[];
