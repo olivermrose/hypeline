@@ -192,6 +192,15 @@ export class Channel {
 		}
 	}
 
+	public async fetchCheermotes() {
+		const response = await this.client.get<{ data: Cheermote[] }>("/bits/cheermotes", {
+			broadcaster_id: this.user.id,
+		});
+
+		this.cheermotes.push(...response.data);
+		return this.cheermotes;
+	}
+
 	public async announce(message: string) {
 		if (!app.user || !this.moderators.has(app.user.id)) {
 			return;

@@ -3,15 +3,10 @@ use serde::Serialize;
 use serde_json::json;
 use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
-use twitch_api::HelixClient;
 use twitch_api::eventsub::EventType;
-use twitch_api::helix::bits::{Cheermote, GetCheermotesRequest};
-use twitch_api::helix::streams::Stream;
-use twitch_api::twitch_oauth2::UserToken;
 
 use super::get_access_token;
-use super::streams::get_stream;
-use super::users::{User, get_user_from_login};
+use super::users::get_user_from_login;
 use crate::AppState;
 use crate::emotes::{Emote, EmoteMap, fetch_user_emotes};
 use crate::error::Error;
@@ -19,12 +14,8 @@ use crate::providers::seventv::{EmoteSet, fetch_active_emote_set, send_presence}
 
 #[derive(Serialize)]
 pub struct JoinedChannel {
-    id: String,
-    user: User,
-    stream: Option<Stream>,
     emotes: EmoteMap,
     emote_set: Option<EmoteSet>,
-    cheermotes: Vec<Cheermote>,
 }
 
 #[tracing::instrument(skip(state, is_mod))]
@@ -36,7 +27,7 @@ pub async fn join(
 ) -> Result<JoinedChannel, Error> {
     tracing::info!("Joining {login}");
 
-    let (helix, token, irc, eventsub, seventv) = {
+    let (token, irc, eventsub, seventv) = {
         let state = state.lock().await;
         let token = get_access_token(&state)?;
 
@@ -46,7 +37,6 @@ pub async fn join(
         };
 
         (
-            state.helix.clone(),
             token.clone(),
             irc,
             state.eventsub.clone(),
@@ -61,11 +51,9 @@ pub async fn join(
 
     let broadcaster_id = user.data.id.as_str();
 
-    let (stream, mut emotes, emote_set, cheermotes) = tokio::try_join!(
-        get_stream(state.clone(), user.data.id.to_string()),
+    let (mut emotes, emote_set) = tokio::try_join!(
         fetch_user_emotes(broadcaster_id),
-        fetch_active_emote_set(broadcaster_id),
-        get_cheermotes(&helix, &token, broadcaster_id.to_string())
+        fetch_active_emote_set(broadcaster_id)
     )?;
 
     let stv_emotes = match emote_set {
@@ -148,18 +136,11 @@ pub async fn join(
         }
     }
 
-    send_presence(state, broadcaster_id.into()).await?;
-
     irc.join(login.to_string());
 
-    Ok(JoinedChannel {
-        id: broadcaster_id.to_string(),
-        user,
-        stream,
-        emotes,
-        emote_set,
-        cheermotes,
-    })
+    send_presence(state, broadcaster_id.into()).await?;
+
+    Ok(JoinedChannel { emotes, emote_set })
 }
 
 #[tauri::command]
@@ -181,26 +162,4 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     }
 
     Ok(())
-}
-
-#[tracing::instrument(skip(helix, token))]
-pub async fn get_cheermotes(
-    helix: &HelixClient<'static, reqwest::Client>,
-    token: &UserToken,
-    broadcaster_id: String,
-) -> Result<Vec<Cheermote>, Error> {
-    tracing::info!("Fetching cheermotes");
-
-    let request = GetCheermotesRequest::broadcaster_id(broadcaster_id);
-
-    match helix.req_get(request, token).await {
-        Ok(response) => {
-            tracing::info!("Fetched {} cheermotes", response.data.len());
-            Ok(response.data)
-        }
-        Err(err) => {
-            tracing::error!(%err, "Failed to fetch cheermotes");
-            Ok(vec![])
-        }
-    }
 }

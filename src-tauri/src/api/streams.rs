@@ -1,29 +1,11 @@
-use futures::TryStreamExt;
 use tauri::State;
 use tauri::async_runtime::Mutex;
 use twitch_api::helix::clips::{Clip, get_clips};
-use twitch_api::helix::streams::{CreatedStreamMarker, Stream};
+use twitch_api::helix::streams::CreatedStreamMarker;
 
 use super::get_access_token;
 use crate::AppState;
 use crate::error::Error;
-
-#[tauri::command]
-pub async fn get_stream(
-    state: State<'_, Mutex<AppState>>,
-    id: String,
-) -> Result<Option<Stream>, Error> {
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    let stream = state
-        .helix
-        .get_streams_from_ids(&[id][..].into(), token)
-        .try_next()
-        .await?;
-
-    Ok(stream)
-}
 
 #[tauri::command]
 pub async fn create_marker(

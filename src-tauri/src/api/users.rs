@@ -7,9 +7,9 @@ use tauri::async_runtime::Mutex;
 use twitch_api::helix::users::User as HelixUser;
 use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
+use crate::AppState;
 use crate::api::get_access_token;
 use crate::error::Error;
-use crate::{AppState, HTTP};
 
 #[derive(Serialize)]
 pub struct UserEmote {
@@ -30,7 +30,6 @@ pub struct User {
 }
 
 #[tracing::instrument(skip(state))]
-#[tauri::command]
 pub async fn get_user_from_login(
     state: State<'_, Mutex<AppState>>,
     login: String,
