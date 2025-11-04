@@ -161,8 +161,6 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::chat::leave,
         api::moderation::update_held_message,
         api::moderation::update_chat_settings,
-        api::streams::create_marker,
-        api::streams::get_clip,
         api::users::get_user_emotes,
         api::users::get_moderated_channels,
         api::users::block,

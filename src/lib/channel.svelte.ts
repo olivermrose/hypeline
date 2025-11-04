@@ -11,7 +11,7 @@ import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
 import type { Emote } from "./tauri";
-import type { BadgeSet, Cheermote } from "./twitch/api";
+import type { BadgeSet, Cheermote, StreamMarker } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
 import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
@@ -173,11 +173,11 @@ export class Channel {
 	}
 
 	public async fetchBadges() {
-		const response = await this.client.get<{ data: BadgeSet[] }>("/chat/badges", {
+		const { data } = await this.client.get<{ data: BadgeSet[] }>("/chat/badges", {
 			broadcaster_id: this.user.id,
 		});
 
-		for (const badge of response.data) {
+		for (const badge of data) {
 			for (const version of badge.versions) {
 				this.badges.set(`${badge.set_id}:${version.id}`, {
 					title: version.title,
@@ -193,12 +193,23 @@ export class Channel {
 	}
 
 	public async fetchCheermotes() {
-		const response = await this.client.get<{ data: Cheermote[] }>("/bits/cheermotes", {
+		const { data } = await this.client.get<{ data: Cheermote[] }>("/bits/cheermotes", {
 			broadcaster_id: this.user.id,
 		});
 
-		this.cheermotes.push(...response.data);
+		this.cheermotes.push(...data);
 		return this.cheermotes;
+	}
+
+	public async createMarker(description?: string) {
+		const { data } = await this.client.post<{ data: StreamMarker }>("/streams/markers", {
+			body: {
+				user_id: this.user.id,
+				description,
+			},
+		});
+
+		return data;
 	}
 
 	public async announce(message: string) {

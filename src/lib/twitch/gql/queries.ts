@@ -2,6 +2,22 @@ import type { ResultOf } from "gql.tada";
 import { userDetailsFragment } from "./fragments";
 import { gql } from "./function";
 
+export const clipQuery = gql(`
+	query GetClip($slug: ID!) {
+		clip(slug: $slug) {
+			createdAt
+			title
+			viewCount
+			url
+			thumbnailURL
+			curator {
+				displayName
+			}
+		}
+	}`);
+
+export type Clip = NonNullable<ResultOf<typeof clipQuery>["clip"]>;
+
 export const globalBadgesQuery = gql(
 	`query {
 		badges {
