@@ -11,9 +11,9 @@ import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
 import type { Emote } from "./tauri";
-import type { Badge, BadgeSet, Cheermote } from "./twitch/api";
+import type { Cheermote } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
-import type { Stream } from "./twitch/gql";
+import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
@@ -30,7 +30,7 @@ export class Channel {
 
 	public readonly id: string;
 
-	public readonly badges = new SvelteMap<string, Record<string, Badge>>();
+	public readonly badges = new SvelteMap<string, Badge>();
 	public readonly commands = new SvelteMap<string, Command>();
 	public readonly emotes = new SvelteMap<string, Emote>();
 	public readonly cheermotes = $state<Cheermote[]>([]);
@@ -98,15 +98,9 @@ export class Channel {
 		settings.state.lastJoined = null;
 	}
 
-	public addBadges(badges: BadgeSet[]) {
-		for (const set of badges) {
-			const badges: Record<string, Badge> = {};
-
-			for (const version of set.versions) {
-				badges[version.id] = version;
-			}
-
-			this.badges.set(set.set_id, badges);
+	public addBadges(badges: Badge[]) {
+		for (const badge of badges) {
+			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 
 		return this;

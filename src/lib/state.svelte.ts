@@ -7,7 +7,7 @@ import { User } from "./user.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Paint } from "./seventv";
 import type { Emote, JoinedChannel } from "./tauri";
-import type { Badge } from "./twitch/api";
+import type { Badge } from "./twitch/gql";
 
 class AppState {
 	public readonly twitch = new TwitchApiClient();
@@ -32,7 +32,7 @@ class AppState {
 	/**
 	 * Global badges from Twitch.
 	 */
-	public readonly globalBadges = new SvelteMap<string, Record<string, Badge>>();
+	public readonly globalBadges = new SvelteMap<string, Badge>();
 
 	/**
 	 * Provider-specific badges.
@@ -89,7 +89,7 @@ class AppState {
 		}
 
 		channel = channel
-			.addBadges(joined.badges)
+			// .addBadges(joined.badges)
 			.addCommands(commands)
 			.addEmotes(joined.emotes)
 			.addCheermotes(joined.cheermotes);

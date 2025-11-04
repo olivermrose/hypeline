@@ -3,7 +3,7 @@ import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
 import type { Emote } from "$lib/tauri";
-import type { Badge, BadgeSet } from "$lib/twitch/api";
+import { globalBadgesQuery } from "$lib/twitch/gql";
 import { User } from "$lib/user.svelte";
 
 export async function load({ parent, fetch }) {
@@ -37,16 +37,11 @@ export async function load({ parent, fetch }) {
 	}
 
 	if (!app.globalBadges.size) {
-		const badges = await invoke<BadgeSet[]>("fetch_global_badges");
+		const { data } = await app.twitch.send(globalBadgesQuery);
+		const badges = data.badges?.filter((b) => b != null) ?? [];
 
-		for (const set of badges) {
-			const badges: Record<string, Badge> = {};
-
-			for (const version of set.versions) {
-				badges[version.id] = version;
-			}
-
-			app.globalBadges.set(set.set_id, badges);
+		for (const badge of badges) {
+			app.globalBadges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 	}
 }

@@ -103,7 +103,10 @@ export class TwitchApiClient {
 	// General HTTP helpers
 
 	// GraphQL only
-	public async send<T, U>(query: TadaDocumentNode<T, U>, variables: U): Promise<GqlResponse<T>> {
+	public async send<T, U>(
+		query: TadaDocumentNode<T, U>,
+		variables: U = {} as U,
+	): Promise<GqlResponse<T>> {
 		const response = await fetch("https://gql.twitch.tv/gql", {
 			method: "POST",
 			headers: {

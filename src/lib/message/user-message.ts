@@ -2,7 +2,6 @@ import type { Channel } from "$lib/channel.svelte";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
-	Badge,
 	BasicUser,
 	PrivmsgMessage,
 	Reply,
@@ -66,9 +65,9 @@ export class UserMessage extends Message {
 	public readonly highlighted: boolean;
 
 	/**
-	 * The badges sent with the message.
+	 * The badges sent with the message. This is in the form of `setID:version`.
 	 */
-	public readonly badges: Badge[];
+	public readonly badges: string[];
 
 	/**
 	 * The amount of bits sent with the message if it was a cheer.
@@ -114,7 +113,7 @@ export class UserMessage extends Message {
 		this.action = "is_action" in data && data.is_action;
 		this.highlighted = "is_highlighted" in data && data.is_highlighted;
 
-		this.badges = data.badges;
+		this.badges = data.badges.map((b) => `${b.name}:${b.version}`);
 		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
 		this.event = "event" in data ? data.event : null;
 		this.reply = "reply" in data ? data.reply : null;

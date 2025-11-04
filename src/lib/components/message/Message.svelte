@@ -10,7 +10,7 @@
 	import type { LinkNode, MentionNode, UserMessage } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
-	import type { Badge } from "$lib/twitch/api";
+	import type { Badge } from "$lib/twitch/gql";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
@@ -22,8 +22,8 @@
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
 
 	for (const badge of message.badges) {
-		const chatBadge = message.channel.badges.get(badge.name)?.[badge.version];
-		const globalBadge = app.globalBadges.get(badge.name)?.[badge.version];
+		const chatBadge = message.channel.badges.get(badge);
+		const globalBadge = app.globalBadges.get(badge);
 
 		const resolved = chatBadge ?? globalBadge;
 
@@ -32,9 +32,9 @@
 		}
 	}
 
-	if (message.author.badge) {
-		badges.push(message.author.badge);
-	}
+	// if (message.author.badge) {
+	// 	badges.push(message.author.badge);
+	// }
 
 	function getMentionStyle(node: MentionNode) {
 		if (node.marked) return null;
@@ -66,7 +66,7 @@
 		{#snippet trigger()}
 			<img
 				class="inline-block align-middle"
-				src={badge.image_url_2x}
+				src={badge.imageURL2x}
 				alt={badge.description}
 				width="18"
 				height="18"
