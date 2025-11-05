@@ -210,6 +210,13 @@ export class TwitchApiClient {
 			return { data: null! };
 		}
 
-		return response.json();
+		const data = await response.json();
+
+		// TODO: temp until better error handling
+		if (response.status >= 400 && response.status < 500) {
+			throw data.message;
+		}
+
+		return data;
 	}
 }
