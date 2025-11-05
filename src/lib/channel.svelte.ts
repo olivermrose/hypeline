@@ -96,6 +96,16 @@ export class Channel {
 	}
 
 	public async join() {
+		app.joined = this;
+		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
+
+		if (!this.viewers.has(this.id)) {
+			const viewer = new Viewer(this, this.user);
+			viewer.broadcaster = true;
+
+			this.viewers.set(this.id, viewer);
+		}
+
 		const joined = await invoke<JoinedChannel>("join", {
 			id: this.id,
 			login: this.user.username,
@@ -121,16 +131,6 @@ export class Channel {
 
 		this.stream = stream;
 		this.emoteSet = joined.emote_set ?? undefined;
-
-		if (!this.viewers.has(this.id)) {
-			const viewer = new Viewer(this, this.user);
-			viewer.broadcaster = true;
-
-			this.viewers.set(this.id, viewer);
-		}
-
-		app.joined = this;
-		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
 	}
 
 	public async leave() {
