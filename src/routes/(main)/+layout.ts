@@ -2,47 +2,49 @@ import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
-import type { Emote, FullChannel } from "$lib/tauri";
-import type { Badge, BadgeSet } from "$lib/twitch/api";
+import type { BasicUser } from "$lib/twitch/irc";
 import { User } from "$lib/user.svelte";
+import type { Prefix } from "$lib/util";
 
 export async function load({ parent }) {
 	await parent();
 
 	if (!settings.state.user) return;
 
-	app.user = await app.fetchUser(settings.state.user.id);
+	app.twitch.token = settings.state.user.token;
+	app.user = await app.twitch.users.fetch(settings.state.user.id);
+
+	const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
+		"/moderation/channels",
+		{ user_id: app.user.id, first: 100 },
+	);
+
+	for (const channel of data) {
+		app.user.moderating.add(channel.broadcaster_id);
+	}
+
+	// TODO: remove when redoing 7TV
+	await invoke("set_seventv_id", { id: app.user.id });
 
 	if (!app.channels.length) {
-		const channels = await invoke<FullChannel[]>("get_followed_channels");
+		const following = await app.twitch.fetchFollowing();
 
-		for (const channel of channels) {
-			const user = new User(channel.user);
-			const chan = new Channel(user, channel.stream);
+		for (const followed of following) {
+			const user = new User(followed);
+			const channel = new Channel(app.twitch, user, followed.stream);
 
-			app.channels.push(chan);
+			app.channels.push(channel);
 		}
 	}
 
-	if (!app.globalEmotes.size) {
-		const emotes = await invoke<Emote[]>("fetch_global_emotes");
+	const self = new Channel(app.twitch, app.user);
+	app.channels.push(self);
 
-		for (const emote of emotes) {
-			app.globalEmotes.set(emote.name, emote);
-		}
+	if (!app.globalEmotes.size) {
+		await app.twitch.fetchEmotes();
 	}
 
 	if (!app.globalBadges.size) {
-		const badges = await invoke<BadgeSet[]>("fetch_global_badges");
-
-		for (const set of badges) {
-			const badges: Record<string, Badge> = {};
-
-			for (const version of set.versions) {
-				badges[version.id] = version;
-			}
-
-			app.globalBadges.set(set.set_id, badges);
-		}
+		await app.twitch.fetchBadges();
 	}
 }

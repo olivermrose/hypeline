@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { invoke } from "@tauri-apps/api/core";
-	import { SystemMessage, UserMessage } from "$lib/message";
+	import { UserMessage } from "$lib/message";
 	import type { AutoModMetadata } from "$lib/twitch/eventsub";
 	import Message from "./Message.svelte";
 
@@ -10,25 +9,6 @@
 	}
 
 	const { message, metadata }: Props = $props();
-
-	async function updateHeldMessage(allow: boolean) {
-		try {
-			await invoke("update_held_message", {
-				messageId: message.id,
-				allow,
-			});
-		} catch (error) {
-			if (typeof error === "string" && error.includes("already set")) {
-				const sysmsg = new SystemMessage();
-				sysmsg.text =
-					"Failed to update AutoMod message status. It may have already been updated or expired.";
-
-				message.channel.addMessage(sysmsg);
-			}
-		} finally {
-			message.deleted = true;
-		}
-	}
 </script>
 
 <div class="bg-muted/50 my-0.5 space-y-2 border-l-4 border-red-500 p-2">
@@ -38,7 +18,7 @@
 		<div>
 			<img
 				class="inline align-middle"
-				src="https://static-cdn.jtvnw.net/badges/v1/df9095f6-a8a0-4cc2-bb33-d908c0adffb8/2"
+				src="https://static-cdn.jtvnw.net/badges/v1/df9095f6-a8a0-4cc2-bb33-d908c0adffb8/3"
 				alt="AutoMod"
 				width="18"
 				height="18"
@@ -60,7 +40,7 @@
 					class="text-twitch-link font-medium disabled:cursor-not-allowed"
 					type="button"
 					disabled={message.deleted}
-					onclick={() => updateHeldMessage(true)}
+					onclick={() => message.allow()}
 				>
 					Allow
 				</button>
@@ -69,7 +49,7 @@
 					class="text-twitch-link font-medium disabled:cursor-not-allowed"
 					type="button"
 					disabled={message.deleted}
-					onclick={() => updateHeldMessage(false)}
+					onclick={() => message.deny()}
 				>
 					Deny
 				</button>

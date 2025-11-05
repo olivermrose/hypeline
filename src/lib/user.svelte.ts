@@ -1,9 +1,8 @@
-import { SvelteMap } from "svelte/reactivity";
+import { SvelteSet } from "svelte/reactivity";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
-import type { UserWithColor } from "./tauri";
-import type { Badge, User as HelixUser } from "./twitch/api";
+import type { User as ApiUser, Badge } from "./twitch/gql";
 
 export interface PartialUser {
 	id: string;
@@ -13,8 +12,6 @@ export interface PartialUser {
 }
 
 export class User implements PartialUser {
-	readonly #data: HelixUser;
-
 	#color: string | null = null;
 	#displayName: string;
 
@@ -56,6 +53,11 @@ export class User implements PartialUser {
 	public readonly bannerUrl: string;
 
 	/**
+	 * The ids of the channels the current user moderates for.
+	 */
+	public readonly moderating = new SvelteSet<string>();
+
+	/**
 	 * The username of the user.
 	 */
 	public username: string;
@@ -70,32 +72,23 @@ export class User implements PartialUser {
 	 */
 	public paint = $state<Paint>();
 
-	/**
-	 * A map of channel ids to usernames that the user is a moderator in. This will
-	 * always include the user's own id, and will only include other ids for
-	 * the current user.
-	 */
-	public readonly moderating = new SvelteMap<string, string>();
+	public constructor(data: ApiUser) {
+		this.#color = data.chatColor;
+		this.#displayName = data.displayName;
 
-	public constructor(data: UserWithColor) {
-		this.#data = data.data;
+		this.id = data.id;
+		this.username = data.login;
+		this.createdAt = new Date(data.createdAt);
 
-		this.#color = data.color;
-		this.#displayName = this.#data.display_name;
+		this.staff = data.roles?.isStaff ?? false;
+		this.affiliated = data.roles?.isAffiliate ?? false;
+		this.partnered = data.roles?.isPartner ?? false;
 
-		this.id = this.#data.id;
-		this.username = this.#data.login;
-		this.createdAt = new Date(this.#data.created_at);
+		this.bio = data.description ?? "";
+		this.avatarUrl = data.profileImageURL ?? "";
+		this.bannerUrl = data.bannerImageURL ?? "";
 
-		this.staff = this.#data.type === "staff";
-		this.affiliated = this.#data.broadcaster_type === "affiliate";
-		this.partnered = this.#data.broadcaster_type === "partner";
-
-		this.bio = this.#data.description;
-		this.avatarUrl = this.#data.profile_image_url;
-		this.bannerUrl = this.#data.offline_image_url;
-
-		this.moderating.set(this.id, this.username);
+		this.moderating.add(data.id);
 	}
 
 	/**

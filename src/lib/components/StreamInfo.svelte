@@ -2,7 +2,7 @@
 	import dayjs from "dayjs";
 	import duration from "dayjs/plugin/duration";
 	import { onMount } from "svelte";
-	import type { Stream } from "$lib/twitch/api";
+	import type { Stream } from "$lib/twitch/gql";
 
 	dayjs.extend(duration);
 
@@ -23,7 +23,7 @@
 	});
 
 	function getUptime() {
-		const diff = dayjs.duration(dayjs().diff(dayjs(stream.started_at)));
+		const diff = dayjs.duration(dayjs().diff(dayjs(stream.createdAt)));
 		const hours = Math.floor(diff.asHours()).toString().padStart(2, "0");
 
 		return `${hours}:${diff.format("mm:ss")}`;
@@ -38,7 +38,7 @@
 	<div class="ml-[3ch] flex items-center gap-1">
 		<div class="flex items-center">
 			<span class="iconify lucide--users mr-1"></span>
-			<span class="font-medium">{stream.viewer_count}</span>
+			<span class="font-medium">{stream.viewersCount}</span>
 		</div>
 
 		&bullet;

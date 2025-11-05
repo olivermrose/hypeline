@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { invoke } from "@tauri-apps/api/core";
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
 	import type { Emote, EmoteHost } from "$lib/seventv";
-	import type { Clip } from "$lib/twitch/api";
+	import { app } from "$lib/state.svelte";
+	import { clipQuery } from "$lib/twitch/gql";
 
 	interface Props {
 		url: URL;
@@ -30,10 +30,10 @@
 			slug = url.pathname.slice(1);
 		}
 
-		const clip = await invoke<Clip | null>("get_clip", { id: slug });
-
+		const { data } = await app.twitch.send(clipQuery, { slug });
 		onLoad?.();
-		return clip;
+
+		return data.clip;
 	}
 
 	function getSrcset(host: EmoteHost) {
@@ -103,7 +103,7 @@
 		{#await fetchClip() then clip}
 			{#if clip}
 				<div class="bg-sidebar flex h-18 gap-2 overflow-hidden rounded-md border">
-					<img src={clip.thumbnail_url} alt={clip.title} decoding="async" />
+					<img src={clip.thumbnailURL} alt={clip.title} decoding="async" />
 
 					<div class="flex flex-col gap-0.5 overflow-hidden py-1 pr-1">
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -117,17 +117,17 @@
 						</span>
 
 						<span class="text-muted-foreground text-xs">
-							{dayjs(clip.created_at).format("MMMM D, YYYY")}
+							{dayjs(clip.createdAt).format("MMMM D, YYYY")}
 						</span>
 
 						<div class="text-muted-foreground flex items-center gap-1 text-xs">
-							by {clip.creator_name}
+							by {clip.curator?.displayName}
 
 							<span class="text-foreground">&bullet;</span>
 
 							<div class="flex items-center">
 								<span class="iconify lucide--eye mr-1"></span>
-								{clip.view_count} views
+								{clip.viewCount} views
 							</div>
 						</div>
 					</div>

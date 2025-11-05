@@ -5,7 +5,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "notice",
 	async handle(data, channel) {
-		if (!data.is_recent && app.user?.moderating.has(data.channel_login)) {
+		if (!data.is_recent && app.user?.moderating.has(channel.id)) {
 			return;
 		}
 

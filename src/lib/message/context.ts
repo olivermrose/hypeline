@@ -38,7 +38,7 @@ export interface ClearContext {
 export interface DeleteContext {
 	type: "delete";
 	text: string;
-	viewer: Viewer;
+	user: User;
 	moderator?: Viewer;
 }
 

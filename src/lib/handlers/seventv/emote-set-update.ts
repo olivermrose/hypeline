@@ -45,7 +45,7 @@ export default defineHandler({
 		const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
 
-		const actor = await app.fetchUser(twitch.id);
+		const actor = await app.twitch.users.fetch(twitch.id);
 		const message = new SystemMessage();
 
 		for (const change of data.pushed ?? []) {

@@ -15,15 +15,14 @@ export default defineHandler({
 	name: "cosmetic.create",
 	handle(cosmetic) {
 		if (cosmetic.kind === "BADGE") {
-			const res2x = cosmetic.data.host.files.find((f) => f.name.startsWith("2x"))!;
+			const res2x = cosmetic.data.host.files.find((f) => f.name.startsWith("4x"))!;
 
 			app.badges.set(cosmetic.id, {
-				id: cosmetic.id,
+				setID: cosmetic.id,
+				version: "1",
 				title: cosmetic.data.name,
 				description: cosmetic.data.tooltip,
-				image_url_1x: "",
-				image_url_2x: `https:${cosmetic.data.host.url}/${res2x.name}`,
-				image_url_4x: "",
+				imageURL: `https:${cosmetic.data.host.url}/${res2x.name}`,
 			});
 
 			log.debug(`Created badge ${cosmetic.id} (${cosmetic.data.name})`);

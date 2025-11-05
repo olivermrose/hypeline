@@ -2,7 +2,7 @@
 	"name": "hypeline",
 	"type": "module",
 	"version": "0.1.0",
-	"packageManager": "pnpm@10.7.0",
+	"packageManager": "pnpm@10.20.0",
 	"description": "",
 	"license": "MIT",
 	"scripts": {
@@ -36,7 +36,10 @@
 		"chroma-js": "^3.1.2",
 		"clsx": "^2.1.1",
 		"dayjs": "^1.11.19",
+		"gql.tada": "^1.8.13",
+		"graphql-web-lite": "16.6.0-4",
 		"mode-watcher": "^1.1.0",
+		"neverthrow": "^8.2.0",
 		"tailwind-merge": "^3.3.1",
 		"tailwindcss": "^4.1.16",
 		"tldts": "^7.0.17",
@@ -44,6 +47,7 @@
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^6.2.0",
+		"@gql.tada/svelte-support": "^1.0.1",
 		"@iconify-json/lucide": "^1.2.71",
 		"@iconify/tailwind4": "^1.0.6",
 		"@sveltejs/adapter-static": "^3.0.10",

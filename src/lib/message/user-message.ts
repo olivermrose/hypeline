@@ -1,9 +1,7 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { Channel } from "$lib/channel.svelte";
 import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
-	Badge,
 	BasicUser,
 	PrivmsgMessage,
 	Reply,
@@ -19,18 +17,15 @@ import type { Node } from ".";
 
 function createMinimalUser(channel: Channel, sender: BasicUser, color: string) {
 	const user = new User({
-		data: {
-			id: sender.id,
-			created_at: "0",
-			login: sender.login,
-			display_name: sender.name,
-			description: "",
-			profile_image_url: "",
-			offline_image_url: "",
-			type: "",
-			broadcaster_type: "",
-		},
-		color: color ?? null,
+		id: sender.id,
+		createdAt: "0",
+		login: sender.login,
+		displayName: sender.name,
+		description: "",
+		chatColor: color,
+		profileImageURL: "",
+		bannerImageURL: "",
+		roles: null,
 	});
 
 	const viewer = new Viewer(channel, user);
@@ -70,9 +65,9 @@ export class UserMessage extends Message {
 	public readonly highlighted: boolean;
 
 	/**
-	 * The badges sent with the message.
+	 * The badges sent with the message. This is in the form of `setID:version`.
 	 */
-	public readonly badges: Badge[];
+	public readonly badges: string[];
 
 	/**
 	 * The amount of bits sent with the message if it was a cheer.
@@ -118,12 +113,15 @@ export class UserMessage extends Message {
 		this.action = "is_action" in data && data.is_action;
 		this.highlighted = "is_highlighted" in data && data.is_highlighted;
 
-		this.badges = data.badges;
+		this.badges = data.badges.map((b) => `${b.name}:${b.version}`);
 		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
 		this.event = "event" in data ? data.event : null;
 		this.reply = "reply" in data ? data.reply : null;
 	}
 
+	/**
+	 * Creates a user message from a message received over EventSub.
+	 */
 	public static from(channel: Channel, message: StructuredMessage, sender: BasicUser) {
 		const isAction = /^\x01ACTION.*$/.test(message.text);
 		const text = isAction ? message.text.slice(8, -1) : message.text;
@@ -178,6 +176,9 @@ export class UserMessage extends Message {
 		);
 	}
 
+	// This is a getter to lazily parse on first access since not all information
+	// is present during instantiation e.g. in the case of automod metadata being
+	// attached later.
 	public get nodes() {
 		if (!this.#nodes.length) {
 			this.#nodes = parse(this).sort((a, b) => a.start - b.start);
@@ -186,12 +187,52 @@ export class UserMessage extends Message {
 		return this.#nodes;
 	}
 
+	/**
+	 * Deletes the message from chat.
+	 */
 	public async delete() {
-		if (!app.user) return;
+		if (!app.user?.moderating.has(this.channel.id)) {
+			return;
+		}
 
-		await invoke("delete_message", {
-			broadcasterId: this.channel.id,
-			messageId: this.id,
+		await this.channel.client.delete("/moderation/chat", {
+			broadcaster_id: this.channel.id,
+			moderator_id: app.user.id,
+			message_id: this.id,
 		});
+	}
+
+	/**
+	 * Allows the message to post to chat if it was caught by AutoMod to be held
+	 * for review.
+	 */
+	public async allow() {
+		await this.#updateHeldMessage(true);
+	}
+
+	/**
+	 * Denies the message from posting to chat if it was caught by AutoMod to be
+	 * held for review.
+	 */
+	public async deny() {
+		await this.#updateHeldMessage(false);
+	}
+
+	async #updateHeldMessage(allow: boolean) {
+		if (!app.user?.moderating.has(this.channel.id)) {
+			return;
+		}
+
+		try {
+			await this.channel.client.post("/moderation/automod/message", {
+				body: {
+					user_id: app.user.id,
+					msg_id: this.id,
+					action: allow ? "ALLOW" : "DENY",
+				},
+			});
+		} finally {
+			this.deleted = true;
+		}
 	}
 }

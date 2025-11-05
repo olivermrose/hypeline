@@ -25,6 +25,10 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: GQL checks
+        run: |
+          pnpm gql-tada generate output
+          pnpm gql-tada check
       - name: Type check
         run: pnpm check
       - name: Lint

@@ -1,21 +1,32 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
-import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
+import { commands } from "./commands";
 import { log } from "./log";
+import { ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
 import { settings } from "./settings";
 import { app } from "./state.svelte";
-import { ViewerManager } from "./viewer-manager";
 import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
-import type { Emote } from "./tauri";
-import type { Badge, BadgeSet, Cheermote, Stream } from "./twitch/api";
+import type { Emote, JoinedChannel } from "./tauri";
+import type { BadgeSet, Cheermote, SentMessage, StreamMarker } from "./twitch/api";
+import type { TwitchApiClient } from "./twitch/client";
+import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
+
+export interface ChatSettings {
+	unique?: boolean;
+	subOnly?: boolean;
+	emoteOnly?: boolean;
+	followerOnly?: boolean;
+	followerOnlyDuration?: number;
+	slow?: number;
+}
 
 export class Channel {
 	#bypassNext = false;
@@ -28,7 +39,7 @@ export class Channel {
 
 	public readonly id: string;
 
-	public readonly badges = new SvelteMap<string, Record<string, Badge>>();
+	public readonly badges = new SvelteMap<string, Badge>();
 	public readonly commands = new SvelteMap<string, Command>();
 	public readonly emotes = new SvelteMap<string, Emote>();
 	public readonly cheermotes = $state<Cheermote[]>([]);
@@ -36,7 +47,7 @@ export class Channel {
 	/**
 	 * The viewers in the channel.
 	 */
-	public readonly viewers = new ViewerManager(this);
+	public readonly viewers: ViewerManager;
 
 	/**
 	 * The stream associated with the channel if it's currently live.
@@ -65,6 +76,8 @@ export class Channel {
 	public error = $state<string>("");
 
 	public constructor(
+		public readonly client: TwitchApiClient,
+
 		/**
 		 * The user for the channel.
 		 */
@@ -78,6 +91,46 @@ export class Channel {
 
 		this.id = user.id;
 		this.stream = stream;
+
+		this.viewers = new ViewerManager(client, this);
+	}
+
+	public async join() {
+		const joined = await invoke<JoinedChannel>("join", {
+			id: this.id,
+			login: this.user.username,
+			isMod: app.user?.moderating.has(this.id),
+		});
+
+		if (settings.state.chat.history.enabled) {
+			await invoke("fetch_recent_messages", {
+				channel: this.user.username,
+				historyLimit: settings.state.chat.history.limit,
+			});
+		}
+
+		const [stream] = await Promise.all([
+			this.client.fetchStream(this.id),
+			this.fetchBadges(),
+			this.fetchCheermotes(),
+		]);
+
+		this.addCommands(commands);
+		this.addEmotes(app.globalEmotes);
+		this.addEmotes(joined.emotes);
+
+		this.stream = stream;
+		this.emoteSet = joined.emote_set ?? undefined;
+
+		if (!this.viewers.has(this.id)) {
+			const viewer = new Viewer(this, this.user);
+			viewer.broadcaster = true;
+
+			this.viewers.set(this.id, viewer);
+		}
+
+		app.joined = this;
+		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
 	}
 
 	public async leave() {
@@ -86,15 +139,9 @@ export class Channel {
 		settings.state.lastJoined = null;
 	}
 
-	public addBadges(badges: BadgeSet[]) {
-		for (const set of badges) {
-			const badges: Record<string, Badge> = {};
-
-			for (const version of set.versions) {
-				badges[version.id] = version;
-			}
-
-			this.badges.set(set.set_id, badges);
+	public addBadges(badges: Badge[]) {
+		for (const badge of badges) {
+			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 
 		return this;
@@ -166,16 +213,144 @@ export class Channel {
 		}
 	}
 
+	public async fetchBadges() {
+		const { data } = await this.client.get<BadgeSet[]>("/chat/badges", {
+			broadcaster_id: this.id,
+		});
+
+		for (const badge of data) {
+			for (const version of badge.versions) {
+				this.badges.set(`${badge.set_id}:${version.id}`, {
+					title: version.title,
+					description: version.description,
+					imageURL: version.image_url_4x,
+					setID: badge.set_id,
+					version: version.id,
+				});
+			}
+		}
+	}
+
+	public async fetchCheermotes() {
+		const { data } = await this.client.get<Cheermote[]>("/bits/cheermotes", {
+			broadcaster_id: this.id,
+		});
+
+		this.cheermotes.push(...data);
+		return this.cheermotes;
+	}
+
+	public async createMarker(description?: string) {
+		const { data } = await this.client.post<StreamMarker>("/streams/markers", {
+			body: {
+				user_id: this.id,
+				description,
+			},
+		});
+
+		return data;
+	}
+
+	public async announce(message: string) {
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.post("/chat/announcements", {
+			params: {
+				broadcaster_id: this.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				message,
+			},
+		});
+	}
+
 	public async raid(to: string) {
-		await invoke("raid", { fromId: this.user.id, toId: to });
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.post("/raids", {
+			params: {
+				from_broadcaster_id: this.id,
+				to_broadcaster_id: to,
+			},
+		});
 	}
 
 	public async unraid() {
-		await invoke("cancel_raid", { broadcasterId: this.user.id });
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.delete("/raids", { broadcaster_id: this.id });
 	}
 
-	public shoutout(to: string) {
-		return invoke("shoutout", { fromId: this.user.id, toId: to });
+	public async shoutout(to: string) {
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.post("/chat/shoutouts", {
+			params: {
+				from_broadcaster_id: this.id,
+				to_broadcaster_id: to,
+				moderator_id: app.user.id,
+			},
+		});
+	}
+
+	public async clearChat() {
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.delete("/moderation/chat", {
+			broadcaster_id: this.id,
+			moderator_id: app.user.id,
+		});
+	}
+
+	public async setShieldMode(active = true) {
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		await this.client.put("/moderation/shield_mode", {
+			params: {
+				broadcaster_id: this.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				is_active: active,
+			},
+		});
+	}
+
+	public async updateChatSettings(settings: ChatSettings) {
+		if (!app.user?.moderating.has(this.id)) {
+			return;
+		}
+
+		const setSlow = typeof settings.slow === "number" && settings.slow > 0;
+
+		await this.client.patch("/chat/settings", {
+			params: {
+				broadcaster_id: this.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				emote_mode: settings.emoteOnly ?? false,
+				follower_mode: settings.followerOnly ?? false,
+				follower_mode_duration: settings.followerOnlyDuration ?? 0,
+				subscriber_mode: settings.subOnly ?? false,
+				slow_mode: setSlow,
+				slow_mode_wait_time: setSlow ? settings.slow : 3,
+				unique_mode: settings.unique ?? false,
+			},
+		});
 	}
 
 	public async send(message: string, replyId?: string) {
@@ -216,38 +391,27 @@ export class Channel {
 			this.#bypassNext = false;
 		}
 
-		log.info(`Sending message in ${this.user.username} (${this.user.id})`);
+		log.info(`Sending message in ${this.user.username} (${this.id})`);
 
-		const response = await fetch("https://api.twitch.tv/helix/chat/messages", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Client-ID": PUBLIC_TWITCH_CLIENT_ID,
-				Authorization: `Bearer ${settings.state.user?.token}`,
-			},
-			body: JSON.stringify({
-				broadcaster_id: this.user.id,
+		const {
+			data: [data],
+		} = await this.client.post<[SentMessage]>("/chat/messages", {
+			body: {
+				broadcaster_id: this.id,
 				sender_id: viewer.id,
 				reply_parent_message_id: replyId,
 				message,
-			}),
+			},
 		});
 
-		const body = await response.json();
+		if (data.is_sent) {
+			log.info("Message sent");
+			await invoke("send_presence", { channelId: this.id });
+		} else if (data.drop_reason) {
+			const reason = data.drop_reason.message;
 
-		if (body.status === 429) {
-			log.warn(`Rate limit exceeded: ${body.message}`);
-			this.addMessage(new SystemMessage(body.message));
-		} else if (response.ok) {
-			if (body.data[0].is_sent) {
-				log.info("Message sent");
-				await invoke("send_presence", { channelId: this.user.id });
-			} else {
-				const reason = body.data[0].drop_reason.message;
-
-				log.warn(`Message dropped: ${reason}`);
-				this.addMessage(new SystemMessage(reason));
-			}
+			log.warn(`Message dropped: ${reason}`);
+			this.addMessage(new SystemMessage(reason));
 		}
 	}
 

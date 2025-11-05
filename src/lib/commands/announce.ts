@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand } from "./util";
 
 export default defineCommand({
@@ -14,9 +13,6 @@ export default defineCommand({
 			return;
 		}
 
-		await invoke("announce", {
-			broadcasterId: channel.user.id,
-			message,
-		});
+		await channel.announce(message);
 	},
 });

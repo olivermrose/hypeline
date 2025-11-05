@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, untrack } from "svelte";
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 	import type { Channel } from "$lib/channel.svelte";
 	import { Completer } from "$lib/completer.svelte";
@@ -38,7 +38,13 @@
 
 	onMount(() => {
 		input.value = chatInput;
-		completer = new Completer(input.value!);
+	});
+
+	$effect(() => {
+		completer = new Completer(
+			channel,
+			untrack(() => input.value!),
+		);
 	});
 
 	$effect(() => {

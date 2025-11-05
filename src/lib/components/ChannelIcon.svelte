@@ -3,7 +3,7 @@
 	import { goto } from "$app/navigation";
 	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
-	import type { Stream } from "$lib/twitch/api";
+	import type { Stream } from "$lib/twitch/gql";
 	import type { User } from "$lib/user.svelte";
 	import Tooltip from "./ui/Tooltip.svelte";
 
@@ -75,7 +75,7 @@
 	{#if stream}
 		<div class="space-y-0.5">
 			<div class="text-twitch-link overflow-hidden overflow-ellipsis whitespace-nowrap">
-				{user.displayName} &bullet; {stream.game_name}
+				{user.displayName} &bullet; {stream.game?.displayName}
 			</div>
 
 			<p class="line-clamp-2">{stream.title}</p>
@@ -84,7 +84,7 @@
 				<span class="lucide--users iconify mr-1 size-3"></span>
 
 				<p class="text-xs">
-					{stream.viewer_count} viewers
+					{stream.viewersCount} viewers
 				</p>
 			</div>
 		</div>

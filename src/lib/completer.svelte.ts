@@ -1,5 +1,6 @@
 import { commands } from "./commands";
 import { app } from "./state.svelte";
+import type { Channel } from "./channel.svelte";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";
 import type { Emote } from "./tauri";
@@ -12,9 +13,6 @@ interface SearchOptions<T> {
 }
 
 export class Completer {
-	#emotes = () => app.joined?.emotes.values();
-	#viewers = () => app.joined?.viewers.values();
-
 	#commandOptions: SearchOptions<Command>;
 	#emoteOptions: SearchOptions<Emote>;
 	#viewerOptions: SearchOptions<Viewer>;
@@ -25,7 +23,10 @@ export class Completer {
 	public current = $state(0);
 	public suggestions = $state<Suggestion[]>([]);
 
-	public constructor(public readonly input: HTMLInputElement) {
+	public constructor(
+		private readonly channel: Channel,
+		public readonly input: HTMLInputElement,
+	) {
 		this.#commandOptions = {
 			source: () => commands,
 			comparee: (item) => item.name,
@@ -41,7 +42,7 @@ export class Completer {
 		};
 
 		this.#emoteOptions = {
-			source: () => this.#emotes()?.toArray() ?? [],
+			source: () => channel.emotes.values().toArray(),
 			comparee: (item) => item.name,
 			map: (item) => ({
 				type: "emote" as const,
@@ -52,7 +53,7 @@ export class Completer {
 		};
 
 		this.#viewerOptions = {
-			source: () => this.#viewers()?.toArray() ?? [],
+			source: () => channel.viewers.values().toArray(),
 			comparee: (item) => item.username,
 			map: (item) => ({
 				type: "user" as const,
@@ -129,15 +130,15 @@ export class Completer {
 		if (this.query.startsWith("/")) {
 			this.prefixed = true;
 			this.suggestions = this.#search(this.#commandOptions).filter((suggestion) => {
-				if (!app.joined || suggestion.type !== "command") {
+				if (!app.user || suggestion.type !== "command") {
 					return false;
 				}
 
-				if (suggestion.broadcasterOnly && app.joined.id !== app.user?.id) {
+				if (suggestion.broadcasterOnly && this.channel.id !== app.user.id) {
 					return false;
 				}
 
-				if (suggestion.modOnly && !app.user?.moderating.has(app.joined.id)) {
+				if (suggestion.modOnly && !app.user.moderating.has(this.channel.id)) {
 					return false;
 				}
 

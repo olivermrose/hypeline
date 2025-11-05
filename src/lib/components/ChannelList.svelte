@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { invoke } from "@tauri-apps/api/core";
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
 	import { log } from "$lib/log";
 	import { app } from "$lib/state.svelte";
-	import type { Stream } from "$lib/twitch/api";
 	import ChannelIcon from "./ChannelIcon.svelte";
 
 	const groups = $derived.by(() => {
 		const sorted = app.channels.toSorted((a, b) => {
 			if (a.stream && b.stream) {
-				return b.stream.viewer_count - a.stream.viewer_count;
+				return (b.stream.viewersCount ?? 0) - (a.stream.viewersCount ?? 0);
 			}
 
 			if (a.stream && !b.stream) return -1;
@@ -19,7 +17,11 @@
 			return a.user.username.localeCompare(b.user.username);
 		});
 
-		return Object.groupBy(sorted, (channel) => (channel.ephemeral ? "a" : "b"));
+		const self = sorted.filter((c) => c.id === app.user?.id);
+		const ephemeral = sorted.filter((c) => c.ephemeral);
+		const following = sorted.filter((c) => c.id !== app.user?.id && !c.ephemeral);
+
+		return [self, ephemeral, following].filter((g) => g.length);
 	});
 
 	onMount(() => {
@@ -27,12 +29,11 @@
 			async () => {
 				log.info("Updating streams");
 
-				const streams = await invoke<Stream[]>("get_streams", {
-					ids: app.channels.map((c) => c.user.id),
-				});
+				const ids = app.channels.map((c) => c.user.id);
+				const streams = await app.twitch.fetchStreams(ids);
 
 				for (const channel of app.channels) {
-					const stream = streams.find((s) => s.user_id === channel.user.id);
+					const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
 					channel.stream = stream ?? null;
 				}
 			},
@@ -43,14 +44,7 @@
 	});
 </script>
 
-<!-- TODO: include stream with user -->
-{#if app.user}
-	<ChannelIcon user={app.user} stream={null} />
-{/if}
-
-{#each Object.entries(groups)
-	.sort((a, b) => a[0].localeCompare(b[0]))
-	.map((e) => e[1]) as channels}
+{#each groups as channels}
 	<div class="bg-border h-px" role="separator"></div>
 
 	{#each channels as channel (channel.user.id)}

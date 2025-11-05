@@ -118,7 +118,7 @@
 {/snippet}
 
 {#snippet deleteMsg(ctx: DeleteContext)}
-	{@const target = colorizeName(ctx.viewer)}
+	{@const target = colorizeName(ctx.user)}
 
 	{#if ctx.moderator}
 		{@html colorizeName(ctx.moderator)} deleted {@html target}'s message: {ctx.text}

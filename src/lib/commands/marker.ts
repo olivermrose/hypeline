@@ -1,7 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
 import dayjs from "dayjs";
 import { SystemMessage } from "$lib/message";
-import type { StreamMarker } from "$lib/twitch/api";
 import { defineCommand } from "./util";
 
 export default defineCommand({
@@ -22,10 +20,7 @@ export default defineCommand({
 			return;
 		}
 
-		const marker = await invoke<StreamMarker>("create_marker", {
-			broadcasterId: channel.user.id,
-			description,
-		});
+		const marker = await channel.createMarker(description);
 
 		const duration = dayjs.duration(marker.position_seconds, "s");
 		const format = duration.asHours() > 0 ? "H[h] mm[m] ss[s]" : "mm[m] ss[s]";

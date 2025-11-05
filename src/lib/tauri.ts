@@ -1,5 +1,4 @@
 import type { EmoteSet } from "./seventv";
-import type { BadgeSet, Cheermote, User as HelixUser, Stream } from "./twitch/api";
 
 export interface Emote {
 	name: string;
@@ -19,20 +18,7 @@ export interface UserEmote {
 	owner_profile_picture_url: string;
 }
 
-export interface UserWithColor {
-	data: HelixUser;
-	color: string | null;
-}
-
-export interface FullChannel {
-	user: UserWithColor;
-	stream: Stream | null;
-}
-
-export interface JoinedChannel extends FullChannel {
-	id: string;
+export interface JoinedChannel {
 	emotes: Record<string, Emote>;
 	emote_set: EmoteSet | null;
-	cheermotes: Cheermote[];
-	badges: BadgeSet[];
 }
