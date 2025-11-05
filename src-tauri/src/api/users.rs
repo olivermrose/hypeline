@@ -4,7 +4,6 @@ use futures::TryStreamExt;
 use serde::Serialize;
 use tauri::State;
 use tauri::async_runtime::Mutex;
-use twitch_api::helix::users::User as HelixUser;
 use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
 use crate::AppState;
@@ -20,36 +19,6 @@ pub struct UserEmote {
     format: String,
     owner: String,
     owner_profile_picture_url: String,
-}
-
-#[derive(Serialize)]
-pub struct User {
-    pub data: HelixUser,
-    pub color: Option<String>,
-}
-
-#[tracing::instrument(skip(state))]
-pub async fn get_user_from_login(
-    state: State<'_, Mutex<AppState>>,
-    login: String,
-) -> Result<Option<User>, Error> {
-    let state = state.lock().await;
-
-    let Some(ref token) = state.token else {
-        return Ok(None);
-    };
-
-    let helix_user = state.helix.get_user_from_login(&login, token).await?;
-
-    let Some(user) = helix_user else {
-        tracing::debug!("User not found");
-        return Ok(None);
-    };
-
-    let color_user = state.helix.get_user_chat_color(&user.id, token).await?;
-    let color = color_user.and_then(|u| u.color.map(|c| c.into()));
-
-    Ok(Some(User { data: user, color }))
 }
 
 #[tauri::command]

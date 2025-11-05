@@ -1,21 +1,17 @@
 <script lang="ts">
 	import { Combobox, Dialog } from "bits-ui";
 	import { goto } from "$app/navigation";
+	import { Channel } from "$lib/channel.svelte";
 	import { app } from "$lib/state.svelte";
+	import { suggestionsQuery } from "$lib/twitch/gql";
+	import type { SearchSuggestionChannel } from "$lib/twitch/gql";
 	import { debounce } from "$lib/util";
 	import Input from "./ui/Input.svelte";
-
-	interface Suggestion {
-		id: string;
-		displayName: string;
-		isLive: boolean;
-		profileImageURL: string;
-	}
 
 	let { open = $bindable(false) } = $props();
 
 	let value = $state("");
-	let suggestions = $state<Suggestion[]>([]);
+	let suggestions = $state<SearchSuggestionChannel[]>([]);
 
 	const suggest = debounce(search, 300);
 
@@ -28,46 +24,14 @@
 
 		if (!query) return;
 
-		const response = await fetch("https://gql.twitch.tv/gql", {
-			method: "POST",
-			headers: {
-				"Client-Id": "kimne78kx3ncx6brgo4mv6wki5h1ko",
-			},
-			body: JSON.stringify({
-				query: `query {
-					searchSuggestions(queryFragment: "${query}", withOfflineChannelContent: true) {
-						edges {
-							node {
-								text
-								content {
-									__typename
-									... on SearchSuggestionChannel {
-										id
-										isLive
-										profileImageURL(width: 50)
-										user {
-											displayName
-										}
-									}
-								}
-							}
-						}
-					}
-				}`,
-			}),
-		});
+		const { data } = await app.twitch.send(suggestionsQuery, { query });
 
-		if (!response.ok) return;
+		for (const edge of data.searchSuggestions?.edges ?? []) {
+			if (edge.node.content?.__typename !== "SearchSuggestionChannel") {
+				continue;
+			}
 
-		const { data } = await response.json();
-
-		for (const { node } of data.searchSuggestions.edges) {
-			if (node.content?.__typename !== "SearchSuggestionChannel") continue;
-
-			suggestions.push({
-				displayName: node.content.user.displayName,
-				...node.content,
-			});
+			suggestions.push(edge.node.content);
 		}
 	}
 
@@ -77,10 +41,18 @@
 		const form = event.currentTarget as HTMLFormElement;
 		const input = form.elements.namedItem("name") as HTMLInputElement;
 
-		const existing = app.channels.find((c) => c.user.username === input.value.toLowerCase());
-		const param = existing?.user.username ?? `ephemeral:${input.value}`;
+		let channel = app.channels.find((c) => c.user.username === input.value.toLowerCase());
 
-		await goto(`/channels/${param}`);
+		if (!channel) {
+			const user = await app.twitch.users.fetch(input.value, "login");
+
+			channel = new Channel(app.twitch, user);
+			channel.ephemeral = true;
+
+			app.channels.push(channel);
+		}
+
+		await goto(`/channels/${channel.user.username}`);
 		open = false;
 	}
 </script>
@@ -135,21 +107,23 @@
 						<Combobox.Content
 							class="bg-card mt-2 max-h-72 w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border p-1"
 						>
-							{#each suggestions as suggestion (suggestion.id)}
+							{#each suggestions as channel (channel.id)}
+								{@const displayName = channel.user!.displayName}
+
 								<Combobox.Item
 									class="data-highlighted:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-1 py-1"
-									value={suggestion.displayName}
+									value={displayName}
 								>
 									<img
 										class="size-6 rounded-full"
-										src={suggestion.profileImageURL}
-										alt={suggestion.displayName}
+										src={channel.profileImageURL}
+										alt={displayName}
 									/>
 
 									<div class="flex w-full items-center justify-between">
-										<span class="text-sm">{suggestion.displayName}</span>
+										<span class="text-sm">{displayName}</span>
 
-										{#if suggestion.isLive}
+										{#if channel.isLive}
 											<div class="flex items-center text-red-500">
 												<div
 													class="mr-1 size-2 animate-pulse rounded-full bg-current"

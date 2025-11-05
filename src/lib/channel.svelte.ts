@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
+import { commands } from "./commands";
 import { log } from "./log";
 import { ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
@@ -10,7 +11,7 @@ import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
-import type { Emote } from "./tauri";
+import type { Emote, JoinedChannel } from "./tauri";
 import type { BadgeSet, Cheermote, StreamMarker } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
 import type { Badge, Stream } from "./twitch/gql";
@@ -90,6 +91,45 @@ export class Channel {
 
 		this.viewers = new ViewerManager(client, this);
 		this.moderators.add(user.id);
+	}
+
+	public async join() {
+		const joined = await invoke<JoinedChannel>("join", {
+			id: this.id,
+			login: this.user.username,
+			// TODO: stopgap
+			isMod: true,
+		});
+
+		if (settings.state.chat.history.enabled) {
+			await invoke("fetch_recent_messages", {
+				channel: this.user.username,
+				historyLimit: settings.state.chat.history.limit,
+			});
+		}
+
+		const [stream] = await Promise.all([
+			this.client.fetchStream(this.id),
+			this.fetchBadges(),
+			this.fetchCheermotes(),
+		]);
+
+		this.addCommands(commands);
+		this.addEmotes(app.globalEmotes);
+		this.addEmotes(joined.emotes);
+
+		this.stream = stream;
+		this.emoteSet = joined.emote_set ?? undefined;
+
+		if (!this.viewers.has(this.id)) {
+			const viewer = new Viewer(this, this.user);
+			viewer.broadcaster = true;
+
+			this.viewers.set(this.id, viewer);
+		}
+
+		app.joined = this;
+		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
 	}
 
 	public async leave() {

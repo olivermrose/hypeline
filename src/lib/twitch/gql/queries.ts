@@ -34,6 +34,40 @@ export const globalBadgesQuery = gql(
 
 export type Badge = NonNullable<NonNullable<ResultOf<typeof globalBadgesQuery>["badges"]>[number]>;
 
+export const suggestionsQuery = gql(`
+	query GetSearchSuggestions($query: String!) {
+		searchSuggestions(queryFragment: $query, withOfflineChannelContent: true) {
+			edges {
+				node {
+					text
+					content {
+						__typename
+						... on SearchSuggestionChannel {
+							id
+							isLive
+							profileImageURL(width: 50)
+							user {
+								displayName
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+`);
+
+export type SearchSuggestion = NonNullable<
+	NonNullable<
+		NonNullable<ResultOf<typeof suggestionsQuery>["searchSuggestions"]>["edges"]
+	>[number]["node"]
+>;
+
+export type SearchSuggestionChannel = Extract<
+	NonNullable<SearchSuggestion["content"]>,
+	{ __typename: "SearchSuggestionChannel" }
+>;
+
 export const userQuery = gql(
 	`query GetUser($id: ID, $login: String) {
 		user(id: $id, login: $login) {

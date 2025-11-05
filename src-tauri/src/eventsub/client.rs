@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use anyhow::anyhow;
 use futures::future::join_all;
@@ -8,17 +8,17 @@ use futures::{SinkExt, StreamExt};
 use serde::de::{DeserializeOwned, Error as DeError};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::json;
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{Mutex, mpsc};
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 use tracing::Instrument;
+use twitch_api::HelixClient;
 use twitch_api::eventsub::{EventSubSubscription, EventType};
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
-use twitch_api::HelixClient;
 
+use crate::HTTP;
 use crate::api::Response;
 use crate::error::Error;
-use crate::HTTP;
 
 #[cfg(local)]
 const TWITCH_EVENTSUB_WS_URI: &str = "ws://127.0.0.1:8080/ws";
@@ -344,6 +344,7 @@ impl EventSubClient {
         Ok(())
     }
 
+    #[tracing::instrument(name = "eventsub_subscribe_all", skip(self, subscriptions))]
     pub async fn subscribe_all(
         &self,
         channel: &str,
@@ -354,6 +355,8 @@ impl EventSubClient {
             .map(|&(event, condition)| self.subscribe(channel, event, condition.clone()));
 
         join_all(futures).await;
+
+        tracing::info!("{} subscriptions created", subscriptions.len());
 
         Ok(())
     }

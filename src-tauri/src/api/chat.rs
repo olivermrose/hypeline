@@ -6,7 +6,6 @@ use tokio::sync::Mutex;
 use twitch_api::eventsub::EventType;
 
 use super::get_access_token;
-use super::users::get_user_from_login;
 use crate::AppState;
 use crate::emotes::{Emote, EmoteMap, fetch_user_emotes};
 use crate::error::Error;
@@ -22,6 +21,7 @@ pub struct JoinedChannel {
 #[tauri::command]
 pub async fn join(
     state: State<'_, Mutex<AppState>>,
+    id: String,
     login: String,
     is_mod: bool,
 ) -> Result<JoinedChannel, Error> {
@@ -44,17 +44,8 @@ pub async fn join(
         )
     };
 
-    let user = match get_user_from_login(state.clone(), login).await? {
-        Some(user) => user,
-        None => return Err(Error::Generic(anyhow!("User not found"))),
-    };
-
-    let broadcaster_id = user.data.id.as_str();
-
-    let (mut emotes, emote_set) = tokio::try_join!(
-        fetch_user_emotes(broadcaster_id),
-        fetch_active_emote_set(broadcaster_id)
-    )?;
+    let (mut emotes, emote_set) =
+        tokio::try_join!(fetch_user_emotes(&id), fetch_active_emote_set(&id))?;
 
     let stv_emotes = match emote_set {
         Some(ref emote_set) => emote_set
@@ -70,22 +61,20 @@ pub async fn join(
         emotes.insert(emote.name.clone(), emote);
     }
 
-    let login = user.data.login.clone();
-
     if let Some(eventsub) = eventsub {
         let login = login.clone();
 
         let ch_cond = json!({
-            "broadcaster_user_id": broadcaster_id
+            "broadcaster_user_id": id
         });
 
         let ch_with_user_cond = json!({
-            "broadcaster_user_id": broadcaster_id,
+            "broadcaster_user_id": id,
             "user_id": token.user_id
         });
 
         let ch_with_mod_cond = json!({
-            "broadcaster_user_id": broadcaster_id,
+            "broadcaster_user_id": id,
             "moderator_user_id": token.user_id
         });
 
@@ -123,7 +112,7 @@ pub async fn join(
         let channel_cond = json!({
             "ctx": "channel",
             "platform": "TWITCH",
-            "id": broadcaster_id
+            "id": id
         });
 
         seventv.subscribe("cosmetic.create", &channel_cond).await;
@@ -138,7 +127,7 @@ pub async fn join(
 
     irc.join(login.to_string());
 
-    send_presence(state, broadcaster_id.into()).await?;
+    send_presence(state, id).await?;
 
     Ok(JoinedChannel { emotes, emote_set })
 }

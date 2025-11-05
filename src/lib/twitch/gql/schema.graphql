@@ -9337,7 +9337,7 @@ The view configuration of an extension if the component anchor is supported.
 type ComponentView implements ExtensionView {
   """
   Specifies the width of a component extension in relation to it's targetHeight and aspectRatioY.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth.
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -9346,7 +9346,7 @@ type ComponentView implements ExtensionView {
 
   """
   Specifies the height of a component extension in relation to it's targetHeight and aspectRatioX.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth,
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -9373,7 +9373,7 @@ type ComponentView implements ExtensionView {
   """
   The percentage of the available space (0-100) (between the top and bottom player controls)
   that the extension aims to consume.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth,
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -15278,7 +15278,7 @@ interface Directory {
   """
   URL to an avatar image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -15290,7 +15290,7 @@ interface Directory {
   """
   URL to a cover image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -18848,7 +18848,7 @@ type Game implements Directory {
   """
   URL to an avatar image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -18857,7 +18857,7 @@ type Game implements Directory {
   """
   URL to a box art image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -18878,7 +18878,7 @@ type Game implements Directory {
   """
   URL to a cover image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -18938,7 +18938,7 @@ type Game implements Directory {
   """
   URL to a game logo image.
   The image dimensions are specifiable via the `height` and `width` parameters.
-  
+
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
   """
@@ -22623,7 +22623,7 @@ type Mutation {
   The client must retrieve the input fields from the browser's push notification API. Client's will
   call this when the user opts-in. A browser push subscription is tied to a user's browser (device).
   Twitch will use these push subscriptions to send browser push notifications.
-  
+
   Spec: https://www.w3.org/TR/push-api/#push-subscription.
   """
   addBrowserPushSubscription(input: AddBrowserPushSubscriptionInput!): AddBrowserPushSubscriptionPayload
@@ -24367,7 +24367,7 @@ type Mutation {
   Changes the user's visibility setting. This is an account-level setting that will cause the user's availability to
   appear differently to other users, despite what sessions are reporting. See the VisibilityInput enum for details on
   the effects of each value.
-  
+
   Because this is an account-level setting, it should only be used in response to the user expressing clear intention
   to change their visibility. Setting a status for an individual session should be done using setSessionStatus.
   """
@@ -25557,9 +25557,9 @@ type PartnershipApplication {
 
   """
   A submitted application currently can only be unresolved or resolved:
-  
+
   - A null resolvedAt timestamp means that the application is unresolved and may be under review.
-  
+
   - A non-null resolvedAt means that the application has been resolved, either approved or rejected.
     A user with an approved application may now start the partnership on-boarding flow.
   """
@@ -28835,7 +28835,7 @@ type Query {
   searchStreams(userQuery: String!, first: Int = 25, after: Cursor): SearchStreamConnection
 
   """Get search suggestions for a user's query."""
-  searchSuggestions(queryFragment: String!, requestID: ID): SearchSuggestionConnection
+  searchSuggestions(queryFragment: String!, withOfflineChannelContent: Boolean = false, requestID: ID): SearchSuggestionConnection
 
   """
   Get users by query in search. for search page product use searchFor instead.
@@ -28876,7 +28876,7 @@ type Query {
 
   """
   Get a subscription product by its name. See product name examples below. The productName uniquely identifies a product.
-  
+
   e.g. "meclipse", "meclipse_2000", "meclipse_3000", these are respectively, the tier 1, 2, and 3 subscription product
   names for the user with login "shroud".
   """
@@ -32164,7 +32164,7 @@ input SaveComponentViewInput {
 
   """
   Specifies the width of a component extension in relation to it's targetHeight and aspectRatioY.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth.
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -32173,7 +32173,7 @@ input SaveComponentViewInput {
 
   """
   Specifies the height of a component extension in relation to it's targetHeight and aspectRatioX.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth,
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -32212,7 +32212,7 @@ input SaveComponentViewInput {
   """
   The percentage of the available space (0-100) (between the top and bottom player controls)
   that the extension aims to consume.
-  
+
   NOTE:  targetHeight and aspectRatio will replace aspectHeight and aspectWidth,
          however, since both will be used for a short time during the rollout of the new UI,
          aspectWidth and aspectHeight will not be deprecated until later.
@@ -33022,7 +33022,7 @@ type SearchSuggestionCategory {
   """
   The boxart URL for the category, provided by the endpoint.
   Use this field for lower latency.
-  
+
   The image dimensions are specifiable via the `height` and `width` parameters.
   If `height` or `width` are not specified, the URL will contain
   the template strings `{height}` and/or `{width}` in their respective places.
@@ -33042,6 +33042,12 @@ type SearchSuggestionChannel {
   id: ID!
 
   """
+  Whether or not the channel is live, provided by the endpoint.
+  Use this field for lower latency.
+  """
+  isLive: Boolean!
+
+  """
   Whether or not the channel is verified, provided by the endpoint.
   Use this field for lower latency.
   """
@@ -33056,7 +33062,7 @@ type SearchSuggestionChannel {
   """
   The profile image URL for the channel, provided by the endpoint.
   Use this field for lower latency.
-  
+
   Valid widths are 28, 50, 70, 150, 300, and 600.
   The image height will be the same as the given width.
   """
@@ -34866,7 +34872,7 @@ input SetSessionStatusInput {
   """
   availability is the state of the user's session in your application. You should set it to ONLINE if the user is
   known to be at their device, IDLE if they are not, and OFFLINE if your application is currently terminating.
-  
+
   Note that if your application fails to send an OFFLINE heartbeat before terminating, the session will automatically
   expire after some time without a heartbeat.
   """
@@ -34875,7 +34881,7 @@ input SetSessionStatusInput {
   """
   sessionID must be supplied and can be any string unique to this session. Generating a random UUID when your
   application starts and sending it for each setSessionStatus is a good idea.
-  
+
   Each instance of your application should send the same ID for each of its setSessionStatus calls, but two instances
   of your application running at the same time should never have the same session ID.
   """
@@ -37394,7 +37400,7 @@ type SubscriptionProductSelfConnection {
   user will purchase. It is more expensive to retrieve purchaseSKU than templateSKU, so only
   use purchaseSKU when the user has indicated they want to checkout. Use templateSKU on channel
   page load to retrieve product information.
-  
+
   Will return an error if the user has no purchasable skus. Will return nil if not on a platform
   with an external subscription product or if the country is not supported.
   Uses Client-ID to determine platform information and IP address to determine location.
@@ -37481,7 +37487,7 @@ type SubscriptionPurchase {
   """
   A compatible purchase exists if this user bought a subscription product of a different tier for the
   channel in question.
-  
+
   i.e. this user doesn't have this subscription purchase for the $4.99 sub but they do have a
        compatible purchase for the $9.99 subscription.
   """
@@ -40095,7 +40101,7 @@ input UpdateChatSettingsInput {
   """
   autoModLevel is an integer from 0-4 representing the level of automoderation of chat
   0 is off, 4 is the highest level of moderation.
-  
+
   Deprecated: No longer used.
   """
   autoModLevel: Int
@@ -40118,7 +40124,7 @@ input UpdateChatSettingsInput {
   """
   isBroadcasterLanguageModeEnabled indicates if the broadcaster requires chat messages to
   match their language.
-  
+
   Deprecated: No longer used.
   """
   isBroadcasterLanguageModeEnabled: Boolean
@@ -40132,7 +40138,7 @@ input UpdateChatSettingsInput {
   """
   If isOptedOutOfGlobalBannedWordsList is true, the legacy twitch banned words list will
   be inserted into automod if the channel has automod enabled.
-  
+
   Deprecated: No longer used.
   """
   isOptedOutOfGlobalBannedWordsList: Boolean
@@ -47395,4 +47401,3 @@ type ZuoraConfigs {
   """Zuora API uses token as part of authentication."""
   token: String!
 }
-
