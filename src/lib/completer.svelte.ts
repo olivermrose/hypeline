@@ -138,7 +138,7 @@ export class Completer {
 					return false;
 				}
 
-				if (suggestion.modOnly && !this.channel.moderators.has(app.user.id)) {
+				if (suggestion.modOnly && !app.user.moderating.has(this.channel.id)) {
 					return false;
 				}
 

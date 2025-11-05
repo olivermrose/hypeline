@@ -7,7 +7,7 @@ export default defineHandler({
 	async handle(data, channel) {
 		// Return early if the message isn't recent and the user is a moderator
 		// in the channel to prevent showing two different messages.
-		if (!data.is_recent && app.user && channel.moderators.has(app.user.id)) {
+		if (!data.is_recent && app.user?.moderating.has(channel.id)) {
 			return;
 		}
 

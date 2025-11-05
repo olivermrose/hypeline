@@ -1,3 +1,4 @@
+import { SvelteSet } from "svelte/reactivity";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
@@ -52,6 +53,11 @@ export class User implements PartialUser {
 	public readonly bannerUrl: string;
 
 	/**
+	 * The ids of the channels the current user moderates for.
+	 */
+	public readonly moderating = new SvelteSet<string>();
+
+	/**
 	 * The username of the user.
 	 */
 	public username: string;
@@ -81,6 +87,8 @@ export class User implements PartialUser {
 		this.bio = data.description ?? "";
 		this.avatarUrl = data.profileImageURL ?? "";
 		this.bannerUrl = data.bannerImageURL ?? "";
+
+		this.moderating.add(data.id);
 	}
 
 	/**

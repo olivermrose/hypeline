@@ -22,14 +22,14 @@ export default defineCommand({
 			{ id: channel.id },
 		);
 
+		const mods: string[] = [];
+
 		for (const edge of data.user?.mods?.edges ?? []) {
-			channel.moderators.set(edge.node.id, edge.node.displayName);
+			mods.push(edge.node.displayName);
 		}
 
-		const list = channel.moderators.values().toArray().sort().join(", ");
+		const list = mods.sort().join(", ");
 
-		channel.addMessage(
-			new SystemMessage(`Channel moderators (${channel.moderators.size}): ${list}`),
-		);
+		channel.addMessage(new SystemMessage(`Channel moderators (${mods.length}): ${list}`));
 	},
 });

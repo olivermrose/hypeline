@@ -170,7 +170,7 @@ export class UserMessage extends Message {
 		const diff = Math.abs(now - this.timestamp.getTime());
 
 		return (
-			this.channel.moderators.has(app.user.id) &&
+			app.user.moderating.has(this.channel.id) &&
 			diff <= 6 * 60 * 60 * 1000 &&
 			(app.user.id === this.author.id || !this.viewer?.moderator)
 		);
@@ -191,7 +191,7 @@ export class UserMessage extends Message {
 	 * Deletes the message from chat.
 	 */
 	public async delete() {
-		if (!app.user || !this.channel.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.channel.id)) {
 			return;
 		}
 
@@ -219,7 +219,7 @@ export class UserMessage extends Message {
 	}
 
 	async #updateHeldMessage(allow: boolean) {
-		if (!app.user || !this.channel.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.channel.id)) {
 			return;
 		}
 

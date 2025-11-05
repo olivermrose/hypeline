@@ -10,7 +10,7 @@ import type { User } from "./user.svelte";
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export type Prefix<T, P extends string> = {
-	[K in keyof T as `${P}${K & string}`]: T[K];
+	[K in keyof T as `${P}_${K & string}`]: T[K];
 };
 
 // Only for syntax highlighting

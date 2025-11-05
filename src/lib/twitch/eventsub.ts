@@ -1,11 +1,11 @@
 import type { Nullable, Prefix } from "$lib/util";
 import type { BasicUser } from "./irc";
 
-export type WithBasicUser = Prefix<BasicUser, "user_">;
+export type WithBasicUser = Prefix<BasicUser, "user">;
 
-export type WithBroadcaster = Prefix<WithBasicUser, "broadcaster_">;
+export type WithBroadcaster = Prefix<WithBasicUser, "broadcaster">;
 
-export type WithModerator = Prefix<WithBasicUser, "moderator_">;
+export type WithModerator = Prefix<WithBasicUser, "moderator">;
 
 export interface Boundary {
 	start_pos: number;
@@ -18,7 +18,7 @@ export interface AutoModMetadata {
 	boundaries: Boundary[];
 }
 
-export interface BlockedTerm extends Prefix<WithBroadcaster, "owner_"> {
+export interface BlockedTerm extends Prefix<WithBroadcaster, "owner"> {
 	term_id: string;
 	boundary: Boundary;
 }

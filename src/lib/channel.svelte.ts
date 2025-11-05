@@ -50,16 +50,6 @@ export class Channel {
 	public readonly viewers: ViewerManager;
 
 	/**
-	 * The moderators in the channel.
-	 */
-	public readonly moderators = new SvelteMap<string, string>();
-
-	/**
-	 * The VIPs in the channel.
-	 */
-	public readonly vips = new SvelteMap<string, string>();
-
-	/**
 	 * The stream associated with the channel if it's currently live.
 	 */
 	public stream = $state<Stream | null>(null);
@@ -103,15 +93,13 @@ export class Channel {
 		this.stream = stream;
 
 		this.viewers = new ViewerManager(client, this);
-		this.moderators.set(user.id, user.displayName);
 	}
 
 	public async join() {
 		const joined = await invoke<JoinedChannel>("join", {
 			id: this.id,
 			login: this.user.username,
-			// TODO: stopgap
-			isMod: true,
+			isMod: app.user?.moderating.has(this.id),
 		});
 
 		if (settings.state.chat.history.enabled) {
@@ -264,7 +252,7 @@ export class Channel {
 	}
 
 	public async announce(message: string) {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -280,7 +268,7 @@ export class Channel {
 	}
 
 	public async raid(to: string) {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -293,7 +281,7 @@ export class Channel {
 	}
 
 	public async unraid() {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -301,7 +289,7 @@ export class Channel {
 	}
 
 	public async shoutout(to: string) {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -315,7 +303,7 @@ export class Channel {
 	}
 
 	public async clearChat() {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -326,7 +314,7 @@ export class Channel {
 	}
 
 	public async setShieldMode(active = true) {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 
@@ -342,7 +330,7 @@ export class Channel {
 	}
 
 	public async updateChatSettings(settings: ChatSettings) {
-		if (!app.user || !this.moderators.has(app.user.id)) {
+		if (!app.user?.moderating.has(this.id)) {
 			return;
 		}
 

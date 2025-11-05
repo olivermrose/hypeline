@@ -12,7 +12,6 @@ export default defineCommand({
 					vips(first: 100) {
 						edges {
 							node {
-								id
 								displayName
 							}
 						}
@@ -22,14 +21,16 @@ export default defineCommand({
 			{ id: channel.id },
 		);
 
+		const vips: string[] = [];
+
 		for (const edge of data.user?.vips?.edges ?? []) {
 			if (edge.node) {
-				channel.vips.set(edge.node.id, edge.node.displayName);
+				vips.push(edge.node.displayName);
 			}
 		}
 
-		const list = channel.vips.values().toArray().sort().join(", ");
+		const list = vips.sort().join(", ");
 
-		channel.addMessage(new SystemMessage(`Channel VIPs (${channel.vips.size}): ${list}`));
+		channel.addMessage(new SystemMessage(`Channel VIPs (${vips.length}): ${list}`));
 	},
 });

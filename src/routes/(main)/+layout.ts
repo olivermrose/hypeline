@@ -2,7 +2,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
 import { app } from "$lib/state.svelte";
+import type { BasicUser } from "$lib/twitch/irc";
 import { User } from "$lib/user.svelte";
+import type { Prefix } from "$lib/util";
 
 export async function load({ parent }) {
 	await parent();
@@ -11,6 +13,15 @@ export async function load({ parent }) {
 
 	app.twitch.token = settings.state.user.token;
 	app.user = await app.twitch.users.fetch(settings.state.user.id);
+
+	const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
+		"/moderation/channels",
+		{ user_id: app.user.id, first: 100 },
+	);
+
+	for (const channel of data) {
+		app.user.moderating.add(channel.broadcaster_id);
+	}
 
 	// TODO: remove when redoing 7TV
 	await invoke("set_seventv_id", { id: app.user.id });
