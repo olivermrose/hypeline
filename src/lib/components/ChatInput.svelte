@@ -38,7 +38,7 @@
 
 	onMount(() => {
 		input.value = chatInput;
-		completer = new Completer(input.value!);
+		completer = new Completer(channel, input.value!);
 	});
 
 	$effect(() => {

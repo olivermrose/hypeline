@@ -72,7 +72,7 @@ export default defineHandler({
 				message.context = {
 					type: "delete",
 					text: data.delete.message_body,
-					viewer,
+					user: viewer.user,
 					moderator,
 				};
 
