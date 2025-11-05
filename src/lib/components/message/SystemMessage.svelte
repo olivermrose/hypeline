@@ -27,6 +27,8 @@
 
 	const { message, context: ctx }: Props = $props();
 
+	$inspect(message, ctx);
+
 	// Make these nonreactive
 	// svelte-ignore non_reactive_update
 	let monitored = false;
@@ -118,7 +120,7 @@
 {/snippet}
 
 {#snippet deleteMsg(ctx: DeleteContext)}
-	{@const target = colorizeName(ctx.viewer)}
+	{@const target = colorizeName(ctx.user)}
 
 	{#if ctx.moderator}
 		{@html colorizeName(ctx.moderator)} deleted {@html target}'s message: {ctx.text}

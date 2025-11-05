@@ -213,7 +213,7 @@ export class Channel {
 	}
 
 	public async fetchBadges() {
-		const { data } = await this.client.get<{ data: BadgeSet[] }>("/chat/badges", {
+		const { data } = await this.client.get<BadgeSet[]>("/chat/badges", {
 			broadcaster_id: this.user.id,
 		});
 
@@ -222,9 +222,7 @@ export class Channel {
 				this.badges.set(`${badge.set_id}:${version.id}`, {
 					title: version.title,
 					description: version.description,
-					imageURL1x: version.image_url_1x,
-					imageURL2x: version.image_url_2x,
-					imageURL4x: version.image_url_4x,
+					imageURL: version.image_url_4x,
 					setID: badge.set_id,
 					version: version.id,
 				});
@@ -233,7 +231,7 @@ export class Channel {
 	}
 
 	public async fetchCheermotes() {
-		const { data } = await this.client.get<{ data: Cheermote[] }>("/bits/cheermotes", {
+		const { data } = await this.client.get<Cheermote[]>("/bits/cheermotes", {
 			broadcaster_id: this.user.id,
 		});
 
@@ -242,7 +240,7 @@ export class Channel {
 	}
 
 	public async createMarker(description?: string) {
-		const { data } = await this.client.post<{ data: StreamMarker }>("/streams/markers", {
+		const { data } = await this.client.post<StreamMarker>("/streams/markers", {
 			body: {
 				user_id: this.user.id,
 				description,

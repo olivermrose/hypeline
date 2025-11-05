@@ -113,7 +113,7 @@ export class TwitchApiClient {
 	 * Retrieves the streams of the specified channels if they're live.
 	 */
 	public async fetchStreams(ids: string[]) {
-		const response = await this.get<{ data: HelixStream[] }>("/streams", { user_id: ids });
+		const response = await this.get<HelixStream[]>("/streams", { user_id: ids });
 		const streams: Stream[] = [];
 
 		for (const stream of response.data) {
@@ -166,14 +166,14 @@ export class TwitchApiClient {
 	}
 
 	public delete(path: `/${string}`, params?: QueryParams) {
-		return this.fetch<void>("DELETE", path, { params });
+		return this.fetch<never>("DELETE", path, { params });
 	}
 
 	public async fetch<T>(
 		method: string,
 		path: string,
 		options: { params?: QueryParams; body?: Record<string, any> } = {},
-	): Promise<T> {
+	): Promise<{ data: T }> {
 		const url = new URL(`https://api.twitch.tv/helix${path}`);
 
 		if (options.params) {
@@ -203,7 +203,7 @@ export class TwitchApiClient {
 		});
 
 		if (response.status === 204 || response.headers.get("Content-Length") === "0") {
-			return undefined as T;
+			return { data: null! };
 		}
 
 		return response.json();

@@ -21,7 +21,7 @@ export default defineHandler({
 			sysmsg.context = {
 				type: "delete",
 				text: data.message_text,
-				viewer: message.viewer!,
+				user: message.author,
 			};
 
 			channel.addMessage(sysmsg);

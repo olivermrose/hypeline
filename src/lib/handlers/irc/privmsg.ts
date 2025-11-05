@@ -10,7 +10,7 @@ export default defineHandler({
 		message.author.username = data.sender.login;
 		message.author.displayName = data.sender.name;
 
-		// message.author.badge = app.u2b.get(message.author.id);
+		message.author.badge = app.u2b.get(message.author.id);
 		message.author.paint = app.u2p.get(message.author.id);
 
 		if (message.viewer) {

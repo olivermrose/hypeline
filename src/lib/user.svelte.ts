@@ -1,8 +1,7 @@
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
-import type { Badge } from "./twitch/api";
-import type { User as ApiUser } from "./twitch/gql";
+import type { User as ApiUser, Badge } from "./twitch/gql";
 
 export interface PartialUser {
 	id: string;

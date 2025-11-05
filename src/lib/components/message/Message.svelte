@@ -32,9 +32,9 @@
 		}
 	}
 
-	// if (message.author.badge) {
-	// 	badges.push(message.author.badge);
-	// }
+	if (message.author.badge) {
+		badges.push(message.author.badge);
+	}
 
 	function getMentionStyle(node: MentionNode) {
 		if (node.marked) return null;
@@ -66,7 +66,7 @@
 		{#snippet trigger()}
 			<img
 				class="inline-block align-middle"
-				src={badge.imageURL2x}
+				src={badge.imageURL}
 				alt={badge.description}
 				width="18"
 				height="18"

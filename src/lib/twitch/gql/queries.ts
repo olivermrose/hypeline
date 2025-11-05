@@ -23,9 +23,7 @@ export const globalBadgesQuery = gql(
 		badges {
 			title
 			description
-			imageURL1x: imageURL(size: NORMAL)
-			imageURL2x: imageURL(size: DOUBLE)
-			imageURL4x: imageURL(size: QUADRUPLE)
+			imageURL(size: QUADRUPLE)
 			setID
 			version
 		}
