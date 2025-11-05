@@ -1,15 +1,60 @@
+use std::collections::{HashMap, HashSet};
+
 use anyhow::anyhow;
-use serde::Serialize;
+use futures::TryStreamExt;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
 use twitch_api::eventsub::EventType;
+use twitch_api::twitch_oauth2::{AccessToken, UserToken};
+use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
-use super::get_access_token;
 use crate::AppState;
 use crate::emotes::{Emote, EmoteMap, fetch_user_emotes};
 use crate::error::Error;
 use crate::providers::seventv::{EmoteSet, fetch_active_emote_set, send_presence};
+
+#[derive(Debug, Deserialize)]
+pub struct Response<T> {
+    pub data: T,
+}
+
+pub fn get_access_token(state: &AppState) -> Result<&UserToken, Error> {
+    state.token.as_ref().ok_or_else(|| {
+        tracing::error!("Attempted to retrieve access token but no token is set");
+        Error::Generic(anyhow!("Access token not set"))
+    })
+}
+
+#[derive(Clone, Serialize)]
+pub struct TokenInfo {
+    user_id: String,
+    access_token: String,
+}
+
+pub async fn set_access_token(
+    state: State<'_, Mutex<AppState>>,
+    token: String,
+) -> Option<TokenInfo> {
+    let mut state = state.lock().await;
+
+    state.token = UserToken::from_token(&state.helix, AccessToken::from(token))
+        .await
+        .ok();
+
+    if let Some(ref token) = state.token {
+        let raw_token = token.access_token.as_str();
+        tracing::debug!("Set access token to {}", raw_token);
+
+        Some(TokenInfo {
+            user_id: token.user_id.to_string(),
+            access_token: raw_token.to_string(),
+        })
+    } else {
+        None
+    }
+}
 
 #[derive(Serialize)]
 pub struct JoinedChannel {
@@ -151,4 +196,86 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     }
 
     Ok(())
+}
+
+#[derive(Serialize)]
+pub struct UserEmote {
+    set_id: String,
+    id: String,
+    name: String,
+    #[serde(rename = "type")]
+    kind: String,
+    format: String,
+    owner: String,
+    owner_profile_picture_url: String,
+}
+
+#[tauri::command]
+pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<UserEmote>, Error> {
+    let state = state.lock().await;
+
+    let Some(token) = state.token.as_ref() else {
+        return Ok(vec![]);
+    };
+
+    let emotes: Vec<_> = state
+        .helix
+        .get_user_emotes(&token.user_id, token)
+        .try_collect()
+        .await?;
+
+    let owner_ids: HashSet<_> = emotes
+        .iter()
+        .filter_map(|emote| {
+            let id_str = emote.owner_id.as_str();
+
+            if id_str.is_empty() || id_str == "twitch" {
+                None
+            } else {
+                Some(id_str.to_string())
+            }
+        })
+        .collect();
+
+    let owner_users = if owner_ids.is_empty() {
+        vec![]
+    } else {
+        let id_coll: Collection<UserId> = owner_ids.into_iter().collect();
+
+        state
+            .helix
+            .get_users_from_ids(&id_coll, token)
+            .try_collect()
+            .await?
+    };
+
+    let owner_map: HashMap<_, _> = owner_users
+        .into_iter()
+        .map(|user| (user.id.clone(), user))
+        .collect();
+
+    let user_emotes = emotes
+        .into_iter()
+        .filter_map(|emote| {
+            owner_map.get(&emote.owner_id).map(|owner| {
+                let format = if emote.format.contains(&EmoteAnimationSetting::Animated) {
+                    "animated"
+                } else {
+                    "static"
+                };
+
+                UserEmote {
+                    set_id: emote.emote_set_id.into(),
+                    id: emote.id.into(),
+                    name: emote.name.clone(),
+                    kind: emote.emote_type.clone(),
+                    format: format.into(),
+                    owner: owner.display_name.to_string(),
+                    owner_profile_picture_url: owner.profile_image_url.clone().unwrap_or_default(),
+                }
+            })
+        })
+        .collect();
+
+    Ok(user_emotes)
 }

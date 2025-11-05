@@ -157,9 +157,9 @@ async fn detach_settings(app_handle: AppHandle) {
 fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
         detach_settings,
-        api::chat::join,
-        api::chat::leave,
-        api::users::get_user_emotes,
+        api::join,
+        api::leave,
+        api::get_user_emotes,
         emotes::fetch_global_emotes,
         eventsub::connect_eventsub,
         irc::connect_irc,
