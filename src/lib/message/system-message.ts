@@ -21,13 +21,13 @@ export class SystemMessage extends Message {
 	public context: MessageContext | null = null;
 
 	public constructor(data?: string | Partial<SystemMessageData>) {
-		data = typeof data === "string" ? undefined : (data ?? {});
+		const args = typeof data === "string" ? undefined : (data ?? {});
 
 		super(
 			{
-				deleted: data?.deleted ?? false,
-				is_recent: data?.is_recent ?? false,
-				server_timestamp: data?.server_timestamp ?? Date.now(),
+				deleted: args?.deleted ?? false,
+				is_recent: args?.is_recent ?? false,
+				server_timestamp: args?.server_timestamp ?? Date.now(),
 			},
 			true,
 		);
