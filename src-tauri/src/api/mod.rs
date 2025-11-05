@@ -8,7 +8,6 @@ use crate::AppState;
 use crate::error::Error;
 
 pub mod chat;
-pub mod moderation;
 pub mod users;
 
 #[derive(Debug, Deserialize)]

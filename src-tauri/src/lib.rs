@@ -159,7 +159,6 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         detach_settings,
         api::chat::join,
         api::chat::leave,
-        api::moderation::update_chat_settings,
         api::users::get_user_emotes,
         emotes::fetch_global_emotes,
         eventsub::connect_eventsub,

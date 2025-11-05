@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
-import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { commands } from "./commands";
 import { log } from "./log";
 import { ViewerManager } from "./managers";
@@ -12,13 +11,22 @@ import type { Command } from "./commands/util";
 import type { Message } from "./message";
 import type { EmoteSet } from "./seventv";
 import type { Emote, JoinedChannel } from "./tauri";
-import type { BadgeSet, Cheermote, StreamMarker } from "./twitch/api";
+import type { BadgeSet, Cheermote, SentMessage, StreamMarker } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
 import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
+
+export interface ChatSettings {
+	unique?: boolean;
+	subOnly?: boolean;
+	emoteOnly?: boolean;
+	followerOnly?: boolean;
+	followerOnlyDuration?: number;
+	slow?: number;
+}
 
 export class Channel {
 	#bypassNext = false;
@@ -214,7 +222,7 @@ export class Channel {
 
 	public async fetchBadges() {
 		const { data } = await this.client.get<BadgeSet[]>("/chat/badges", {
-			broadcaster_id: this.user.id,
+			broadcaster_id: this.id,
 		});
 
 		for (const badge of data) {
@@ -232,7 +240,7 @@ export class Channel {
 
 	public async fetchCheermotes() {
 		const { data } = await this.client.get<Cheermote[]>("/bits/cheermotes", {
-			broadcaster_id: this.user.id,
+			broadcaster_id: this.id,
 		});
 
 		this.cheermotes.push(...data);
@@ -242,7 +250,7 @@ export class Channel {
 	public async createMarker(description?: string) {
 		const { data } = await this.client.post<StreamMarker>("/streams/markers", {
 			body: {
-				user_id: this.user.id,
+				user_id: this.id,
 				description,
 			},
 		});
@@ -257,7 +265,7 @@ export class Channel {
 
 		await this.client.post("/chat/announcements", {
 			params: {
-				broadcaster_id: this.user.id,
+				broadcaster_id: this.id,
 				moderator_id: app.user.id,
 			},
 			body: {
@@ -273,7 +281,7 @@ export class Channel {
 
 		await this.client.post("/raids", {
 			params: {
-				from_broadcaster_id: this.user.id,
+				from_broadcaster_id: this.id,
 				to_broadcaster_id: to,
 			},
 		});
@@ -284,7 +292,7 @@ export class Channel {
 			return;
 		}
 
-		await this.client.delete("/raids", { broadcaster_id: this.user.id });
+		await this.client.delete("/raids", { broadcaster_id: this.id });
 	}
 
 	public async shoutout(to: string) {
@@ -294,7 +302,7 @@ export class Channel {
 
 		await this.client.post("/chat/shoutouts", {
 			params: {
-				from_broadcaster_id: this.user.id,
+				from_broadcaster_id: this.id,
 				to_broadcaster_id: to,
 				moderator_id: app.user.id,
 			},
@@ -307,7 +315,7 @@ export class Channel {
 		}
 
 		await this.client.delete("/moderation/chat", {
-			broadcaster_id: this.user.id,
+			broadcaster_id: this.id,
 			moderator_id: app.user.id,
 		});
 	}
@@ -319,11 +327,35 @@ export class Channel {
 
 		await this.client.put("/moderation/shield_mode", {
 			params: {
-				broadcaster_id: this.user.id,
+				broadcaster_id: this.id,
 				moderator_id: app.user.id,
 			},
 			body: {
 				is_active: active,
+			},
+		});
+	}
+
+	public async updateChatSettings(settings: ChatSettings) {
+		if (!app.user || !this.moderators.has(app.user.id)) {
+			return;
+		}
+
+		const setSlow = typeof settings.slow === "number" && settings.slow > 0;
+
+		await this.client.patch("/chat/settings", {
+			params: {
+				broadcaster_id: this.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				emote_mode: settings.emoteOnly ?? false,
+				follower_mode: settings.followerOnly ?? false,
+				follower_mode_duration: settings.followerOnlyDuration ?? 0,
+				subscriber_mode: settings.subOnly ?? false,
+				slow_mode: setSlow,
+				slow_mode_wait_time: setSlow ? settings.slow : 3,
+				unique_mode: settings.unique ?? false,
 			},
 		});
 	}
@@ -366,38 +398,27 @@ export class Channel {
 			this.#bypassNext = false;
 		}
 
-		log.info(`Sending message in ${this.user.username} (${this.user.id})`);
+		log.info(`Sending message in ${this.user.username} (${this.id})`);
 
-		const response = await fetch("https://api.twitch.tv/helix/chat/messages", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Client-ID": PUBLIC_TWITCH_CLIENT_ID,
-				Authorization: `Bearer ${settings.state.user?.token}`,
-			},
-			body: JSON.stringify({
-				broadcaster_id: this.user.id,
+		const {
+			data: [data],
+		} = await this.client.post<[SentMessage]>("/chat/messages", {
+			body: {
+				broadcaster_id: this.id,
 				sender_id: viewer.id,
 				reply_parent_message_id: replyId,
 				message,
-			}),
+			},
 		});
 
-		const body = await response.json();
+		if (data.is_sent) {
+			log.info("Message sent");
+			await invoke("send_presence", { channelId: this.id });
+		} else if (data.drop_reason) {
+			const reason = data.drop_reason.message;
 
-		if (body.status === 429) {
-			log.warn(`Rate limit exceeded: ${body.message}`);
-			this.addMessage(new SystemMessage(body.message));
-		} else if (response.ok) {
-			if (body.data[0].is_sent) {
-				log.info("Message sent");
-				await invoke("send_presence", { channelId: this.user.id });
-			} else {
-				const reason = body.data[0].drop_reason.message;
-
-				log.warn(`Message dropped: ${reason}`);
-				this.addMessage(new SystemMessage(reason));
-			}
+			log.warn(`Message dropped: ${reason}`);
+			this.addMessage(new SystemMessage(reason));
 		}
 	}
 

@@ -165,6 +165,10 @@ export class TwitchApiClient {
 		return this.fetch<T>("PUT", path, options);
 	}
 
+	public patch<T>(path: `/${string}`, options?: FetchOptions) {
+		return this.fetch<T>("PATCH", path, options);
+	}
+
 	public delete(path: `/${string}`, params?: QueryParams) {
 		return this.fetch<never>("DELETE", path, { params });
 	}

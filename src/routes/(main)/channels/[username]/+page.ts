@@ -9,10 +9,5 @@ export async function load({ params }) {
 
 	await channel.join();
 
-	// if (params.username.startsWith("ephemeral:")) {
-	// 	channel.ephemeral = true;
-	// 	app.channels.push(channel);
-	// }
-	//
 	return { channel };
 }

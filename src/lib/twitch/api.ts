@@ -42,6 +42,17 @@ export interface Cheermote {
 	is_charitable: boolean;
 }
 
+export interface DropReason {
+	code: string;
+	message: string;
+}
+
+export interface SentMessage {
+	message_id: string;
+	is_sent: boolean;
+	drop_reason?: DropReason;
+}
+
 export interface Stream {
 	id: string;
 	user_id: string;

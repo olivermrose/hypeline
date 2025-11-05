@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { defineCommand, parseBool } from "./util";
 
 export default defineCommand({
@@ -14,11 +13,6 @@ export default defineCommand({
 			return;
 		}
 
-		await invoke("update_chat_settings", {
-			broadcasterId: channel.user.id,
-			settings: {
-				subscriber_only: enabled,
-			},
-		});
+		await channel.updateChatSettings({ subOnly: enabled });
 	},
 });
