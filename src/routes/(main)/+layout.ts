@@ -37,6 +37,9 @@ export async function load({ parent }) {
 		}
 	}
 
+	const self = new Channel(app.twitch, app.user);
+	app.channels.push(self);
+
 	if (!app.globalEmotes.size) {
 		await app.twitch.fetchEmotes();
 	}
