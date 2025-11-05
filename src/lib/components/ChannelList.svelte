@@ -17,7 +17,11 @@
 			return a.user.username.localeCompare(b.user.username);
 		});
 
-		return Object.groupBy(sorted, (channel) => (channel.ephemeral ? "a" : "b"));
+		const self = sorted.filter((c) => c.id === app.user?.id);
+		const ephemeral = sorted.filter((c) => c.ephemeral);
+		const following = sorted.filter((c) => c.id !== app.user?.id && !c.ephemeral);
+
+		return [self, ephemeral, following].filter((g) => g.length);
 	});
 
 	onMount(() => {
@@ -40,14 +44,7 @@
 	});
 </script>
 
-<!-- TODO: include stream with user -->
-{#if app.user}
-	<ChannelIcon user={app.user} stream={null} />
-{/if}
-
-{#each Object.entries(groups)
-	.sort((a, b) => a[0].localeCompare(b[0]))
-	.map((e) => e[1]) as channels}
+{#each groups as channels}
 	<div class="bg-border h-px" role="separator"></div>
 
 	{#each channels as channel (channel.user.id)}

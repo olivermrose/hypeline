@@ -10,15 +10,23 @@ class AppState {
 	public readonly twitch = new TwitchApiClient();
 
 	/**
-	 * The currently joined channel.
+	 * Whether the app has made all necessary connections.
 	 */
-	public joined = $state<Channel | null>(null);
 	public connected = $state(false);
 
 	/**
 	 * The currently authenticated user.
 	 */
 	public user?: User;
+
+	/**
+	 * The currently joined channel.
+	 */
+	public joined = $state<Channel | null>(null);
+
+	/**
+	 * The list of channels the app is able to join.
+	 */
 	public channels = $state<Channel[]>([]);
 
 	/**
