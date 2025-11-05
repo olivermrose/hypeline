@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { SvelteMap, SvelteSet } from "svelte/reactivity";
+import { SvelteMap } from "svelte/reactivity";
 import { commands } from "./commands";
 import { log } from "./log";
 import { ViewerManager } from "./managers";
@@ -50,9 +50,14 @@ export class Channel {
 	public readonly viewers: ViewerManager;
 
 	/**
-	 * The ids of the moderators in the channel.
+	 * The moderators in the channel.
 	 */
-	public readonly moderators = new SvelteSet<string>();
+	public readonly moderators = new SvelteMap<string, string>();
+
+	/**
+	 * The VIPs in the channel.
+	 */
+	public readonly vips = new SvelteMap<string, string>();
 
 	/**
 	 * The stream associated with the channel if it's currently live.
@@ -98,7 +103,7 @@ export class Channel {
 		this.stream = stream;
 
 		this.viewers = new ViewerManager(client, this);
-		this.moderators.add(user.id);
+		this.moderators.set(user.id, user.displayName);
 	}
 
 	public async join() {
