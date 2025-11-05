@@ -2,35 +2,10 @@ use serde::Deserialize;
 use tauri::State;
 use tokio::sync::Mutex;
 use twitch_api::helix::chat::{UpdateChatSettingsBody, UpdateChatSettingsRequest};
-use twitch_api::helix::moderation::manage_held_automod_messages;
 
 use super::get_access_token;
 use crate::AppState;
 use crate::error::Error;
-
-#[tracing::instrument(skip(state))]
-#[tauri::command]
-pub async fn update_held_message(
-    state: State<'_, Mutex<AppState>>,
-    message_id: String,
-    allow: bool,
-) -> Result<(), Error> {
-    let state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    let request = manage_held_automod_messages::ManageHeldAutoModMessagesRequest::new();
-    let body = manage_held_automod_messages::ManageHeldAutoModMessagesBody::new(
-        &token.user_id,
-        message_id,
-        allow,
-    );
-
-    state.helix.req_post(request, body, token).await?;
-
-    tracing::debug!("Updated held message");
-
-    Ok(())
-}
 
 #[derive(Debug, Deserialize)]
 pub struct ChatSettings {

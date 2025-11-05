@@ -119,6 +119,9 @@ export class UserMessage extends Message {
 		this.reply = "reply" in data ? data.reply : null;
 	}
 
+	/**
+	 * Creates a user message from a message received over EventSub.
+	 */
 	public static from(channel: Channel, message: StructuredMessage, sender: BasicUser) {
 		const isAction = /^\x01ACTION.*$/.test(message.text);
 		const text = isAction ? message.text.slice(8, -1) : message.text;
@@ -173,6 +176,9 @@ export class UserMessage extends Message {
 		);
 	}
 
+	// This is a getter to lazily parse on first access since not all information
+	// is present during instantiation e.g. in the case of automod metadata being
+	// attached later.
 	public get nodes() {
 		if (!this.#nodes.length) {
 			this.#nodes = parse(this).sort((a, b) => a.start - b.start);
@@ -181,15 +187,52 @@ export class UserMessage extends Message {
 		return this.#nodes;
 	}
 
+	/**
+	 * Deletes the message from chat.
+	 */
 	public async delete() {
 		if (!app.user || !this.channel.moderators.has(app.user.id)) {
 			return;
 		}
 
-		await this.channel.client.delete(`/moderation/chat`, {
+		await this.channel.client.delete("/moderation/chat", {
 			broadcaster_id: this.channel.id,
 			moderator_id: app.user.id,
 			message_id: this.id,
 		});
+	}
+
+	/**
+	 * Allows the message to post to chat if it was caught by AutoMod to be held
+	 * for review.
+	 */
+	public async allow() {
+		await this.#updateHeldMessage(true);
+	}
+
+	/**
+	 * Denies the message from posting to chat if it was caught by AutoMod to be
+	 * held for review.
+	 */
+	public async deny() {
+		await this.#updateHeldMessage(false);
+	}
+
+	async #updateHeldMessage(allow: boolean) {
+		if (!app.user || !this.channel.moderators.has(app.user.id)) {
+			return;
+		}
+
+		try {
+			await this.channel.client.post("/moderation/automod/message", {
+				body: {
+					user_id: app.user.id,
+					msg_id: this.id,
+					action: allow ? "ALLOW" : "DENY",
+				},
+			});
+		} finally {
+			this.deleted = true;
+		}
 	}
 }

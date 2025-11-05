@@ -27,8 +27,6 @@
 
 	const { message, context: ctx }: Props = $props();
 
-	$inspect(message, ctx);
-
 	// Make these nonreactive
 	// svelte-ignore non_reactive_update
 	let monitored = false;
