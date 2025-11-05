@@ -11,7 +11,6 @@ use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, State, async_runtime};
 use tokio::sync::Mutex;
 
-use crate::api::get_access_token;
 use crate::error::Error;
 use crate::{AppState, HTTP};
 
@@ -54,11 +53,8 @@ pub async fn connect_seventv(
 }
 
 #[tauri::command]
-pub async fn set_seventv_id(state: State<'_, Mutex<AppState>>) -> Result<(), Error> {
+pub async fn set_seventv_id(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
     let mut state = state.lock().await;
-    let token = get_access_token(&state)?;
-
-    let id = token.user_id.to_string();
 
     let stv_user = HTTP
         .get(format!("https://7tv.io/v3/users/twitch/{id}"))

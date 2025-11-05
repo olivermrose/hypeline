@@ -12,8 +12,8 @@ export async function load({ parent }) {
 	app.twitch.token = settings.state.user.token;
 	app.user = await app.twitch.users.fetch(settings.state.user.id);
 
-	// TODO: stopgap
-	await invoke("set_seventv_id");
+	// TODO: remove when redoing 7TV
+	await invoke("set_seventv_id", { id: app.user.id });
 
 	if (!app.channels.length) {
 		const following = await app.twitch.fetchFollowing();
