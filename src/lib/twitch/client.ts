@@ -176,7 +176,7 @@ export class TwitchApiClient {
 	public async fetch<T>(
 		method: string,
 		path: string,
-		options: { params?: QueryParams; body?: Record<string, any> } = {},
+		options: FetchOptions = {},
 	): Promise<{ data: T }> {
 		const url = new URL(`https://api.twitch.tv/helix${path}`);
 
