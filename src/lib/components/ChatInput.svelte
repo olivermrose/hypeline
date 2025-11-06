@@ -128,7 +128,7 @@
 					if (err instanceof CommandError) {
 						error = err.message;
 					} else {
-						error = "An unexpected error occured.";
+						error = "An unexpected error occurred.";
 					}
 				}
 			}

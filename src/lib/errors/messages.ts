@@ -15,7 +15,7 @@ export const ErrorMessage = {
 		`${user}'s channel settings do not allow raids at this time.`,
 	USER_ALREADY_BANNED: (user: string) => `${user} is already banned.`,
 	USER_ALREADY_MOD: (user: string) => `${user} is already a moderator.`,
-	USER_ALREDY_VIP: (user: string) => `${user} is already a VIP.`,
+	USER_ALREADY_VIP: (user: string) => `${user} is already a VIP.`,
 	USER_CANNOT_BE_BANNED: (user: string) => `${user} cannot be banned.`,
 	USER_CANNOT_BE_RAIDED: (user: string) => `${user} cannot be raided.`,
 	USER_CANNOT_BE_TIMED_OUT: (user: string) => `${user} cannot be timed out.`,

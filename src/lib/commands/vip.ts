@@ -17,7 +17,7 @@ export default defineCommand({
 					throw new CommandError(ErrorMessage.NO_VIP_SLOTS);
 				} else if (error.status === 422) {
 					if (error.message.includes("already")) {
-						throw new CommandError(ErrorMessage.USER_ALREDY_VIP(target.displayName));
+						throw new CommandError(ErrorMessage.USER_ALREADY_VIP(target.displayName));
 					} else if (error.message.includes("moderator")) {
 						throw new CommandError(ErrorMessage.MOD_CANNOT_BE_VIP(target.displayName));
 					}
