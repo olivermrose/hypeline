@@ -70,11 +70,6 @@ export class Channel {
 	public history = $state<string[]>([]);
 	public messages = $state<Message[]>([]);
 
-	/**
-	 * The error message from the last failed command if any.
-	 */
-	public error = $state<string>("");
-
 	public constructor(
 		public readonly client: TwitchApiClient,
 
@@ -368,11 +363,13 @@ export class Channel {
 			try {
 				await command.exec(args, this, viewer.user);
 			} catch (error) {
-				log.error(
-					`Error executing command ${name} in channel ${this.user.username}: ${error}`,
-				);
+				if (error instanceof Error) {
+					log.error(
+						`Error executing command ${name} in channel ${this.user.username}: ${error.message}`,
+					);
+				}
 
-				this.error = "An unknown error occurred while trying to execute command.";
+				throw error;
 			}
 
 			return;

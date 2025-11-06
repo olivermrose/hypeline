@@ -1,3 +1,4 @@
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, parseBool, parseDuration } from "./util";
 
 export default defineCommand({
@@ -27,13 +28,11 @@ export default defineCommand({
 		}
 
 		if (enabled === null) {
-			channel.error = "Invalid value. Use 'on/off' or 'true/false'.";
-			return;
+			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
 		if (duration < 0 || duration > 129_600) {
-			channel.error = "Duration must be between 0 and 129,600 minutes (3 months).";
-			return;
+			throw new CommandError(ErrorMessage.INVALID_FOLLOWER_DURATION);
 		}
 
 		await channel.updateChatSettings({

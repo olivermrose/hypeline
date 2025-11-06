@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -7,19 +8,24 @@ export default defineCommand({
 	args: ["username"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
 
 		try {
 			await channel.viewers.mod(target.id);
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("already")) {
-				channel.error = `${target.displayName} is already a moderator.`;
-			} else if (error.includes("banned")) {
-				channel.error = `${target.displayName} is banned and cannot be made a moderator.`;
-			} else if (error.includes("vip")) {
-				channel.error = `${target.displayName} is a VIP and cannot be made a moderator.`;
+			if (error instanceof ApiError) {
+				if (error.status === 400) {
+					if (error.message.includes("already")) {
+						throw new CommandError(ErrorMessage.USER_ALREADY_MOD(target.displayName));
+					} else if (error.message.includes("banned")) {
+						throw new CommandError(
+							ErrorMessage.BANNED_USER_CANNOT_BE_MOD(target.displayName),
+						);
+					}
+				} else if (error.status === 422) {
+					throw new CommandError(ErrorMessage.VIP_CANNOT_BE_MOD(target.displayName));
+				} else {
+					throw error;
+				}
 			} else {
 				throw error;
 			}

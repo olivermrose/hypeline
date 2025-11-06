@@ -15,6 +15,7 @@
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 	import type { Channel } from "$lib/channel.svelte";
 	import { Completer } from "$lib/completer.svelte";
+	import { CommandError } from "$lib/errors";
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";
@@ -31,6 +32,7 @@
 
 	let emotePickerOpen = $state(false);
 	let historyIdx = $state(-1);
+	let error = $state<string>("");
 
 	let completer = $state<Completer>();
 
@@ -48,19 +50,17 @@
 	});
 
 	$effect(() => {
-		void channel.error;
+		void error;
 
 		const timeout = setTimeout(() => {
-			if (channel.error) {
-				channel.error = "";
-			}
+			error = "";
 		}, 5000);
 
 		return () => clearTimeout(timeout);
 	});
 
 	const send: KeyboardEventHandler<HTMLInputElement> = async (event) => {
-		if (!channel || !completer) return;
+		if (!completer) return;
 
 		const input = event.currentTarget;
 
@@ -121,7 +121,16 @@
 				historyIdx = -1;
 
 				channel.history.push(message);
-				await channel.send(message, replyId);
+
+				try {
+					await channel.send(message, replyId);
+				} catch (err) {
+					if (err instanceof CommandError) {
+						error = err.message;
+					} else {
+						error = "An unexpected error occurred.";
+					}
+				}
 			}
 		} else if (completer.suggestions.length) {
 			completer.reset();
@@ -161,7 +170,7 @@
 			<Message message={replyTarget.value} />
 		</div>
 	</div>
-{:else if channel.error}
+{:else if error}
 	<div
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 py-2.5 text-sm transition-colors duration-200"
 	>
@@ -169,7 +178,7 @@
 			<span class="iconify lucide--triangle-alert mt-px size-4 shrink-0 text-yellow-400">
 			</span>
 
-			<p class="text-muted-foreground">{channel.error}</p>
+			<p class="text-muted-foreground">{error}</p>
 		</div>
 	</div>
 {/if}
@@ -178,7 +187,7 @@
 	<Input
 		class={[
 			"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
-			(replyTarget.value || channel.error) && "rounded-t-none",
+			(replyTarget.value || error) && "rounded-t-none",
 			className,
 		]}
 		type="text"

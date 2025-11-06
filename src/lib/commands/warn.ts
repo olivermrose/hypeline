@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -8,22 +9,17 @@ export default defineCommand({
 	args: ["username", "reason"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
-
 		const reason = args.slice(1).join(" ");
 
 		if (!reason) {
-			channel.error = "Missing reason argument.";
-			return;
+			throw new CommandError(ErrorMessage.MISSING_ARG(this.args[1]));
 		}
 
 		try {
 			await target.warn(reason);
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("may not be warned")) {
-				channel.error = `${target.displayName} may not be warned.`;
+			if (error instanceof ApiError && error.message.includes("may not be warned")) {
+				throw new CommandError(ErrorMessage.USER_CANNOT_BE_WARNED(target.displayName));
 			} else {
 				throw error;
 			}

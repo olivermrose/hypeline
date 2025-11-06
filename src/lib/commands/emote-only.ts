@@ -1,3 +1,4 @@
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, parseBool } from "./util";
 
 export default defineCommand({
@@ -9,8 +10,7 @@ export default defineCommand({
 		const enabled = parseBool(args[0]);
 
 		if (enabled === null) {
-			channel.error = "Invalid value. Use 'on/off' or 'true/false'.";
-			return;
+			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
 		await channel.updateChatSettings({ emoteOnly: enabled });

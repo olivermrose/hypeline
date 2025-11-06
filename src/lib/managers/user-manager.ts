@@ -1,4 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
+import { ApiError } from "$lib/errors";
 import type { TwitchApiClient } from "$lib/twitch/client";
 import { userQuery } from "$lib/twitch/gql";
 import { User } from "$lib/user.svelte";
@@ -33,7 +34,7 @@ export class UserManager extends SvelteMap<string, User> {
 				const { data } = await this.client.send(userQuery, variables);
 
 				if (!data.user) {
-					throw new Error(`User "${idOrLogin}" not found`);
+					throw new ApiError(404, `User "${idOrLogin}" not found`);
 				}
 
 				const user = new User(data.user);
