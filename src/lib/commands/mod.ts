@@ -23,6 +23,8 @@ export default defineCommand({
 					}
 				} else if (error.status === 422) {
 					throw new CommandError(ErrorMessage.VIP_CANNOT_BE_MOD(target.displayName));
+				} else {
+					throw error;
 				}
 			} else {
 				throw error;

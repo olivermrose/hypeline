@@ -23,6 +23,8 @@ export default defineCommand({
 					);
 				} else if (error.message.includes("cannot be")) {
 					throw new CommandError(ErrorMessage.USER_CANNOT_BE_RAIDED(target.displayName));
+				} else {
+					throw error;
 				}
 			} else {
 				throw error;

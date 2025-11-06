@@ -17,6 +17,8 @@ export default defineCommand({
 					throw new CommandError(ErrorMessage.USER_ALREADY_BANNED(target.displayName));
 				} else if (error.message.includes("may not be banned")) {
 					throw new CommandError(ErrorMessage.USER_CANNOT_BE_BANNED(target.displayName));
+				} else {
+					throw error;
 				}
 			} else {
 				throw error;

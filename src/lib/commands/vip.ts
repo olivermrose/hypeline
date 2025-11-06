@@ -21,6 +21,8 @@ export default defineCommand({
 					} else if (error.message.includes("moderator")) {
 						throw new CommandError(ErrorMessage.MOD_CANNOT_BE_VIP(target.displayName));
 					}
+				} else {
+					throw error;
 				}
 			} else {
 				throw error;
