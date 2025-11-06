@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget, parseDuration } from "./util";
 
 export default defineCommand({
@@ -7,22 +8,17 @@ export default defineCommand({
 	args: ["username", "duration", "reason"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
-
 		const duration = parseDuration(args[1]) ?? 600;
 
 		if (duration < 0 || duration > 1_209_600) {
-			channel.error = "Duration must be between 0 and 1,209,600 seconds (14 days).";
-			return;
+			throw new CommandError(ErrorMessage.INVALID_TIMEOUT_DURATION);
 		}
 
 		try {
 			await target.timeout({ duration, reason: args.slice(2).join(" ") });
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("may not be banned")) {
-				channel.error = `${target.username} may not be timed out.`;
+			if (error instanceof ApiError && error.message.includes("may not be banned")) {
+				throw new CommandError(ErrorMessage.USER_CANNOT_BE_TIMED_OUT(target.displayName));
 			} else {
 				throw error;
 			}

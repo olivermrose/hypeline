@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -7,22 +8,22 @@ export default defineCommand({
 	args: ["channel"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
 
 		if (channel.user.id === target.id) {
-			channel.error = "The broadcaster cannot raid themselves.";
-			return;
+			throw new CommandError(ErrorMessage.CANNOT_TARGET_SELF);
 		}
 
 		try {
 			await channel.raid(target.id);
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("settings do not")) {
-				channel.error = `${target.displayName}'s channel settings do not allow raids at this time.`;
-			} else if (error.includes("cannot be")) {
-				channel.error = `${target.displayName} cannot be raided.`;
+			if (error instanceof ApiError && error.status === 400) {
+				if (error.message.includes("settings do not")) {
+					throw new CommandError(
+						ErrorMessage.SETTINGS_DO_NOT_ALLOW_RAIDS(target.displayName),
+					);
+				} else if (error.message.includes("cannot be")) {
+					throw new CommandError(ErrorMessage.USER_CANNOT_BE_RAIDED(target.displayName));
+				}
 			} else {
 				throw error;
 			}

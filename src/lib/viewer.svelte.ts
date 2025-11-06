@@ -96,15 +96,15 @@ export class Viewer {
 		return this.monitored || this.restricted || this.banEvasion !== "unknown";
 	}
 
-	public async ban(reason?: string) {
+	public ban(reason?: string) {
 		return this.channel.viewers.ban(this.id, reason);
 	}
 
-	public async timeout(options: TimeoutOptions) {
+	public timeout(options: TimeoutOptions) {
 		return this.channel.viewers.timeout(this.id, options);
 	}
 
-	public async warn(reason: string) {
+	public warn(reason: string) {
 		return this.channel.viewers.warn(this.id, reason);
 	}
 }

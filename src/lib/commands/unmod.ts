@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -7,15 +8,12 @@ export default defineCommand({
 	args: ["username"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
 
 		try {
 			await channel.viewers.unmod(target.id);
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("is not")) {
-				channel.error = `${target.displayName} is not a moderator.`;
+			if (error instanceof ApiError && error.status === 422) {
+				throw new CommandError(ErrorMessage.USER_NOT_MOD(target.displayName));
 			} else {
 				throw error;
 			}

@@ -1,4 +1,5 @@
 import type { Channel } from "$lib/channel.svelte";
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { app } from "$lib/state.svelte";
 import type { User } from "$lib/user.svelte";
 import { Viewer } from "$lib/viewer.svelte";
@@ -12,14 +13,13 @@ export interface Command {
 	exec: (args: string[], channel: Channel, user: User) => Promise<void>;
 }
 
-export function defineCommand(command: Command) {
+export function defineCommand<const T extends Command>(command: T) {
 	return command;
 }
 
 export async function getTarget(username: string, channel: Channel) {
 	if (!username) {
-		channel.error = "Missing username argument.";
-		return;
+		throw new CommandError(ErrorMessage.MISSING_ARG("username"));
 	}
 
 	username = username.toLowerCase();
@@ -29,15 +29,8 @@ export async function getTarget(username: string, channel: Channel) {
 	if (!target) {
 		const user = await app.twitch.users.fetch(username, "login");
 
-		if (user) {
-			target = new Viewer(channel, user);
-			channel.viewers.set(target.id, target);
-		}
-	}
-
-	if (!target) {
-		channel.error = "User not found.";
-		return;
+		target = new Viewer(channel, user);
+		channel.viewers.set(target.id, target);
 	}
 
 	return target;

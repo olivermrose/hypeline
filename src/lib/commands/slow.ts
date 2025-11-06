@@ -1,3 +1,4 @@
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, parseDuration } from "./util";
 
 export default defineCommand({
@@ -9,8 +10,7 @@ export default defineCommand({
 		const duration = parseDuration(args[0]) ?? 30;
 
 		if (duration !== 0 && (duration < 3 || duration > 120)) {
-			channel.error = "Duration must be between 3 and 120 seconds (2 minutes).";
-			return;
+			throw new CommandError(ErrorMessage.INVALID_SLOW_DURATION);
 		}
 
 		await channel.updateChatSettings({ slow: duration });

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { SystemMessage } from "$lib/message";
 import { defineCommand } from "./util";
 
@@ -11,13 +12,11 @@ export default defineCommand({
 		const description = args.join(" ");
 
 		if (!channel.stream) {
-			channel.error = "Markers can only be created when the channel is live.";
-			return;
+			throw new CommandError(ErrorMessage.CHANNEL_MUST_BE_LIVE);
 		}
 
 		if (description.length > 140) {
-			channel.error = "Marker description must be 140 characters or less.";
-			return;
+			throw new CommandError(ErrorMessage.MARKER_DESC_TOO_LONG);
 		}
 
 		const marker = await channel.createMarker(description);

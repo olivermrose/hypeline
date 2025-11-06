@@ -8,7 +8,6 @@ export default defineCommand({
 	args: ["username"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
 
 		await app.twitch.users.unblock(target.id);
 

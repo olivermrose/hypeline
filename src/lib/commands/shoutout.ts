@@ -1,3 +1,4 @@
+import { CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand, getTarget } from "./util";
 
 export default defineCommand({
@@ -7,16 +8,13 @@ export default defineCommand({
 	args: ["channel"],
 	async exec(args, channel) {
 		const target = await getTarget(args[0], channel);
-		if (!target) return;
 
 		if (!channel.stream) {
-			channel.error = "The channel must be live to send a shoutout.";
-			return;
+			throw new CommandError(ErrorMessage.CHANNEL_MUST_BE_LIVE);
 		}
 
 		if (channel.user.id === target.id) {
-			channel.error = "The broadcaster cannot shoutout themselves.";
-			return;
+			throw new CommandError(ErrorMessage.CANNOT_TARGET_SELF);
 		}
 
 		await channel.shoutout(target.id);

@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { TadaDocumentNode } from "gql.tada";
 import { print } from "graphql-web-lite";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
+import { ApiError } from "$lib/errors";
 import { UserManager } from "$lib/managers";
 import { app } from "$lib/state.svelte";
 import type { Emote } from "$lib/tauri";
@@ -193,7 +194,7 @@ export class TwitchApiClient {
 		}
 
 		if (!this.token) {
-			throw new Error("OAuth token is not set");
+			throw new ApiError(401, "OAuth token is not set");
 		}
 
 		const response = await fetch(url, {
@@ -212,9 +213,8 @@ export class TwitchApiClient {
 
 		const data = await response.json();
 
-		// TODO: temp until better error handling
 		if (response.status >= 400 && response.status < 500) {
-			throw data.message;
+			throw new ApiError(response.status, data.message);
 		}
 
 		return data;

@@ -1,3 +1,4 @@
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { defineCommand } from "./util";
 
 export default defineCommand({
@@ -8,10 +9,8 @@ export default defineCommand({
 		try {
 			await channel.unraid();
 		} catch (error) {
-			if (typeof error !== "string") return;
-
-			if (error.includes("doesn't have")) {
-				channel.error = "No pending raid to stop.";
+			if (error instanceof ApiError && error.status === 404) {
+				throw new CommandError(ErrorMessage.NO_PENDING_RAID);
 			} else {
 				throw error;
 			}

@@ -1,3 +1,5 @@
+import { CommandError } from "$lib/errors";
+import { ErrorMessage } from "$lib/errors/messages";
 import { defineCommand } from "./util";
 
 export default defineCommand({
@@ -9,8 +11,7 @@ export default defineCommand({
 		const message = args.join(" ");
 
 		if (!message) {
-			channel.error = "Missing message argument.";
-			return;
+			throw new CommandError(ErrorMessage.MISSING_ARG(this.args[0]));
 		}
 
 		await channel.announce(message);
