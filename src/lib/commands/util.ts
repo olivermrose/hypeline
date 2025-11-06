@@ -1,5 +1,5 @@
 import type { Channel } from "$lib/channel.svelte";
-import { CommandError, ErrorMessage } from "$lib/errors";
+import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import { app } from "$lib/state.svelte";
 import type { User } from "$lib/user.svelte";
 import { Viewer } from "$lib/viewer.svelte";
@@ -27,10 +27,18 @@ export async function getTarget(username: string, channel: Channel) {
 	let target = channel.viewers.values().find((v) => v.username === username);
 
 	if (!target) {
-		const user = await app.twitch.users.fetch(username, "login");
+		try {
+			const user = await app.twitch.users.fetch(username, "login");
 
-		target = new Viewer(channel, user);
-		channel.viewers.set(target.id, target);
+			target = new Viewer(channel, user);
+			channel.viewers.set(target.id, target);
+		} catch (error) {
+			if (error instanceof ApiError && error.status === 404) {
+				throw new CommandError(ErrorMessage.USER_NOT_FOUND(username));
+			} else {
+				throw error;
+			}
+		}
 	}
 
 	return target;

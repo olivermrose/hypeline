@@ -23,6 +23,7 @@ export const ErrorMessage = {
 	USER_NOT_BANNED: (user: string) => `${user} is not banned.`,
 	USER_NOT_MOD: (user: string) => `${user} is not a moderator.`,
 	USER_NOT_VIP: (user: string) => `${user} is not a VIP.`,
+	USER_NOT_FOUND: (user: string) => `User ${user} not found.`,
 	MOD_CANNOT_BE_VIP: (user: string) => `${user} is a moderator and cannot be made a VIP.`,
 	VIP_CANNOT_BE_MOD: (user: string) => `${user} is a VIP and cannot be made a moderator.`,
 } as const;
