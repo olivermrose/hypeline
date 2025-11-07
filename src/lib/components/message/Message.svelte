@@ -14,6 +14,7 @@
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
+	import User from "../User.svelte";
 	import Embed from "./Embed.svelte";
 
 	const { message, onEmbedLoad }: MessageProps = $props();
@@ -77,11 +78,7 @@
 	</Tooltip>
 {/each}
 
-<!-- Formatting is ugly here, but it needs to be in order for the colon to
-render properly without an extra space in between. -->
-<span class="font-semibold wrap-break-word" style={message.author.style}>
-	{message.author.displayName}
-</span>{#if !message.action}:{/if}
+<User user={message.author} action={message.isAction} />
 
 <p
 	class={["inline", message.action && "italic"]}
