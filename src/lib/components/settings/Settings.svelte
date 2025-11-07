@@ -8,9 +8,9 @@
 	import { Dialog, Popover, Separator, Tabs } from "bits-ui";
 	import { tick } from "svelte";
 	import { goto } from "$app/navigation";
+	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
-	import { app } from "$lib/state.svelte";
 	import TitleBar from "../TitleBar.svelte";
 	import Appearance from "./appearance/Appearance.svelte";
 	import Chat from "./chat/Chat.svelte";

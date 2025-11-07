@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
+	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
-	import { app } from "$lib/state.svelte";
 	import ChannelIcon from "./ChannelIcon.svelte";
 
 	const groups = $derived.by(() => {

@@ -3,10 +3,10 @@
 	import { Tooltip } from "bits-ui";
 	import { ModeWatcher } from "mode-watcher";
 	import { page } from "$app/state";
+	import { app } from "$lib/app.svelte";
 	import Sidebar from "$lib/components/Sidebar.svelte";
 	import TitleBar from "$lib/components/TitleBar.svelte";
 	import { settings } from "$lib/settings";
-	import { app } from "$lib/state.svelte";
 
 	const { children } = $props();
 

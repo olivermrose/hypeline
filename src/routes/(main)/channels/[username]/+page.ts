@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import { dev } from "$app/environment";
-import { app } from "$lib/state.svelte";
+import { app } from "$lib/app.svelte";
 
 export async function load({ params, parent }) {
 	if (dev) await parent();

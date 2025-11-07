@@ -6,7 +6,7 @@ import type { Badge } from "./graphql";
 import type { Paint } from "./seventv";
 import type { User } from "./user.svelte";
 
-class AppState {
+class App {
 	public readonly twitch = new TwitchApiClient();
 
 	/**
@@ -54,4 +54,4 @@ class AppState {
 	public readonly u2p = new Map<string, Paint | undefined>();
 }
 
-export const app = new AppState();
+export const app = new App();

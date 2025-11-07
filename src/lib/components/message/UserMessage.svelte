@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { app } from "$lib/app.svelte";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
-	import { app } from "$lib/state.svelte";
 	import type { Viewer } from "$lib/viewer.svelte";
 	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";

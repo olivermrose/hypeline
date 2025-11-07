@@ -1,9 +1,9 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { app } from "$lib/app.svelte";
 import { handlers } from "$lib/handlers";
 import { log } from "$lib/log";
 import { settings } from "$lib/settings";
 import type { DispatchPayload } from "$lib/seventv";
-import { app } from "$lib/state.svelte";
 import type { NotificationPayload } from "./eventsub";
 import type { IrcMessage } from "./irc";
 

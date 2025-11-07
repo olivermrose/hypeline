@@ -1,11 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
+import { app } from "./app.svelte";
 import { commands } from "./commands";
 import { log } from "./log";
 import { ChannelEmoteManager, ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
 import { settings } from "./settings";
-import { app } from "./state.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
 import type { Badge, Stream } from "./graphql";

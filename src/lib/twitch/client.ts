@@ -1,7 +1,7 @@
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
+import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors";
 import { UserManager } from "$lib/managers";
-import { app } from "$lib/state.svelte";
 import {
 	globalBadgesQuery,
 	twitchGql as gql,

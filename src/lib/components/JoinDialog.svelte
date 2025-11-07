@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Combobox, Dialog } from "bits-ui";
 	import { goto } from "$app/navigation";
+	import { app } from "$lib/app.svelte";
 	import { Channel } from "$lib/channel.svelte";
 	import { suggestionsQuery } from "$lib/graphql";
 	import type { SearchSuggestionChannel } from "$lib/graphql";
-	import { app } from "$lib/state.svelte";
 	import { debounce } from "$lib/util";
 	import Input from "./ui/Input.svelte";
 

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { app } from "$lib/app.svelte";
 import { Channel } from "$lib/channel.svelte";
 import { settings } from "$lib/settings";
-import { app } from "$lib/state.svelte";
 import type { BasicUser } from "$lib/twitch/irc";
 import { User } from "$lib/user.svelte";
 import type { Prefix } from "$lib/util";

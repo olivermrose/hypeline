@@ -1,5 +1,5 @@
+import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/channel.svelte";
-import { app } from "$lib/state.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
 	BasicUser,

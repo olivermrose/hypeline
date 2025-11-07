@@ -7,10 +7,10 @@
 
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
+	import { app } from "$lib/app.svelte";
 	import type { Badge } from "$lib/graphql";
 	import type { LinkNode, MentionNode, UserMessage } from "$lib/message";
 	import { settings } from "$lib/settings";
-	import { app } from "$lib/state.svelte";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";

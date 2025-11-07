@@ -1,5 +1,5 @@
+import { app } from "./app.svelte";
 import { commands } from "./commands";
-import { app } from "./state.svelte";
 import type { Channel } from "./channel.svelte";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";

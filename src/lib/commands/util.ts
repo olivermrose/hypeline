@@ -1,6 +1,6 @@
+import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/channel.svelte";
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { app } from "$lib/state.svelte";
 import type { User } from "$lib/user.svelte";
 import { Viewer } from "$lib/viewer.svelte";
 

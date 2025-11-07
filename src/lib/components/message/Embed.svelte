@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
+	import { app } from "$lib/app.svelte";
 	import { transform7tvEmote } from "$lib/emotes";
 	import {
 		clipQuery,
@@ -8,7 +9,6 @@
 		seventvGql as gql,
 		send7tv as send,
 	} from "$lib/graphql";
-	import { app } from "$lib/state.svelte";
 
 	interface Props {
 		url: URL;
