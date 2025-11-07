@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
-	import { clipQuery } from "$lib/graphql";
-	import type { Emote, EmoteHost } from "$lib/seventv";
+	import { transform7tvEmote } from "$lib/emotes";
+	import {
+		clipQuery,
+		emoteDetailsFragment,
+		seventvGql as gql,
+		send7tv as send,
+	} from "$lib/graphql";
 	import { app } from "$lib/state.svelte";
 
 	interface Props {
@@ -16,11 +21,36 @@
 	let blurred = $state(true);
 
 	async function fetchEmote() {
-		const response = await fetch(`https://7tv.io/v3/emotes/${url.pathname.split("/")[2]}`);
-		if (!response.ok) return;
+		const { emotes } = await send(
+			gql(
+				`query GetEmote($id: Id!){
+					emotes {
+						emote(id: $id) {
+							...EmoteDetails
+							flags {
+								publicListed
+							}
+							owner {
+								mainConnection {
+									platformDisplayName
+								}
+							}
+						}
+					}
+				}`,
+				[emoteDetailsFragment],
+			),
+			{ id: url.pathname.split("/")[2] },
+		);
 
+		if (!emotes.emote) return;
 		onLoad?.();
-		return response.json() as Promise<Emote>;
+
+		return {
+			...transform7tvEmote(emotes.emote),
+			listed: emotes.emote.flags.publicListed,
+			owner: emotes.emote.owner,
+		};
 	}
 
 	async function fetchClip() {
@@ -35,15 +65,6 @@
 
 		return clip;
 	}
-
-	function getSrcset(host: EmoteHost) {
-		return [
-			`https:${host.url}/1x.webp 1x`,
-			`https:${host.url}/2x.webp 2x`,
-			`https:${host.url}/3x.webp 3x`,
-			`https:${host.url}/4x.webp 4x`,
-		].join(", ");
-	}
 </script>
 
 <div class="w-full max-w-[400px]">
@@ -54,7 +75,7 @@
 					<div class="relative h-full shrink-0">
 						<img
 							class="h-full w-auto"
-							srcset={getSrcset(emote.host)}
+							srcset={emote.srcset.join(", ")}
 							alt={emote.name}
 							decoding="async"
 						/>
@@ -82,7 +103,7 @@
 						</div>
 
 						<span class="text-muted-foreground text-xs">
-							by {emote.owner.display_name}
+							by {emote.owner?.mainConnection?.platformDisplayName ?? "Unknown"}
 						</span>
 					</div>
 				{/if}

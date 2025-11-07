@@ -1,28 +1,35 @@
 import type { FragmentOf } from "gql.tada";
 import { seventvGql, twitchGql } from "./function";
 
-export const emoteSetDetailsFragment = seventvGql(`
-	fragment EmoteSetDetails on EmoteSet {
+export const emoteDetailsFragment = seventvGql(`
+	fragment EmoteDetails on Emote {
+		id
+		defaultName
+		images {
+			mime
+			width
+			height
+			url
+		}
+		flags {
+			defaultZeroWidth
+		}
+	}
+`);
+
+export const emoteSetDetailsFragment = seventvGql(
+	`fragment EmoteSetDetails on EmoteSet {
 		id
 		emotes {
 			items {
 				emote {
-					id
-					defaultName
-					images {
-						mime
-						width
-						height
-						url
-					}
-					flags {
-						defaultZeroWidth
-					}
+					...EmoteDetails
 				}
 			}
 		}
-	}
-`);
+	}`,
+	[emoteDetailsFragment],
+);
 
 export const streamDetailsFragment = twitchGql(`
 	fragment StreamDetails on Stream {
