@@ -41,7 +41,7 @@ export async function load({ parent }) {
 	app.channels.push(self);
 
 	if (!app.emotes.size) {
-		await app.emotes.fetchGlobal();
+		await app.emotes.fetch();
 	}
 
 	if (!app.globalBadges.size) {
