@@ -47,7 +47,7 @@ export interface EmoteSetUpdateContext {
 	action: "added" | "removed" | "renamed";
 	oldName?: string;
 	emote: Emote;
-	actor: User;
+	actor: Viewer;
 }
 
 export interface JoinContext {

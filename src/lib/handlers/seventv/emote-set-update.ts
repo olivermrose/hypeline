@@ -1,7 +1,6 @@
 import type { Emote } from "$lib/emotes";
 import { SystemMessage } from "$lib/message";
 import type { EmoteChange } from "$lib/seventv";
-import { app } from "$lib/state.svelte";
 import { defineHandler } from "../helper";
 
 function transform(emote: EmoteChange): Emote {
@@ -45,7 +44,7 @@ export default defineHandler({
 		const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
 
-		const actor = await app.twitch.users.fetch(twitch.id);
+		const actor = await channel.viewers.fetch(twitch.id);
 		const message = new SystemMessage();
 
 		for (const change of data.pushed ?? []) {

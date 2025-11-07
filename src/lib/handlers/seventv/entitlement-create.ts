@@ -4,27 +4,27 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "entitlement.create",
-	async handle(data) {
+	async handle(data, channel) {
 		const twitch = data.user.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
 
-		const user = await app.twitch.users.fetch(twitch.id);
+		const viewer = await channel.viewers.fetch(twitch.id);
 
 		switch (data.kind) {
 			case "BADGE": {
-				log.debug(`Assigned badge ${data.ref_id} to ${user.username}`);
+				log.debug(`Assigned badge ${data.ref_id} to ${viewer.username}`);
 
-				user.badge = app.badges.get(data.ref_id);
-				app.u2b.set(user.id, user.badge);
+				viewer.user.badge = app.badges.get(data.ref_id);
+				app.u2b.set(viewer.user.id, viewer.user.badge);
 
 				break;
 			}
 
 			case "PAINT": {
-				log.debug(`Assigned paint ${data.ref_id} to ${user.username}`);
+				log.debug(`Assigned paint ${data.ref_id} to ${viewer.user.username}`);
 
-				user.paint = app.paints.get(data.ref_id);
-				app.u2p.set(user.id, user.paint);
+				viewer.user.paint = app.paints.get(data.ref_id);
+				app.u2p.set(viewer.user.id, viewer.user.paint);
 
 				break;
 			}
