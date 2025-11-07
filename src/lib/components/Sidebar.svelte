@@ -24,7 +24,7 @@
 <JoinDialog bind:open={joinOpen} />
 
 <ScrollArea.Root>
-	<ScrollArea.Viewport class="h-full">
+	<ScrollArea.Viewport class="h-full min-h-screen">
 		<nav class="h-full space-y-4 p-3 pt-0">
 			<div class="space-y-2">
 				<button
