@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 	import { goto } from "$app/navigation";
+	import type { Stream } from "$lib/graphql";
 	import { settings } from "$lib/settings";
 	import { app } from "$lib/state.svelte";
-	import type { Stream } from "$lib/twitch/gql";
 	import type { User } from "$lib/user.svelte";
 	import Tooltip from "./ui/Tooltip.svelte";
 

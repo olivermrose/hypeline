@@ -2,18 +2,16 @@ import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { commands } from "./commands";
 import { log } from "./log";
-import { ViewerManager } from "./managers";
+import { ChannelEmoteManager, ViewerManager } from "./managers";
 import { SystemMessage } from "./message";
 import { settings } from "./settings";
 import { app } from "./state.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Command } from "./commands/util";
+import type { Badge, Stream } from "./graphql";
 import type { Message } from "./message";
-import type { EmoteSet } from "./seventv";
-import type { Emote, JoinedChannel } from "./tauri";
 import type { BadgeSet, Cheermote, SentMessage, StreamMarker } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
-import type { Badge, Stream } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
@@ -41,7 +39,7 @@ export class Channel {
 
 	public readonly badges = new SvelteMap<string, Badge>();
 	public readonly commands = new SvelteMap<string, Command>();
-	public readonly emotes = new SvelteMap<string, Emote>();
+	public readonly emotes = new ChannelEmoteManager(this);
 	public readonly cheermotes = $state<Cheermote[]>([]);
 
 	/**
@@ -60,9 +58,9 @@ export class Channel {
 	public ephemeral = false;
 
 	/**
-	 * The active 7TV emote set for the channel if any.
+	 * The id of the active 7TV emote set for the channel if any.
 	 */
-	public emoteSet = $state<EmoteSet>();
+	public emoteSetId = $state<string | null>(null);
 
 	/**
 	 * An array of messages the user has sent in the channel.
@@ -101,8 +99,21 @@ export class Channel {
 			this.viewers.set(this.id, viewer);
 		}
 
-		const joined = await invoke<JoinedChannel>("join", {
+		const [stream] = await Promise.all([
+			this.client.fetchStream(this.id),
+			this.emotes.fetch(),
+			this.fetchBadges(),
+			this.fetchCheermotes(),
+		]);
+
+		this.stream = stream;
+
+		this.addCommands(commands);
+		this.emotes.addAll(app.emotes.values());
+
+		await invoke("join", {
 			id: this.id,
+			setId: this.emoteSetId,
 			login: this.user.username,
 			isMod: app.user?.moderating.has(this.id),
 		});
@@ -113,19 +124,6 @@ export class Channel {
 				historyLimit: settings.state.chat.history.limit,
 			});
 		}
-
-		const [stream] = await Promise.all([
-			this.client.fetchStream(this.id),
-			this.fetchBadges(),
-			this.fetchCheermotes(),
-		]);
-
-		this.addCommands(commands);
-		this.addEmotes(app.globalEmotes);
-		this.addEmotes(joined.emotes);
-
-		this.stream = stream;
-		this.emoteSet = joined.emote_set ?? undefined;
 	}
 
 	public async leave() {
@@ -153,16 +151,6 @@ export class Channel {
 	public addCheermotes(cheermotes: Cheermote[]) {
 		for (const cheermote of cheermotes) {
 			this.cheermotes.push(cheermote);
-		}
-
-		return this;
-	}
-
-	public addEmotes(emotes: Record<string, Emote> | Map<string, Emote>) {
-		const entries = emotes instanceof Map ? emotes : Object.entries(emotes);
-
-		for (const [name, emote] of entries) {
-			this.emotes.set(name, emote);
 		}
 
 		return this;

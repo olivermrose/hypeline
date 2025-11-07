@@ -2,7 +2,7 @@ import { SvelteSet } from "svelte/reactivity";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { Paint } from "./seventv";
-import type { User as ApiUser, Badge } from "./twitch/gql";
+import type { User as ApiUser, Badge } from "./graphql";
 
 export interface PartialUser {
 	id: string;
@@ -43,12 +43,12 @@ export class User implements PartialUser {
 	public readonly bio: string;
 
 	/**
-	 * The URL of the user's avatar image.
+	 * The url of the user's avatar image.
 	 */
 	public readonly avatarUrl: string;
 
 	/**
-	 * The URL of the user's banner image seen when they are offline.
+	 * The url of the user's banner image seen when they are offline.
 	 */
 	public readonly bannerUrl: string;
 

@@ -13,10 +13,21 @@
 		"plugins": [
 			{
 				"name": "gql.tada/ts-plugin",
-				"schema": "./src/lib/twitch/gql/schema.graphql",
-				"tadaOutputLocation": "./src/graphql-env.d.ts",
-				"tadaTurboLocation": "./src/graphql-cache.d.ts",
-				"shouldCheckForColocatedFragments": false
+				"shouldCheckForColocatedFragments": false,
+				"schemas": [
+					{
+						"name": "twitch",
+						"schema": "./src/lib/graphql/twitch.graphql",
+						"tadaOutputLocation": "./src/lib/graphql/twitch-env.d.ts",
+						"tadaTurboLocation": "./src/lib/graphql/twitch-cache.d.ts"
+					},
+					{
+						"name": "seventv",
+						"schema": "https://7tv.io/v4/gql",
+						"tadaOutputLocation": "./src/lib/graphql/7tv-env.d.ts",
+						"tadaTurboLocation": "./src/lib/graphql/7tv-cache.d.ts"
+					}
+				]
 			}
 		]
 	}

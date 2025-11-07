@@ -40,8 +40,8 @@ export async function load({ parent }) {
 	const self = new Channel(app.twitch, app.user);
 	app.channels.push(self);
 
-	if (!app.globalEmotes.size) {
-		await app.twitch.fetchEmotes();
+	if (!app.emotes.size) {
+		await app.emotes.fetchGlobal();
 	}
 
 	if (!app.globalBadges.size) {

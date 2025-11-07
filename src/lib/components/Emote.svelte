@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Emote } from "$lib/tauri";
+	import type { Emote } from "$lib/emotes";
 	import Tooltip from "./ui/Tooltip.svelte";
 
 	interface Props {
@@ -8,6 +8,7 @@
 	}
 
 	const { emote, layers = [] }: Props = $props();
+
 	const srcset = emote.srcset.join(", ");
 </script>
 

@@ -1,9 +1,9 @@
 import { SvelteMap } from "svelte/reactivity";
+import { EmoteManager } from "./managers";
 import { TwitchApiClient } from "./twitch/client";
 import type { Channel } from "./channel.svelte";
+import type { Badge } from "./graphql";
 import type { Paint } from "./seventv";
-import type { Emote } from "./tauri";
-import type { Badge } from "./twitch/gql";
 import type { User } from "./user.svelte";
 
 class AppState {
@@ -30,9 +30,9 @@ class AppState {
 	public channels = $state<Channel[]>([]);
 
 	/**
-	 * Global emotes from Twitch, 7TV, BTTV, and FFZ.
+	 * Global emotes from FFZ, BTTV, and 7TV.
 	 */
-	public readonly globalEmotes = new SvelteMap<string, Emote>();
+	public readonly emotes = new EmoteManager();
 
 	/**
 	 * Global badges from Twitch.

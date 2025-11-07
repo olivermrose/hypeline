@@ -11,9 +11,8 @@ use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
 use crate::AppState;
-use crate::emotes::{Emote, EmoteMap, fetch_user_emotes};
 use crate::error::Error;
-use crate::providers::seventv::{EmoteSet, fetch_active_emote_set, send_presence};
+use crate::seventv::send_presence;
 
 #[derive(Debug, Deserialize)]
 pub struct Response<T> {
@@ -56,20 +55,15 @@ pub async fn set_access_token(
     }
 }
 
-#[derive(Serialize)]
-pub struct JoinedChannel {
-    emotes: EmoteMap,
-    emote_set: Option<EmoteSet>,
-}
-
 #[tracing::instrument(skip(state, is_mod))]
 #[tauri::command]
 pub async fn join(
     state: State<'_, Mutex<AppState>>,
     id: String,
+    set_id: Option<String>,
     login: String,
     is_mod: bool,
-) -> Result<JoinedChannel, Error> {
+) -> Result<(), Error> {
     tracing::info!("Joining {login}");
 
     let (token, irc, eventsub, seventv) = {
@@ -88,23 +82,6 @@ pub async fn join(
             state.seventv.clone(),
         )
     };
-
-    let (mut emotes, emote_set) =
-        tokio::try_join!(fetch_user_emotes(&id), fetch_active_emote_set(&id))?;
-
-    let stv_emotes = match emote_set {
-        Some(ref emote_set) => emote_set
-            .emotes
-            .clone()
-            .into_iter()
-            .map(Emote::from)
-            .collect(),
-        None => vec![],
-    };
-
-    for emote in stv_emotes {
-        emotes.insert(emote.name.clone(), emote);
-    }
 
     if let Some(eventsub) = eventsub {
         let login = login.clone();
@@ -163,9 +140,9 @@ pub async fn join(
         seventv.subscribe("cosmetic.create", &channel_cond).await;
         seventv.subscribe("entitlement.create", &channel_cond).await;
 
-        if let Some(ref set) = emote_set {
+        if let Some(ref set_id) = set_id {
             seventv
-                .subscribe("emote_set.*", &json!({ "object_id": set.id }))
+                .subscribe("emote_set.*", &json!({ "object_id": set_id }))
                 .await;
         }
     }
@@ -174,7 +151,7 @@ pub async fn join(
 
     send_presence(state, id).await?;
 
-    Ok(JoinedChannel { emotes, emote_set })
+    Ok(())
 }
 
 #[tauri::command]

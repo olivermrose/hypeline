@@ -1,14 +1,16 @@
-import { invoke } from "@tauri-apps/api/core";
-import type { TadaDocumentNode } from "gql.tada";
-import { print } from "graphql-web-lite";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { ApiError } from "$lib/errors";
 import { UserManager } from "$lib/managers";
 import { app } from "$lib/state.svelte";
-import type { Emote } from "$lib/tauri";
-import { globalBadgesQuery, gql, streamDetailsFragment, userDetailsFragment } from "./gql";
+import {
+	globalBadgesQuery,
+	twitchGql as gql,
+	sendTwitch as send,
+	streamDetailsFragment,
+	userDetailsFragment,
+} from "../graphql";
+import type { Stream } from "../graphql";
 import type { Stream as HelixStream } from "./api";
-import type { GqlResponse, Stream } from "./gql";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;
 
@@ -29,28 +31,14 @@ export class TwitchApiClient {
 	 * Retrieves the list of global badges and caches them for later use.
 	 */
 	public async fetchBadges() {
-		const { data } = await app.twitch.send(globalBadgesQuery);
-		const badges = data.badges?.filter((b) => b != null) ?? [];
+		const { badges: data } = await this.send(globalBadgesQuery);
+		const badges = data?.filter((b) => b != null) ?? [];
 
 		for (const badge of badges) {
 			app.globalBadges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 
 		return badges;
-	}
-
-	/**
-	 * Retrieves the list of global emotes, including those from FFZ, BTTV, and 7TV,
-	 * and caches them for later use.
-	 */
-	public async fetchEmotes() {
-		const emotes = await invoke<Emote[]>("fetch_global_emotes");
-
-		for (const emote of emotes) {
-			app.globalEmotes.set(emote.name, emote);
-		}
-
-		return emotes;
 	}
 
 	/**
@@ -61,7 +49,7 @@ export class TwitchApiClient {
 			throw new Error("User is not logged in");
 		}
 
-		const { data } = await this.send(
+		const { user } = await this.send(
 			gql(
 				`query GetUserFollowing($id: ID!) {
 					user(id: $id) {
@@ -82,14 +70,14 @@ export class TwitchApiClient {
 			{ id: app.user.id },
 		);
 
-		return data.user!.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
+		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
 	}
 
 	/**
 	 * Retrieves the stream of the specified channel if it's live.
 	 */
 	public async fetchStream(id: string) {
-		const { data } = await this.send(
+		const { user } = await this.send(
 			gql(
 				`query GetStream($id: ID!) {
 					user(id: $id) {
@@ -103,11 +91,11 @@ export class TwitchApiClient {
 			{ id },
 		);
 
-		if (!data.user) {
+		if (!user) {
 			throw new Error("User not found");
 		}
 
-		return data.user.stream;
+		return user.stream;
 	}
 
 	/**
@@ -137,22 +125,7 @@ export class TwitchApiClient {
 	// General HTTP helpers
 
 	// GraphQL only
-	public async send<T, U>(query: TadaDocumentNode<T, U>, variables?: U): Promise<GqlResponse<T>> {
-		const response = await fetch("https://gql.twitch.tv/gql", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Client-Id": "kimne78kx3ncx6brgo4mv6wki5h1ko",
-			},
-			body: JSON.stringify({
-				// @ts-expect-error - outdated types
-				query: print(query),
-				variables,
-			}),
-		});
-
-		return response.json();
-	}
+	public send = send;
 
 	public get<T>(path: `/${string}`, params?: QueryParams) {
 		return this.fetch<T>("GET", path, { params });

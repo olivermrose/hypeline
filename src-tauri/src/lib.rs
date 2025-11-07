@@ -5,8 +5,8 @@ use std::sync::{Arc, LazyLock};
 
 use eventsub::EventSubClient;
 use irc::IrcClient;
-use providers::seventv::SeventTvClient;
 use reqwest::header::HeaderMap;
+use seventv::SeventTvClient;
 use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
 use tauri::{AppHandle, Manager, WebviewWindowBuilder, WindowEvent};
@@ -15,13 +15,13 @@ use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 
 mod api;
-mod emotes;
 mod error;
 mod eventsub;
 mod irc;
 mod log;
-mod providers;
+mod recent_messages;
 mod server;
+mod seventv;
 
 const CLIENT_ID: &str = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 
@@ -160,14 +160,13 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::join,
         api::leave,
         api::get_user_emotes,
-        emotes::fetch_global_emotes,
         eventsub::connect_eventsub,
         irc::connect_irc,
         log::log,
-        providers::fetch_recent_messages,
-        providers::seventv::connect_seventv,
-        providers::seventv::set_seventv_id,
-        providers::seventv::send_presence,
-        server::start_server
+        recent_messages::fetch_recent_messages,
+        server::start_server,
+        seventv::connect_seventv,
+        seventv::set_seventv_id,
+        seventv::send_presence,
     ]
 }

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
+	import { clipQuery } from "$lib/graphql";
 	import type { Emote, EmoteHost } from "$lib/seventv";
 	import { app } from "$lib/state.svelte";
-	import { clipQuery } from "$lib/twitch/gql";
 
 	interface Props {
 		url: URL;

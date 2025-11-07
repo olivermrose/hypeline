@@ -1,7 +1,30 @@
 import type { FragmentOf } from "gql.tada";
-import { gql } from "./function";
+import { seventvGql, twitchGql } from "./function";
 
-export const streamDetailsFragment = gql(`
+export const emoteSetDetailsFragment = seventvGql(`
+	fragment EmoteSetDetails on EmoteSet {
+		id
+		emotes {
+			items {
+				emote {
+					id
+					defaultName
+					images {
+						mime
+						width
+						height
+						url
+					}
+					flags {
+						defaultZeroWidth
+					}
+				}
+			}
+		}
+	}
+`);
+
+export const streamDetailsFragment = twitchGql(`
 	fragment StreamDetails on Stream {
 		broadcaster {
 			id
@@ -17,7 +40,7 @@ export const streamDetailsFragment = gql(`
 
 export type Stream = FragmentOf<typeof streamDetailsFragment>;
 
-export const userDetailsFragment = gql(`
+export const userDetailsFragment = twitchGql(`
 	fragment UserDetails on User {
 		id
 		createdAt
