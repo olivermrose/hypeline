@@ -1,4 +1,4 @@
-import type { Emote } from "$lib/tauri";
+import type { Emote } from "$lib/emotes";
 import type {
 	AutoModMessageStatus,
 	AutoModTermsMetadata,

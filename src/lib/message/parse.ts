@@ -1,5 +1,5 @@
 import { parse as parseTld } from "tldts";
-import type { Emote } from "$lib/tauri";
+import type { Emote } from "$lib/emotes";
 import type { CheermoteTier } from "$lib/twitch/api";
 import type { Range } from "$lib/twitch/irc";
 import type { User } from "$lib/user.svelte";
@@ -150,13 +150,14 @@ export function parse(message: UserMessage): Node[] {
 				type: "emote",
 				data: {
 					emote: {
+						provider: "Twitch",
+						id: ircEmote.id,
 						name: ircEmote.code,
 						width: 56,
 						height: 56,
 						srcset: [1, 2, 3].map((density) => {
 							return `${baseUrl}/${ircEmote.id}/default/dark/${density}.0 ${density}x`;
 						}),
-						zero_width: false,
 					},
 					layers: [],
 				},
@@ -165,7 +166,7 @@ export function parse(message: UserMessage): Node[] {
 			const foundIdx = ircEmotes.indexOf(ircEmote);
 			ircEmotes.splice(foundIdx, 1);
 		} else if (emote) {
-			if (emote.zero_width && prevNode?.type === "emote") {
+			if (emote.zeroWidth && prevNode?.type === "emote") {
 				prevNode.data.layers.push(emote);
 			} else {
 				nodes.push({

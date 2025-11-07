@@ -1,6 +1,6 @@
 import type { ResultOf } from "gql.tada";
 import { userDetailsFragment } from "./fragments";
-import { gql } from "./function";
+import { twitchGql as gql } from "./function";
 
 export const clipQuery = gql(`
 	query GetClip($slug: ID!) {

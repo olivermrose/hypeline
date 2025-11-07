@@ -2,7 +2,7 @@
 	import dayjs from "dayjs";
 	import duration from "dayjs/plugin/duration";
 	import { onMount } from "svelte";
-	import type { Stream } from "$lib/twitch/gql";
+	import type { Stream } from "$lib/graphql";
 
 	dayjs.extend(duration);
 

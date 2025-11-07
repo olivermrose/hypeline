@@ -24,6 +24,7 @@
 		]
 	},
 	"dependencies": {
+		"@better-fetch/fetch": "^1.1.18",
 		"@tailwindcss/vite": "^4.1.16",
 		"@tauri-apps/api": "^2.9.0",
 		"@tauri-apps/plugin-clipboard-manager": "~2.3.2",

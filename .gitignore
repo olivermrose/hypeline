@@ -10,5 +10,4 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-/src/graphql-env.d.ts
-/src/graphql-cache.d.ts
+**/graphql/*.d.ts

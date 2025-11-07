@@ -1,22 +1,21 @@
+import type { Emote } from "$lib/emotes";
 import { SystemMessage } from "$lib/message";
 import type { EmoteChange } from "$lib/seventv";
 import { app } from "$lib/state.svelte";
 import { defineHandler } from "../helper";
 
-function reparse(emote: EmoteChange) {
+function transform(emote: EmoteChange): Emote {
 	let width = 28;
 	let height = 28;
 	const srcset: string[] = [];
 
 	for (const format of ["webp", "png", "gif"]) {
-		const matchedFiles = emote.data.host.files.filter(
-			(file) => file.format.toLowerCase() === format,
-		);
+		const files = emote.data.host.files.filter((file) => file.format.toLowerCase() === format);
 
-		if (matchedFiles.length) {
-			matchedFiles.sort((a, b) => a.width - b.width);
+		if (files.length) {
+			files.sort((a, b) => a.width - b.width);
 
-			for (const file of matchedFiles) {
+			for (const file of files) {
 				width = file.width;
 				height = file.height;
 
@@ -28,19 +27,20 @@ function reparse(emote: EmoteChange) {
 	}
 
 	return {
+		provider: "7TV",
 		id: emote.id,
 		name: emote.name,
 		width: width / 2,
 		height: height / 2,
 		srcset,
-		zero_width: (emote.data.flags & 256) === 256,
+		zeroWidth: (emote.data.flags & 256) === 256,
 	};
 }
 
 export default defineHandler({
 	name: "emote_set.update",
 	async handle(data, channel) {
-		if (data.id !== channel.emoteSet?.id) return;
+		if (data.id !== channel.emoteSetId) return;
 
 		const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;
@@ -49,7 +49,7 @@ export default defineHandler({
 		const message = new SystemMessage();
 
 		for (const change of data.pushed ?? []) {
-			const emote = reparse(change.value);
+			const emote = transform(change.value);
 
 			message.context = {
 				type: "emoteSetUpdate",

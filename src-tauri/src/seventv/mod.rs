@@ -1,11 +1,9 @@
 pub mod client;
-mod emotes;
 
 use std::sync::Arc;
 
 use anyhow::anyhow;
 pub use client::SeventTvClient;
-pub use emotes::*;
 use serde_json::json;
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, State, async_runtime};

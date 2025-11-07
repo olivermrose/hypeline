@@ -2,9 +2,9 @@
 	import { Combobox, Dialog } from "bits-ui";
 	import { goto } from "$app/navigation";
 	import { Channel } from "$lib/channel.svelte";
+	import { suggestionsQuery } from "$lib/graphql";
+	import type { SearchSuggestionChannel } from "$lib/graphql";
 	import { app } from "$lib/state.svelte";
-	import { suggestionsQuery } from "$lib/twitch/gql";
-	import type { SearchSuggestionChannel } from "$lib/twitch/gql";
 	import { debounce } from "$lib/util";
 	import Input from "./ui/Input.svelte";
 
@@ -24,9 +24,9 @@
 
 		if (!query) return;
 
-		const { data } = await app.twitch.send(suggestionsQuery, { query });
+		const { searchSuggestions } = await app.twitch.send(suggestionsQuery, { query });
 
-		for (const edge of data.searchSuggestions?.edges ?? []) {
+		for (const edge of searchSuggestions?.edges ?? []) {
 			if (edge.node.content?.__typename !== "SearchSuggestionChannel") {
 				continue;
 			}
