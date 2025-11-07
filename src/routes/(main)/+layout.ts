@@ -30,7 +30,7 @@ export async function load({ parent }) {
 		const following = await app.twitch.fetchFollowing();
 
 		for (const followed of following) {
-			const user = new User(followed);
+			const user = new User(app.twitch, followed);
 			const channel = new Channel(app.twitch, user, followed.stream);
 
 			app.channels.push(channel);

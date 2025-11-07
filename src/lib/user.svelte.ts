@@ -3,6 +3,7 @@ import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { User as ApiUser, Badge } from "./graphql";
 import type { Paint } from "./seventv";
+import type { TwitchApiClient } from "./twitch/client";
 
 export interface PartialUser {
 	id: string;
@@ -20,7 +21,7 @@ export class User implements PartialUser {
 	/**
 	 * The date the user's account was created.
 	 */
-	public readonly createdAt: Date;
+	public createdAt: Date;
 
 	/**
 	 * Whether the user is Twitch staff.
@@ -40,17 +41,17 @@ export class User implements PartialUser {
 	/**
 	 * The bio of the user.
 	 */
-	public readonly bio: string;
+	public bio: string;
 
 	/**
 	 * The url of the user's avatar image.
 	 */
-	public readonly avatarUrl: string;
+	public avatarUrl: string;
 
 	/**
 	 * The url of the user's banner image seen when they are offline.
 	 */
-	public readonly bannerUrl: string;
+	public bannerUrl: string;
 
 	/**
 	 * The ids of the channels the current user moderates for.
@@ -72,13 +73,18 @@ export class User implements PartialUser {
 	 */
 	public paint = $state<Paint>();
 
-	public constructor(data: ApiUser) {
+	public constructor(
+		public readonly client: TwitchApiClient,
+		data: ApiUser,
+	) {
 		this.#color = data.chatColor;
 		this.#displayName = data.displayName;
 
 		this.id = data.id;
 		this.username = data.login;
-		this.createdAt = new Date(data.createdAt);
+
+		// WebKit and V8 behavior differ when instantiating a date with 0 as a string
+		this.createdAt = new Date(data.createdAt === "0" ? 0 : data.createdAt);
 
 		this.staff = data.roles?.isStaff ?? false;
 		this.affiliated = data.roles?.isAffiliate ?? false;
@@ -142,5 +148,23 @@ export class User implements PartialUser {
 	 */
 	public get localizedName() {
 		return this.username !== this.#displayName.toLowerCase() ? this.#displayName : null;
+	}
+
+	public get partial() {
+		return this.createdAt.getUTCFullYear() === 1970;
+	}
+
+	public async fetch() {
+		await this.client.users.fetch(this.id, { force: true });
+
+		const cached = this.client.users.get(this.id);
+		if (!cached) return this;
+
+		this.createdAt = cached.createdAt;
+		this.bio = cached.bio;
+		this.avatarUrl = cached.avatarUrl;
+		this.bannerUrl = cached.bannerUrl;
+
+		return this;
 	}
 }
