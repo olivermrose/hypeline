@@ -21,11 +21,6 @@ export interface EmoteChange {
 	data: Emote;
 }
 
-export interface EmoteSet {
-	id: string;
-	name: string;
-}
-
 export interface Paint {
 	name: string;
 	css: string;

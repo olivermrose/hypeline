@@ -14,7 +14,7 @@ export interface Emote {
 	/**
 	 * The name of the emote.
 	 */
-	readonly name: string;
+	name: string;
 
 	/**
 	 * The width of the emote.
