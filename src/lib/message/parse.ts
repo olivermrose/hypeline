@@ -158,7 +158,6 @@ export function parse(message: UserMessage): Node[] {
 						srcset: [1, 2, 3].map((density) => {
 							return `${baseUrl}/${ircEmote.id}/default/dark/${density}.0 ${density}x`;
 						}),
-						zeroWidth: false,
 					},
 					layers: [],
 				},

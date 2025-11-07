@@ -35,7 +35,7 @@ export interface Emote {
 	 * Whether the emote is zero-width i.e. can be used to modify other emotes.
 	 * 7TV only.
 	 */
-	readonly zeroWidth: boolean;
+	readonly zeroWidth?: boolean;
 }
 
 // 7TV
@@ -100,7 +100,6 @@ export function transformFfzEmote(emote: FfzEmote): Emote {
 		width: emote.width,
 		height: emote.height,
 		srcset: Object.entries(emote.urls).map(([n, url]) => `${url} ${n}x`),
-		zeroWidth: false,
 	};
 }
 
@@ -112,7 +111,6 @@ export function transformBttvEmote(emote: BttvEmote): Emote {
 		width: emote.width ?? 28,
 		height: emote.height ?? 28,
 		srcset: [1, 2, 3].map((n) => `https://cdn.betterttv.net/emote/${emote.id}/${n}x ${n}x`),
-		zeroWidth: false,
 	};
 }
 
