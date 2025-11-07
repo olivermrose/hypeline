@@ -1,8 +1,8 @@
 import { SvelteSet } from "svelte/reactivity";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
-import type { Paint } from "./seventv";
 import type { User as ApiUser, Badge } from "./graphql";
+import type { Paint } from "./seventv";
 
 export interface PartialUser {
 	id: string;
