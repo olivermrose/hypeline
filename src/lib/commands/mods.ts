@@ -6,7 +6,7 @@ export default defineCommand({
 	name: "mods",
 	description: "Display a list of moderators for this channel",
 	async exec(_, channel) {
-		const { data } = await channel.client.send(
+		const { user } = await channel.client.send(
 			gql(`query GetUserMods($id: ID!) {
 				user(id: $id) {
 					mods(first: 100) {
@@ -24,7 +24,7 @@ export default defineCommand({
 
 		const mods: string[] = [];
 
-		for (const edge of data.user?.mods?.edges ?? []) {
+		for (const edge of user?.mods?.edges ?? []) {
 			mods.push(edge.node.displayName);
 		}
 

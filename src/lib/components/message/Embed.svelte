@@ -30,10 +30,10 @@
 			slug = url.pathname.slice(1);
 		}
 
-		const { data } = await app.twitch.send(clipQuery, { slug });
+		const { clip } = await app.twitch.send(clipQuery, { slug });
 		onLoad?.();
 
-		return data.clip;
+		return clip;
 	}
 
 	function getSrcset(host: EmoteHost) {
