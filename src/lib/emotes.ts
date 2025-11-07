@@ -1,3 +1,5 @@
+import type { FragmentOf } from "gql.tada";
+
 export type EmoteProvider = "Twitch" | "FrankerFaceZ" | "BetterTTV" | "7TV";
 
 export interface Emote {
@@ -74,23 +76,7 @@ export interface BttvEmote {
 	height?: number;
 }
 
-export interface EmoteImage {
-	mime: string;
-	width: number;
-	height: number;
-	url: string;
-}
-
-export interface EmoteFlags {
-	defaultZeroWidth: boolean;
-}
-
-export interface SevenTvEmote {
-	id: string;
-	defaultName: string;
-	images: EmoteImage[];
-	flags: EmoteFlags;
-}
+export type SevenTvEmote = FragmentOf<typeof import("$lib/graphql").emoteDetailsFragment>;
 
 export function transformFfzEmote(emote: FfzEmote): Emote {
 	return {
@@ -131,9 +117,7 @@ export function transform7tvEmote(emote: SevenTvEmote): Emote {
 				width = img.width;
 				height = img.height;
 
-				const [, n] = /(\d+)x\./.exec(img.url) ?? [];
-
-				srcset.push(`${img.url} ${n}x`);
+				srcset.push(`${img.url} ${img.scale}x`);
 			}
 
 			break;

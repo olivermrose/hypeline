@@ -9,6 +9,7 @@ export const emoteDetailsFragment = seventvGql(`
 			mime
 			width
 			height
+			scale
 			url
 		}
 		flags {
