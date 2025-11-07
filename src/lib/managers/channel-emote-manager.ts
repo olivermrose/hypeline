@@ -83,6 +83,10 @@ export class ChannelEmoteManager extends SvelteMap<string, Emote> {
 		);
 
 		if (error) {
+			if (error.status === 404) {
+				return [];
+			}
+
 			throw new ApiError(error.status, error.statusText);
 		}
 
