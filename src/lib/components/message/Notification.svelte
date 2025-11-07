@@ -79,6 +79,21 @@
 				<p class="inline">
 					{@html colorizeName(message.author)} canceled the raid.
 				</p>
+			{:else if type === "watch_streak"}
+				<div class="flex gap-1">
+					<span class="iconify lucide--flame mt-px size-4 shrink-0"></span>
+
+					<p>
+						{@html colorizeName(message.author)}
+						reached a {message.event.days}-day watch streak!
+					</p>
+				</div>
+
+				{#if message.data.message_text}
+					<div class="mt-2">
+						<Message {message} />
+					</div>
+				{/if}
 			{/if}
 		</div>
 	{/if}

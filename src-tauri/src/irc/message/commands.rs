@@ -586,6 +586,10 @@ pub enum UserNoticeEvent {
     BitsBadgeTier {
         threshold: u64,
     },
+    WatchStreak {
+        days: u32,
+        points: u32,
+    },
     Unknown,
 }
 
@@ -722,6 +726,17 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                     .try_get_number::<u64>("msg-param-threshold")?
                     .to_owned(),
             },
+            "viewermilestone" => {
+                let category = source.try_get_nonempty_tag_value("msg-param-category")?;
+
+                match category {
+                    "watch-streak" => UserNoticeEvent::WatchStreak {
+                        days: source.try_get_number("msg-param-value")?,
+                        points: source.try_get_number("msg-param-copoReward")?,
+                    },
+                    _ => UserNoticeEvent::Unknown,
+                }
+            }
             _ => UserNoticeEvent::Unknown,
         };
 

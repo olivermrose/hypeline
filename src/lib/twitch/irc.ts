@@ -241,6 +241,12 @@ export interface CommunityPayForwardEvent {
 	gifter: BasicUser;
 }
 
+export interface WatchStreakEvent {
+	type: "watch_streak";
+	days: number;
+	points: number;
+}
+
 export type UserNoticeEvent =
 	| AnnouncementEvent
 	| SubOrResubEvent
@@ -254,7 +260,8 @@ export type UserNoticeEvent =
 	| AnonGiftPaidUpgradeEvent
 	| RitualEvent
 	| BitsBadgeTierEvent
-	| CommunityPayForwardEvent;
+	| CommunityPayForwardEvent
+	| WatchStreakEvent;
 
 export interface UserNoticeMessage extends BaseUserMessage {
 	type: "usernotice";
