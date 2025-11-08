@@ -17,6 +17,7 @@
 
 	const { message, mention }: Props = $props();
 
+	let showAllBadges = $state(false);
 	let relationship = $state<Relationship>();
 
 	onMount(async () => {
@@ -143,8 +144,12 @@
 			<span class="font-semibold" style={user.style}>{user.displayName}</span>
 
 			{#if relationship?.badges.length}
-				<div class="flex flex-wrap gap-1">
-					{#each relationship.badges as badge (`${badge.setID}:${badge.version}`)}
+				{@const badges = showAllBadges
+					? relationship.badges
+					: relationship.badges.slice(0, 10)}
+
+				<div class="flex flex-wrap items-center gap-1">
+					{#each badges as badge (`${badge.setID}:${badge.version}`)}
 						<img
 							class="size-4"
 							src={badge.imageURL}
@@ -152,6 +157,17 @@
 							title={badge.title}
 						/>
 					{/each}
+
+					{#if !showAllBadges && relationship.badges.length > 10}
+						<button
+							class="text-twitch hover:text-twitch-link ml-1 text-xs transition-colors"
+							type="button"
+							onclick={() => (showAllBadges = true)}
+							aria-label="Show {relationship.badges.length - 10} more badges"
+						>
+							+{relationship.badges.length - 10} more
+						</button>
+					{/if}
 				</div>
 			{/if}
 
