@@ -2,6 +2,7 @@ import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors";
 import { UserManager } from "$lib/managers";
+import { dedupe } from "$lib/util";
 import {
 	globalBadgesQuery,
 	twitchGql as gql,
@@ -170,26 +171,31 @@ export class TwitchApiClient {
 			throw new ApiError(401, "OAuth token is not set");
 		}
 
-		const response = await fetch(url, {
-			method,
-			headers: {
-				Authorization: `Bearer ${this.token}`,
-				"Client-Id": PUBLIC_TWITCH_CLIENT_ID,
-				"Content-Type": "application/json",
-			},
-			body: options.body ? JSON.stringify(options.body) : undefined,
+		const body = options.body ? JSON.stringify(options.body) : undefined;
+		const key = `${method}:${url.toString()}:${body ?? "{}"}`;
+
+		return dedupe(key, async () => {
+			const response = await fetch(url, {
+				method,
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+					"Client-Id": PUBLIC_TWITCH_CLIENT_ID,
+					"Content-Type": "application/json",
+				},
+				body,
+			});
+
+			if (response.status === 204 || response.headers.get("Content-Length") === "0") {
+				return { data: null! };
+			}
+
+			const data = await response.json();
+
+			if (response.status >= 400 && response.status < 500) {
+				throw new ApiError(response.status, data.message);
+			}
+
+			return data;
 		});
-
-		if (response.status === 204 || response.headers.get("Content-Length") === "0") {
-			return { data: null! };
-		}
-
-		const data = await response.json();
-
-		if (response.status >= 400 && response.status < 500) {
-			throw new ApiError(response.status, data.message);
-		}
-
-		return data;
 	}
 }

@@ -130,3 +130,18 @@ export function debounce<F extends (...args: Parameters<F>) => ReturnType<F>>(
 		id = setTimeout(() => fn(...args), timeout);
 	};
 }
+
+const requests = new Map<string, Promise<any>>();
+
+export function dedupe<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+	const request = requests.get(key);
+	if (request) return request;
+
+	const promise = fetcher().finally(() => {
+		requests.delete(key);
+	});
+
+	requests.set(key, promise);
+
+	return promise;
+}

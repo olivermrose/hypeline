@@ -1,9 +1,9 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
-import { SvelteSet } from "svelte/reactivity";
+import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { ApiError } from "./errors";
 import { badgeDetailsFragment, twitchGql as gql } from "./graphql";
 import { settings } from "./settings";
-import { makeReadable } from "./util";
+import { dedupe, makeReadable } from "./util";
 import type { User as ApiUser, Badge } from "./graphql";
 import type { Paint } from "./seventv";
 import type { SubscriptionAge } from "./twitch/api";
@@ -103,6 +103,11 @@ export class User implements PartialUser {
 	 * The ids of the channels the current user moderates for.
 	 */
 	public readonly moderating = new SvelteSet<string>();
+
+	/**
+	 * The relationships of the user to other channels.
+	 */
+	public readonly relationships = new SvelteMap<string, Relationship>();
 
 	/**
 	 * The username of the user.
@@ -214,7 +219,13 @@ export class User implements PartialUser {
 		return this;
 	}
 
-	public async fetchRelationship(channel: string): Promise<Relationship> {
+	/**
+	 * Retrieves the user's relationship to the specified channel.
+	 */
+	public async fetchRelationship(channel: string) {
+		const rel = this.relationships.get(channel);
+		if (rel) return rel;
+
 		const gqlRequest = this.client.send(
 			gql(
 				`query GetUserBadges($user: String!, $channel: String!) {
@@ -229,8 +240,9 @@ export class User implements PartialUser {
 			{ user: this.username, channel },
 		);
 
-		const ivrRequest = fetch<SubscriptionAge>(
-			`https://api.ivr.fi/v2/twitch/subage/${this.username}/${channel}`,
+		const params = `${this.username}/${channel}`;
+		const ivrRequest = dedupe(`ivr:${params}`, () =>
+			fetch<SubscriptionAge>(`https://api.ivr.fi/v2/twitch/subage/${params}`),
 		);
 
 		const [{ channelViewer }, { data, error }] = await Promise.all([gqlRequest, ivrRequest]);
@@ -239,7 +251,7 @@ export class User implements PartialUser {
 			throw new ApiError(error.status, error.statusText);
 		}
 
-		return {
+		const relationship = {
 			badges: channelViewer?.earnedBadges ?? [],
 			followedAt: data.followedAt ? new Date(data.followedAt) : null,
 			subscription: {
@@ -249,5 +261,8 @@ export class User implements PartialUser {
 				months: data.cumulative?.months ?? null,
 			},
 		};
+
+		this.relationships.set(channel, relationship);
+		return relationship;
 	}
 }

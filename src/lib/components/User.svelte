@@ -7,7 +7,6 @@
 	import type { MentionNode } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import { User } from "$lib/user.svelte";
-	import type { Relationship } from "$lib/user.svelte";
 	import Message from "./message/Message.svelte";
 
 	dayjs.extend(localizedFormat);
@@ -23,14 +22,16 @@
 	const user = mention?.data.user ?? message.author;
 
 	let showAllBadges = $state(false);
-	let relationship = $state<Relationship>();
+	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
 	onMount(async () => {
 		if (user.partial) {
 			await user.fetch();
 		}
 
-		relationship = await user.fetchRelationship(message.channel.user.username);
+		if (!relationship) {
+			await user.fetchRelationship(message.channel.user.username);
+		}
 	});
 
 	function getMentionStyle() {
