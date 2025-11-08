@@ -3,19 +3,22 @@
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
 	import { onMount } from "svelte";
-	import type { MentionNode, UserMessage } from "$lib/message";
+	import { UserMessage } from "$lib/message";
+	import type { MentionNode } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import { User } from "$lib/user.svelte";
 	import type { Relationship } from "$lib/user.svelte";
+	import Message from "./message/Message.svelte";
 
 	dayjs.extend(localizedFormat);
 
 	interface Props {
 		message: UserMessage;
+		nested?: boolean;
 		mention?: MentionNode;
 	}
 
-	const { message, mention }: Props = $props();
+	const { message, nested = false, mention }: Props = $props();
 
 	const user = mention?.data.user ?? message.author;
 
@@ -44,11 +47,19 @@
 
 <Popover.Root>
 	{#if mention}
-		<Popover.Trigger class="font-semibold wrap-break-word" style={getMentionStyle()}>
+		<Popover.Trigger
+			class="font-semibold wrap-break-word disabled:cursor-default"
+			disabled={nested}
+			style={getMentionStyle()}
+		>
 			@{mention.data.user?.displayName ?? mention.value.slice(1)}
 		</Popover.Trigger>
 	{:else}
-		<Popover.Trigger class="font-semibold wrap-break-word" style={message.author.style}>
+		<Popover.Trigger
+			class="font-semibold wrap-break-word disabled:cursor-default"
+			disabled={nested}
+			style={message.author.style}
+		>
 			{message.author.displayName}
 		</Popover.Trigger>{#if !message.action}:{/if}
 	{/if}
@@ -64,6 +75,10 @@
 </Popover.Root>
 
 {#snippet card(user: User)}
+	{@const history = message.channel.messages.filter(
+		(m): m is UserMessage => m.isUser() && m.author.id === user.id,
+	)}
+
 	<div class="bg-twitch h-18" style:background-color={user.color}>
 		{#if user.bannerUrl}
 			<img
@@ -168,4 +183,14 @@
 			{/if}
 		</div>
 	</div>
+
+	{#if history.length}
+		<div class="max-h-40 overflow-y-auto border-t px-4 py-2">
+			{#each history.toReversed() as message (message.id)}
+				<div class="origin-left scale-80">
+					<Message {message} nested />
+				</div>
+			{/each}
+		</div>
+	{/if}
 {/snippet}

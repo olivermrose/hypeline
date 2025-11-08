@@ -16,7 +16,11 @@
 	import User from "../User.svelte";
 	import Embed from "./Embed.svelte";
 
-	const { message, onEmbedLoad }: MessageProps = $props();
+	interface Props extends MessageProps {
+		nested?: boolean;
+	}
+
+	const { message, nested = false, onEmbedLoad }: Props = $props();
 
 	const badges = $state<Badge[]>([]);
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
@@ -64,7 +68,7 @@
 	</Tooltip>
 {/each}
 
-<User {message} />
+<User {message} {nested} />
 
 <p
 	class={["inline", message.action && "italic"]}
@@ -128,7 +132,7 @@
 	{/each}
 </p>
 
-{#if linkNodes.some(canEmbed)}
+{#if !nested && linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed onLoad={onEmbedLoad} {...node.data} />
