@@ -44,7 +44,7 @@
 		let channel = app.channels.find((c) => c.user.username === input.value.toLowerCase());
 
 		if (!channel) {
-			const user = await app.twitch.users.fetch(input.value, "login");
+			const user = await app.twitch.users.fetch(input.value, { by: "login" });
 
 			channel = new Channel(app.twitch, user);
 			channel.ephemeral = true;

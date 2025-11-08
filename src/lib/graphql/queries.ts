@@ -1,5 +1,5 @@
 import type { ResultOf } from "gql.tada";
-import { userDetailsFragment } from "./fragments";
+import { badgeDetailsFragment, userDetailsFragment } from "./fragments";
 import { twitchGql as gql } from "./function";
 
 export const clipQuery = gql(`
@@ -21,16 +21,11 @@ export type Clip = NonNullable<ResultOf<typeof clipQuery>["clip"]>;
 export const globalBadgesQuery = gql(
 	`query {
 		badges {
-			title
-			description
-			imageURL(size: QUADRUPLE)
-			setID
-			version
+			...BadgeDetails
 		}
 	}`,
+	[badgeDetailsFragment],
 );
-
-export type Badge = NonNullable<NonNullable<ResultOf<typeof globalBadgesQuery>["badges"]>[number]>;
 
 export const suggestionsQuery = gql(`
 	query GetSearchSuggestions($query: String!) {

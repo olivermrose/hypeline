@@ -28,7 +28,7 @@ export async function getTarget(username: string, channel: Channel) {
 
 	if (!target) {
 		try {
-			const user = await app.twitch.users.fetch(username, "login");
+			const user = await app.twitch.users.fetch(username, { by: "login" });
 
 			target = new Viewer(channel, user);
 			channel.viewers.set(target.id, target);

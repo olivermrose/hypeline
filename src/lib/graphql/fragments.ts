@@ -1,6 +1,18 @@
 import type { FragmentOf } from "gql.tada";
 import { seventvGql, twitchGql } from "./function";
 
+export const badgeDetailsFragment = twitchGql(`
+	fragment BadgeDetails on Badge {
+		setID
+		version
+		title
+		description
+		imageURL(size: QUADRUPLE)
+	}
+`);
+
+export type Badge = FragmentOf<typeof badgeDetailsFragment>;
+
 export const emoteDetailsFragment = seventvGql(`
 	fragment EmoteDetails on Emote {
 		id

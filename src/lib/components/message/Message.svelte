@@ -9,14 +9,18 @@
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import { app } from "$lib/app.svelte";
 	import type { Badge } from "$lib/graphql";
-	import type { LinkNode, MentionNode, UserMessage } from "$lib/message";
-	import { settings } from "$lib/settings";
+	import type { LinkNode, UserMessage } from "$lib/message";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
+	import User from "../User.svelte";
 	import Embed from "./Embed.svelte";
 
-	const { message, onEmbedLoad }: MessageProps = $props();
+	interface Props extends MessageProps {
+		nested?: boolean;
+	}
+
+	const { message, nested = false, onEmbedLoad }: Props = $props();
 
 	const badges = $state<Badge[]>([]);
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
@@ -34,19 +38,6 @@
 
 	if (message.author.badge) {
 		badges.push(message.author.badge);
-	}
-
-	function getMentionStyle(node: MentionNode) {
-		if (node.marked) return null;
-
-		switch (settings.state.chat.mentionStyle) {
-			case "none":
-				return null;
-			case "colored":
-				return `color: ${node.data.user?.color}`;
-			case "painted":
-				return node.data.user?.style;
-		}
 	}
 
 	function canEmbed(node: LinkNode) {
@@ -77,11 +68,7 @@
 	</Tooltip>
 {/each}
 
-<!-- Formatting is ugly here, but it needs to be in order for the colon to
-render properly without an extra space in between. -->
-<span class="font-semibold wrap-break-word" style={message.author.style}>
-	{message.author.displayName}
-</span>{#if !message.action}:{/if}
+<User {message} {nested} />
 
 <p
 	class={["inline", message.action && "italic"]}
@@ -103,13 +90,17 @@ render properly without an extra space in between. -->
 			</svelte:element>
 		{:else if node.type === "mention"}
 			{#if !message.reply || (message.reply && i > 0)}
-				<svelte:element
-					this={node.marked ? "mark" : "span"}
-					class="font-semibold wrap-break-word"
-					style={getMentionStyle(node)}
-				>
-					@{node.data.user?.displayName ?? node.value.slice(1)}
-				</svelte:element>
+				{#if node.marked}
+					<mark class="font-semibold wrap-break-word">
+						@{node.data.user?.displayName ?? node.value.slice(1)}
+					</mark>
+				{:else if !node.data.user}
+					<span class="font-semibold wrap-break-word">
+						{node.value.slice(1)}
+					</span>
+				{:else}
+					<User {message} mention={node} />
+				{/if}
 			{/if}
 		{:else if node.type === "cheer"}
 			{#if node.marked}
@@ -141,7 +132,7 @@ render properly without an extra space in between. -->
 	{/each}
 </p>
 
-{#if linkNodes.some(canEmbed)}
+{#if !nested && linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed onLoad={onEmbedLoad} {...node.data} />

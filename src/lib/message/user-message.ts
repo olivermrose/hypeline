@@ -15,8 +15,8 @@ import { Message } from "./message.svelte";
 import { parse } from ".";
 import type { Node } from ".";
 
-function createMinimalUser(channel: Channel, sender: BasicUser, color: string) {
-	const user = new User({
+function createPartialUser(channel: Channel, sender: BasicUser, color: string) {
+	const user = new User(channel.client, {
 		id: sender.id,
 		createdAt: "0",
 		login: sender.login,
@@ -107,7 +107,7 @@ export class UserMessage extends Message {
 		// which case we can assume system_message is present
 		this.text = data.message_text ?? (data as UserNoticeMessage).system_message;
 
-		this.author = viewer?.user ?? createMinimalUser(channel, data.sender, data.name_color);
+		this.author = viewer?.user ?? createPartialUser(channel, data.sender, data.name_color);
 		this.viewer = viewer ?? null;
 
 		this.action = "is_action" in data && data.is_action;

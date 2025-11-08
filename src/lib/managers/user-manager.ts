@@ -4,6 +4,11 @@ import { userQuery } from "$lib/graphql";
 import type { TwitchApiClient } from "$lib/twitch/client";
 import { User } from "$lib/user.svelte";
 
+export interface UserFetchOptions {
+	by?: "id" | "login";
+	force?: boolean;
+}
+
 export class UserManager extends SvelteMap<string, User> {
 	readonly #requests = new Map<string, Promise<User>>();
 
@@ -11,7 +16,7 @@ export class UserManager extends SvelteMap<string, User> {
 		super();
 	}
 
-	public async fetch(idOrLogin: string, type: "id" | "login" = "id") {
+	public async fetch(idOrLogin: string, { by = "id", force = false }: UserFetchOptions = {}) {
 		const inProgress = this.#requests.get(idOrLogin);
 		if (inProgress) return inProgress;
 
@@ -20,9 +25,11 @@ export class UserManager extends SvelteMap<string, User> {
 			login: null as string | null,
 		};
 
-		if (type === "id") {
-			const cached = this.get(idOrLogin);
-			if (cached) return cached;
+		if (by === "id") {
+			if (!force) {
+				const cached = this.get(idOrLogin);
+				if (cached) return cached;
+			}
 
 			variables.id = idOrLogin;
 		} else {
@@ -37,9 +44,9 @@ export class UserManager extends SvelteMap<string, User> {
 					throw new ApiError(404, `User "${idOrLogin}" not found`);
 				}
 
-				const user = new User(data);
+				const user = new User(this.client, data);
 
-				if (type === "id") {
+				if (by === "id") {
 					this.set(idOrLogin, user);
 				}
 
