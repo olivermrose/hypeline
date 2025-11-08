@@ -1,4 +1,4 @@
-import { UserMessage } from "$lib/message";
+import { UserMessage } from "$lib/models";
 import type { Boundary } from "$lib/twitch/eventsub";
 import { defineHandler } from "../helper";
 

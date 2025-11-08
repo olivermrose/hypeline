@@ -3,8 +3,8 @@
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import type { Stream } from "$lib/graphql";
+	import type { User } from "$lib/models";
 	import { settings } from "$lib/settings";
-	import type { User } from "$lib/user.svelte";
 	import Tooltip from "./ui/Tooltip.svelte";
 
 	interface Props {

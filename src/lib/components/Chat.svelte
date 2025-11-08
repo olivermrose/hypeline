@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Separator } from "bits-ui";
 	import { VList } from "virtua/svelte";
-	import type { Channel } from "$lib/channel.svelte";
+	import type { Channel } from "$lib/models";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
 	import SystemMessage from "./message/SystemMessage.svelte";

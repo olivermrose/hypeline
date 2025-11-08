@@ -1,5 +1,5 @@
-import { SystemMessage } from "$lib/message";
-import type { Viewer } from "$lib/viewer.svelte";
+import { SystemMessage } from "$lib/models";
+import type { Viewer } from "$lib/models";
 import { defineHandler } from "../helper";
 
 export default defineHandler({

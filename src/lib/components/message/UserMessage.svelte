@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { app } from "$lib/app.svelte";
+	import type { Viewer } from "$lib/models";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
-	import type { Viewer } from "$lib/viewer.svelte";
 	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";

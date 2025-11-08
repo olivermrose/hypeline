@@ -1,5 +1,5 @@
 import type { BaseUserMessage } from "$lib/twitch/irc";
-import type { SystemMessage, SystemMessageData, UserMessage } from ".";
+import type { SystemMessage, SystemMessageData, UserMessage } from "../";
 
 export type MessageData = BaseUserMessage | SystemMessageData;
 

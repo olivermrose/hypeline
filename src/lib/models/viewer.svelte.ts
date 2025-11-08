@@ -1,5 +1,5 @@
+import type { BanEvasionEvaluation } from "../twitch/eventsub";
 import type { Channel } from "./channel.svelte";
-import type { BanEvasionEvaluation } from "./twitch/eventsub";
 import type { User } from "./user.svelte";
 
 export interface TimeoutOptions {

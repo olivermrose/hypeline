@@ -15,7 +15,7 @@
 		TimeoutContext,
 		UnbanRequestContext,
 		WarnContext,
-	} from "$lib/message";
+	} from "$lib/models";
 	import { colorizeName, formatDuration } from "$lib/util";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";

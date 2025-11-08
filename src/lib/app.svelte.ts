@@ -1,10 +1,9 @@
 import { SvelteMap } from "svelte/reactivity";
 import { EmoteManager } from "./managers";
 import { TwitchApiClient } from "./twitch/client";
-import type { Channel } from "./channel.svelte";
 import type { Badge } from "./graphql";
+import type { Channel, User } from "./models";
 import type { Paint } from "./seventv";
-import type { User } from "./user.svelte";
 
 class App {
 	public readonly twitch = new TwitchApiClient();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UserMessage } from "$lib/message";
+	import type { UserMessage } from "$lib/models";
 	import type {
 		GiftPaidUpgradeEvent,
 		PrimePaidUpgradeEvent,

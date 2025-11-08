@@ -1,5 +1,5 @@
 import { twitchGql as gql } from "$lib/graphql";
-import { SystemMessage } from "$lib/message";
+import { SystemMessage } from "$lib/models";
 import { defineCommand } from "./util";
 
 export default defineCommand({

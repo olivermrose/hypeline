@@ -2,8 +2,7 @@ import { parse as parseTld } from "tldts";
 import type { Emote } from "$lib/emotes";
 import type { CheermoteTier } from "$lib/twitch/api";
 import type { Range } from "$lib/twitch/irc";
-import type { User } from "$lib/user.svelte";
-import type { UserMessage } from "./user-message";
+import type { User, UserMessage } from "../";
 
 export interface BaseNode {
 	start: number;

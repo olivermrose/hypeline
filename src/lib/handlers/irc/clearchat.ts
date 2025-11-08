@@ -1,5 +1,5 @@
 import { app } from "$lib/app.svelte";
-import { SystemMessage } from "$lib/message";
+import { SystemMessage } from "$lib/models";
 import { defineHandler } from "../helper";
 
 export default defineHandler({

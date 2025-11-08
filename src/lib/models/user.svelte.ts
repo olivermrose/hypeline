@@ -1,13 +1,13 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
-import { ApiError } from "./errors";
-import { badgeDetailsFragment, twitchGql as gql } from "./graphql";
-import { settings } from "./settings";
-import { dedupe, makeReadable } from "./util";
-import type { User as ApiUser, Badge } from "./graphql";
-import type { Paint } from "./seventv";
-import type { SubscriptionAge } from "./twitch/api";
-import type { TwitchApiClient } from "./twitch/client";
+import { ApiError } from "../errors";
+import { badgeDetailsFragment, twitchGql as gql } from "../graphql";
+import { settings } from "../settings";
+import { dedupe, makeReadable } from "../util";
+import type { User as ApiUser, Badge } from "../graphql";
+import type { Paint } from "../seventv";
+import type { SubscriptionAge } from "../twitch/api";
+import type { TwitchApiClient } from "../twitch/client";
 
 export interface RelationshipSubscription {
 	/**

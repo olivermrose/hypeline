@@ -1,6 +1,6 @@
 import { app } from "$lib/app.svelte";
-import { SystemMessage } from "$lib/message";
-import type { UserMessage } from "$lib/message";
+import { SystemMessage } from "$lib/models";
+import type { UserMessage } from "$lib/models";
 import { defineHandler } from "../helper";
 
 export default defineHandler({

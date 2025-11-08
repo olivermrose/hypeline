@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Separator, Toolbar } from "bits-ui";
 	import { input, replyTarget } from "$lib/components/ChatInput.svelte";
-	import type { UserMessage } from "$lib/message";
+	import type { UserMessage } from "$lib/models";
 	import { cn } from "$lib/util";
 
 	interface Props {
@@ -18,7 +18,7 @@
 
 <Toolbar.Root class={cn("bg-muted flex items-center gap-x-1 rounded-sm border p-0.5", className)}>
 	<Toolbar.Button
-		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1"
+		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1"
 		title="Copy message"
 		onclick={copy}
 	>
@@ -26,7 +26,7 @@
 	</Toolbar.Button>
 
 	<Toolbar.Button
-		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1"
+		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1"
 		title="Reply to {message.author.displayName}"
 		onclick={() => {
 			replyTarget.value = message;
@@ -40,7 +40,7 @@
 		<Separator.Root class="bg-border h-4 w-px" orientation="vertical" />
 
 		<Toolbar.Button
-			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1 text-blue-400"
+			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1 text-blue-400"
 			title="Delete message"
 			onclick={() => message.delete()}
 		>
@@ -48,7 +48,7 @@
 		</Toolbar.Button>
 
 		<Toolbar.Button
-			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-[4px] p-1 text-yellow-400"
+			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1 text-yellow-400"
 			title="Timeout {message.author.displayName} for 10 minutes"
 			onclick={() => message.viewer?.timeout({ duration: 600 })}
 		>
@@ -56,7 +56,7 @@
 		</Toolbar.Button>
 
 		<Toolbar.Button
-			class="hover:bg-muted-foreground/50 text-destructive flex items-center justify-center rounded-[4px] p-1"
+			class="hover:bg-muted-foreground/50 text-destructive flex items-center justify-center rounded-sm p-1"
 			title="Ban {message.author.displayName}"
 			onclick={() => message.viewer?.ban()}
 		>

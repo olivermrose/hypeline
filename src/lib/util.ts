@@ -2,10 +2,10 @@ import chroma from "chroma-js";
 import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Viewer } from "./viewer.svelte";
+import { Viewer } from "./models";
+import type { User } from "./models";
 import type { Fragment } from "./twitch/eventsub";
 import type { Emote } from "./twitch/irc";
-import type { User } from "./user.svelte";
 
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 

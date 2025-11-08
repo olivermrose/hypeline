@@ -1,9 +1,8 @@
 import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
-import type { Channel } from "$lib/channel.svelte";
+import type { Channel, TimeoutOptions } from "$lib/models";
+import { Viewer } from "$lib/models";
 import type { TwitchApiClient } from "$lib/twitch/client";
-import { Viewer } from "$lib/viewer.svelte";
-import type { TimeoutOptions } from "$lib/viewer.svelte";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
 	public constructor(

@@ -1,8 +1,7 @@
 import { app } from "$lib/app.svelte";
-import type { Channel } from "$lib/channel.svelte";
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import type { User } from "$lib/user.svelte";
-import { Viewer } from "$lib/viewer.svelte";
+import type { Channel, User } from "$lib/models";
+import { Viewer } from "$lib/models";
 
 export interface Command {
 	name: string;

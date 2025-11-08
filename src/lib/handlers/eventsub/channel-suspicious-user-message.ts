@@ -1,4 +1,4 @@
-import { UserMessage } from "$lib/message";
+import { UserMessage } from "$lib/models";
 import { defineHandler } from "../helper";
 
 export default defineHandler({

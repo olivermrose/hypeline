@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { UserMessage } from "$lib/message";
+	import { UserMessage } from "$lib/models";
 	import { colorizeName } from "$lib/util";
 	import Message from "./Message.svelte";
 	import Sub from "./Sub.svelte";

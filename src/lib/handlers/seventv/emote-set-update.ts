@@ -1,5 +1,5 @@
 import type { Emote } from "$lib/emotes";
-import { SystemMessage } from "$lib/message";
+import { SystemMessage } from "$lib/models";
 import type { EmoteChange } from "$lib/seventv";
 import { defineHandler } from "../helper";
 

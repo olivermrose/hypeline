@@ -1,5 +1,4 @@
 import { app } from "$lib/app.svelte";
-import type { Channel } from "$lib/channel.svelte";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
 	BasicUser,
@@ -8,12 +7,9 @@ import type {
 	UserNoticeEvent,
 	UserNoticeMessage,
 } from "$lib/twitch/irc";
-import { User } from "$lib/user.svelte";
 import { extractEmotes } from "$lib/util";
-import { Viewer } from "$lib/viewer.svelte";
-import { Message } from "./message.svelte";
-import { parse } from ".";
-import type { Node } from ".";
+import { Message, parse, User, Viewer } from "../";
+import type { Channel, Node } from "../";
 
 function createPartialUser(channel: Channel, sender: BasicUser, color: string) {
 	const user = new User(channel.client, {

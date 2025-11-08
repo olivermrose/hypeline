@@ -1,4 +1,4 @@
-import type { Channel } from "$lib/channel.svelte";
+import type { Channel } from "$lib/models";
 import type { SevenTvEventMap } from "$lib/seventv";
 import type { SubscriptionEventMap } from "$lib/twitch/eventsub";
 import type { IrcMessageMap } from "$lib/twitch/irc";

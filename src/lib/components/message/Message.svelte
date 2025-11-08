@@ -9,7 +9,7 @@
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import { app } from "$lib/app.svelte";
 	import type { Badge } from "$lib/graphql";
-	import type { LinkNode, UserMessage } from "$lib/message";
+	import type { LinkNode, UserMessage } from "$lib/models";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
