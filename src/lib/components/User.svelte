@@ -17,11 +17,17 @@
 
 	const { message, mention }: Props = $props();
 
+	const user = mention?.data.user ?? message.author;
+
 	let showAllBadges = $state(false);
 	let relationship = $state<Relationship>();
 
 	onMount(async () => {
-		relationship = await message.author.fetchRelationship(message.channel.user.username);
+		if (user.partial) {
+			await user.fetch();
+		}
+
+		relationship = await user.fetchRelationship(message.channel.user.username);
 	});
 
 	function getMentionStyle() {
@@ -52,24 +58,10 @@
 			class="bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 slide-in-from-left-2 z-50 w-sm origin-(--bits-popover-content-transform-origin) overflow-hidden rounded-md border shadow-md outline-hidden"
 			sideOffset={8}
 		>
-			{#if mention}
-				{@render branch(mention.data.user!)}
-			{:else}
-				{@render branch(message.author)}
-			{/if}
+			{@render card(user)}
 		</Popover.Content>
 	</Popover.Portal>
 </Popover.Root>
-
-{#snippet branch(user: User)}
-	{#if user.partial}
-		{#await user.fetch() then user}
-			{@render card(user)}
-		{/await}
-	{:else}
-		{@render card(user)}
-	{/if}
-{/snippet}
 
 {#snippet card(user: User)}
 	<div class="bg-twitch h-18" style:background-color={user.color}>
