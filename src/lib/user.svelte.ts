@@ -1,9 +1,55 @@
+import { betterFetch as fetch } from "@better-fetch/fetch";
 import { SvelteSet } from "svelte/reactivity";
+import { ApiError } from "./errors";
+import { badgeDetailsFragment, twitchGql as gql } from "./graphql";
 import { settings } from "./settings";
 import { makeReadable } from "./util";
 import type { User as ApiUser, Badge } from "./graphql";
 import type { Paint } from "./seventv";
+import type { SubscriptionAge } from "./twitch/api";
 import type { TwitchApiClient } from "./twitch/client";
+
+export interface RelationshipSubscription {
+	/**
+	 * Whether the user has their subscription info hidden.
+	 */
+	hidden: boolean;
+
+	/**
+	 * The type of subscription the user has in the channel.
+	 */
+	type: "prime" | "paid" | "gift" | null;
+
+	/**
+	 * The tier of the subscription the user has in the channel.
+	 */
+	tier: string | null;
+
+	/**
+	 * The number of months the user has been subscribed to the channel.
+	 */
+	months: number | null;
+}
+
+/**
+ * Represents a user's relationship to a channel.
+ */
+export interface Relationship {
+	/**
+	 * The badges the user has in the channel along with global badges earned.
+	 */
+	badges: Badge[];
+
+	/**
+	 * The date the user followed the channel if they follow it.
+	 */
+	followedAt: Date | null;
+
+	/**
+	 * Metadata for the user's subscription to the channel if they are subscribed.
+	 */
+	subscription: RelationshipSubscription;
+}
 
 export interface PartialUser {
 	id: string;
@@ -166,5 +212,42 @@ export class User implements PartialUser {
 		this.bannerUrl = cached.bannerUrl;
 
 		return this;
+	}
+
+	public async fetchRelationship(channel: string): Promise<Relationship> {
+		const gqlRequest = this.client.send(
+			gql(
+				`query GetUserBadges($user: String!, $channel: String!) {
+					channelViewer(userLogin: $user, channelLogin: $channel) {
+						earnedBadges {
+							...BadgeDetails
+						}
+					}
+				}`,
+				[badgeDetailsFragment],
+			),
+			{ user: this.username, channel },
+		);
+
+		const ivrRequest = fetch<SubscriptionAge>(
+			`https://api.ivr.fi/v2/twitch/subage/${this.username}/${channel}`,
+		);
+
+		const [{ channelViewer }, { data, error }] = await Promise.all([gqlRequest, ivrRequest]);
+
+		if (error) {
+			throw new ApiError(error.status, error.statusText);
+		}
+
+		return {
+			badges: channelViewer?.earnedBadges ?? [],
+			followedAt: data.followedAt ? new Date(data.followedAt) : null,
+			subscription: {
+				hidden: data.statusHidden,
+				type: data.meta?.type ?? null,
+				tier: data.meta?.tier ?? null,
+				months: data.cumulative?.months ?? null,
+			},
+		};
 	}
 }

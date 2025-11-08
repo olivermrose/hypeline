@@ -3,11 +3,10 @@
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
 	import { onMount } from "svelte";
-	import { badgeDetailsFragment, twitchGql as gql } from "$lib/graphql";
-	import type { Badge } from "$lib/graphql";
 	import type { MentionNode, UserMessage } from "$lib/message";
 	import { settings } from "$lib/settings";
 	import { User } from "$lib/user.svelte";
+	import type { Relationship } from "$lib/user.svelte";
 
 	dayjs.extend(localizedFormat);
 
@@ -18,24 +17,10 @@
 
 	const { message, mention }: Props = $props();
 
-	let badges = $state<Badge[]>([]);
+	let relationship = $state<Relationship>();
 
 	onMount(async () => {
-		const { channelViewer } = await message.author.client.send(
-			gql(
-				`query GetUserBadges($source: String!, $target: String!) {
-					channelViewer(userLogin: $source, channelLogin: $target) {
-						earnedBadges {
-							...BadgeDetails
-						}
-					}
-				}`,
-				[badgeDetailsFragment],
-			),
-			{ source: message.author.username, target: message.channel.user.username },
-		);
-
-		badges = channelViewer?.earnedBadges ?? [];
+		relationship = await message.author.fetchRelationship(message.channel.user.username);
 	});
 
 	function getMentionStyle() {
@@ -107,20 +92,59 @@
 			/>
 		</div>
 
-		<div class="text-muted-foreground absolute top-2 right-2 flex items-center gap-1">
-			<span class="iconify lucide--cake size-3"></span>
+		<div class="text-muted-foreground absolute top-2 right-2 space-y-1 text-xs">
+			<div class="flex items-center gap-1">
+				<span class="iconify lucide--cake size-3"></span>
 
-			<time class="text-xs" datetime={user.createdAt.toISOString()}>
-				{dayjs(user.createdAt).format("LL")}
-			</time>
+				<time datetime={user.createdAt.toISOString()}>
+					{dayjs(user.createdAt).format("LL")}
+				</time>
+			</div>
+
+			<div class="flex items-center gap-1">
+				<span class="iconify lucide--heart size-3"></span>
+
+				{#if relationship?.followedAt}
+					<time datetime={relationship.followedAt.toISOString()}>
+						{dayjs(relationship.followedAt).format("LL")}
+					</time>
+				{:else}
+					Not following
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-1">
+				<span
+					class={[
+						"iconify size-3",
+						relationship?.subscription.hidden || !relationship?.subscription.tier
+							? "lucide--star-off"
+							: "lucide--star",
+					]}
+				></span>
+
+				{#if !relationship?.subscription.hidden && relationship?.subscription.months}
+					{@const { tier, type, months } = relationship.subscription}
+					{@const noun = `month${months > 1 ? "s" : ""}`}
+
+					{#if tier}
+						{type === "prime" ? "Prime" : `Tier ${tier}`} - {months}
+						{noun}
+					{:else}
+						{months} {noun}
+					{/if}
+				{:else}
+					Subscription hidden
+				{/if}
+			</div>
 		</div>
 
-		<div class="flex flex-col gap-y-2">
+		<div class="mt-1 flex flex-col gap-y-2">
 			<span class="font-semibold" style={user.style}>{user.displayName}</span>
 
-			{#if badges.length}
+			{#if relationship?.badges.length}
 				<div class="flex flex-wrap gap-1">
-					{#each badges as badge (`${badge.setID}:${badge.version}`)}
+					{#each relationship.badges as badge (`${badge.setID}:${badge.version}`)}
 						<img
 							class="size-4"
 							src={badge.imageURL}
