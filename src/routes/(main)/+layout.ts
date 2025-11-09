@@ -1,14 +1,20 @@
+import { redirect } from "@sveltejs/kit";
 import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
+import { log } from "$lib/log";
 import { Channel, User } from "$lib/models";
 import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";
 import type { Prefix } from "$lib/util";
 
 export async function load({ parent }) {
+	// Force root layout to run first to ensure settings are synced
 	await parent();
 
-	if (!settings.state.user) return;
+	if (!settings.state.user) {
+		log.info("User not authenticated, redirecting to login");
+		redirect(302, "/auth/login");
+	}
 
 	app.twitch.token = settings.state.user.token;
 	app.user = await app.twitch.users.fetch(settings.state.user.id);
@@ -34,10 +40,10 @@ export async function load({ parent }) {
 
 			app.channels.push(channel);
 		}
-	}
 
-	const self = new Channel(app.twitch, app.user);
-	app.channels.push(self);
+		const self = new Channel(app.twitch, app.user);
+		app.channels.push(self);
+	}
 
 	if (!app.emotes.size) {
 		await app.emotes.fetch();

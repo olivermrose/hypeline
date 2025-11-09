@@ -54,17 +54,13 @@
 	});
 
 	onDestroy(() => unlisten?.());
-
-	async function openAuth() {
-		await openUrl(authUrl.toString());
-	}
 </script>
 
 <div class="flex h-screen items-center justify-center">
 	<button
 		class="bg-twitch m-auto flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white"
 		type="button"
-		onclick={openAuth}
+		onclick={() => openUrl(authUrl)}
 	>
 		<svg
 			class="size-5 fill-white"
