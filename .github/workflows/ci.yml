@@ -11,8 +11,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     env:
-      PUBLIC_TWITCH_CLIENT_ID:
-      PUBLIC_TWITCH_REDIRECT_URL:
+      PUBLIC_TWITCH_CLIENT_ID: ""
+      PUBLIC_TWITCH_REDIRECT_URL: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
