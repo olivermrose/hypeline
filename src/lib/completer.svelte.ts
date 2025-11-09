@@ -32,6 +32,7 @@ export class Completer {
 			map: (item) => ({
 				type: "command" as const,
 				value: item.name,
+				provider: item.provider,
 				display: `/${item.name}`,
 				description: item.description,
 				args: item.args ?? [],

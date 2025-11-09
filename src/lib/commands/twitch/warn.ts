@@ -1,7 +1,8 @@
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, getTarget } from "./util";
+import { defineCommand, getTarget } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "warn",
 	description:
 		"Issue a warning to a user that they must acknowledge before sending more messages",

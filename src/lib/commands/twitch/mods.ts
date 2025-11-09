@@ -1,8 +1,9 @@
 import { twitchGql as gql } from "$lib/graphql";
 import { SystemMessage } from "$lib/models";
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "mods",
 	description: "Display a list of moderators for this channel",
 	async exec(_, channel) {

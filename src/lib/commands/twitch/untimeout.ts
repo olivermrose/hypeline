@@ -1,7 +1,8 @@
+import { defineCommand } from "../";
 import unban from "./unban";
-import { defineCommand } from "./util";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "untimeout",
 	description: "Remove a timeout on a user",
 	modOnly: true,

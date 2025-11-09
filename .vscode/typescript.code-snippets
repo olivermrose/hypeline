@@ -33,7 +33,7 @@
 		"scope": "typescript",
 		"prefix": "cmd",
 		"body": [
-			"import { defineCommand } from \"./util\";",
+			"import { defineCommand } from \"../\";",
 			"",
 			"export default defineCommand({",
 			"\tname: \"${TM_FILENAME_BASE}\",",

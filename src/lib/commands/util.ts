@@ -3,7 +3,10 @@ import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
 import type { Channel, User } from "$lib/models";
 import { Viewer } from "$lib/models";
 
+export type CommandProvider = "Built-in" | "Twitch";
+
 export interface Command {
+	provider: CommandProvider;
 	name: string;
 	description: string;
 	args?: string[];

@@ -1,7 +1,8 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, parseBool } from "./util";
+import { defineCommand, parseBool } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "unique",
 	description: "Prevent users from sending duplicate messages",
 	modOnly: true,

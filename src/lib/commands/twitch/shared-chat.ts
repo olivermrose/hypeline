@@ -1,6 +1,7 @@
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "shared-chat",
 	description: "Start a new shared chat session or join one in an existing collaboration",
 	broadcasterOnly: true,

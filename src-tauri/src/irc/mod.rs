@@ -14,7 +14,7 @@ use config::ClientConfig;
 use error::Error;
 use message::ServerMessage;
 use tauri::ipc::Channel;
-use tauri::{AppHandle, State, async_runtime};
+use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
 use tracing::Instrument;
 
