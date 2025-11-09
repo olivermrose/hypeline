@@ -14,7 +14,7 @@ use config::ClientConfig;
 use error::Error;
 use message::ServerMessage;
 use tauri::ipc::Channel;
-use tauri::{State, async_runtime};
+use tauri::{AppHandle, State, async_runtime};
 use tokio::sync::Mutex;
 use tracing::Instrument;
 
@@ -45,16 +45,6 @@ pub async fn connect_irc(
         async move {
             while let Some(message) = incoming.recv().await {
                 tracing::trace!(?message, "Received {} message", message.source().command);
-
-                match message {
-                    ServerMessage::Join(ref join) => {
-                        tracing::info!("Joined {}", join.channel_login);
-                    }
-                    ServerMessage::Part(ref part) => {
-                        tracing::info!("Parted {}", part.channel_login);
-                    }
-                    _ => (),
-                }
 
                 channel.send(message).unwrap();
             }

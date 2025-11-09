@@ -127,9 +127,12 @@ export class Channel {
 	}
 
 	public async leave() {
-		await invoke("leave", { channel: this.user.username });
-
-		settings.state.lastJoined = null;
+		try {
+			await invoke("leave", { channel: this.user.username });
+		} finally {
+			this.reset();
+			settings.state.lastJoined = null;
+		}
 	}
 
 	public addBadges(badges: Badge[]) {
