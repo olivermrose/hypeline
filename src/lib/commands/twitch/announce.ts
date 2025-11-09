@@ -1,7 +1,8 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "announce",
 	description: "Call attention to your message with a colored highlight",
 	modOnly: true,

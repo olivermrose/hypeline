@@ -1,7 +1,8 @@
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, getTarget, parseDuration } from "./util";
+import { defineCommand, getTarget, parseDuration } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "timeout",
 	description: "Temporarily restrict a user from sending messages",
 	modOnly: true,

@@ -1,9 +1,10 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, parseBool } from "./util";
+import { defineCommand, parseBool } from "../";
 
 export default defineCommand({
-	name: "emote-only",
-	description: "Restrict chat to emote only messages",
+	provider: "Twitch",
+	name: "subscriber-only",
+	description: "Restrict chat to subscribers only",
 	modOnly: true,
 	args: ["enabled"],
 	async exec(args, channel) {
@@ -13,6 +14,6 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
-		await channel.updateChatSettings({ emoteOnly: enabled });
+		await channel.updateChatSettings({ subOnly: enabled });
 	},
 });

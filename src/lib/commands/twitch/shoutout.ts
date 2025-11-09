@@ -1,7 +1,8 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, getTarget } from "./util";
+import { defineCommand, getTarget } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "shoutout",
 	description: "Highlight a channel for viewers to follow",
 	modOnly: true,

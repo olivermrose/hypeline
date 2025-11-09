@@ -1,7 +1,8 @@
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "unraid",
 	description: "Stop an ongoing raid",
 	modOnly: true,

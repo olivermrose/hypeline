@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
 import { CommandError, ErrorMessage } from "$lib/errors";
 import { SystemMessage } from "$lib/models";
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "marker",
 	description: "Add a stream marker at the current timestamp",
 	modOnly: true,

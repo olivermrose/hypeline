@@ -1,9 +1,10 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, parseBool } from "./util";
+import { defineCommand, parseBool } from "../";
 
 export default defineCommand({
-	name: "subscriber-only",
-	description: "Restrict chat to subscribers only",
+	provider: "Twitch",
+	name: "shield",
+	description: "Restrict chat and ban harassing chatters",
 	modOnly: true,
 	args: ["enabled"],
 	async exec(args, channel) {
@@ -13,6 +14,6 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
-		await channel.updateChatSettings({ subOnly: enabled });
+		await channel.setShieldMode(enabled);
 	},
 });

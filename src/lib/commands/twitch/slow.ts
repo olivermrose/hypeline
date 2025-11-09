@@ -1,7 +1,8 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, parseDuration } from "./util";
+import { defineCommand, parseDuration } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "slow",
 	description: "Limit how frequently users can send messages",
 	modOnly: true,

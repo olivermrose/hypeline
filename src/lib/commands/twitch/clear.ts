@@ -1,6 +1,7 @@
-import { defineCommand } from "./util";
+import { defineCommand } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "clear",
 	description: "Clear chat history for non-moderator viewers",
 	modOnly: true,

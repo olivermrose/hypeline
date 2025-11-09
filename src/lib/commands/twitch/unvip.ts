@@ -1,7 +1,8 @@
 import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, getTarget } from "./util";
+import { defineCommand, getTarget } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "unvip",
 	description: "Revoke VIP status from a user",
 	broadcasterOnly: true,

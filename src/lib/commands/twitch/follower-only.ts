@@ -1,7 +1,8 @@
 import { CommandError, ErrorMessage } from "$lib/errors";
-import { defineCommand, parseBool, parseDuration } from "./util";
+import { defineCommand, parseBool, parseDuration } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "follower-only",
 	description: "Restrict chat to followers based on their follow duration",
 	modOnly: true,

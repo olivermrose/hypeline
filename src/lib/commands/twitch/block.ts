@@ -1,8 +1,9 @@
 import { app } from "$lib/app.svelte";
 import { SystemMessage } from "$lib/models";
-import { defineCommand, getTarget } from "./util";
+import { defineCommand, getTarget } from "../";
 
 export default defineCommand({
+	provider: "Twitch",
 	name: "block",
 	description: "Block a user from interacting with you on Twitch",
 	args: ["username"],

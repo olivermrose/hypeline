@@ -90,7 +90,7 @@
 								</p>
 							</div>
 
-							<span class="text-muted-foreground">Built-in</span>
+							<span class="text-muted-foreground">{suggestion.provider}</span>
 						</div>
 					{:else if suggestion.type === "emote"}
 						<img
