@@ -10,6 +10,12 @@ export interface AppearanceSettings {
 	timestamps: TimestampSettings;
 }
 
+export interface EmoteSettings {
+	ffz: boolean;
+	bttv: boolean;
+	seventv: boolean;
+}
+
 export interface MessageHistorySettings {
 	enabled: boolean;
 	limit: number;
@@ -20,6 +26,7 @@ export interface ChatSettings {
 	mentionStyle: "none" | "colored" | "painted";
 	localizedNames: boolean;
 	readableColors: boolean;
+	emotes: EmoteSettings;
 	history: MessageHistorySettings;
 }
 
@@ -91,6 +98,11 @@ export const settings = new RuneStore<Settings>("settings", {
 		mentionStyle: "painted",
 		localizedNames: true,
 		readableColors: true,
+		emotes: {
+			ffz: true,
+			bttv: true,
+			seventv: true,
+		},
 		history: {
 			enabled: true,
 			limit: 250,

@@ -3,6 +3,7 @@
 	import { settings } from "$lib/settings";
 	import Switch from "../../ui/Switch.svelte";
 	import Group from "../Group.svelte";
+	import Emotes from "./Emotes.svelte";
 	import Messages from "./Messages.svelte";
 
 	const mentionStyles = [
@@ -62,6 +63,7 @@
 			</Group>
 		</Group>
 
+		<Emotes />
 		<Messages />
 	</div>
 </div>

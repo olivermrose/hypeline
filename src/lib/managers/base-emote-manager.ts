@@ -1,11 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 import type { Emote } from "$lib/emotes";
-
-export interface EmoteProviderOptions {
-	ffz?: boolean;
-	bttv?: boolean;
-	seventv?: boolean;
-}
+import { settings } from "$lib/settings";
 
 export abstract class BaseEmoteManager extends SvelteMap<string, Emote> {
 	public abstract fetchFfz(): Promise<Emote[]>;
@@ -13,21 +8,21 @@ export abstract class BaseEmoteManager extends SvelteMap<string, Emote> {
 	public abstract fetch7tv(): Promise<Emote[]>;
 
 	/**
-	 * Retrieves the list of emotes from the specified providers and caches them
-	 * for later use.
+	 * Retrieves the list of emotes from the providers enabled in the settings and
+	 * caches them for later use.
 	 */
-	public async fetch(options: EmoteProviderOptions = { ffz: true, bttv: true, seventv: true }) {
+	public async fetch() {
 		const promises: Promise<Emote[]>[] = [];
 
-		if (options.ffz) {
+		if (settings.state.chat.emotes.ffz) {
 			promises.push(this.fetchFfz());
 		}
 
-		if (options.bttv) {
+		if (settings.state.chat.emotes.bttv) {
 			promises.push(this.fetchBttv());
 		}
 
-		if (options.seventv) {
+		if (settings.state.chat.emotes.seventv) {
 			promises.push(this.fetch7tv());
 		}
 
