@@ -28,23 +28,32 @@
 		<nav class="h-full space-y-4 p-3 pt-0">
 			<div class="space-y-2">
 				<button
-					class="bg-twitch flex size-10 items-center justify-center rounded-md"
+					class="sidebar-button"
 					title="Settings"
 					type="button"
 					onclick={openSettings}
 					aria-label="Open settings"
 				>
-					<span class="lucide--settings iconify size-5 text-white"></span>
+					<span class="lucide--settings iconify"></span>
 				</button>
 
+				<a
+					class="sidebar-button"
+					title="Whispers"
+					href="/whispers"
+					aria-label="Go to whispers"
+				>
+					<span class="lucide--message-square iconify"></span>
+				</a>
+
 				<button
-					class="bg-twitch flex size-10 items-center justify-center rounded-md"
+					class="sidebar-button"
 					title="Join a channel"
 					type="button"
 					onclick={() => (joinOpen = true)}
 					aria-label="Join a channel"
 				>
-					<span class="lucide--plus iconify size-5 text-white"></span>
+					<span class="lucide--plus iconify"></span>
 				</button>
 			</div>
 
@@ -62,3 +71,23 @@
 		<ScrollArea.Thumb class="bg-muted-foreground/80 rounded-full" />
 	</ScrollArea.Scrollbar>
 </ScrollArea.Root>
+
+<style>
+	@reference "../../app.css";
+
+	.sidebar-button {
+		background: var(--color-twitch);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: --spacing(10);
+		height: --spacing(10);
+		border-radius: var(--radius-md);
+
+		.iconify {
+			width: --spacing(5);
+			height: --spacing(5);
+			color: white;
+		}
+	}
+</style>
