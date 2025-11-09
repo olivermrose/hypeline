@@ -29,17 +29,12 @@ class App {
 	public channels = $state<Channel[]>([]);
 
 	/**
-	 * Global emotes from FFZ, BTTV, and 7TV.
+	 * Provider-specific global emotes.
 	 */
 	public readonly emotes = new EmoteManager();
 
 	/**
-	 * Global badges from Twitch.
-	 */
-	public readonly globalBadges = new SvelteMap<string, Badge>();
-
-	/**
-	 * Provider-specific badges.
+	 * Provider-specific global badges.
 	 */
 	public readonly badges = new SvelteMap<string, Badge>();
 

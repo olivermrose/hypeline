@@ -49,7 +49,7 @@ export async function load({ parent }) {
 		await app.emotes.fetch();
 	}
 
-	if (!app.globalBadges.size) {
+	if (!app.twitch.badges.size) {
 		await app.twitch.fetchBadges();
 	}
 }

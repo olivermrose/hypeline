@@ -1,3 +1,4 @@
+import { SvelteMap } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors";
@@ -10,7 +11,7 @@ import {
 	streamDetailsFragment,
 	userDetailsFragment,
 } from "../graphql";
-import type { Stream } from "../graphql";
+import type { Badge, Stream } from "../graphql";
 import type { Stream as HelixStream } from "./api";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;
@@ -26,6 +27,7 @@ export class TwitchApiClient {
 	// API calls SHOULD have a valid token as it's set at first layout load.
 	public token: string | null = null;
 
+	public readonly badges = new SvelteMap<string, Badge>();
 	public readonly users = new UserManager(this);
 
 	/**
@@ -36,7 +38,7 @@ export class TwitchApiClient {
 		const badges = data?.filter((b) => b != null) ?? [];
 
 		for (const badge of badges) {
-			app.globalBadges.set(`${badge.setID}:${badge.version}`, badge);
+			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 
 		return badges;

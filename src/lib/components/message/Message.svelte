@@ -27,7 +27,7 @@
 
 	for (const badge of message.badges) {
 		const chatBadge = message.channel.badges.get(badge);
-		const globalBadge = app.globalBadges.get(badge);
+		const globalBadge = app.twitch.badges.get(badge);
 
 		const resolved = chatBadge ?? globalBadge;
 
