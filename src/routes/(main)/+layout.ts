@@ -7,13 +7,17 @@ import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";
 import type { Prefix } from "$lib/util";
 
-export async function load({ parent }) {
+export async function load({ parent, url }) {
 	// Force root layout to run first to ensure settings are synced
 	await parent();
 
 	if (!settings.state.user) {
-		log.info("User not authenticated, redirecting to login");
-		redirect(302, "/auth/login");
+		if (url.pathname !== "/auth/login") {
+			log.info("User not authenticated, redirecting to login");
+			redirect(302, "/auth/login");
+		}
+
+		return;
 	}
 
 	app.twitch.token = settings.state.user.token;
