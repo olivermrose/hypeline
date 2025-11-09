@@ -75,31 +75,6 @@ export class TwitchApiClient {
 	}
 
 	/**
-	 * Retrieves the stream of the specified channel if it's live.
-	 */
-	public async fetchStream(id: string) {
-		const { user } = await this.send(
-			gql(
-				`query GetStream($id: ID!) {
-					user(id: $id) {
-						stream {
-							...StreamDetails
-						}
-					}
-				}`,
-				[streamDetailsFragment],
-			),
-			{ id },
-		);
-
-		if (!user) {
-			throw new Error("User not found");
-		}
-
-		return user.stream;
-	}
-
-	/**
 	 * Retrieves the streams of the specified channels if they're live.
 	 */
 	public async fetchStreams(ids: string[]) {

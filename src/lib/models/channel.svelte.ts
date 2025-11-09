@@ -1,7 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
+import { ApiError, ErrorMessage } from "$lib/errors";
 import { app } from "../app.svelte";
 import { commands } from "../commands";
+import { twitchGql as gql, streamDetailsFragment } from "../graphql";
 import { log } from "../log";
 import { ChannelEmoteManager, ViewerManager } from "../managers";
 import { settings } from "../settings";
@@ -100,7 +102,7 @@ export class Channel {
 		}
 
 		const [stream] = await Promise.all([
-			this.client.fetchStream(this.id),
+			this.fetchStream(),
 			this.emotes.fetch(),
 			this.fetchBadges(),
 			this.fetchCheermotes(),
@@ -199,6 +201,9 @@ export class Channel {
 		}
 	}
 
+	/**
+	 * Retrieves the list of badges in the channel and caches them for later use.
+	 */
 	public async fetchBadges() {
 		const { data } = await this.client.get<BadgeSet[]>("/chat/badges", {
 			broadcaster_id: this.id,
@@ -217,6 +222,10 @@ export class Channel {
 		}
 	}
 
+	/**
+	 * Retrieves the list of cheermotes in the channel and caches them for later
+	 * use.
+	 */
 	public async fetchCheermotes() {
 		const { data } = await this.client.get<Cheermote[]>("/bits/cheermotes", {
 			broadcaster_id: this.id,
@@ -224,6 +233,31 @@ export class Channel {
 
 		this.cheermotes.push(...data);
 		return this.cheermotes;
+	}
+
+	/**
+	 * Retrieves the stream of the channel if it's live.
+	 */
+	public async fetchStream() {
+		const { user } = await this.client.send(
+			gql(
+				`query GetStream($id: ID!) {
+					user(id: $id) {
+						stream {
+							...StreamDetails
+						}
+					}
+				}`,
+				[streamDetailsFragment],
+			),
+			{ id: this.id },
+		);
+
+		if (!user) {
+			throw new ApiError(404, ErrorMessage.USER_NOT_FOUND(this.user.username));
+		}
+
+		return user.stream;
 	}
 
 	public async createMarker(description?: string) {

@@ -1,12 +1,13 @@
-import { app } from "$lib/app.svelte";
 import { SystemMessage } from "$lib/models";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "stream.online",
-	async handle(data, channel) {
-		const broadcaster = await channel.viewers.fetch(data.broadcaster_user_id);
-		channel.stream = await app.twitch.fetchStream(data.broadcaster_user_id);
+	async handle(_, channel) {
+		const broadcaster = channel.viewers.get(channel.id);
+		if (!broadcaster) return;
+
+		channel.stream = await channel.fetchStream();
 
 		channel.addMessage(
 			SystemMessage.fromContext({
