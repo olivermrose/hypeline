@@ -10,33 +10,13 @@
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
-	import { settings } from "$lib/settings";
+	import { layout, settings } from "$lib/settings";
 	import TitleBar from "../TitleBar.svelte";
-	import Appearance from "./appearance/Appearance.svelte";
-	import Chat from "./chat/Chat.svelte";
-	import Highlights from "./highlights/Highlights.svelte";
+	import Category from "./Category.svelte";
 
 	let { open = $bindable(false), detached = false } = $props();
 
 	let copied = $state(false);
-
-	const categories = [
-		{
-			name: "Appearance",
-			icon: "lucide--monitor-cog",
-			component: Appearance,
-		},
-		{
-			name: "Chat",
-			icon: "lucide--message-square",
-			component: Chat,
-		},
-		{
-			name: "Highlights",
-			icon: "lucide--highlighter",
-			component: Highlights,
-		},
-	];
 
 	$effect(() => {
 		if (!open) {
@@ -100,16 +80,16 @@
 				{/snippet}
 			</TitleBar>
 
-			<Tabs.Root class="relative flex h-full" orientation="vertical" value="Appearance">
+			<Tabs.Root class="relative flex h-full" orientation="vertical" value={layout[0].label}>
 				<nav class="h-full min-w-44 p-2 pt-0">
 					<Tabs.List class="space-y-1">
-						{#each categories as category (category.name)}
+						{#each layout as category (category.label)}
 							<Tabs.Trigger
 								class="settings-btn text-muted-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground"
-								value={category.name}
+								value={category.label}
 							>
 								<span class="iconify size-4 {category.icon}"></span>
-								<span class="text-sm">{category.name}</span>
+								<span class="text-sm">{category.label}</span>
 							</Tabs.Trigger>
 						{/each}
 					</Tabs.List>
@@ -181,9 +161,9 @@
 						</Dialog.Close>
 					{/if}
 
-					{#each categories as category (category.name)}
-						<Tabs.Content value={category.name}>
-							<category.component />
+					{#each layout as category (category.label)}
+						<Tabs.Content value={category.label}>
+							<Category {category} />
 						</Tabs.Content>
 					{/each}
 				</div>
