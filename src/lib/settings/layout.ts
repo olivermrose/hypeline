@@ -75,7 +75,7 @@ export const layout: SettingsCategory[] = [
 						description:
 							"Show the user's localized display name if they have their Twitch language set to Arabic, Chinese, Japanese, or Korean.",
 						get model() {
-							return settings.state.chat.localizedNames;
+							return settings.state.chat.usernames.localized;
 						},
 					},
 					{
@@ -85,7 +85,7 @@ export const layout: SettingsCategory[] = [
 						description:
 							"Lightens or darkens the color of usernames based on the current theme. This does not apply to 7TV paints.",
 						get model() {
-							return settings.state.chat.readableColors;
+							return settings.state.chat.usernames.readable;
 						},
 					},
 					{
@@ -100,7 +100,7 @@ export const layout: SettingsCategory[] = [
 							{ label: "Painted", value: "painted" },
 						],
 						get model() {
-							return settings.state.chat.mentionStyle;
+							return settings.state.chat.usernames.mentionStyle;
 						},
 					},
 				],
@@ -146,31 +146,31 @@ export const layout: SettingsCategory[] = [
 				label: "Messages",
 				items: [
 					{
-						id: "bypass-duplicate",
+						id: "duplicate-bypass",
 						type: "toggle",
 						label: "Bypass duplicate message warning",
 						description:
 							"Allows you to send identical messages even if you're not a moderator or a VIP.",
 						get model() {
-							return settings.state.chat.bypassDuplicate;
+							return settings.state.chat.messages.duplicateBypass;
 						},
 					},
 					{
 						type: "group",
-						label: "Message History",
+						label: "History",
 						items: [
 							{
-								id: "message-history-enabled",
+								id: "history-enabled",
 								type: "toggle",
 								label: "Fetch recent messages upon joining a channel",
 								description:
 									'This feature uses a <a class="text-twitch-link" href="https://recent-messages.robotty.de/">third-party API</a> that temporarily stores the messages sent in joined channels. To opt-out, disable this setting.',
 								get model() {
-									return settings.state.chat.history.enabled;
+									return settings.state.chat.messages.history.enabled;
 								},
 							},
 							{
-								id: "message-history-limit",
+								id: "history-limit",
 								type: "slider",
 								label: "Limit",
 								description:
@@ -179,10 +179,10 @@ export const layout: SettingsCategory[] = [
 								max: 800,
 								step: 50,
 								get disabled() {
-									return !settings.state.chat.history.enabled;
+									return !settings.state.chat.messages.history.enabled;
 								},
 								get model() {
-									return settings.state.chat.history.limit;
+									return settings.state.chat.messages.history.limit;
 								},
 							},
 						],

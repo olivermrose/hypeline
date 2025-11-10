@@ -153,7 +153,7 @@ export class User implements PartialUser {
 	 * if the user doesn't have a color set.
 	 */
 	public get color() {
-		if (this.#color && settings.state.chat.readableColors) {
+		if (this.#color && settings.state.chat.usernames.readable) {
 			return makeReadable(this.#color);
 		}
 
@@ -182,7 +182,7 @@ export class User implements PartialUser {
 	 * parentheses.
 	 */
 	public get displayName() {
-		if (settings.state.chat.localizedNames && this.localizedName) {
+		if (settings.state.chat.usernames.localized && this.localizedName) {
 			return `${this.localizedName} (${this.username})`;
 		}
 

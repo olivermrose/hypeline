@@ -120,10 +120,10 @@ export class Channel {
 			isMod: app.user?.moderating.has(this.id),
 		});
 
-		if (settings.state.chat.history.enabled) {
+		if (settings.state.chat.messages.history.enabled) {
 			await invoke("fetch_recent_messages", {
 				channel: this.user.username,
-				historyLimit: settings.state.chat.history.limit,
+				historyLimit: settings.state.chat.messages.history.limit,
 			});
 		}
 	}
@@ -403,7 +403,11 @@ export class Channel {
 		const rateLimited = this.#checkRateLimit(elevated);
 		if (rateLimited) return;
 
-		if (!elevated && settings.state.chat.bypassDuplicate && this.history.at(-1) === message) {
+		if (
+			!elevated &&
+			settings.state.chat.messages.duplicateBypass &&
+			this.history.at(-1) === message
+		) {
 			this.#bypassNext = !this.#bypassNext;
 
 			if (this.#bypassNext) {

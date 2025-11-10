@@ -10,24 +10,32 @@ export interface AppearanceSettings {
 	timestamps: TimestampSettings;
 }
 
+export interface UsernameSettings {
+	localized: boolean;
+	readable: boolean;
+	mentionStyle: "none" | "colored" | "painted";
+}
+
 export interface EmoteSettings {
 	ffz: boolean;
 	bttv: boolean;
 	seventv: boolean;
 }
 
-export interface MessageHistorySettings {
+export interface HistorySettings {
 	enabled: boolean;
 	limit: number;
 }
 
+export interface MessageSettings {
+	duplicateBypass: boolean;
+	history: HistorySettings;
+}
+
 export interface ChatSettings {
-	bypassDuplicate: boolean;
-	mentionStyle: "none" | "colored" | "painted";
-	localizedNames: boolean;
-	readableColors: boolean;
+	usernames: UsernameSettings;
 	emotes: EmoteSettings;
-	history: MessageHistorySettings;
+	messages: MessageSettings;
 }
 
 export type HighlightType =
@@ -58,12 +66,17 @@ export interface HighlightSettings extends Record<HighlightType, HighlightTypeSe
 	custom: CustomHighlightTypeSettings[];
 }
 
+interface StoredUser {
+	id: string;
+	token: string;
+}
+
 export interface Settings {
 	// Index signature needed for RuneStore
 	[key: string]: unknown;
 
 	// Internal
-	user: { id: string; token: string } | null;
+	user: StoredUser | null;
 	lastJoined: string | null;
 
 	// User
@@ -94,18 +107,22 @@ export const settings = new RuneStore<Settings>("settings", {
 		},
 	},
 	chat: {
-		bypassDuplicate: true,
-		mentionStyle: "painted",
-		localizedNames: true,
-		readableColors: true,
+		usernames: {
+			localized: true,
+			readable: true,
+			mentionStyle: "painted",
+		},
 		emotes: {
 			ffz: true,
 			bttv: true,
 			seventv: true,
 		},
-		history: {
-			enabled: true,
-			limit: 250,
+		messages: {
+			duplicateBypass: true,
+			history: {
+				enabled: true,
+				limit: 250,
+			},
 		},
 	},
 	highlights: {

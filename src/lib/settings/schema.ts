@@ -11,7 +11,7 @@ export interface BaseField {
 	label: string;
 	description?: string;
 	disabled?: boolean;
-	model: any;
+	model: unknown;
 }
 
 export interface CustomField extends Omit<BaseField, "id" | "model"> {
