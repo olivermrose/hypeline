@@ -224,6 +224,9 @@ export const categories: SettingsCategory[] = [
 			{
 				type: "custom",
 				label: "Keywords",
+				// TODO: temporary description, link to docs when site is up
+				description:
+					"Keyword highlights can use regular expressions, be matched as whole words, and be case sensitive.",
 				component: KeywordHighlights,
 			},
 		],

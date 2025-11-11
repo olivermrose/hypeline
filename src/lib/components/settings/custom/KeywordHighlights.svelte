@@ -18,12 +18,6 @@
 	};
 </script>
 
-<!-- TODO: temporary description, link to docs when site is up -->
-<!-- {#snippet description()}
-		Keyword highlight triggers can use regular expressions, be matched as whole words, and be
-		case sensitive.
-	{/snippet} -->
-
 <div>
 	<button
 		class="bg-twitch mb-4 flex items-center rounded-md px-4 py-2 text-sm font-medium"

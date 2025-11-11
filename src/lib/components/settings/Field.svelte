@@ -31,7 +31,13 @@
 		</div>
 	</div>
 {:else if field.type === "custom"}
-	<field.component />
+	<div class="flex flex-col gap-2">
+		<span class="text-lg font-semibold">{field.label}</span>
+
+		{@render description(field.description)}
+
+		<field.component />
+	</div>
 {:else if field.type === "input"}
 	<div class="flex flex-col gap-2">
 		<Label for={field.id}>{field.label}</Label>
