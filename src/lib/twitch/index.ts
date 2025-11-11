@@ -1,12 +1,3 @@
-import { Channel, invoke } from "@tauri-apps/api/core";
-import { app } from "$lib/app.svelte";
-import { handlers } from "$lib/handlers";
-import { log } from "$lib/log";
-import { settings } from "$lib/settings";
-import type { DispatchPayload } from "$lib/seventv";
-import type { NotificationPayload } from "./eventsub";
-import type { IrcMessage } from "./irc";
-
 export const SCOPES = [
 	// Channel
 	"channel:edit:commercial",
@@ -59,33 +50,3 @@ export const SCOPES = [
 	"clips:edit",
 	"whispers:read",
 ];
-
-export async function connect() {
-	if (!settings.state.user || app.connected) return;
-
-	const ircChannel = new Channel<IrcMessage>(async (message) => {
-		await handle(message.type, message);
-	});
-
-	const eventsubChannel = new Channel<NotificationPayload>(async (message) => {
-		await handle(message.subscription.type, message.event);
-	});
-
-	const seventvChannel = new Channel<DispatchPayload>(async (message) => {
-		await handle(message.type, "object" in message.body ? message.body.object : message.body);
-	});
-
-	await invoke("connect_irc", { channel: ircChannel });
-	await invoke("connect_eventsub", { channel: eventsubChannel });
-	await invoke("connect_seventv", { channel: seventvChannel });
-
-	app.connected = true;
-	log.info("All connections established");
-}
-
-async function handle(key: string, payload: any) {
-	if (!app.joined) return;
-
-	const handler = handlers.get(key);
-	await handler?.handle(payload, app.joined);
-}

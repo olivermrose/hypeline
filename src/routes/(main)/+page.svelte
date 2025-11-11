@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { goto } from "$app/navigation";
+	import { app } from "$lib/app.svelte";
 	import { settings } from "$lib/settings";
-	import { connect } from "$lib/twitch";
 
 	let loading = $state(true);
 
 	onMount(async () => {
-		await connect();
+		await app.connect();
 
 		if (settings.state.lastJoined) {
 			await goto(`/channels/${settings.state.lastJoined}`);
