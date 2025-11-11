@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
-	import type { HighlightType, HighlightTypeSettings } from "$lib/settings";
+	import type { HighlightConfig, HighlightType } from "$lib/settings";
 
 	interface Props {
 		children: Snippet;
 		type: HighlightType | "custom";
-		highlight: HighlightTypeSettings;
+		highlight: HighlightConfig;
 		info?: string;
 	}
 

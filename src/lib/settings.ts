@@ -10,24 +10,32 @@ export interface AppearanceSettings {
 	timestamps: TimestampSettings;
 }
 
+export interface UsernameSettings {
+	localized: boolean;
+	readable: boolean;
+	mentionStyle: "none" | "colored" | "painted";
+}
+
 export interface EmoteSettings {
 	ffz: boolean;
 	bttv: boolean;
 	seventv: boolean;
 }
 
-export interface MessageHistorySettings {
+export interface HistorySettings {
 	enabled: boolean;
 	limit: number;
 }
 
+export interface MessageSettings {
+	duplicateBypass: boolean;
+	history: HistorySettings;
+}
+
 export interface ChatSettings {
-	bypassDuplicate: boolean;
-	mentionStyle: "none" | "colored" | "painted";
-	localizedNames: boolean;
-	readableColors: boolean;
+	usernames: UsernameSettings;
 	emotes: EmoteSettings;
-	history: MessageHistorySettings;
+	messages: MessageSettings;
 }
 
 export type HighlightType =
@@ -40,22 +48,27 @@ export type HighlightType =
 	| "subscriber"
 	| "vip";
 
-export interface HighlightTypeSettings {
+export interface HighlightConfig {
 	enabled: boolean;
 	color: string;
 	style: "default" | "compact" | "background";
 }
 
-export interface CustomHighlightTypeSettings extends HighlightTypeSettings {
+export interface KeywordHighlightConfig extends HighlightConfig {
 	pattern: string;
 	regex: boolean;
 	wholeWord: boolean;
 	matchCase: boolean;
 }
 
-export interface HighlightSettings extends Record<HighlightType, HighlightTypeSettings> {
+export interface HighlightSettings extends Record<HighlightType, HighlightConfig> {
 	enabled: boolean;
-	custom: CustomHighlightTypeSettings[];
+	keywords: KeywordHighlightConfig[];
+}
+
+interface StoredUser {
+	id: string;
+	token: string;
 }
 
 export interface Settings {
@@ -63,7 +76,7 @@ export interface Settings {
 	[key: string]: unknown;
 
 	// Internal
-	user: { id: string; token: string } | null;
+	user: StoredUser | null;
 	lastJoined: string | null;
 
 	// User
@@ -72,7 +85,7 @@ export interface Settings {
 	highlights: HighlightSettings;
 }
 
-export const defaultHighlightTypes: Record<HighlightType, HighlightTypeSettings> = {
+export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 	mention: { enabled: true, color: "#adadb8", style: "background" },
 	new: { enabled: true, color: "#ff75e6", style: "default" },
 	returning: { enabled: true, color: "#00a3a3", style: "default" },
@@ -94,23 +107,27 @@ export const settings = new RuneStore<Settings>("settings", {
 		},
 	},
 	chat: {
-		bypassDuplicate: true,
-		mentionStyle: "painted",
-		localizedNames: true,
-		readableColors: true,
+		usernames: {
+			localized: true,
+			readable: true,
+			mentionStyle: "painted",
+		},
 		emotes: {
 			ffz: true,
 			bttv: true,
 			seventv: true,
 		},
-		history: {
-			enabled: true,
-			limit: 250,
+		messages: {
+			duplicateBypass: true,
+			history: {
+				enabled: true,
+				limit: 250,
+			},
 		},
 	},
 	highlights: {
 		enabled: true,
-		custom: [],
+		keywords: [],
 		...defaultHighlightTypes,
 	},
 });
