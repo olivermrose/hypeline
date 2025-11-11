@@ -1,5 +1,10 @@
 import type { Component } from "svelte";
 
+export interface Binding<T> {
+	get: () => T;
+	set: (value: T) => void;
+}
+
 export interface GroupField {
 	type: "group";
 	label: string;
@@ -10,11 +15,11 @@ export interface BaseField {
 	id: string;
 	label: string;
 	description?: string;
-	disabled?: boolean;
-	model: unknown;
+	disabled?: () => boolean;
+	binding: Binding<any>;
 }
 
-export interface CustomField extends Omit<BaseField, "id" | "model"> {
+export interface CustomField extends Omit<BaseField, "id" | "binding"> {
 	type: "custom";
 	component: Component;
 }

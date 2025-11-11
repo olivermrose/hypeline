@@ -2,7 +2,11 @@ import Custom from "$lib/components/settings/highlights/Custom.svelte";
 import Viewers from "$lib/components/settings/highlights/Viewers.svelte";
 import Theme from "$lib/components/settings/Theme.svelte";
 import { settings } from "./store";
-import type { SettingsCategory } from "./schema";
+import type { Binding, SettingsCategory } from "./schema";
+
+function bind<T>(get: () => T, set: (value: T) => void): Binding<T> {
+	return { get, set };
+}
 
 export const layout: SettingsCategory[] = [
 	{
@@ -22,9 +26,10 @@ export const layout: SettingsCategory[] = [
 						id: "show-timestamps",
 						type: "toggle",
 						label: "Show timestamps next to messages",
-						get model() {
-							return settings.state.appearance.timestamps.show;
-						},
+						binding: bind(
+							() => settings.state.appearance.timestamps.show,
+							(v) => (settings.state.appearance.timestamps.show = v),
+						),
 					},
 					{
 						id: "timestamp-format",
@@ -36,12 +41,11 @@ export const layout: SettingsCategory[] = [
 							{ label: "24-hour", value: "24" },
 							{ label: "Custom", value: "custom" },
 						],
-						get disabled() {
-							return !settings.state.appearance.timestamps.show;
-						},
-						get model() {
-							return settings.state.appearance.timestamps.format;
-						},
+						disabled: () => !settings.state.appearance.timestamps.show,
+						binding: bind(
+							() => settings.state.appearance.timestamps.format,
+							(v) => (settings.state.appearance.timestamps.format = v),
+						),
 					},
 					{
 						id: "timestamp-format-custom",
@@ -49,12 +53,11 @@ export const layout: SettingsCategory[] = [
 						label: "Custom Format",
 						description:
 							'Formats use the format tokens used by <a class="text-twitch-link" href="https://day.js.org/en">Day.js</a>; view the full list of tokens and their descriptions <a class="text-twitch-link" href="https://day.js.org/docs/en/display/format">here</a> (note that localized formats are not enabled).',
-						get disabled() {
-							return settings.state.appearance.timestamps.format !== "custom";
-						},
-						get model() {
-							return settings.state.appearance.timestamps.customFormat;
-						},
+						disabled: () => settings.state.appearance.timestamps.format !== "custom",
+						binding: bind(
+							() => settings.state.appearance.timestamps.customFormat,
+							(v) => (settings.state.appearance.timestamps.customFormat = v),
+						),
 					},
 				],
 			},
@@ -74,9 +77,10 @@ export const layout: SettingsCategory[] = [
 						label: "Display localized names",
 						description:
 							"Show the user's localized display name if they have their Twitch language set to Arabic, Chinese, Japanese, or Korean.",
-						get model() {
-							return settings.state.chat.usernames.localized;
-						},
+						binding: bind(
+							() => settings.state.chat.usernames.localized,
+							(v) => (settings.state.chat.usernames.localized = v),
+						),
 					},
 					{
 						id: "readable-colors",
@@ -84,9 +88,10 @@ export const layout: SettingsCategory[] = [
 						label: "Readable name colors",
 						description:
 							"Lightens or darkens the color of usernames based on the current theme. This does not apply to 7TV paints.",
-						get model() {
-							return settings.state.chat.usernames.readable;
-						},
+						binding: bind(
+							() => settings.state.chat.usernames.readable,
+							(v) => (settings.state.chat.usernames.readable = v),
+						),
 					},
 					{
 						id: "mention-style",
@@ -99,9 +104,10 @@ export const layout: SettingsCategory[] = [
 							{ label: "Colored", value: "colored" },
 							{ label: "Painted", value: "painted" },
 						],
-						get model() {
-							return settings.state.chat.usernames.mentionStyle;
-						},
+						binding: bind(
+							() => settings.state.chat.usernames.mentionStyle,
+							(v) => (settings.state.chat.usernames.mentionStyle = v),
+						),
 					},
 				],
 			},
@@ -115,9 +121,10 @@ export const layout: SettingsCategory[] = [
 						label: "Enable FFZ emotes",
 						description:
 							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://www.frankerfacez.com/">FrankerFaceZ</a>',
-						get model() {
-							return settings.state.chat.emotes.ffz;
-						},
+						binding: bind(
+							() => settings.state.chat.emotes.ffz,
+							(v) => (settings.state.chat.emotes.ffz = v),
+						),
 					},
 					{
 						id: "emotes-bttv",
@@ -125,9 +132,10 @@ export const layout: SettingsCategory[] = [
 						label: "Enable BTTV emotes",
 						description:
 							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://betterttv.com/">BetterTTV</a>',
-						get model() {
-							return settings.state.chat.emotes.bttv;
-						},
+						binding: bind(
+							() => settings.state.chat.emotes.bttv,
+							(v) => (settings.state.chat.emotes.bttv = v),
+						),
 					},
 					{
 						id: "emotes-7tv",
@@ -135,9 +143,10 @@ export const layout: SettingsCategory[] = [
 						label: "Enable 7TV emotes",
 						description:
 							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://7tv.app/">7TV</a>',
-						get model() {
-							return settings.state.chat.emotes.seventv;
-						},
+						binding: bind(
+							() => settings.state.chat.emotes.seventv,
+							(v) => (settings.state.chat.emotes.seventv = v),
+						),
 					},
 				],
 			},
@@ -151,9 +160,10 @@ export const layout: SettingsCategory[] = [
 						label: "Bypass duplicate message warning",
 						description:
 							"Allows you to send identical messages even if you're not a moderator or a VIP.",
-						get model() {
-							return settings.state.chat.messages.duplicateBypass;
-						},
+						binding: bind(
+							() => settings.state.chat.messages.duplicateBypass,
+							(v) => (settings.state.chat.messages.duplicateBypass = v),
+						),
 					},
 					{
 						type: "group",
@@ -165,9 +175,10 @@ export const layout: SettingsCategory[] = [
 								label: "Fetch recent messages upon joining a channel",
 								description:
 									'This feature uses a <a class="text-twitch-link" href="https://recent-messages.robotty.de/">third-party API</a> that temporarily stores the messages sent in joined channels. To opt-out, disable this setting.',
-								get model() {
-									return settings.state.chat.messages.history.enabled;
-								},
+								binding: bind(
+									() => settings.state.chat.messages.history.enabled,
+									(v) => (settings.state.chat.messages.history.enabled = v),
+								),
 							},
 							{
 								id: "history-limit",
@@ -178,12 +189,11 @@ export const layout: SettingsCategory[] = [
 								min: 0,
 								max: 800,
 								step: 50,
-								get disabled() {
-									return !settings.state.chat.messages.history.enabled;
-								},
-								get model() {
-									return settings.state.chat.messages.history.limit;
-								},
+								disabled: () => !settings.state.chat.messages.history.enabled,
+								binding: bind(
+									() => settings.state.chat.messages.history.limit,
+									(v) => (settings.state.chat.messages.history.limit = v),
+								),
 							},
 						],
 					},
@@ -201,9 +211,10 @@ export const layout: SettingsCategory[] = [
 				label: "Highlight messages",
 				description:
 					"Message highlights allow you to easily identify different types of viewers or when specific keywords are sent in chat.",
-				get model() {
-					return settings.state.highlights.enabled;
-				},
+				binding: bind(
+					() => settings.state.highlights.enabled,
+					(v) => (settings.state.highlights.enabled = v),
+				),
 			},
 			{
 				type: "custom",

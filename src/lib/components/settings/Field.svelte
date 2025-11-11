@@ -42,8 +42,8 @@
 			type="text"
 			autocapitalize="off"
 			autocomplete="off"
-			disabled={field.disabled}
-			bind:value={field.model}
+			disabled={field.disabled?.()}
+			bind:value={field.binding.get, field.binding.set}
 		/>
 
 		{@render description(field.description)}
@@ -57,13 +57,13 @@
 		<RadioGroup.Root
 			id={field.id}
 			class="group space-y-1 data-disabled:cursor-not-allowed data-disabled:opacity-50"
-			disabled={field.disabled}
-			bind:value={field.model}
+			disabled={field.disabled?.()}
+			bind:value={field.binding.get, field.binding.set}
 		>
 			{#each field.options as option (option.value)}
 				<Label
 					class="hover:bg-muted has-data-[state=checked]:bg-muted flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-100 hover:cursor-pointer aria-disabled:cursor-not-allowed"
-					aria-disabled={field.disabled}
+					aria-disabled={field.disabled?.()}
 				>
 					<RadioGroup.Item
 						class="data-[state=checked]:border-twitch data-[state=checked]:bg-foreground size-4 rounded-full border data-[state=checked]:border-5"
@@ -90,8 +90,8 @@
 			min={field.min}
 			max={field.max}
 			step={field.step}
-			disabled={field.disabled}
-			bind:value={field.model}
+			disabled={field.disabled?.()}
+			bind:value={field.binding.get, field.binding.set}
 		>
 			<div class="bg-input relative h-1.5 w-full rounded-full hover:cursor-pointer">
 				<Slider.Range class="bg-twitch absolute h-full rounded-full" />
@@ -102,7 +102,7 @@
 				index={0}
 			>
 				<div class="mt-7 text-center text-xs font-medium">
-					{field.model}
+					{field.binding.get()}
 				</div>
 			</Slider.Thumb>
 		</Slider.Root>
@@ -115,7 +115,7 @@
 			<Switch.Root
 				id={field.id}
 				class="data-[state=checked]:bg-twitch data-[state=unchecked]:bg-input h-6 w-11 items-center rounded-full border-2 border-transparent transition-colors"
-				bind:checked={field.model}
+				bind:checked={field.binding.get, field.binding.set}
 			>
 				<Switch.Thumb
 					class="pointer-events-none block size-4.5 rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0.5"
