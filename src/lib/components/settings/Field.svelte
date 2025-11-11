@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { RadioGroup, Slider, Switch } from "bits-ui";
-	import type { SettingsField } from "$lib/settings";
 	import Input from "../ui/Input.svelte";
 	import Label from "../ui/Label.svelte";
 	import Field from "./Field.svelte";
+	import type { SettingsField } from "./types";
 
 	interface Props {
 		field: SettingsField;

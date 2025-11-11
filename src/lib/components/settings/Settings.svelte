@@ -10,9 +10,10 @@
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
-	import { layout, settings } from "$lib/settings";
+	import { settings } from "$lib/settings";
 	import TitleBar from "../TitleBar.svelte";
 	import Category from "./Category.svelte";
+	import { categories } from "./";
 
 	let { open = $bindable(false), detached = false } = $props();
 
@@ -80,10 +81,14 @@
 				{/snippet}
 			</TitleBar>
 
-			<Tabs.Root class="relative flex h-full" orientation="vertical" value={layout[0].label}>
+			<Tabs.Root
+				class="relative flex h-full"
+				orientation="vertical"
+				value={categories[0].label}
+			>
 				<nav class="h-full min-w-44 p-2 pt-0">
 					<Tabs.List class="space-y-1">
-						{#each layout as category (category.label)}
+						{#each categories as category (category.label)}
 							<Tabs.Trigger
 								class="settings-btn text-muted-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground"
 								value={category.label}
@@ -161,7 +166,7 @@
 						</Dialog.Close>
 					{/if}
 
-					{#each layout as category (category.label)}
+					{#each categories as category (category.label)}
 						<Tabs.Content value={category.label}>
 							<Category {category} />
 						</Tabs.Content>

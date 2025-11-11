@@ -1,14 +1,14 @@
-import Custom from "$lib/components/settings/highlights/Custom.svelte";
-import Viewers from "$lib/components/settings/highlights/Viewers.svelte";
-import Theme from "$lib/components/settings/Theme.svelte";
-import { settings } from "./store";
-import type { Binding, SettingsCategory } from "./schema";
+import { settings } from "$lib/settings";
+import KeywordHighlights from "./custom/KeywordHighlights.svelte";
+import Theme from "./custom/Theme.svelte";
+import ViewerHighlights from "./custom/ViewerHighlights.svelte";
+import type { Binding, SettingsCategory } from "./types";
 
 function bind<T>(get: () => T, set: (value: T) => void): Binding<T> {
 	return { get, set };
 }
 
-export const layout: SettingsCategory[] = [
+export const categories: SettingsCategory[] = [
 	{
 		label: "Appearance",
 		icon: "lucide--monitor-cog",
@@ -219,12 +219,12 @@ export const layout: SettingsCategory[] = [
 			{
 				type: "custom",
 				label: "Viewers",
-				component: Viewers,
+				component: ViewerHighlights,
 			},
 			{
 				type: "custom",
-				label: "Custom",
-				component: Custom,
+				label: "Keywords",
+				component: KeywordHighlights,
 			},
 		],
 	},

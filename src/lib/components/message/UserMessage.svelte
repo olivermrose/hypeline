@@ -17,7 +17,7 @@
 	const highlights = $derived(settings.state.highlights);
 
 	const customMatched = $derived(
-		highlights.custom.find((hl) => {
+		highlights.keywords.find((hl) => {
 			if (!hl.pattern.trim()) return false;
 
 			let pattern = hl.regex ? hl.pattern : RegExp.escape(hl.pattern);

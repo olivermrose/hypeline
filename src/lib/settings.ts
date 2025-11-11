@@ -48,22 +48,22 @@ export type HighlightType =
 	| "subscriber"
 	| "vip";
 
-export interface HighlightTypeSettings {
+export interface HighlightConfig {
 	enabled: boolean;
 	color: string;
 	style: "default" | "compact" | "background";
 }
 
-export interface CustomHighlightTypeSettings extends HighlightTypeSettings {
+export interface KeywordHighlightConfig extends HighlightConfig {
 	pattern: string;
 	regex: boolean;
 	wholeWord: boolean;
 	matchCase: boolean;
 }
 
-export interface HighlightSettings extends Record<HighlightType, HighlightTypeSettings> {
+export interface HighlightSettings extends Record<HighlightType, HighlightConfig> {
 	enabled: boolean;
-	custom: CustomHighlightTypeSettings[];
+	keywords: KeywordHighlightConfig[];
 }
 
 interface StoredUser {
@@ -85,7 +85,7 @@ export interface Settings {
 	highlights: HighlightSettings;
 }
 
-export const defaultHighlightTypes: Record<HighlightType, HighlightTypeSettings> = {
+export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 	mention: { enabled: true, color: "#adadb8", style: "background" },
 	new: { enabled: true, color: "#ff75e6", style: "default" },
 	returning: { enabled: true, color: "#00a3a3", style: "default" },
@@ -127,7 +127,7 @@ export const settings = new RuneStore<Settings>("settings", {
 	},
 	highlights: {
 		enabled: true,
-		custom: [],
+		keywords: [],
 		...defaultHighlightTypes,
 	},
 });

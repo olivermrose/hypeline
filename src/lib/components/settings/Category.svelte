@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { SettingsCategory } from "$lib/settings";
 	import Field from "./Field.svelte";
+	import type { SettingsCategory } from "./";
 
 	const { category }: { category: SettingsCategory } = $props();
 </script>

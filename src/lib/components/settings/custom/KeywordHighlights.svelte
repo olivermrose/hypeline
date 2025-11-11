@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Popover, Toggle } from "bits-ui";
 	import { settings } from "$lib/settings";
-	import type { CustomHighlightTypeSettings } from "$lib/settings";
+	import type { KeywordHighlightConfig } from "$lib/settings";
+	import { highlightStyles as styles } from "..";
 	import ColorPicker from "../../ui/ColorPicker.svelte";
 	import Input from "../../ui/Input.svelte";
 	import * as Select from "../../ui/select";
-	import { styles } from ".";
 
-	const defaultCustom: CustomHighlightTypeSettings = {
+	const defaults: KeywordHighlightConfig = {
 		enabled: true,
 		pattern: "",
 		style: "default",
@@ -20,7 +20,7 @@
 
 <!-- TODO: temporary description, link to docs when site is up -->
 <!-- {#snippet description()}
-		Custom highlight triggers can use regular expressions, be matched as whole words, and be
+		Keyword highlight triggers can use regular expressions, be matched as whole words, and be
 		case sensitive.
 	{/snippet} -->
 
@@ -28,7 +28,7 @@
 	<button
 		class="bg-twitch mb-4 flex items-center rounded-md px-4 py-2 text-sm font-medium"
 		type="button"
-		onclick={() => settings.state.highlights.custom.push(defaultCustom)}
+		onclick={() => settings.state.highlights.keywords.push(defaults)}
 	>
 		<span class="lucide--plus iconify mr-1 size-4"></span>
 		Add new trigger
@@ -36,7 +36,7 @@
 
 	<div class="overflow-x-auto">
 		<div class="grid min-w-max grid-cols-[repeat(7,auto)] gap-x-3 gap-y-4">
-			{#each settings.state.highlights.custom as highlight, i}
+			{#each settings.state.highlights.keywords as highlight, i}
 				<Input
 					class="col-start-1 focus-visible:ring-0"
 					type="text"
@@ -127,7 +127,7 @@
 					title="Delete"
 					type="button"
 					aria-label="Delete trigger"
-					onclick={() => settings.state.highlights.custom.splice(i, 1)}
+					onclick={() => settings.state.highlights.keywords.splice(i, 1)}
 				>
 					<span class="iconify lucide--trash"></span>
 				</button>
