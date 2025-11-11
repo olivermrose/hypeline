@@ -9,8 +9,8 @@
 	<h1>{category.label}</h1>
 
 	<div class="divide-border divide-y *:py-6 *:first:pt-0 *:last:pb-0">
-		{#each category.settings as setting}
-			<Field field={setting} />
+		{#each category.fields as field}
+			<Field {field} />
 		{/each}
 	</div>
 </div>

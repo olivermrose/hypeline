@@ -8,7 +8,7 @@ export interface Binding<T> {
 export interface GroupField {
 	type: "group";
 	label: string;
-	items: SettingsField[];
+	fields: SettingsField[];
 }
 
 export interface BaseField {
@@ -60,5 +60,5 @@ export type SettingsField =
 export interface SettingsCategory {
 	icon: string;
 	label: string;
-	settings: SettingsField[];
+	fields: SettingsField[];
 }

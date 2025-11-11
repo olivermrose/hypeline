@@ -25,8 +25,8 @@
 		</svelte:element>
 
 		<div class="space-y-6">
-			{#each field.items as item}
-				<Field field={item} depth={depth + 1} />
+			{#each field.fields as subField}
+				<Field field={subField} depth={depth + 1} />
 			{/each}
 		</div>
 	</div>

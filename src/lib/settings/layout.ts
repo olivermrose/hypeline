@@ -12,7 +12,7 @@ export const layout: SettingsCategory[] = [
 	{
 		label: "Appearance",
 		icon: "lucide--monitor-cog",
-		settings: [
+		fields: [
 			{
 				type: "custom",
 				label: "Theme",
@@ -21,7 +21,7 @@ export const layout: SettingsCategory[] = [
 			{
 				type: "group",
 				label: "Timestamps",
-				items: [
+				fields: [
 					{
 						id: "show-timestamps",
 						type: "toggle",
@@ -66,11 +66,11 @@ export const layout: SettingsCategory[] = [
 	{
 		label: "Chat",
 		icon: "lucide--message-square",
-		settings: [
+		fields: [
 			{
 				type: "group",
 				label: "Usernames",
-				items: [
+				fields: [
 					{
 						id: "localized-names",
 						type: "toggle",
@@ -114,7 +114,7 @@ export const layout: SettingsCategory[] = [
 			{
 				type: "group",
 				label: "Emotes",
-				items: [
+				fields: [
 					{
 						id: "emotes-ffz",
 						type: "toggle",
@@ -153,7 +153,7 @@ export const layout: SettingsCategory[] = [
 			{
 				type: "group",
 				label: "Messages",
-				items: [
+				fields: [
 					{
 						id: "duplicate-bypass",
 						type: "toggle",
@@ -168,7 +168,7 @@ export const layout: SettingsCategory[] = [
 					{
 						type: "group",
 						label: "History",
-						items: [
+						fields: [
 							{
 								id: "history-enabled",
 								type: "toggle",
@@ -204,7 +204,7 @@ export const layout: SettingsCategory[] = [
 	{
 		label: "Highlights",
 		icon: "lucide--highlighter",
-		settings: [
+		fields: [
 			{
 				id: "highlights-enabled",
 				type: "toggle",
