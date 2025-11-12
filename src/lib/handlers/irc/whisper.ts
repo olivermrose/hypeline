@@ -3,17 +3,15 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "whisper",
-	channel: false,
-	async handle(data) {
-		if (!app.user) return;
-
+	global: true,
+	async handle(data, user) {
 		const sender = await app.twitch.users.fetch(data.sender.id);
 
-		if (!app.user.whispers.has(sender.id)) {
-			app.user.whispers.set(sender.id, []);
+		if (!user.whispers.has(sender.id)) {
+			user.whispers.set(sender.id, []);
 		}
 
-		const messages = app.user.whispers.get(sender.id)!;
+		const messages = user.whispers.get(sender.id)!;
 
 		messages.push({
 			badges: data.badges
