@@ -15,9 +15,14 @@ type HandlerData<K> = K extends keyof IrcMessageMap
 
 export interface Handler<K extends HandlerKey = HandlerKey> {
 	name: K;
+	channel?: boolean;
 	handle: (data: HandlerData<K>, channel: Channel) => Promise<void> | void;
 }
 
 export function defineHandler<K extends HandlerKey>(handler: Handler<K>) {
+	if (handler.channel === undefined) {
+		handler.channel = true;
+	}
+
 	return handler;
 }

@@ -51,6 +51,12 @@ export interface Relationship {
 	subscription: RelationshipSubscription;
 }
 
+export interface Whisper {
+	badges: Badge[];
+	sender: User;
+	message: string;
+}
+
 export interface PartialUser {
 	id: string;
 	color?: string | null;
@@ -108,6 +114,11 @@ export class User implements PartialUser {
 	 * The relationships of the user to other channels.
 	 */
 	public readonly relationships = new SvelteMap<string, Relationship>();
+
+	/**
+	 * The whisper threads the user is involved in.
+	 */
+	public readonly whispers = new SvelteMap<string, Whisper[]>();
 
 	/**
 	 * The username of the user.
