@@ -106,12 +106,14 @@
 			{#if node.marked}
 				<mark class="wrap-anywhere">{node.data.prefix + node.data.bits}</mark>
 			{:else}
+				{@const srcset = node.data.tier.images.flatMap((img) =>
+					img ? [`${img.url} ${img.dpiScale}x`] : [],
+				)}
+
 				<img
 					class="-my-2 inline-block align-middle"
-					src={node.data.tier.images.dark.animated[2]}
+					srcset={srcset.join(", ")}
 					alt="{node.data.prefix} {node.data.bits}"
-					width="32"
-					height="32"
 				/>
 
 				<span class="font-semibold" style:color={node.data.tier.color}

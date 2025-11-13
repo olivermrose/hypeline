@@ -13,6 +13,26 @@ export const badgeDetailsFragment = twitchGql(`
 
 export type Badge = FragmentOf<typeof badgeDetailsFragment>;
 
+export const cheermoteDetailsFragment = twitchGql(`
+	fragment CheermoteDetails on Cheermote {
+		id
+		prefix
+		tiers {
+			id
+			bits
+			color
+			images(theme: DARK, isAnimated: true) {
+				id
+				dpiScale
+				url
+			}
+		}
+	}
+`);
+
+export type Cheermote = FragmentOf<typeof cheermoteDetailsFragment>;
+export type CheermoteTier = Cheermote["tiers"][number];
+
 export const emoteDetailsFragment = seventvGql(`
 	fragment EmoteDetails on Emote {
 		id

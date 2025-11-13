@@ -3,13 +3,18 @@ import { SvelteMap } from "svelte/reactivity";
 import { ApiError, ErrorMessage } from "$lib/errors";
 import { app } from "../app.svelte";
 import { commands } from "../commands";
-import { badgeDetailsFragment, twitchGql as gql, streamDetailsFragment } from "../graphql";
+import {
+	badgeDetailsFragment,
+	cheermoteDetailsFragment,
+	twitchGql as gql,
+	streamDetailsFragment,
+} from "../graphql";
 import { log } from "../log";
 import { ChannelEmoteManager, ViewerManager } from "../managers";
 import { settings } from "../settings";
 import type { Command } from "../commands/util";
-import type { Badge, Stream } from "../graphql";
-import type { Cheermote, SentMessage, StreamMarker } from "../twitch/api";
+import type { Badge, Cheermote, Stream } from "../graphql";
+import type { SentMessage, StreamMarker } from "../twitch/api";
 import type { TwitchApiClient } from "../twitch/client";
 import { Viewer } from "./viewer.svelte";
 import type { User } from "./user.svelte";
@@ -229,11 +234,23 @@ export class Channel {
 	 * use.
 	 */
 	public async fetchCheermotes() {
-		const { data } = await this.client.get<Cheermote[]>("/bits/cheermotes", {
-			broadcaster_id: this.id,
-		});
+		const { user } = await this.client.send(
+			gql(
+				`query GetCheermotes($id: ID!) {
+					user(id: $id) {
+						cheer {
+							emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
+							...CheermoteDetails
+							}
+						}
+					}
+				}`,
+				[cheermoteDetailsFragment],
+			),
+			{ id: this.id },
+		);
 
-		this.cheermotes.push(...data);
+		this.cheermotes.push(...(user?.cheer?.emotes.filter((e) => e != null) ?? []));
 		return this.cheermotes;
 	}
 

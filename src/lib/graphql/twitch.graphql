@@ -6146,7 +6146,7 @@ type CheerInfo {
   will be applied to the result unless it's null or empty.
   If includeUpperTiers is true, the upper tiers of the cheermotes will be returned.
   """
-  emotes(prefixes: [String!], type: [CheermoteType!], includeUpperTiers: Boolean, includeSponsored: Boolean): [Cheermote]! @deprecated(reason: "Scheduled to be removed. Use cheerGroups instead")
+  emotes(prefixes: [String!], type: [CheermoteType!], includeUpperTiers: Boolean, includeSponsored: Boolean): [Cheermote]!
 
   """
   hashtags for augmenting cheering with different actions, such as #charity will donate bits to
@@ -6354,19 +6354,19 @@ type CheermoteImage {
   dpiScale is the scale of the cheermote image.
   Currently available scales are: 1, 1.5, 2, 3, or 4.
   """
-  dpiScale: Float! @deprecated(reason: "Scheduled to be removed.")
+  dpiScale: Float!
 
   """The ID of CheermoteImage."""
-  id: ID! @deprecated(reason: "Scheduled to be removed.")
+  id: ID!
 
   """isAnimated is true for animated cheermotes and false otherwise."""
-  isAnimated: Boolean! @deprecated(reason: "Scheduled to be removed.")
+  isAnimated: Boolean!
 
   """theme is the UI theme the cheermote is designed to be rendered on."""
-  theme: ChatTheme! @deprecated(reason: "Scheduled to be removed.")
+  theme: ChatTheme!
 
   """url is the URL of the image asset."""
-  url: String! @deprecated(reason: "Scheduled to be removed.")
+  url: String!
 }
 
 """CheermoteTier has information about a single tier of a cheermote."""
@@ -6386,7 +6386,7 @@ type CheermoteTier {
   """
   color is the hex color used to render the number of bits for this tier.
   """
-  color: String! @deprecated(reason: "Scheduled to be removed.")
+  color: String!
 
   """The ID of CheermoteTier."""
   id: ID!
@@ -6395,7 +6395,7 @@ type CheermoteTier {
   images are urls for the cheermote that match various settings.
   This can optionally be filtered to only certain variations or called without arguments to return all available images.
   """
-  images(theme: ChatTheme, isAnimated: Boolean, dpiScale: Float): [CheermoteImage]! @deprecated(reason: "Scheduled to be removed.")
+  images(theme: ChatTheme, isAnimated: Boolean, dpiScale: Float): [CheermoteImage]!
 
   """
   tierID of this specific cheermote icon. For "Kappa100" this will be "100".
@@ -35981,7 +35981,7 @@ type Stream {
   tags: [Tag!]
 
   """A user-defined title describing the stream."""
-  title: String @deprecated(reason: "Title field in Users has been deprecated. Use broadcaster.broadcastSettings.title instead")
+  title: String
 
   """What type of stream this is (e.g. live, playlist, watch_party)."""
   type: String

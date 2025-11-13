@@ -1,6 +1,6 @@
 import { parse as parseTld } from "tldts";
 import type { Emote } from "$lib/emotes";
-import type { CheermoteTier } from "$lib/twitch/api";
+import type { CheermoteTier } from "$lib/graphql";
 import type { Range } from "$lib/twitch/irc";
 import type { User, UserMessage } from "../";
 
@@ -112,8 +112,8 @@ export function parse(message: UserMessage): Node[] {
 			if (amount > 0) {
 				let selectedTier: CheermoteTier | undefined;
 
-				for (const tier of cheermote.tiers.toSorted((a, b) => b.min_bits - a.min_bits)) {
-					if (amount >= tier.min_bits) {
+				for (const tier of cheermote.tiers.toSorted((a, b) => b.bits - a.bits)) {
+					if (amount >= tier.bits) {
 						selectedTier = tier;
 						break;
 					}
