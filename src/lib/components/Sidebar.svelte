@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getAllWebviewWindows } from "@tauri-apps/api/webviewWindow";
 	import { ScrollArea } from "bits-ui";
+	import { app } from "$lib/app.svelte";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
 	import Settings from "./settings/Settings.svelte";
