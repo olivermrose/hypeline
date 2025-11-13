@@ -1,3 +1,4 @@
+import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
 import { Whisper } from "$lib/models";
 import { defineHandler } from "../helper";
@@ -24,6 +25,8 @@ export default defineHandler({
 			text: data.message_text,
 		});
 
-		whisper.unread++;
+		if (page.url.pathname !== `/whispers/${sender.id}`) {
+			whisper.unread++;
+		}
 	},
 });
