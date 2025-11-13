@@ -64,16 +64,16 @@
 					</time>
 				</div>
 
-				<div class="flex items-center justify-between">
+				<div class="flex justify-between">
 					<p class={["text-sm", !whisper.unread && "text-muted-foreground"]}>
 						{message.text}
 					</p>
 
 					{#if whisper.unread}
 						<div
-							class="bg-twitch mt-1 flex size-5 items-center justify-center rounded-full p-1 text-xs font-medium"
+							class="bg-twitch mt-1 flex size-6 items-center justify-center rounded-full p-1 text-xs font-medium"
 						>
-							{whisper.unread}
+							{whisper.unread > 9 ? "9+" : whisper.unread}
 						</div>
 					{/if}
 				</div>
