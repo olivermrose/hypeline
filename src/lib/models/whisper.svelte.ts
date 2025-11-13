@@ -1,4 +1,6 @@
+import { app } from "$lib/app.svelte";
 import type { Badge } from "$lib/graphql";
+import type { TwitchApiClient } from "$lib/twitch/client";
 import type { User } from "./user.svelte";
 
 export interface WhisperMessage {
@@ -24,4 +26,31 @@ export class Whisper {
 	 * The number of unread messages in the whisper.
 	 */
 	public unread = $state<number>(0);
+
+	public constructor(
+		public readonly client: TwitchApiClient,
+		public readonly id: string,
+	) {}
+
+	public async send(message: string) {
+		if (!app.user) return;
+
+		await this.client.post("/whispers", {
+			params: {
+				from_user_id: app.user.id,
+				to_user_id: this.id,
+			},
+			body: {
+				message,
+			},
+		});
+
+		this.messages.push({
+			id: crypto.randomUUID(),
+			createdAt: new Date(),
+			badges: [],
+			user: app.user,
+			text: message,
+		});
+	}
 }

@@ -42,7 +42,7 @@
 			></a>
 
 			<img
-				class="mr-3 rounded-full border"
+				class="mr-3 rounded-full"
 				src={message.user.avatarUrl}
 				alt={message.user.displayName}
 				width="56"
@@ -71,7 +71,7 @@
 
 					{#if whisper.unread}
 						<div
-							class="bg-twitch flex size-5 items-center justify-center rounded-full p-1 text-xs font-medium"
+							class="bg-twitch mt-1 flex size-5 items-center justify-center rounded-full p-1 text-xs font-medium"
 						>
 							{whisper.unread}
 						</div>
