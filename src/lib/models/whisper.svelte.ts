@@ -33,7 +33,7 @@ export class Whisper {
 	) {}
 
 	public async send(message: string) {
-		if (!app.user) return;
+		if (!app.user || !message) return;
 
 		await this.client.post("/whispers", {
 			params: {
