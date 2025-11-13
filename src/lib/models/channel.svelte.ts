@@ -14,8 +14,8 @@ import { ChannelEmoteManager, ViewerManager } from "../managers";
 import { settings } from "../settings";
 import type { Command } from "../commands/util";
 import type { Badge, Cheermote, Stream } from "../graphql";
+import type { TwitchClient } from "../twitch";
 import type { SentMessage, StreamMarker } from "../twitch/api";
-import type { TwitchApiClient } from "../twitch/client";
 import { Viewer } from "./viewer.svelte";
 import type { User } from "./user.svelte";
 import { SystemMessage } from "./";
@@ -76,7 +76,7 @@ export class Channel {
 	public messages = $state<Message[]>([]);
 
 	public constructor(
-		public readonly client: TwitchApiClient,
+		public readonly client: TwitchClient,
 
 		/**
 		 * The user for the channel.

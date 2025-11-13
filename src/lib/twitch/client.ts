@@ -21,7 +21,7 @@ interface FetchOptions {
 	body?: Record<string, any>;
 }
 
-export class TwitchApiClient {
+export class TwitchClient {
 	// This should only be null between the time of app start up and settings
 	// synchronization because of browser restrictions; however, any subsequent
 	// API calls SHOULD have a valid token as it's set at first layout load.

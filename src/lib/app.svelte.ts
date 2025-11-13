@@ -3,7 +3,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { handlers } from "./handlers";
 import { log } from "./log";
 import { EmoteManager } from "./managers";
-import { TwitchApiClient } from "./twitch/client";
+import { TwitchClient } from "./twitch";
 import type { Badge } from "./graphql";
 import type { Channel, User } from "./models";
 import type { DispatchPayload, Paint } from "./seventv";
@@ -11,7 +11,7 @@ import type { NotificationPayload } from "./twitch/eventsub";
 import type { IrcMessage } from "./twitch/irc";
 
 class App {
-	public readonly twitch = new TwitchApiClient();
+	public readonly twitch = new TwitchClient();
 
 	/**
 	 * Whether the app has made all necessary connections.

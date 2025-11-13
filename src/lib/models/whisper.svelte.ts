@@ -1,6 +1,6 @@
 import { app } from "$lib/app.svelte";
 import type { Badge } from "$lib/graphql";
-import type { TwitchApiClient } from "$lib/twitch/client";
+import type { TwitchClient } from "$lib/twitch";
 import type { User } from "./user.svelte";
 
 export interface WhisperMessage {
@@ -28,7 +28,7 @@ export class Whisper {
 	public unread = $state(0);
 
 	public constructor(
-		public readonly client: TwitchApiClient,
+		public readonly client: TwitchClient,
 		public readonly id: string,
 	) {}
 

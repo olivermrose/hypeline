@@ -6,8 +6,8 @@ import { settings } from "../settings";
 import { dedupe, makeReadable } from "../util";
 import type { User as ApiUser, Badge } from "../graphql";
 import type { Paint } from "../seventv";
+import type { TwitchClient } from "../twitch";
 import type { SubscriptionAge } from "../twitch/api";
-import type { TwitchApiClient } from "../twitch/client";
 import type { Whisper } from "./";
 
 export interface RelationshipSubscription {
@@ -131,7 +131,7 @@ export class User implements PartialUser {
 	public paint = $state<Paint>();
 
 	public constructor(
-		public readonly client: TwitchApiClient,
+		public readonly client: TwitchClient,
 		data: ApiUser,
 	) {
 		this.#color = data.chatColor;

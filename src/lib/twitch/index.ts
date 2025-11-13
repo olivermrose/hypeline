@@ -1,3 +1,5 @@
+export * from "./client";
+
 export const SCOPES = [
 	// Channel
 	"channel:edit:commercial",

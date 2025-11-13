@@ -2,7 +2,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { ApiError, ErrorMessage } from "$lib/errors";
 import { userQuery } from "$lib/graphql";
 import { User } from "$lib/models";
-import type { TwitchApiClient } from "$lib/twitch/client";
+import type { TwitchClient } from "$lib/twitch";
 
 export interface UserFetchOptions {
 	by?: "id" | "login";
@@ -10,7 +10,7 @@ export interface UserFetchOptions {
 }
 
 export class UserManager extends SvelteMap<string, User> {
-	public constructor(public readonly client: TwitchApiClient) {
+	public constructor(public readonly client: TwitchClient) {
 		super();
 	}
 

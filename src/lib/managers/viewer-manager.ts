@@ -2,11 +2,11 @@ import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import type { Channel, TimeoutOptions } from "$lib/models";
 import { Viewer } from "$lib/models";
-import type { TwitchApiClient } from "$lib/twitch/client";
+import type { TwitchClient } from "$lib/twitch";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
 	public constructor(
-		public readonly client: TwitchApiClient,
+		public readonly client: TwitchClient,
 		public readonly channel: Channel,
 	) {
 		super();
