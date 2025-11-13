@@ -9,6 +9,8 @@
 	let settingsOpen = $state(false);
 	let joinOpen = $state(false);
 
+	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
+
 	async function openSettings() {
 		const windows = await getAllWebviewWindows();
 		const settingsWindow = windows.find((win) => win.label === "settings");
@@ -27,7 +29,7 @@
 <ScrollArea.Root>
 	<ScrollArea.Viewport class="h-full min-h-screen">
 		<nav class="h-full space-y-4 p-3 pt-0">
-			<div class="space-y-2">
+			<div class="space-y-2.5">
 				<button
 					class="sidebar-button"
 					title="Settings"
@@ -39,11 +41,19 @@
 				</button>
 
 				<a
-					class="sidebar-button"
+					class="sidebar-button relative"
 					title="Whispers"
 					href="/whispers"
 					aria-label="Go to whispers"
 				>
+					{#if unread}
+						<div
+							class="absolute -top-1/3 -right-1/3 flex size-5 -translate-x-1/3 translate-y-1/3 items-center justify-center rounded-full bg-red-500 text-xs font-medium shadow-md"
+						>
+							{unread > 9 ? "9+" : unread}
+						</div>
+					{/if}
+
 					<span class="lucide--message-square iconify"></span>
 				</a>
 

@@ -25,7 +25,7 @@ export class Whisper {
 	/**
 	 * The number of unread messages in the whisper.
 	 */
-	public unread = $state<number>(0);
+	public unread = $state(0);
 
 	public constructor(
 		public readonly client: TwitchApiClient,
