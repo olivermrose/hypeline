@@ -14,7 +14,7 @@
 			const now = new Date();
 			const offset = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
-			setTimeout(() => {
+			const timeout = setTimeout(() => {
 				element.textContent = dayjs(date).fromNow();
 
 				interval = setInterval(() => {
@@ -22,7 +22,10 @@
 				}, 60 * 1000);
 			}, offset);
 
-			return () => clearInterval(interval);
+			return () => {
+				clearTimeout(timeout);
+				clearInterval(interval);
+			};
 		};
 	}
 </script>
