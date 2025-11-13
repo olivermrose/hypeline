@@ -8,6 +8,7 @@ import type { User as ApiUser, Badge } from "../graphql";
 import type { Paint } from "../seventv";
 import type { SubscriptionAge } from "../twitch/api";
 import type { TwitchApiClient } from "../twitch/client";
+import type { Whisper } from "./";
 
 export interface RelationshipSubscription {
 	/**
@@ -108,6 +109,11 @@ export class User implements PartialUser {
 	 * The relationships of the user to other channels.
 	 */
 	public readonly relationships = new SvelteMap<string, Relationship>();
+
+	/**
+	 * The whisper threads the user is involved in.
+	 */
+	public readonly whispers = new SvelteMap<string, Whisper>();
 
 	/**
 	 * The username of the user.

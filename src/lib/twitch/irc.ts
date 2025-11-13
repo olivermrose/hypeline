@@ -114,14 +114,17 @@ export interface Emote {
 	code: string;
 }
 
-export interface BaseUserMessage {
-	channel_login: string;
-	channel_id: string;
+export interface BaseMessage {
 	sender: BasicUser;
 	badges: Badge[];
-	badge_info: Badge[];
 	name_color: string;
 	emotes: Emote[];
+}
+
+export interface BaseUserMessage extends BaseMessage {
+	channel_login: string;
+	channel_id: string;
+	badge_info: Badge[];
 	message_id: string;
 	deleted: boolean;
 	is_recent: boolean;
@@ -271,6 +274,12 @@ export interface UserNoticeMessage extends BaseUserMessage {
 	event_id: string;
 }
 
+export interface WhisperMessage extends BaseMessage {
+	type: "whisper";
+	recipient_login: string;
+	message_text: string;
+}
+
 export type IrcMessage =
 	| ClearChatMessage
 	| ClearMsgMessage
@@ -278,7 +287,8 @@ export type IrcMessage =
 	| NoticeMessage
 	| PartMessage
 	| PrivmsgMessage
-	| UserNoticeMessage;
+	| UserNoticeMessage
+	| WhisperMessage;
 
 export type IrcMessageMap = {
 	[K in IrcMessage["type"]]: Extract<IrcMessage, { type: K }>;

@@ -1,4 +1,4 @@
-import type { Channel } from "$lib/models";
+import type { Channel, User } from "$lib/models";
 import type { SevenTvEventMap } from "$lib/seventv";
 import type { SubscriptionEventMap } from "$lib/twitch/eventsub";
 import type { IrcMessageMap } from "$lib/twitch/irc";
@@ -13,11 +13,24 @@ type HandlerData<K> = K extends keyof IrcMessageMap
 			? SevenTvEventMap[K]
 			: never;
 
-export interface Handler<K extends HandlerKey = HandlerKey> {
+interface ChannelHandler<K> {
 	name: K;
+	global?: false;
 	handle: (data: HandlerData<K>, channel: Channel) => Promise<void> | void;
 }
 
+interface GlobalHandler<K> {
+	name: K;
+	global: true;
+	handle: (data: HandlerData<K>, user: User) => Promise<void> | void;
+}
+
+export type Handler<K extends HandlerKey = HandlerKey> = ChannelHandler<K> | GlobalHandler<K>;
+
 export function defineHandler<K extends HandlerKey>(handler: Handler<K>) {
+	if (handler.global === undefined) {
+		handler.global = false;
+	}
+
 	return handler;
 }

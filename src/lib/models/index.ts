@@ -6,3 +6,4 @@ export * from "./message/system-message";
 export * from "./message/user-message";
 export * from "./user.svelte";
 export * from "./viewer.svelte";
+export * from "./whisper.svelte";

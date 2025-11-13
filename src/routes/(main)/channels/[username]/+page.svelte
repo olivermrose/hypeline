@@ -16,6 +16,8 @@
 		unlisten = await listen<IrcMessage[]>("recentmessages", async (event) => {
 			for (const message of event.payload) {
 				const handler = handlers.get(message.type);
+				if (handler?.global) continue;
+
 				await handler?.handle(message, data.channel);
 			}
 		});
