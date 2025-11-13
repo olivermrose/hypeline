@@ -83,7 +83,7 @@ class App {
 	async #handle(key: string, payload: any) {
 		const handler = handlers.get(key);
 
-		// Need to explicitly compare againt false to make TypeScript happy
+		// Need to explicitly compare against false to make TypeScript happy
 		if (this.joined && handler?.global === false) {
 			await handler.handle(payload, this.joined);
 		} else if (this.user && handler?.global) {
