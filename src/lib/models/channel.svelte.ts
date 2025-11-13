@@ -3,13 +3,13 @@ import { SvelteMap } from "svelte/reactivity";
 import { ApiError, ErrorMessage } from "$lib/errors";
 import { app } from "../app.svelte";
 import { commands } from "../commands";
-import { twitchGql as gql, streamDetailsFragment } from "../graphql";
+import { badgeDetailsFragment, twitchGql as gql, streamDetailsFragment } from "../graphql";
 import { log } from "../log";
 import { ChannelEmoteManager, ViewerManager } from "../managers";
 import { settings } from "../settings";
 import type { Command } from "../commands/util";
 import type { Badge, Stream } from "../graphql";
-import type { BadgeSet, Cheermote, SentMessage, StreamMarker } from "../twitch/api";
+import type { Cheermote, SentMessage, StreamMarker } from "../twitch/api";
 import type { TwitchApiClient } from "../twitch/client";
 import { Viewer } from "./viewer.svelte";
 import type { User } from "./user.svelte";
@@ -205,20 +205,22 @@ export class Channel {
 	 * Retrieves the list of badges in the channel and caches them for later use.
 	 */
 	public async fetchBadges() {
-		const { data } = await this.client.get<BadgeSet[]>("/chat/badges", {
-			broadcaster_id: this.id,
-		});
+		const { user } = await this.client.send(
+			gql(
+				`query GetChannelBadges($id: ID!) {
+					user(id: $id) {
+						broadcastBadges {
+							...BadgeDetails
+						}
+					}
+				}`,
+				[badgeDetailsFragment],
+			),
+			{ id: this.id },
+		);
 
-		for (const badge of data) {
-			for (const version of badge.versions) {
-				this.badges.set(`${badge.set_id}:${version.id}`, {
-					title: version.title,
-					description: version.description,
-					imageURL: version.image_url_4x,
-					setID: badge.set_id,
-					version: version.id,
-				});
-			}
+		for (const badge of user?.broadcastBadges?.filter((b) => b != null) ?? []) {
+			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 	}
 
