@@ -54,6 +54,10 @@ pub async fn connect_seventv(
 pub async fn set_seventv_id(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
     let mut state = state.lock().await;
 
+    if state.seventv_id.is_some() {
+        return Ok(());
+    }
+
     let stv_user = HTTP
         .get(format!("https://7tv.io/v3/users/twitch/{id}"))
         .send()

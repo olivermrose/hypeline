@@ -1,12 +1,8 @@
 <script lang="ts">
 	import "../app.css";
-	import { Tooltip } from "bits-ui";
 	import { ModeWatcher } from "mode-watcher";
-	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
-	import Sidebar from "$lib/components/Sidebar.svelte";
 	import TitleBar from "$lib/components/TitleBar.svelte";
-	import { settings } from "$lib/settings";
 
 	const { children } = $props();
 
@@ -30,20 +26,5 @@
 		{/snippet}
 	</TitleBar>
 
-	<Tooltip.Provider delayDuration={100}>
-		<div class="flex grow overflow-hidden">
-			{#if settings.state.user && !page.data.detached}
-				<Sidebar />
-			{/if}
-
-			<main
-				class={[
-					"grow overflow-hidden",
-					settings.state.user && "rounded-tl-lg border-t border-l",
-				]}
-			>
-				{@render children()}
-			</main>
-		</div>
-	</Tooltip.Provider>
+	{@render children()}
 </div>

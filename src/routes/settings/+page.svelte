@@ -8,6 +8,7 @@
 	import { Popover, Separator, Tabs } from "bits-ui";
 	import { tick } from "svelte";
 	import { beforeNavigate, goto } from "$app/navigation";
+	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
 	import { categories } from "$lib/components/settings";
 	import Category from "$lib/components/settings/Category.svelte";
@@ -86,7 +87,12 @@
 		<Separator.Root class="bg-border my-1 h-px w-full" />
 
 		<div class="space-y-1">
-			<button class="settings-btn text-muted-foreground" type="button" onclick={detach}>
+			<button
+				class="settings-btn text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+				type="button"
+				disabled={page.data.detached}
+				onclick={detach}
+			>
 				<span class="iconify lucide--external-link size-4"></span>
 				<span class="text-sm">Popout settings</span>
 			</button>
@@ -129,13 +135,15 @@
 	</nav>
 
 	<div class="relative grow overflow-y-auto rounded-tl-lg border-t border-l p-4 pb-16">
-		<button
-			class="text-muted-foreground group hover:text-foreground absolute top-4 right-4 flex flex-col items-center"
-			onclick={() => history.back()}
-			aria-label="Close settings"
-		>
-			<span class="iconify lucide--x size-6"></span>
-		</button>
+		{#if !page.data.detached}
+			<button
+				class="text-muted-foreground group hover:text-foreground absolute top-4 right-4 flex flex-col items-center"
+				onclick={() => history.back()}
+				aria-label="Close settings"
+			>
+				<span class="iconify lucide--x size-6"></span>
+			</button>
+		{/if}
 
 		{#each categories as category (category.label)}
 			<Tabs.Content value={category.label}>
@@ -146,7 +154,7 @@
 </Tabs.Root>
 
 <style>
-	@reference "../../../app.css";
+	@reference "../../app.css";
 
 	:global(.settings-btn) {
 		width: 100%;

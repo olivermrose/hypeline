@@ -10,8 +10,9 @@ import type { Prefix } from "$lib/util";
 export const ssr = false;
 
 export async function load({ url }) {
-	await settings.start();
-	log.info("Settings synced");
+	if (url.searchParams.has("detached")) {
+		return { detached: true };
+	}
 
 	if (!settings.state.user) {
 		if (url.pathname !== "/auth/login") {
@@ -22,20 +23,22 @@ export async function load({ url }) {
 		return;
 	}
 
-	app.twitch.token = settings.state.user.token;
-	app.user = await app.twitch.users.fetch(settings.state.user.id);
-
-	const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
-		"/moderation/channels",
-		{ user_id: app.user.id, first: 100 },
-	);
-
-	for (const channel of data) {
-		app.user.moderating.add(channel.broadcaster_id);
-	}
+	app.twitch.token ??= settings.state.user.token;
+	app.user ??= await app.twitch.users.fetch(settings.state.user.id);
 
 	// TODO: remove when redoing 7TV
 	await invoke("set_seventv_id", { id: app.user.id });
+
+	if (!app.user.moderating.size) {
+		const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
+			"/moderation/channels",
+			{ user_id: app.user.id, first: 100 },
+		);
+
+		for (const channel of data) {
+			app.user.moderating.add(channel.broadcaster_id);
+		}
+	}
 
 	if (!app.channels.length) {
 		const following = await app.twitch.fetchFollowing();
