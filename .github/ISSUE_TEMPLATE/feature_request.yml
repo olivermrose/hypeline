@@ -2,3 +2,20 @@ name: Feature Request
 description: Suggest a new feature for Hypeline
 labels: [enhancement]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature! Please fill out the template below to help us understand your request.
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the existing issues to make sure this feature hasn't already been requested.
+          required: true
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Describe the Feature
+      description: A clear and concise description of the feature you would like to see implemented. If this is a feature that exists on Twitch, please include any screenshots.
+    validations:
+      required: true

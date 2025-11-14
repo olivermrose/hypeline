@@ -6,6 +6,12 @@ body:
     attributes:
       value: |
         Thanks for taking the time to report a bug! Please fill out the template below to help us understand and resolve the issue.
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the existing issues to make sure this bug hasn't already been reported.
+          required: true
   - type: textarea
     id: debug-info
     attributes:
