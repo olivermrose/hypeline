@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { getAllWebviewWindows } from "@tauri-apps/api/webviewWindow";
 	import { ScrollArea } from "bits-ui";
+	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
-	import Settings from "./settings/Settings.svelte";
 
-	let settingsOpen = $state(false);
 	let joinOpen = $state(false);
 
 	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
@@ -18,12 +17,11 @@
 		if (settingsWindow) {
 			await settingsWindow.setFocus();
 		} else {
-			settingsOpen = true;
+			await goto("/settings");
 		}
 	}
 </script>
 
-<Settings bind:open={settingsOpen} />
 <JoinDialog bind:open={joinOpen} />
 
 <ScrollArea.Root>
