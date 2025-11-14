@@ -1,0 +1,29 @@
+name: Bug Report
+description: Report an issue with Hypeline
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the template below to help us understand and resolve the issue.
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the existing issues to make sure this bug hasn't already been reported.
+          required: true
+  - type: textarea
+    id: debug-info
+    attributes:
+      label: Debug Info
+      description: Go to the settings page and click `Copy debug info` to copy relevant platform information and paste it here.
+      render: block
+    validations:
+      required: true
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is. Please include any screenshots if applicable.
+    validations:
+      required: true
