@@ -40,22 +40,22 @@
 			<a
 				class="absolute inset-0 z-1"
 				href="/whispers/{id}"
-				aria-label="Go to whisper with {message.user.displayName}"
+				aria-label="Go to whisper with {whisper.sender.displayName}"
 				data-sveltekit-preload-data="off"
 			></a>
 
 			<img
 				class="mr-3 rounded-full"
-				src={message.user.avatarUrl}
-				alt={message.user.displayName}
+				src={whisper.sender.avatarUrl}
+				alt={whisper.sender.displayName}
 				width="56"
 				height="56"
 			/>
 
 			<div class="flex w-full flex-col">
 				<div class="flex items-center justify-between">
-					<span class="font-semibold" style={message.user.style}>
-						{message.user.displayName}
+					<span class="font-semibold" style={whisper.sender.style}>
+						{whisper.sender.displayName}
 					</span>
 
 					<time

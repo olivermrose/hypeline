@@ -29,7 +29,7 @@ export class Whisper {
 
 	public constructor(
 		public readonly client: TwitchClient,
-		public readonly id: string,
+		public readonly sender: User,
 	) {}
 
 	public async send(message: string) {
@@ -38,7 +38,7 @@ export class Whisper {
 		await this.client.post("/whispers", {
 			params: {
 				from_user_id: app.user.id,
-				to_user_id: this.id,
+				to_user_id: this.sender.id,
 			},
 			body: {
 				message,
