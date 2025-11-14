@@ -41,6 +41,7 @@
 		"gql.tada": "^1.8.13",
 		"graphql-web-lite": "16.6.0-4",
 		"mode-watcher": "^1.1.0",
+		"svelte-sonner": "^1.0.6",
 		"tailwind-merge": "^3.3.1",
 		"tailwindcss": "^4.1.16",
 		"tldts": "^7.0.17",

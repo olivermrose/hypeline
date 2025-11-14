@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "../app.css";
 	import { ModeWatcher } from "mode-watcher";
+	import { Toaster } from "svelte-sonner";
 	import { app } from "$lib/app.svelte";
 	import TitleBar from "$lib/components/TitleBar.svelte";
 
@@ -12,6 +13,7 @@
 	});
 </script>
 
+<Toaster duration={3000} richColors />
 <ModeWatcher />
 
 <div class="flex max-h-screen flex-col">

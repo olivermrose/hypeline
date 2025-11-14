@@ -5,8 +5,9 @@
 	import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 	import { openPath } from "@tauri-apps/plugin-opener";
 	import * as os from "@tauri-apps/plugin-os";
-	import { Popover, Separator, Tabs } from "bits-ui";
+	import { Separator, Tabs } from "bits-ui";
 	import { tick } from "svelte";
+	import { toast } from "svelte-sonner";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
@@ -14,8 +15,6 @@
 	import Category from "$lib/components/settings/Category.svelte";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
-
-	let copied = $state(false);
 
 	beforeNavigate(async () => {
 		await settings.saveNow();
@@ -40,11 +39,7 @@
 		const osInfo = `${os.platform()} ${os.arch()} (${os.version()})`;
 
 		await writeText(`${appInfo}\n${osInfo}`);
-		copied = true;
-
-		setTimeout(() => {
-			copied = false;
-		}, 2000);
+		toast.success("Debug info copied to clipboard");
 	}
 
 	async function logOut() {
@@ -75,7 +70,7 @@
 		<Tabs.List class="space-y-1">
 			{#each categories as category (category.label)}
 				<Tabs.Trigger
-					class="settings-btn text-muted-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground"
+					class="text-muted-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground"
 					value={category.label}
 				>
 					<span class="iconify size-4 {category.icon}"></span>
@@ -88,7 +83,7 @@
 
 		<div class="space-y-1">
 			<button
-				class="settings-btn text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+				class="text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
 				type="button"
 				disabled={page.data.detached}
 				onclick={detach}
@@ -97,34 +92,21 @@
 				<span class="text-sm">Popout settings</span>
 			</button>
 
-			<button class="settings-btn text-muted-foreground" type="button" onclick={openLogDir}>
+			<button class="text-muted-foreground" type="button" onclick={openLogDir}>
 				<span class="iconify lucide--folder-open size-4"></span>
 				<span class="text-sm">Open logs</span>
 			</button>
 
-			<Popover.Root bind:open={() => copied, () => {}}>
-				<Popover.Trigger
-					class="settings-btn text-muted-foreground"
-					type="button"
-					onclick={copyDebugInfo}
-				>
-					<span class="iconify lucide--clipboard size-4"></span>
-					<span class="text-sm">Copy debug info</span>
-				</Popover.Trigger>
-
-				<Popover.Content
-					class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--bits-popover-content-transform-origin) rounded-md border bg-green-600 px-2 py-1 text-sm font-medium shadow-md outline-hidden"
-					side="top"
-				>
-					Copied!
-				</Popover.Content>
-			</Popover.Root>
+			<button class="text-muted-foreground" type="button" onclick={copyDebugInfo}>
+				<span class="iconify lucide--clipboard size-4"></span>
+				<span class="text-sm">Copy debug info</span>
+			</button>
 		</div>
 
 		<Separator.Root class="bg-border my-1 h-px w-full" />
 
 		<button
-			class="settings-btn text-destructive hover:bg-destructive/10!"
+			class="text-destructive hover:bg-destructive/10!"
 			type="button"
 			data-logout
 			onclick={logOut}
@@ -156,7 +138,7 @@
 <style>
 	@reference "../../app.css";
 
-	:global(.settings-btn) {
+	nav :global(button) {
 		width: 100%;
 		display: flex;
 		align-items: center;
