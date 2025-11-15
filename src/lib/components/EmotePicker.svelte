@@ -2,26 +2,38 @@
 	import { invoke } from "@tauri-apps/api/core";
 	import { Popover, Tabs } from "bits-ui";
 	import { onMount } from "svelte";
-	import type { UserEmote } from "$lib/tauri";
+	import { SvelteMap } from "svelte/reactivity";
+	import { app } from "$lib/app.svelte";
+	import type { User } from "$lib/models";
+	import type { UserEmote } from "$lib/twitch/api";
+
+	interface EmoteSet {
+		owner: User;
+		emotes: UserEmote[];
+	}
 
 	interface Props {
-		open?: boolean;
 		input?: HTMLInputElement | null;
-		anchor?: HTMLElement;
 	}
 
-	interface EmoteGroup {
-		displayName: string;
-		profilePictureUrl: string;
-		emotes: Omit<UserEmote, "owner" | "owner_profile_picture_url">[];
-	}
+	const { input }: Props = $props();
 
-	let { open = $bindable(false), input, anchor }: Props = $props();
-
-	let channels = $state<EmoteGroup[]>([]);
+	const emoteSets = new SvelteMap<string, EmoteSet>();
 
 	onMount(async () => {
-		channels = await fetchEmotes();
+		const emotes = await invoke<UserEmote[]>("get_user_emotes");
+		const grouped = SvelteMap.groupBy(emotes, (emote) => emote.owner_id || "global");
+
+		for (const [id, emotes] of grouped) {
+			// TODO: handle global "owner"
+			if (id === "global") continue;
+
+			const owner = await app.twitch.users.fetch(id, {
+				by: id === "twitch" ? "login" : "id",
+			});
+
+			emoteSets.set(id, { owner, emotes });
+		}
 	});
 
 	function appendEmote(name: string) {
@@ -33,65 +45,54 @@
 			input.value = name;
 		}
 	}
-
-	async function fetchEmotes() {
-		const grouped: Record<string, EmoteGroup> = {};
-
-		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		emotes.sort((a, b) => a.owner.localeCompare(b.owner));
-
-		for (const { owner, owner_profile_picture_url, ...emote } of emotes) {
-			if (!grouped[owner]) {
-				grouped[owner] = {
-					displayName: owner,
-					profilePictureUrl: owner_profile_picture_url,
-					emotes: [],
-				};
-			}
-
-			grouped[owner].emotes.push(emote);
-		}
-
-		return Object.values(grouped);
-	}
 </script>
 
-<Popover.Root bind:open>
+<Popover.Root>
+	<Popover.Trigger
+		class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150"
+		aria-label="Open emote picker"
+	>
+		<span class="lucide--smile iconify size-5"></span>
+	</Popover.Trigger>
+
 	<Popover.Portal>
 		<Popover.Content
-			class="bg-muted overflow-hidden rounded border"
-			customAnchor={anchor}
+			class="bg-muted overflow-hidden rounded-md border"
 			side="top"
 			sideOffset={12}
 			collisionPadding={8}
 		>
 			<Tabs.Root class="flex" orientation="vertical">
 				<Tabs.List
-					class="bg-sidebar flex max-h-96 flex-col gap-3 overflow-y-auto border-r p-2"
+					class="bg-sidebar flex max-h-100 flex-col gap-3 overflow-y-auto border-r p-2"
 				>
-					{#each channels as channel}
-						<Tabs.Trigger value={channel.displayName}>
+					{#each emoteSets.values() as set}
+						<Tabs.Trigger class="group" value={set.owner.displayName}>
 							<img
-								class="size-8 rounded-full"
-								src={channel.profilePictureUrl}
-								alt={channel.displayName}
+								class="group-data-[state=active]:outline-twitch size-8 rounded-full group-data-[state=active]:outline-2"
+								src={set.owner.avatarUrl}
+								alt={set.owner.displayName}
 							/>
 						</Tabs.Trigger>
 					{/each}
 				</Tabs.List>
 
-				{#each channels as channel}
-					<Tabs.Content class="max-h-96 overflow-y-auto" value={channel.displayName}>
+				{#each emoteSets.values() as set}
+					<Tabs.Content class="max-h-100 overflow-y-auto" value={set.owner.displayName}>
 						<div class="bg-sidebar border-b p-2">
-							{channel.displayName}'s emotes
+							{set.owner.displayName}'s emotes
 						</div>
 
-						<div class="grid grid-cols-7 content-start gap-2 p-2">
-							{#each channel.emotes as emote}
+						<div class="grid grid-cols-6 content-start gap-2 p-2">
+							{#each set.emotes as emote}
+								{@const format = emote.format.includes("animated")
+									? "animated"
+									: "static"}
+
 								<button title={emote.name} onclick={() => appendEmote(emote.name)}>
 									<img
-										class="size-8"
-										src="https://static-cdn.jtvnw.net/emoticons/v2/{emote.id}/{emote.format}/dark/3.0"
+										class="size-10"
+										src="https://static-cdn.jtvnw.net/emoticons/v2/{emote.id}/{format}/dark/3.0"
 										alt={emote.name}
 									/>
 								</button>
