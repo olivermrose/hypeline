@@ -3,7 +3,17 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "usernotice",
-	handle(data, channel) {
-		channel.addMessage(new UserMessage(channel, data));
+	async handle(data, channel) {
+		const message = new UserMessage(channel, data);
+
+		if (message.source && message.source.channel_id !== channel.id) {
+			const source = await channel.viewers.fetch(message.source.channel_id);
+
+			if (!source.user.avatarUrl) {
+				await source.user.fetch();
+			}
+		}
+
+		channel.addMessage(message);
 	},
 });

@@ -3,7 +3,7 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "privmsg",
-	handle(data, channel) {
+	async handle(data, channel) {
 		const message = new UserMessage(channel, data);
 
 		message.author.username = data.sender.login;
@@ -16,6 +16,14 @@ export default defineHandler({
 			message.viewer.vip = message.badges.some((b) => b.startsWith("vip"));
 			message.viewer.returning = data.is_returning_chatter;
 			message.viewer.new = data.is_first_msg;
+		}
+
+		if (message.source && message.source.channel_id !== channel.id) {
+			const source = await channel.viewers.fetch(message.source.channel_id);
+
+			if (!source.user.avatarUrl) {
+				await source.user.fetch();
+			}
 		}
 
 		channel.addMessage(message);
