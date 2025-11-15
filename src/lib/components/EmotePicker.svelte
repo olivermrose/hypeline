@@ -2,7 +2,6 @@
 	import { invoke } from "@tauri-apps/api/core";
 	import { Popover, Tabs } from "bits-ui";
 	import { onMount } from "svelte";
-	import { SvelteMap } from "svelte/reactivity";
 	import { app } from "$lib/app.svelte";
 	import type { User } from "$lib/models";
 	import type { UserEmote } from "$lib/twitch/api";
@@ -18,11 +17,11 @@
 
 	const { input }: Props = $props();
 
-	const emoteSets = new SvelteMap<string, EmoteSet>();
+	const emoteSets = new Map<string, EmoteSet>();
 
 	onMount(async () => {
 		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		const grouped = SvelteMap.groupBy(emotes, (emote) => emote.owner_id || "global");
+		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "global");
 
 		for (const [id, emotes] of grouped) {
 			// TODO: handle global "owner"
