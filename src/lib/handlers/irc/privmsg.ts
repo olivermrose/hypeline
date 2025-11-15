@@ -17,6 +17,14 @@ export default defineHandler({
 		message.viewer.returning = data.is_returning_chatter;
 		message.viewer.new = data.is_first_msg;
 
+		if (message.source && message.source.channel_id !== channel.id) {
+			const source = await channel.viewers.fetch(message.source.channel_id);
+
+			if (!source.user.avatarUrl) {
+				await source.user.fetch();
+			}
+		}
+
 		channel.chat.addMessage(message);
 	},
 });

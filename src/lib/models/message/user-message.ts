@@ -4,6 +4,7 @@ import type {
 	BasicUser,
 	PrivmsgMessage,
 	Reply,
+	Source,
 	UserNoticeEvent,
 	UserNoticeMessage,
 } from "$lib/twitch/irc";
@@ -86,6 +87,11 @@ export class UserMessage extends Message {
 	public readonly reply: Reply | null;
 
 	/**
+	 * The source metadata for the message if it was sent in a shared chat.
+	 */
+	public readonly source: Source | null;
+
+	/**
 	 * The AutoMod metadata attached to the message if it was caught by AutoMod.
 	 */
 	public autoMod: AutoModMetadata | null = null;
@@ -114,6 +120,7 @@ export class UserMessage extends Message {
 		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
 		this.event = "event" in data ? data.event : null;
 		this.reply = "reply" in data ? data.reply : null;
+		this.source = "source" in data ? data.source : null;
 	}
 
 	/**
@@ -146,6 +153,8 @@ export class UserMessage extends Message {
 			is_returning_chatter: false,
 			reply: null,
 			sender,
+			source_only: false,
+			source: null,
 			server_timestamp: Date.now(),
 		});
 	}

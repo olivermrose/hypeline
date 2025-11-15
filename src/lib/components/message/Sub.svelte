@@ -25,6 +25,8 @@
 	}
 
 	const { message, sub }: Props = $props();
+
+	const source = message.source ? message.channel.viewers.get(message.source.channel_id) : null;
 </script>
 
 <div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={message.channel.user.color}>
@@ -55,13 +57,17 @@
 						<Link href="https://gaming.amazon.com/home">Prime</Link>
 					{:else}
 						<span class="font-semibold">Tier {sub.sub_plan[0]}</span>
-					{/if}{#if !isMultimonth}.{/if}
+					{/if}{#if !isMultimonth && !source}.{/if}
 
 					{#if isMultimonth}
 						for
 						<span class="font-semibold">
 							{sub.multimonth_duration} months
-						</span> in advance.
+						</span> in advance
+					{/if}{#if !source}.{/if}
+
+					{#if source}
+						to {@html colorizeName(source)}.
 					{/if}
 
 					{#if sub.cumulative_months > 1}
@@ -85,7 +91,11 @@
 					Gifted
 					{singular ? "a" : sub.mass_gift_count}
 					<span class="font-semibold"> Tier {sub.sub_plan[0]}</span>
-					sub{singular ? null : "s"}!
+					sub{singular ? null : "s"}{#if !source}!{/if}
+
+					{#if source}
+						to {@html colorizeName(source)}'s community!
+					{/if}
 
 					{#if sub.sender_total_gifts && sub.sender_total_gifts > sub.mass_gift_count}
 						They've gifted a total of
@@ -142,7 +152,11 @@
 					{@html colorizeName(recipient)}
 				{:else}
 					<span class="font-semibold">{sub.recipient.name}</span>
-				{/if}!
+				{/if}{#if !source}!{/if}
+
+				{#if source}
+					in {@html colorizeName(source)}'s channel!
+				{/if}
 
 				{#if sub.sender_total_months > sub.num_gifted_months}
 					They've gifted a total of

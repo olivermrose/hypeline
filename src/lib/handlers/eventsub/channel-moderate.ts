@@ -5,7 +5,12 @@ export default defineHandler({
 	name: "channel.moderate",
 	async handle(data, channel) {
 		const message = new SystemMessage(channel);
+
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
+		const source =
+			data.source_broadcaster_user_id === data.broadcaster_user_id
+				? null
+				: await channel.viewers.fetch(data.source_broadcaster_user_id);
 
 		switch (data.action) {
 			case "emoteonly":
@@ -66,14 +71,17 @@ export default defineHandler({
 				break;
 			}
 
-			case "delete": {
-				const viewer = await channel.viewers.fetch(data.delete.user_id);
+			case "delete":
+			case "shared_chat_delete": {
+				const metadata = data.action === "delete" ? data.delete : data.shared_chat_delete;
+				const viewer = await channel.viewers.fetch(metadata.user_id);
 
 				message.context = {
 					type: "delete",
-					text: data.delete.message_body,
+					text: metadata.message_body,
 					user: viewer.user,
 					moderator,
+					source,
 				};
 
 				break;
@@ -100,31 +108,40 @@ export default defineHandler({
 				break;
 			}
 
-			case "timeout": {
-				const viewer = await channel.viewers.fetch(data.timeout.user_id);
-				channel.chat.deleteMessages(data.timeout.user_id);
+			case "timeout":
+			case "shared_chat_timeout": {
+				const metadata =
+					data.action === "timeout" ? data.timeout : data.shared_chat_timeout;
+				const viewer = await channel.viewers.fetch(metadata.user_id);
 
-				const expiration = new Date(data.timeout.expires_at);
+				channel.chat.deleteMessages(metadata.user_id);
+
+				const expiration = new Date(metadata.expires_at);
 				const duration = expiration.getTime() - message.timestamp.getTime();
 
 				message.context = {
 					type: "timeout",
 					seconds: Math.ceil(duration / 1000),
-					reason: data.timeout.reason,
+					reason: metadata.reason,
 					viewer,
 					moderator,
+					source,
 				};
 
 				break;
 			}
 
-			case "untimeout": {
-				const viewer = await channel.viewers.fetch(data.untimeout.user_id);
+			case "untimeout":
+			case "shared_chat_untimeout": {
+				const metadata =
+					data.action === "untimeout" ? data.untimeout : data.shared_chat_untimeout;
+				const viewer = await channel.viewers.fetch(metadata.user_id);
 
 				message.context = {
 					type: "untimeout",
 					viewer,
 					moderator,
+					source,
 				};
 
 				break;
@@ -145,6 +162,30 @@ export default defineHandler({
 					reason: isBan ? data.ban.reason : null,
 					viewer,
 					moderator,
+					source,
+				};
+
+				break;
+			}
+
+			case "shared_chat_ban":
+			case "shared_chat_unban": {
+				const isBan = data.action === "shared_chat_ban";
+				const viewer = await channel.viewers.fetch(
+					(isBan ? data.shared_chat_ban : data.shared_chat_unban).user_id,
+				);
+
+				if (isBan) {
+					channel.chat.deleteMessages(data.shared_chat_ban.user_id);
+				}
+
+				message.context = {
+					type: "banStatus",
+					banned: isBan,
+					reason: isBan ? data.shared_chat_ban.reason : null,
+					viewer,
+					moderator,
+					source,
 				};
 
 				break;
