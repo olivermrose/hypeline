@@ -1,5 +1,6 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
+import { app } from "../app.svelte";
 import { ApiError } from "../errors";
 import { badgeDetailsFragment, twitchGql as gql } from "../graphql";
 import { settings } from "../settings";
@@ -123,12 +124,12 @@ export class User implements PartialUser {
 	/**
 	 * The 7TV badge for the user if they have one set.
 	 */
-	public badge = $state<Badge>();
+	public readonly badge?: Badge;
 
 	/**
 	 * The 7TV paint for the user if they have one set.
 	 */
-	public paint = $state<Paint>();
+	public readonly paint?: Paint;
 
 	public constructor(
 		public readonly client: TwitchClient,
@@ -150,6 +151,9 @@ export class User implements PartialUser {
 		this.bio = data.description ?? "";
 		this.avatarUrl = data.profileImageURL ?? "";
 		this.bannerUrl = data.bannerImageURL ?? "";
+
+		this.badge = $derived(app.u2b.get(this.id));
+		this.paint = $derived(app.u2p.get(this.id));
 
 		this.moderating.add(data.id);
 	}

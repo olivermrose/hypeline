@@ -1,5 +1,4 @@
 import { app } from "$lib/app.svelte";
-import { log } from "$lib/log";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -12,20 +11,12 @@ export default defineHandler({
 
 		switch (data.kind) {
 			case "BADGE": {
-				log.debug(`Assigned badge ${data.ref_id} to ${viewer.username}`);
-
-				viewer.user.badge = app.badges.get(data.ref_id);
-				app.u2b.set(viewer.user.id, viewer.user.badge);
-
+				app.u2b.set(viewer.user.id, app.badges.get(data.ref_id));
 				break;
 			}
 
 			case "PAINT": {
-				log.debug(`Assigned paint ${data.ref_id} to ${viewer.user.username}`);
-
-				viewer.user.paint = app.paints.get(data.ref_id);
-				app.u2p.set(viewer.user.id, viewer.user.paint);
-
+				app.u2p.set(viewer.user.id, app.paints.get(data.ref_id));
 				break;
 			}
 		}

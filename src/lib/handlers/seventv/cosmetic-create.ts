@@ -1,5 +1,4 @@
 import { app } from "$lib/app.svelte";
-import { log } from "$lib/log";
 import { defineHandler } from "../helper";
 
 function toRgb(decimal: number) {
@@ -25,7 +24,6 @@ export default defineHandler({
 				imageURL: `https:${cosmetic.data.host.url}/${res2x.name}`,
 			});
 
-			log.debug(`Created badge ${cosmetic.id} (${cosmetic.data.name})`);
 			return;
 		}
 
@@ -73,7 +71,5 @@ export default defineHandler({
 		].join(" ");
 
 		app.paints.set(cosmetic.id, { name: cosmetic.data.name, css });
-
-		log.debug(`Created paint ${cosmetic.id} (${cosmetic.data.name})`);
 	},
 });

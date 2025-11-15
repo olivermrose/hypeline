@@ -49,8 +49,8 @@ class App {
 	public readonly paints = new SvelteMap<string, Paint>();
 
 	// Associates a (u)ser id to a 7TV (b)adge or (p)aint.
-	public readonly u2b = new Map<string, Badge | undefined>();
-	public readonly u2p = new Map<string, Paint | undefined>();
+	public readonly u2b = new SvelteMap<string, Badge | undefined>();
+	public readonly u2p = new SvelteMap<string, Paint | undefined>();
 
 	public async connect() {
 		if (!this.user || this.connected) return;
