@@ -26,7 +26,7 @@ export interface BanStatusContext {
 	reason: string | null;
 	viewer: Viewer;
 	moderator?: Viewer;
-	source: Viewer | null;
+	source?: Viewer | null;
 }
 
 export interface BlockStatusContext {
@@ -45,7 +45,7 @@ export interface DeleteContext {
 	text: string;
 	user: User;
 	moderator?: Viewer;
-	source: Viewer | null;
+	source?: Viewer | null;
 }
 
 export interface EmoteSetChangeContext {
@@ -113,7 +113,7 @@ export interface TimeoutContext {
 	reason: string | null;
 	viewer: Viewer;
 	moderator?: Viewer;
-	source: Viewer | null;
+	source?: Viewer | null;
 }
 
 export interface UnbanRequestContext {
@@ -133,7 +133,7 @@ export interface UntimeoutContext {
 	type: "untimeout";
 	viewer: Viewer;
 	moderator: Viewer;
-	source: Viewer | null;
+	source?: Viewer | null;
 }
 
 export interface WarnContext {
