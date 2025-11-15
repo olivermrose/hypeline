@@ -9,6 +9,10 @@
 
 	type ControlType = "minimize" | "maximize" | "close";
 
+	const { icon, title } = $derived(
+		page.data.titleBar ?? { icon: "/favicon.png", title: "Hypeline" },
+	);
+
 	const platformName = $derived(browser ? platform() : undefined);
 	const current = $derived(browser ? window.getCurrentWindow() : undefined);
 
@@ -32,19 +36,14 @@
 	class="min-h-title-bar relative flex w-full shrink-0 items-center justify-center gap-1.5"
 	data-tauri-drag-region
 >
-	{#if page.data.titleBar.icon.includes("lucide")}
-		<span class="iconify size-4 {page.data.titleBar.icon}" data-tauri-drag-region></span>
+	{#if icon.startsWith("lucide")}
+		<span class="iconify size-4 {icon}" data-tauri-drag-region></span>
 	{:else}
-		<img
-			class="size-5 rounded-full"
-			src={page.data.titleBar.icon}
-			alt={page.data.titleBar.title}
-			data-tauri-drag-region
-		/>
+		<img class="size-5 rounded-full" src={icon} alt={title} data-tauri-drag-region />
 	{/if}
 
 	<span class="pointer-events-none text-sm font-medium" data-tauri-drag-region>
-		{page.data.titleBar.title}
+		{title}
 	</span>
 
 	{#if platformName === "windows"}
