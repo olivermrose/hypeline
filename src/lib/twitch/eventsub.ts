@@ -278,6 +278,14 @@ export interface ChannelUnbanRequestResolve
 	status: "approved" | "denied" | "cancelled";
 }
 
+export interface ChannelUpdate extends WithBroadcaster {
+	title: string;
+	language: string;
+	category_id: string;
+	category_name: string;
+	content_classification_labels: string[];
+}
+
 export type ChannelWarningAcknowledge = WithBroadcaster & WithBasicUser;
 
 export type StreamOffline = WithBroadcaster;
@@ -299,6 +307,7 @@ export interface SubscriptionEventMap {
 	"channel.suspicious_user.update": ChannelSuspiciousUserUpdate;
 	"channel.unban_request.create": ChannelUnbanRequestCreate;
 	"channel.unban_request.resolve": ChannelUnbanRequestResolve;
+	"channel.update": ChannelUpdate;
 	"channel.warning.acknowledge": ChannelWarningAcknowledge;
 	"stream.offline": StreamOffline;
 	"stream.online": StreamOnline;
