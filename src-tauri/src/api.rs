@@ -107,6 +107,7 @@ pub async fn join(
                 (Ev::ChannelChatUserMessageHold, &ch_with_user_cond),
                 (Ev::ChannelChatUserMessageUpdate, &ch_with_user_cond),
                 (Ev::ChannelSubscriptionEnd, &ch_cond),
+                (Ev::ChannelUpdate, &ch_cond),
                 (Ev::StreamOffline, &ch_cond),
                 (Ev::StreamOnline, &ch_cond),
             ];
