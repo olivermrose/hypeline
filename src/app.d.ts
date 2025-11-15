@@ -1,7 +1,13 @@
+interface TitleBar {
+	icon: string;
+	title: string;
+}
+
 declare global {
 	namespace App {
 		interface PageData {
 			detached?: boolean;
+			titleBar?: TitleBar;
 		}
 	}
 

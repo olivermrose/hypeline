@@ -17,5 +17,11 @@ export async function load({ params, parent }) {
 		await channel.join();
 	}
 
-	return { channel };
+	return {
+		channel,
+		titleBar: {
+			icon: channel.user.avatarUrl,
+			title: channel.user.displayName,
+		},
+	};
 }

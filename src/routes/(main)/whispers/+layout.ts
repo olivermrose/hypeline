@@ -4,5 +4,11 @@ import { app } from "$lib/app.svelte";
 export function load() {
 	if (!app.user) error(401);
 
-	return { whispers: app.user.whispers };
+	return {
+		whispers: app.user.whispers,
+		titleBar: {
+			icon: "lucide--messages-square",
+			title: "Whispers",
+		},
+	};
 }

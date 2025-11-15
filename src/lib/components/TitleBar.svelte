@@ -3,18 +3,15 @@
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { platform } from "@tauri-apps/plugin-os";
 	import { onDestroy, onMount } from "svelte";
-	import type { Snippet } from "svelte";
 	import type { HTMLButtonAttributes } from "svelte/elements";
 	import { browser } from "$app/environment";
-
-	interface Props {
-		icon: Snippet;
-		title: string;
-	}
+	import { page } from "$app/state";
 
 	type ControlType = "minimize" | "maximize" | "close";
 
-	const { icon, title }: Props = $props();
+	const { icon, title } = $derived(
+		page.data.titleBar ?? { icon: "/favicon.png", title: "Hypeline" },
+	);
 
 	const platformName = $derived(browser ? platform() : undefined);
 	const current = $derived(browser ? window.getCurrentWindow() : undefined);
@@ -39,7 +36,11 @@
 	class="min-h-title-bar relative flex w-full shrink-0 items-center justify-center gap-1.5"
 	data-tauri-drag-region
 >
-	{@render icon()}
+	{#if icon.startsWith("lucide")}
+		<span class="iconify size-4 {icon}" data-tauri-drag-region></span>
+	{:else}
+		<img class="size-5 rounded-full" src={icon} alt={title} data-tauri-drag-region />
+	{/if}
 
 	<span class="pointer-events-none text-sm font-medium" data-tauri-drag-region>
 		{title}

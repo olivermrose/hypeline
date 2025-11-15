@@ -2,31 +2,16 @@
 	import "../app.css";
 	import { ModeWatcher } from "mode-watcher";
 	import { Toaster } from "svelte-sonner";
-	import { app } from "$lib/app.svelte";
 	import TitleBar from "$lib/components/TitleBar.svelte";
 
 	const { children } = $props();
-
-	const titleBar = $derived({
-		icon: app.joined?.user.avatarUrl ?? "/favicon.png",
-		title: app.joined?.user.displayName ?? "Hypeline",
-	});
 </script>
 
 <Toaster duration={3000} richColors />
 <ModeWatcher />
 
 <div class="flex max-h-screen flex-col">
-	<TitleBar title={titleBar.title}>
-		{#snippet icon()}
-			<img
-				class="size-5 rounded-full"
-				src={titleBar.icon}
-				alt={titleBar.title}
-				data-tauri-drag-region
-			/>
-		{/snippet}
-	</TitleBar>
+	<TitleBar />
 
 	{@render children()}
 </div>
