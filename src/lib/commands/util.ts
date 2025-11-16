@@ -1,7 +1,10 @@
 import { app } from "$lib/app.svelte";
-import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import type { Channel, User } from "$lib/models";
-import { Viewer } from "$lib/models";
+import { ApiError } from "$lib/errors/api-error";
+import { CommandError } from "$lib/errors/command-error";
+import { ErrorMessage } from "$lib/errors/messages";
+import type { Channel } from "$lib/models/channel.svelte";
+import type { User } from "$lib/models/user.svelte";
+import { Viewer } from "$lib/models/viewer.svelte";
 
 export type CommandProvider = "Built-in" | "Twitch";
 

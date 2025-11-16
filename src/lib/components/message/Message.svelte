@@ -8,8 +8,9 @@
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import { app } from "$lib/app.svelte";
-	import type { Badge } from "$lib/graphql";
-	import type { LinkNode, UserMessage } from "$lib/models";
+	import type { Badge } from "$lib/graphql/fragments";
+	import type { LinkNode } from "$lib/models/message/parse";
+	import type { UserMessage } from "$lib/models/message/user-message";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";

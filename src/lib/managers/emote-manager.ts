@@ -1,8 +1,10 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
 import type { BttvEmote, GlobalSet } from "$lib/emotes";
-import { ApiError } from "$lib/errors";
-import { emoteSetDetailsFragment, seventvGql as gql, send7tv as send } from "$lib/graphql";
+import { ApiError } from "$lib/errors/api-error";
+import { send7tv as send } from "$lib/graphql";
+import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
+import { seventvGql as gql } from "$lib/graphql/function";
 import { BaseEmoteManager } from "./base-emote-manager";
 
 export class EmoteManager extends BaseEmoteManager {

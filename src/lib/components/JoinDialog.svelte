@@ -2,9 +2,9 @@
 	import { Combobox, Dialog } from "bits-ui";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
-	import { suggestionsQuery } from "$lib/graphql";
-	import type { SearchSuggestionChannel } from "$lib/graphql";
-	import { Channel } from "$lib/models";
+	import { suggestionsQuery } from "$lib/graphql/queries";
+	import type { SearchSuggestionChannel } from "$lib/graphql/queries";
+	import { Channel } from "$lib/models/channel.svelte";
 	import { debounce } from "$lib/util";
 	import Input from "./ui/Input.svelte";
 

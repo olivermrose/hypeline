@@ -1,17 +1,14 @@
 import { SvelteMap } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { app } from "$lib/app.svelte";
-import { ApiError } from "$lib/errors";
-import { UserManager } from "$lib/managers";
+import { ApiError } from "$lib/errors/api-error";
+import { sendTwitch as send } from "$lib/graphql";
+import { streamDetailsFragment, userDetailsFragment } from "$lib/graphql/fragments";
+import { twitchGql as gql } from "$lib/graphql/function";
+import { globalBadgesQuery } from "$lib/graphql/queries";
+import { UserManager } from "$lib/managers/user-manager";
 import { dedupe } from "$lib/util";
-import {
-	globalBadgesQuery,
-	twitchGql as gql,
-	sendTwitch as send,
-	streamDetailsFragment,
-	userDetailsFragment,
-} from "../graphql";
-import type { Badge, Stream } from "../graphql";
+import type { Badge, Stream } from "../graphql/fragments";
 import type { Stream as HelixStream } from "./api";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;

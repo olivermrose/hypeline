@@ -1,8 +1,9 @@
 import { SvelteMap } from "svelte/reactivity";
-import { ApiError, ErrorMessage } from "$lib/errors";
-import { userQuery } from "$lib/graphql";
-import { User } from "$lib/models";
-import type { TwitchClient } from "$lib/twitch";
+import { ApiError } from "$lib/errors/api-error";
+import { ErrorMessage } from "$lib/errors/messages";
+import { userQuery } from "$lib/graphql/queries";
+import { User } from "$lib/models/user.svelte";
+import type { TwitchClient } from "$lib/twitch/client";
 
 export interface UserFetchOptions {
 	by?: "id" | "login";

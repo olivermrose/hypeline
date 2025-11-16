@@ -1,12 +1,8 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import type { TadaDocumentNode } from "gql.tada";
 import { print } from "graphql-web-lite";
-import { ApiError } from "$lib/errors";
+import { ApiError } from "$lib/errors/api-error";
 import { dedupe } from "$lib/util";
-
-export * from "./fragments";
-export * from "./function";
-export * from "./queries";
 
 // TODO: split this into a union for error handling
 export interface GqlResponse<T> {

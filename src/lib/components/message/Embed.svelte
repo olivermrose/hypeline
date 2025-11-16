@@ -3,12 +3,10 @@
 	import dayjs from "dayjs";
 	import { app } from "$lib/app.svelte";
 	import { transform7tvEmote } from "$lib/emotes";
-	import {
-		clipQuery,
-		emoteDetailsFragment,
-		seventvGql as gql,
-		send7tv as send,
-	} from "$lib/graphql";
+	import { send7tv as send } from "$lib/graphql";
+	import { emoteDetailsFragment } from "$lib/graphql/fragments";
+	import { seventvGql as gql } from "$lib/graphql/function";
+	import { clipQuery } from "$lib/graphql/queries";
 
 	interface Props {
 		url: URL;
