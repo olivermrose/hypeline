@@ -36,7 +36,6 @@ export type CheermoteTier = Cheermote["tiers"][number];
 export const emoteDetailsFragment = seventvGql(`
 	fragment EmoteDetails on Emote {
 		id
-		defaultName
 		images {
 			mime
 			width
@@ -55,6 +54,7 @@ export const emoteSetDetailsFragment = seventvGql(
 		id
 		emotes {
 			items {
+				alias
 				emote {
 					...EmoteDetails
 				}

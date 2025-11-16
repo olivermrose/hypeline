@@ -94,7 +94,7 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 		const set = users.userByConnection.style.activeEmoteSet;
 		this.channel.emoteSetId = set.id;
 
-		const emotes = set.emotes.items.map((item) => transform7tvEmote(item.emote));
+		const emotes = set.emotes.items.map((item) => transform7tvEmote(item.emote, item.alias));
 		this.addAll(emotes);
 
 		return emotes;

@@ -100,7 +100,7 @@ export function transformBttvEmote(emote: BttvEmote): Emote {
 	};
 }
 
-export function transform7tvEmote(emote: SevenTvEmote): Emote {
+export function transform7tvEmote(emote: SevenTvEmote, alias: string): Emote {
 	let width = 28;
 	let height = 28;
 	const srcset: string[] = [];
@@ -127,7 +127,7 @@ export function transform7tvEmote(emote: SevenTvEmote): Emote {
 	return {
 		provider: "7TV",
 		id: emote.id,
-		name: emote.defaultName,
+		name: alias,
 		width,
 		height,
 		srcset,
