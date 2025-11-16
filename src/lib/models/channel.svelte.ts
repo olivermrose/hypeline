@@ -24,6 +24,14 @@ import type { Message } from "./";
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
 
+export interface ChatMode {
+	unique: boolean;
+	subOnly: boolean;
+	emoteOnly: boolean;
+	followerOnly: number | boolean;
+	slow: number | boolean;
+}
+
 export interface ChatSettings {
 	unique?: boolean;
 	subOnly?: boolean;
@@ -75,6 +83,8 @@ export class Channel {
 	public history = $state<string[]>([]);
 	public messages = $state<Message[]>([]);
 
+	public readonly chatMode: ChatMode;
+
 	public constructor(
 		public readonly client: TwitchClient,
 
@@ -91,6 +101,14 @@ export class Channel {
 
 		this.id = user.id;
 		this.stream = stream;
+
+		this.chatMode = {
+			emoteOnly: false,
+			unique: false,
+			slow: false,
+			followerOnly: false,
+			subOnly: false,
+		};
 
 		this.viewers = new ViewerManager(client, this);
 	}
