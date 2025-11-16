@@ -1,5 +1,5 @@
-import { Message } from "../";
-import type { MessageContext } from "../";
+import { Message } from "./message.svelte";
+import type { MessageContext } from "./context";
 
 export interface SystemMessageData {
 	deleted: boolean;

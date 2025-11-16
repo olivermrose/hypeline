@@ -2,8 +2,8 @@ import chroma from "chroma-js";
 import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Viewer } from "./models";
-import type { User } from "./models";
+import { Viewer } from "./models/viewer.svelte";
+import type { User } from "./models/user.svelte";
 import type { Fragment } from "./twitch/eventsub";
 import type { Emote } from "./twitch/irc";
 

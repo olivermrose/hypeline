@@ -1,4 +1,5 @@
-import { CommandError, ErrorMessage } from "$lib/errors";
+import { CommandError } from "$lib/errors/command-error";
+import { ErrorMessage } from "$lib/errors/messages";
 import { defineCommand } from "../";
 
 export default defineCommand({

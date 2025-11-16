@@ -1,7 +1,9 @@
 import { goto } from "$app/navigation";
 import { app } from "$lib/app.svelte";
-import { ApiError, CommandError, ErrorMessage } from "$lib/errors";
-import { Channel } from "$lib/models";
+import { ApiError } from "$lib/errors/api-error";
+import { CommandError } from "$lib/errors/command-error";
+import { ErrorMessage } from "$lib/errors/messages";
+import { Channel } from "$lib/models/channel.svelte";
 import { defineCommand } from "../";
 
 export default defineCommand({

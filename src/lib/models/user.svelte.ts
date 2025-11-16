@@ -1,15 +1,17 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
-import { app } from "../app.svelte";
-import { ApiError } from "../errors";
-import { badgeDetailsFragment, twitchGql as gql } from "../graphql";
-import { settings } from "../settings";
-import { dedupe, makeReadable } from "../util";
-import type { User as ApiUser, Badge } from "../graphql";
-import type { Paint } from "../seventv";
-import type { TwitchClient } from "../twitch";
-import type { SubscriptionAge } from "../twitch/api";
-import type { Whisper } from "./";
+import { app } from "$lib/app.svelte";
+import { ApiError } from "$lib/errors/api-error";
+import { badgeDetailsFragment } from "$lib/graphql/fragments";
+import type { Badge } from "$lib/graphql/fragments";
+import { twitchGql as gql } from "$lib/graphql/function";
+import type { User as ApiUser } from "$lib/graphql/queries";
+import { settings } from "$lib/settings";
+import type { Paint } from "$lib/seventv";
+import type { SubscriptionAge } from "$lib/twitch/api";
+import type { TwitchClient } from "$lib/twitch/client";
+import { dedupe, makeReadable } from "$lib/util";
+import type { Whisper } from "./whisper.svelte";
 
 export interface RelationshipSubscription {
 	/**

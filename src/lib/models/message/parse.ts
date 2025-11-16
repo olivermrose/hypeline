@@ -1,8 +1,9 @@
 import { parse as parseTld } from "tldts";
 import type { Emote } from "$lib/emotes";
-import type { CheermoteTier } from "$lib/graphql";
+import type { CheermoteTier } from "$lib/graphql/fragments";
 import type { Range } from "$lib/twitch/irc";
-import type { User, UserMessage } from "../";
+import type { User } from "../user.svelte";
+import type { UserMessage } from "./user-message";
 
 export interface BaseNode {
 	start: number;

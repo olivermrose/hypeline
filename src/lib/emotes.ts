@@ -76,7 +76,7 @@ export interface BttvEmote {
 	height?: number;
 }
 
-export type SevenTvEmote = FragmentOf<typeof import("$lib/graphql").emoteDetailsFragment>;
+export type SevenTvEmote = FragmentOf<typeof import("$lib/graphql/fragments").emoteDetailsFragment>;
 
 export function transformFfzEmote(emote: FfzEmote): Emote {
 	return {
@@ -100,7 +100,7 @@ export function transformBttvEmote(emote: BttvEmote): Emote {
 	};
 }
 
-export function transform7tvEmote(emote: SevenTvEmote, alias: string): Emote {
+export function transform7tvEmote(emote: SevenTvEmote, alias?: string): Emote {
 	let width = 28;
 	let height = 28;
 	const srcset: string[] = [];
@@ -127,7 +127,7 @@ export function transform7tvEmote(emote: SevenTvEmote, alias: string): Emote {
 	return {
 		provider: "7TV",
 		id: emote.id,
-		name: alias,
+		name: alias ?? emote.defaultName,
 		width,
 		height,
 		srcset,

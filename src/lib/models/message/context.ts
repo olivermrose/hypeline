@@ -6,7 +6,8 @@ import type {
 	ChannelUnbanRequestResolve,
 	WarnMetadata,
 } from "$lib/twitch/eventsub";
-import type { User, Viewer } from "../";
+import type { User } from "../user.svelte";
+import type { Viewer } from "../viewer.svelte";
 
 export interface AutoModContext {
 	type: "autoMod";

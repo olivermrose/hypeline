@@ -11,7 +11,7 @@
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
-	import { categories } from "$lib/components/settings";
+	import { categories } from "$lib/components/settings/categories";
 	import Category from "$lib/components/settings/Category.svelte";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";

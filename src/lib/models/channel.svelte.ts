@@ -1,25 +1,27 @@
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
-import { ApiError, ErrorMessage } from "$lib/errors";
+import { ApiError } from "$lib/errors/api-error";
+import { ErrorMessage } from "$lib/errors/messages";
+import { twitchGql as gql } from "$lib/graphql/function";
+import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
 import { app } from "../app.svelte";
 import { commands } from "../commands";
 import {
 	badgeDetailsFragment,
 	cheermoteDetailsFragment,
-	twitchGql as gql,
 	streamDetailsFragment,
-} from "../graphql";
+} from "../graphql/fragments";
 import { log } from "../log";
-import { ChannelEmoteManager, ViewerManager } from "../managers";
+import { ViewerManager } from "../managers/viewer-manager";
 import { settings } from "../settings";
 import type { Command } from "../commands/util";
-import type { Badge, Cheermote, Stream } from "../graphql";
-import type { TwitchClient } from "../twitch";
+import type { Badge, Cheermote, Stream } from "../graphql/fragments";
 import type { SentMessage, StreamMarker } from "../twitch/api";
+import type { TwitchClient } from "../twitch/client";
+import { SystemMessage } from "./message/system-message";
 import { Viewer } from "./viewer.svelte";
+import type { Message } from "./message/message.svelte";
 import type { User } from "./user.svelte";
-import { SystemMessage } from "./";
-import type { Message } from "./";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;

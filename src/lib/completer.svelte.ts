@@ -3,7 +3,8 @@ import { commands } from "./commands";
 import type { Command } from "./commands/util";
 import type { Suggestion } from "./components/Suggestions.svelte";
 import type { Emote } from "./emotes";
-import type { Channel, Viewer } from "./models";
+import type { Channel } from "./models/channel.svelte";
+import type { Viewer } from "./models/viewer.svelte";
 
 interface SearchOptions<T> {
 	source: () => T[];

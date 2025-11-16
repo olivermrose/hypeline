@@ -2,8 +2,8 @@
 	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
-	import type { Stream } from "$lib/graphql";
-	import type { User } from "$lib/models";
+	import type { Stream } from "$lib/graphql/fragments";
+	import type { User } from "$lib/models/user.svelte";
 	import { settings } from "$lib/settings";
 	import Tooltip from "./ui/Tooltip.svelte";
 

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { UserMessage } from "$lib/models";
+	import type { UserMessage } from "$lib/models/message/user-message";
 
 	export const replyTarget = $state<{ value: UserMessage | null }>({
 		value: null,
@@ -14,8 +14,8 @@
 	import { onMount, untrack } from "svelte";
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 	import { Completer } from "$lib/completer.svelte";
-	import { CommandError } from "$lib/errors";
-	import type { Channel } from "$lib/models";
+	import { CommandError } from "$lib/errors/command-error";
+	import type { Channel } from "$lib/models/channel.svelte";
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";

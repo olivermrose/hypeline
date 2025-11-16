@@ -2,7 +2,7 @@
 	import dayjs from "dayjs";
 	import duration from "dayjs/plugin/duration";
 	import { onMount } from "svelte";
-	import type { Stream } from "$lib/graphql";
+	import type { Stream } from "$lib/graphql/fragments";
 
 	dayjs.extend(duration);
 

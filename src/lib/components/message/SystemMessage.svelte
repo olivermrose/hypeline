@@ -10,12 +10,12 @@
 		RoleStatusContext,
 		StreamStatusContext,
 		SuspicionStatusContext,
-		SystemMessage,
 		TermContext,
 		TimeoutContext,
 		UnbanRequestContext,
 		WarnContext,
-	} from "$lib/models";
+	} from "$lib/models/message/context";
+	import type { SystemMessage } from "$lib/models/message/system-message";
 	import { colorizeName, formatDuration } from "$lib/util";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";

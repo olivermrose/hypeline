@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Separator, Toolbar } from "bits-ui";
 	import { input, replyTarget } from "$lib/components/ChatInput.svelte";
-	import type { UserMessage } from "$lib/models";
+	import type { UserMessage } from "$lib/models/message/user-message";
 	import { cn } from "$lib/util";
 
 	interface Props {

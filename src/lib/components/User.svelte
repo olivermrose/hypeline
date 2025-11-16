@@ -3,8 +3,9 @@
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
 	import { onMount } from "svelte";
-	import { User, UserMessage } from "$lib/models";
-	import type { MentionNode } from "$lib/models";
+	import type { MentionNode } from "$lib/models/message/parse";
+	import { UserMessage } from "$lib/models/message/user-message";
+	import { User } from "$lib/models/user.svelte";
 	import { settings } from "$lib/settings";
 	import Message from "./message/Message.svelte";
 
