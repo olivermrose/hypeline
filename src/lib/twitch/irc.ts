@@ -41,6 +41,8 @@ export interface JoinMessage {
 	user_login: string;
 }
 
+// Not going to bother implementing all of these
+// https://git.kotmisia.pl/Mm2PL/docs/src/branch/master/irc_msg_ids.md
 export type NoticeMessageId =
 	| "emote_only_on"
 	| "emote_only_off"
