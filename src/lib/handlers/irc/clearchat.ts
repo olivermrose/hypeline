@@ -14,16 +14,16 @@ export default defineHandler({
 		const message = new SystemMessage(data);
 
 		if (data.action.type === "clear") {
-			channel.clearMessages();
+			channel.chat.deleteMessages();
 
 			message.context = { type: "clear" };
-			channel.addMessage(message);
+			channel.chat.addMessage(message);
 
 			return;
 		}
 
 		const target = await channel.viewers.fetch(data.action.user_id);
-		channel.clearMessages(target.id);
+		channel.chat.deleteMessages(target.id);
 
 		if (data.action.type === "ban") {
 			message.context = {
@@ -41,6 +41,6 @@ export default defineHandler({
 			};
 		}
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

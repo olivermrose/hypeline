@@ -10,6 +10,6 @@ export default defineHandler({
 			channel.stream.viewersCount += message.event.viewer_count;
 		}
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

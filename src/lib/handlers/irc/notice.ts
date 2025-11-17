@@ -32,7 +32,7 @@ export default defineHandler({
 					.replace("s-only", "-only");
 
 				message.text = text;
-				channel.addMessage(message);
+				channel.chat.addMessage(message);
 
 				break;
 			}

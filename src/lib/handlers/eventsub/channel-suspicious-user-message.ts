@@ -16,6 +16,6 @@ export default defineHandler({
 			message.viewer.banEvasion = data.ban_evasion_evaluation;
 		}
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

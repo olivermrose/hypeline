@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Separator } from "bits-ui";
 	import { VList } from "virtua/svelte";
-	import type { Channel } from "$lib/models/channel.svelte";
+	import type { Chat } from "$lib/models/chat.svelte";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
 	import SystemMessage from "./message/SystemMessage.svelte";
@@ -9,14 +9,14 @@
 
 	interface Props {
 		class?: string;
-		channel: Channel;
+		chat: Chat;
 	}
 
 	// Arbitrary; corresponds to how much of the bottom of the chat needs to be
 	// visible (smaller = more, larger = less).
 	const TOLERANCE = 15;
 
-	const { class: className, channel }: Props = $props();
+	const { class: className, chat }: Props = $props();
 
 	let list = $state<VList<any>>();
 	let scrollingPaused = $state(false);
@@ -25,18 +25,18 @@
 	const newMessageCount = $derived.by(() => {
 		if (!list) return "0";
 
-		const total = channel.messages.length - countSnapshot;
+		const total = chat.messages.length - countSnapshot;
 		return total > 99 ? "99+" : Math.max(total, 0).toString();
 	});
 
 	$effect(() => {
-		if (channel.messages.length && !scrollingPaused) {
+		if (chat.messages.length && !scrollingPaused) {
 			scrollToEnd();
 		}
 	});
 
 	function scrollToEnd() {
-		list?.scrollToIndex(channel.messages.length - 1, { align: "end" });
+		list?.scrollToIndex(chat.messages.length - 1, { align: "end" });
 	}
 
 	function handleScroll(offset: number) {
@@ -45,7 +45,7 @@
 		const atBottom = offset >= list.getScrollSize() - list.getViewportSize() - TOLERANCE;
 
 		if (!atBottom && !scrollingPaused) {
-			countSnapshot = channel.messages.length;
+			countSnapshot = chat.messages.length;
 		}
 
 		scrollingPaused = !atBottom;
@@ -75,13 +75,13 @@
 
 	<VList
 		class="{className} overflow-y-auto text-sm"
-		data={channel.messages}
+		data={chat.messages}
 		getKey={(message) => message.id}
 		onscroll={handleScroll}
 		bind:this={list}
 	>
 		{#snippet children(message, i)}
-			{@const prev = channel.messages[i - 1]}
+			{@const prev = chat.messages[i - 1]}
 			{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
 			{#if isNewDay}
@@ -120,7 +120,7 @@
 				{/if}
 			{/if}
 
-			{@const next = channel.messages.at(i + 1)}
+			{@const next = chat.messages.at(i + 1)}
 
 			{#if message.recent && !next?.recent}
 				<div class="text-twitch relative px-3.5">

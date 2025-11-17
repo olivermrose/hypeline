@@ -20,7 +20,7 @@ export default defineHandler({
 			viewer.restricted = status === "restricted";
 		}
 
-		channel.addMessage(
+		channel.chat.addMessage(
 			SystemMessage.fromContext({
 				type: "suspicionStatus",
 				active: status !== "no_treatment",

@@ -76,7 +76,7 @@
 </Popover.Root>
 
 {#snippet card(user: User)}
-	{@const history = message.channel.messages.filter(
+	{@const history = message.channel.chat.messages.filter(
 		(m): m is UserMessage => m.isUser() && m.author.id === user.id,
 	)}
 

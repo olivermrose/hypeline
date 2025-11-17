@@ -31,6 +31,6 @@ export default defineCommand({
 
 		const list = mods.sort().join(", ");
 
-		channel.addMessage(new SystemMessage(`Channel moderators (${mods.length}): ${list}`));
+		channel.chat.addMessage(new SystemMessage(`Channel moderators (${mods.length}): ${list}`));
 	},
 });

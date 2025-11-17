@@ -13,7 +13,7 @@ export default defineHandler({
 			moderator = await channel.viewers.fetch(data.moderator_user_id);
 		}
 
-		channel.addMessage(
+		channel.chat.addMessage(
 			SystemMessage.fromContext({
 				type: "unbanRequest",
 				request: data,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Separator, Toolbar } from "bits-ui";
-	import { input, replyTarget } from "$lib/components/ChatInput.svelte";
+	import { input } from "$lib/components/ChatInput.svelte";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { cn } from "$lib/util";
 
@@ -29,7 +29,7 @@
 		class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1"
 		title="Reply to {message.author.displayName}"
 		onclick={() => {
-			replyTarget.value = message;
+			message.channel.chat.replyTarget = message;
 			input.value?.focus();
 		}}
 	>

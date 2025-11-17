@@ -307,7 +307,7 @@ export interface SubscriptionEventMap {
 	"channel.suspicious_user.update": ChannelSuspiciousUserUpdate;
 	"channel.unban_request.create": ChannelUnbanRequestCreate;
 	"channel.unban_request.resolve": ChannelUnbanRequestResolve;
-	"channel.update": ChannelUpdate;
+	"channel.chat.update": ChannelUpdate;
 	"channel.warning.acknowledge": ChannelWarningAcknowledge;
 	"stream.offline": StreamOffline;
 	"stream.online": StreamOnline;

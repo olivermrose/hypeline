@@ -6,7 +6,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "clearmsg",
 	handle(data, channel) {
-		const message = channel.messages.find(
+		const message = channel.chat.messages.find(
 			(m): m is UserMessage => m.isUser() && m.id === data.message_id,
 		);
 		if (!message) return;
@@ -21,7 +21,7 @@ export default defineHandler({
 				user: message.author,
 			};
 
-			channel.addMessage(sysmsg);
+			channel.chat.addMessage(sysmsg);
 		}
 	},
 });

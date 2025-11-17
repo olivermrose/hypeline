@@ -37,7 +37,7 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_FOLLOWER_DURATION);
 		}
 
-		await channel.updateChatSettings({
+		await channel.chat.updateSettings({
 			followerOnly: enabled,
 			followerOnlyDuration: duration,
 		});

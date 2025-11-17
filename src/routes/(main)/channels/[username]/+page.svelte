@@ -31,9 +31,9 @@
 		<StreamInfo stream={data.channel.stream} />
 	{/if}
 
-	<Chat class="grow" channel={data.channel} />
+	<Chat class="grow" chat={data.channel.chat} />
 
 	<div class="p-2">
-		<ChatInput channel={data.channel} />
+		<ChatInput chat={data.channel.chat} />
 	</div>
 </div>

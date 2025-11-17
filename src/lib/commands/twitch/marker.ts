@@ -31,6 +31,6 @@ export default defineCommand({
 			`Stream marker created at ${duration.format(format) + echo}`,
 		);
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });
