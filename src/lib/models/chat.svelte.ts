@@ -9,6 +9,7 @@ import { SystemMessage } from "./message/system-message";
 import { Viewer } from "./viewer.svelte";
 import type { Channel } from "./channel.svelte";
 import type { Message } from "./message/message.svelte";
+import type { UserMessage } from "./message/user-message";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
@@ -48,6 +49,11 @@ export class Chat {
 	 * An array of messages the current user has sent in the chat.
 	 */
 	public history: string[] = [];
+
+	/**
+	 * The message the current user is replying to if any.
+	 */
+	public replyTarget = $state<UserMessage | null>(null);
 
 	public constructor(public readonly channel: Channel) {
 		const now = performance.now();
@@ -108,6 +114,7 @@ export class Chat {
 	public reset() {
 		this.#bypassNext = false;
 		this.#lastRecentAt = null;
+		this.replyTarget = null;
 		this.messages = [];
 		this.history = [];
 	}
@@ -152,7 +159,7 @@ export class Chat {
 		});
 	}
 
-	public async send(message: string, replyId?: string) {
+	public async send(message: string) {
 		if (!app.user) return;
 
 		const viewer = this.channel.viewers.get(app.user.id) ?? new Viewer(this.channel, app.user);
@@ -197,6 +204,10 @@ export class Chat {
 		}
 
 		log.info(`Sending message in ${this.channel.user.username} (${this.channel.id})`);
+
+		// Optimistically reset replyTarget to avoid UI delay
+		const replyId = this.replyTarget?.id;
+		this.replyTarget = null;
 
 		const {
 			data: [data],

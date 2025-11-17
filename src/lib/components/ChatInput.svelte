@@ -1,10 +1,4 @@
 <script lang="ts" module>
-	import type { UserMessage } from "$lib/models/message/user-message";
-
-	export const replyTarget = $state<{ value: UserMessage | null }>({
-		value: null,
-	});
-
 	export const input = $state<{ value: HTMLInputElement | null }>({
 		value: null,
 	});
@@ -68,7 +62,7 @@
 			event.preventDefault();
 			completer.tab(event.shiftKey);
 		} else if (event.key === "Escape") {
-			replyTarget.value = null;
+			chat.replyTarget = null;
 		} else if (event.key === "ArrowUp") {
 			if (showSuggestions) {
 				event.preventDefault();
@@ -116,14 +110,11 @@
 				if (!message) return;
 				if (!event.ctrlKey) input.value = "";
 
-				const replyId = replyTarget.value?.id;
-				replyTarget.value = null;
 				historyIdx = -1;
-
 				chat.history.push(message);
 
 				try {
-					await chat.send(message, replyId);
+					await chat.send(message);
 				} catch (err) {
 					if (err instanceof CommandError) {
 						error = err.message;
@@ -148,7 +139,7 @@
 
 <EmotePicker {anchor} input={chatInput} bind:open={emotePickerOpen} />
 
-{#if replyTarget.value}
+{#if chat.replyTarget}
 	<div
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 pt-1.5 pb-2.5 text-sm transition-colors duration-200"
 	>
@@ -158,7 +149,7 @@
 			<button
 				type="button"
 				aria-label="Cancel reply"
-				onclick={() => (replyTarget.value = null)}
+				onclick={() => (chat.replyTarget = null)}
 			>
 				<span
 					class="text-muted-foreground hover:text-foreground lucide--circle-x iconify block size-4 transition-colors duration-150"
@@ -167,7 +158,7 @@
 		</div>
 
 		<div class="mt-2">
-			<Message message={replyTarget.value} />
+			<Message message={chat.replyTarget} />
 		</div>
 	</div>
 {:else if error}
@@ -187,7 +178,7 @@
 	<Input
 		class={[
 			"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
-			(replyTarget.value || error) && "rounded-t-none",
+			(chat.replyTarget || error) && "rounded-t-none",
 			className,
 		]}
 		type="text"
