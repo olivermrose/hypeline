@@ -2,7 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { ApiError } from "$lib/errors/api-error";
 import { ErrorMessage } from "$lib/errors/messages";
-import { twitchGql as gql } from "$lib/graphql/function";
+import { send7tv as send } from "$lib/graphql";
+import { seventvGql, twitchGql } from "$lib/graphql/function";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
 import { app } from "../app.svelte";
 import { commands } from "../commands";
@@ -36,6 +37,8 @@ export interface ChatSettings {
 }
 
 export class Channel {
+	#seventvId: string | null = null;
+
 	#bypassNext = false;
 	#lastRecentAt: number | null = null;
 
@@ -110,6 +113,7 @@ export class Channel {
 
 		const [stream] = await Promise.all([
 			this.fetchStream(),
+			this.#fetch7tvId(),
 			this.emotes.fetch(),
 			this.fetchBadges(),
 			this.fetchCheermotes(),
@@ -122,6 +126,7 @@ export class Channel {
 
 		await invoke("join", {
 			id: this.id,
+			stvId: this.#seventvId,
 			setId: this.emoteSetId,
 			login: this.user.username,
 			isMod: app.user?.moderating.has(this.id),
@@ -213,7 +218,7 @@ export class Channel {
 	 */
 	public async fetchBadges() {
 		const { user } = await this.client.send(
-			gql(
+			twitchGql(
 				`query GetChannelBadges($id: ID!) {
 					user(id: $id) {
 						broadcastBadges {
@@ -237,7 +242,7 @@ export class Channel {
 	 */
 	public async fetchCheermotes() {
 		const { user } = await this.client.send(
-			gql(
+			twitchGql(
 				`query GetCheermotes($id: ID!) {
 					user(id: $id) {
 						cheer {
@@ -261,7 +266,7 @@ export class Channel {
 	 */
 	public async fetchStream() {
 		const { user } = await this.client.send(
-			gql(
+			twitchGql(
 				`query GetStream($id: ID!) {
 					user(id: $id) {
 						stream {
@@ -493,5 +498,22 @@ export class Channel {
 
 		queue.push(now);
 		return false;
+	}
+
+	async #fetch7tvId() {
+		const response = await send(
+			seventvGql(
+				`query GetUser($id: String!) {
+					users {
+						userByConnection(platform: TWITCH, platformId: $id) {
+							id
+						}
+					}
+				}`,
+			),
+			{ id: this.id },
+		).catch(() => null);
+
+		this.#seventvId = response?.users.userByConnection?.id ?? null;
 	}
 }

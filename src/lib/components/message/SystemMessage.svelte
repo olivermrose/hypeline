@@ -4,6 +4,7 @@
 		BanStatusContext,
 		ClearContext,
 		DeleteContext,
+		EmoteSetChangeContext,
 		EmoteSetUpdateContext,
 		MessageContext,
 		ModeContext,
@@ -43,6 +44,7 @@
 		banStatus,
 		clear,
 		delete: deleteMsg,
+		emoteSetChange,
 		emoteSetUpdate,
 		mode,
 		roleStatus,
@@ -63,7 +65,7 @@
 			{#if ctx.type === "blockStatus"}
 				{ctx.blocked ? "Blocked" : "Unblocked"} {@html colorizeName(ctx.user)}
 			{:else if ctx.type === "join"}
-				Joined {@html colorizeName(ctx.channel)}
+				Joined {@html colorizeName(ctx.channel.user)}
 			{:else if ctx.type === "raid"}
 				{@html colorizeName(ctx.moderator)} is raiding {@html colorizeName(ctx.user)} with {@html ctx.viewers}
 				viewers.
@@ -124,6 +126,17 @@
 		{@html colorizeName(ctx.moderator)} deleted {@html target}'s message: {ctx.text}
 	{:else}
 		{@html target}'s message was deleted: {ctx.text}
+	{/if}
+{/snippet}
+
+{#snippet emoteSetChange(ctx: EmoteSetChangeContext)}
+	{@html colorizeName(ctx.actor)}
+
+	{#if ctx.name}
+		changed the active emote set to
+		<span class="text-foreground font-medium">{ctx.name}</span>.
+	{:else}
+		disabled the channel's emote set.
 	{/if}
 {/snippet}
 

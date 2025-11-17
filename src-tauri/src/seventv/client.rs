@@ -132,7 +132,25 @@ impl SeventTvClient {
         }
     }
 
-    pub async fn unsubscribe(&self) {
+    pub async fn unsubscribe(&self, event: &str) {
+        let mut subscriptions = self.subscriptions.lock().await;
+
+        if let Some(condition) = subscriptions.remove(event) {
+            let payload = json!({
+                "op": 36,
+                "d": {
+                    "type": event,
+                    "condition": condition
+                }
+            });
+
+            let _ = self
+                .message_tx
+                .send(Message::Text(payload.to_string().into()));
+        }
+    }
+
+    pub async fn unsubscribe_all(&self) {
         let mut subscriptions = self.subscriptions.lock().await;
 
         for (event, condition) in subscriptions.drain() {

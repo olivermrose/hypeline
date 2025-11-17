@@ -60,6 +60,7 @@ pub async fn set_access_token(
 pub async fn join(
     state: State<'_, Mutex<AppState>>,
     id: String,
+    stv_id: Option<String>,
     set_id: Option<String>,
     login: String,
     is_mod: bool,
@@ -146,6 +147,12 @@ pub async fn join(
                 .subscribe("emote_set.*", &json!({ "object_id": set_id }))
                 .await;
         }
+
+        if let Some(ref stv_id) = stv_id {
+            seventv
+                .subscribe("user.update", &json!({ "object_id": stv_id }))
+                .await;
+        }
     }
 
     irc.join(login.to_string());
@@ -166,7 +173,7 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     }
 
     if let Some(ref seventv) = state.seventv {
-        seventv.unsubscribe().await;
+        seventv.unsubscribe_all().await;
     }
 
     if let Some(ref irc) = state.irc {
