@@ -64,11 +64,15 @@
 				<p>
 					{@html colorizeName(message.author)}
 					is paying forward the gifted sub they received from
-					{#if gifter}
+
+					{#if message.event.is_prior_gifter_anonymous}
+						an anonymous gifter
+					{:else if gifter}
 						{@html colorizeName(gifter)}
 					{:else}
 						<span class="font-semibold">{message.event.prior_gifter.name}</span>
 					{/if} to
+
 					{#if recipient}
 						{@html colorizeName(recipient)}
 					{:else}
@@ -81,6 +85,7 @@
 				<p>
 					{@html colorizeName(message.author)}
 					is paying forward the gifted sub they received from
+
 					{#if gifter}
 						{@html colorizeName(gifter)}
 					{:else}
