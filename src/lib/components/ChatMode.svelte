@@ -20,7 +20,12 @@
 	const modes = $derived(
 		config.map((mode) => {
 			const value = chat.mode[mode.key];
-			const active = typeof value === "number" ? value > 0 : value;
+			const active =
+				typeof value === "number"
+					? mode.key === "followerOnly"
+						? value >= 0
+						: value > 0
+					: value;
 
 			return { active, ...mode };
 		}),
@@ -40,7 +45,7 @@
 		</Popover.Trigger>
 
 		<Popover.Content
-			class="bg-muted rounded-md border p-2 text-xs"
+			class="bg-muted rounded-md border p-2 text-xs focus-visible:outline-none"
 			sideOffset={4}
 			collisionPadding={8}
 		>
