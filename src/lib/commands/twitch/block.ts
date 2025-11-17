@@ -19,6 +19,6 @@ export default defineCommand({
 			user: target.user,
 		});
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

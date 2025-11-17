@@ -6,6 +6,6 @@ export default defineCommand({
 	description: "Clear chat history for non-moderator viewers",
 	modOnly: true,
 	async exec(_, channel) {
-		await channel.clearChat();
+		await channel.chat.clear();
 	},
 });

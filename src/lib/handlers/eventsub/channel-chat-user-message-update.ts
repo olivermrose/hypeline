@@ -6,9 +6,9 @@ export default defineHandler({
 	handle(data, channel) {
 		if (data.status === "invalid") return;
 
-		const message = channel.messages.find((m) => m.id === data.message_id);
+		const message = channel.chat.messages.find((m) => m.id === data.message_id);
 		if (message) message.deleted = true;
 
-		channel.addMessage(new SystemMessage(`A moderator ${data.status} your message.`));
+		channel.chat.addMessage(new SystemMessage(`A moderator ${data.status} your message.`));
 	},
 });

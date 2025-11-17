@@ -15,6 +15,6 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
-		await channel.updateChatSettings({ unique: enabled });
+		await channel.chat.updateSettings({ unique: enabled });
 	},
 });

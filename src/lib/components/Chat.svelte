@@ -25,18 +25,18 @@
 	const newMessageCount = $derived.by(() => {
 		if (!list) return "0";
 
-		const total = channel.messages.length - countSnapshot;
+		const total = channel.chat.messages.length - countSnapshot;
 		return total > 99 ? "99+" : Math.max(total, 0).toString();
 	});
 
 	$effect(() => {
-		if (channel.messages.length && !scrollingPaused) {
+		if (channel.chat.messages.length && !scrollingPaused) {
 			scrollToEnd();
 		}
 	});
 
 	function scrollToEnd() {
-		list?.scrollToIndex(channel.messages.length - 1, { align: "end" });
+		list?.scrollToIndex(channel.chat.messages.length - 1, { align: "end" });
 	}
 
 	function handleScroll(offset: number) {
@@ -45,7 +45,7 @@
 		const atBottom = offset >= list.getScrollSize() - list.getViewportSize() - TOLERANCE;
 
 		if (!atBottom && !scrollingPaused) {
-			countSnapshot = channel.messages.length;
+			countSnapshot = channel.chat.messages.length;
 		}
 
 		scrollingPaused = !atBottom;
@@ -75,13 +75,13 @@
 
 	<VList
 		class="{className} overflow-y-auto text-sm"
-		data={channel.messages}
+		data={channel.chat.messages}
 		getKey={(message) => message.id}
 		onscroll={handleScroll}
 		bind:this={list}
 	>
 		{#snippet children(message, i)}
-			{@const prev = channel.messages[i - 1]}
+			{@const prev = channel.chat.messages[i - 1]}
 			{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
 			{#if isNewDay}
@@ -120,7 +120,7 @@
 				{/if}
 			{/if}
 
-			{@const next = channel.messages.at(i + 1)}
+			{@const next = channel.chat.messages.at(i + 1)}
 
 			{#if message.recent && !next?.recent}
 				<div class="text-twitch relative px-3.5">

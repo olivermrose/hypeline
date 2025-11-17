@@ -18,6 +18,6 @@ export default defineHandler({
 			message.viewer.new = data.is_first_msg;
 		}
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

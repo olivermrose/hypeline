@@ -32,6 +32,6 @@ export default defineCommand({
 
 		const list = vips.sort().join(", ");
 
-		channel.addMessage(new SystemMessage(`Channel VIPs (${vips.length}): ${list}`));
+		channel.chat.addMessage(new SystemMessage(`Channel VIPs (${vips.length}): ${list}`));
 	},
 });

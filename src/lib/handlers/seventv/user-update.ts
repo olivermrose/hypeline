@@ -39,6 +39,6 @@ export default defineHandler({
 			await invoke("resub_emote_set", { setId: channel.emoteSetId });
 		}
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

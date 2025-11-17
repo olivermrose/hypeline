@@ -7,7 +7,7 @@ export default defineHandler({
 		const broadcaster = await channel.viewers.fetch(data.broadcaster_user_id);
 		channel.stream = null;
 
-		channel.addMessage(
+		channel.chat.addMessage(
 			SystemMessage.fromContext({
 				type: "streamStatus",
 				online: false,

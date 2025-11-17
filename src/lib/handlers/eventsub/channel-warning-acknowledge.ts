@@ -6,7 +6,7 @@ export default defineHandler({
 	async handle(data, channel) {
 		const viewer = await channel.viewers.fetch(data.user_id);
 
-		channel.addMessage(
+		channel.chat.addMessage(
 			SystemMessage.fromContext({
 				type: "warnAck",
 				viewer,

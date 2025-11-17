@@ -74,15 +74,15 @@
 				event.preventDefault();
 				completer.prev();
 			} else {
-				if (!channel.history.length) return;
+				if (!channel.chat.history.length) return;
 
 				if (historyIdx === -1) {
-					historyIdx = channel.history.length - 1;
+					historyIdx = channel.chat.history.length - 1;
 				} else if (historyIdx > 0) {
 					historyIdx--;
 				}
 
-				input.value = channel.history[historyIdx];
+				input.value = channel.chat.history[historyIdx];
 
 				setTimeout(() => {
 					input.setSelectionRange(input.value.length, input.value.length);
@@ -95,9 +95,9 @@
 			} else {
 				if (historyIdx === -1) return;
 
-				if (historyIdx < channel.history.length - 1) {
+				if (historyIdx < channel.chat.history.length - 1) {
 					historyIdx++;
-					input.value = channel.history[historyIdx];
+					input.value = channel.chat.history[historyIdx];
 				} else {
 					historyIdx = -1;
 					input.value = "";
@@ -120,10 +120,10 @@
 				replyTarget.value = null;
 				historyIdx = -1;
 
-				channel.history.push(message);
+				channel.chat.history.push(message);
 
 				try {
-					await channel.send(message, replyId);
+					await channel.chat.send(message, replyId);
 				} catch (err) {
 					if (err instanceof CommandError) {
 						error = err.message;

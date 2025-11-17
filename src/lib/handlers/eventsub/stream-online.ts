@@ -9,7 +9,7 @@ export default defineHandler({
 
 		channel.stream = await channel.fetchStream();
 
-		channel.addMessage(
+		channel.chat.addMessage(
 			SystemMessage.fromContext({
 				type: "streamStatus",
 				online: true,

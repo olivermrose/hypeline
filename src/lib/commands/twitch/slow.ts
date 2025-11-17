@@ -15,6 +15,6 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_SLOW_DURATION);
 		}
 
-		await channel.updateChatSettings({ slow: duration });
+		await channel.chat.updateSettings({ slow: duration });
 	},
 });

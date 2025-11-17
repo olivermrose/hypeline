@@ -18,6 +18,6 @@ export default defineHandler({
 			boundaries: [],
 		};
 
-		channel.addMessage(message);
+		channel.chat.addMessage(message);
 	},
 });

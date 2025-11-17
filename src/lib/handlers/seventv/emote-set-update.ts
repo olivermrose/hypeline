@@ -89,7 +89,7 @@ export default defineHandler({
 				channel.emotes.set(change.value.name, emote);
 			}
 
-			channel.addMessage(message);
+			channel.chat.addMessage(message);
 		} else {
 			const emoteSet = app.emoteSets.get(data.id);
 			if (!emoteSet) return;
