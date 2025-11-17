@@ -19,6 +19,17 @@ export default defineHandler({
 				app.u2p.set(viewer.user.id, app.paints.get(data.ref_id));
 				break;
 			}
+
+			case "EMOTE_SET": {
+				const emoteSet = app.emoteSets.get(data.ref_id);
+				if (!emoteSet) return;
+
+				for (const emote of emoteSet.emotes) {
+					viewer.user.emotes.set(emote.name, emote);
+				}
+
+				break;
+			}
 		}
 	},
 });

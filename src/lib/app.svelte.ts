@@ -4,6 +4,7 @@ import { handlers } from "./handlers";
 import { log } from "./log";
 import { EmoteManager } from "./managers/emote-manager";
 import { TwitchClient } from "./twitch/client";
+import type { EmoteSet } from "./emotes";
 import type { Badge } from "./graphql/fragments";
 import type { Channel } from "./models/channel.svelte";
 import type { User } from "./models/user.svelte";
@@ -38,6 +39,11 @@ class App {
 	 * Provider-specific global emotes.
 	 */
 	public readonly emotes = new EmoteManager();
+
+	/**
+	 * Provider-specific emote sets.
+	 */
+	public readonly emoteSets = new SvelteMap<string, EmoteSet>();
 
 	/**
 	 * Provider-specific global badges.

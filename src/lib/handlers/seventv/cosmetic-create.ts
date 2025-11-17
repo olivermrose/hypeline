@@ -12,16 +12,17 @@ function toRgb(decimal: number) {
 
 export default defineHandler({
 	name: "cosmetic.create",
+	global: true,
 	handle(cosmetic) {
 		if (cosmetic.kind === "BADGE") {
-			const res2x = cosmetic.data.host.files.find((f) => f.name.startsWith("4x"))!;
+			const file = cosmetic.data.host.files.find((f) => f.name.startsWith("4x"))!;
 
 			app.badges.set(cosmetic.id, {
 				setID: cosmetic.id,
 				version: "1",
 				title: cosmetic.data.name,
 				description: cosmetic.data.tooltip,
-				imageURL: `https:${cosmetic.data.host.url}/${res2x.name}`,
+				imageURL: `https:${cosmetic.data.host.url}/${file.name}`,
 			});
 
 			return;
@@ -62,13 +63,13 @@ export default defineHandler({
 		);
 
 		const css = [
-			`background-color: currentcolor;`,
-			`background-image: ${cssFunction}(${args.join(", ")});`,
-			`background-size: 100% 100%;`,
-			`background-clip: text;`,
-			`filter: ${shadows.join(" ")};`,
-			`-webkit-text-fill-color: transparent;`,
-		].join(" ");
+			`background-color: currentcolor`,
+			`background-image: ${cssFunction}(${args.join(", ")})`,
+			`background-size: 100% 100%`,
+			`background-clip: text`,
+			`filter: ${shadows.join(" ")}`,
+			`-webkit-text-fill-color: transparent`,
+		].join(";");
 
 		app.paints.set(cosmetic.id, { name: cosmetic.data.name, css });
 	},

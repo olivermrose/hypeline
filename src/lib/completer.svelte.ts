@@ -43,7 +43,11 @@ export class Completer {
 		};
 
 		this.#emoteOptions = {
-			source: () => channel.emotes.values().toArray(),
+			source: () =>
+				this.channel.emotes
+					.values()
+					.toArray()
+					.concat(...(app.user?.emotes.values() ?? [])),
 			comparee: (item) => item.name,
 			map: (item) => ({
 				type: "emote" as const,
