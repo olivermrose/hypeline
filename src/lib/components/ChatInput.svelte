@@ -15,17 +15,17 @@
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
-	import type { Channel } from "$lib/models/channel.svelte";
+	import type { Chat } from "$lib/models/chat.svelte";
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";
 	import Input from "./ui/Input.svelte";
 
 	interface Props extends HTMLInputAttributes {
-		channel: Channel;
+		chat: Chat;
 	}
 
-	const { class: className, channel, ...rest }: Props = $props();
+	const { class: className, chat, ...rest }: Props = $props();
 
 	let chatInput = $state<HTMLInputElement | null>(null);
 	let anchor = $state<HTMLElement>();
@@ -44,7 +44,7 @@
 
 	$effect(() => {
 		completer = new Completer(
-			channel,
+			chat.channel,
 			untrack(() => input.value!),
 		);
 	});
@@ -74,15 +74,15 @@
 				event.preventDefault();
 				completer.prev();
 			} else {
-				if (!channel.chat.history.length) return;
+				if (!chat.history.length) return;
 
 				if (historyIdx === -1) {
-					historyIdx = channel.chat.history.length - 1;
+					historyIdx = chat.history.length - 1;
 				} else if (historyIdx > 0) {
 					historyIdx--;
 				}
 
-				input.value = channel.chat.history[historyIdx];
+				input.value = chat.history[historyIdx];
 
 				setTimeout(() => {
 					input.setSelectionRange(input.value.length, input.value.length);
@@ -95,9 +95,9 @@
 			} else {
 				if (historyIdx === -1) return;
 
-				if (historyIdx < channel.chat.history.length - 1) {
+				if (historyIdx < chat.history.length - 1) {
 					historyIdx++;
-					input.value = channel.chat.history[historyIdx];
+					input.value = chat.history[historyIdx];
 				} else {
 					historyIdx = -1;
 					input.value = "";
@@ -120,10 +120,10 @@
 				replyTarget.value = null;
 				historyIdx = -1;
 
-				channel.chat.history.push(message);
+				chat.history.push(message);
 
 				try {
-					await channel.chat.send(message, replyId);
+					await chat.send(message, replyId);
 				} catch (err) {
 					if (err instanceof CommandError) {
 						error = err.message;
