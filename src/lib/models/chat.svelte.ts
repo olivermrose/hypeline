@@ -171,7 +171,7 @@ export class Chat {
 			},
 			body: {
 				subscriber_mode: settings.subOnly ?? this.mode.subOnly,
-				follower_mode: settings.followerOnly ?? this.mode.followerOnly,
+				follower_mode: settings.followerOnly ?? this.mode.followerOnly !== false,
 				follower_mode_duration: settings.followerOnlyDuration ?? followDuration,
 				slow_mode: isSlow,
 				slow_mode_wait_time: isSlow ? slowDuration : 3,
