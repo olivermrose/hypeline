@@ -27,6 +27,8 @@ export default defineHandler({
 				for (const emote of emoteSet.emotes) {
 					viewer.user.emotes.set(emote.name, emote);
 				}
+
+				break;
 			}
 		}
 	},
