@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import type { Command } from "$lib/commands";
 import { log } from "$lib/log";
@@ -32,7 +31,7 @@ export class Chat {
 	#lastHitSpdAt: number;
 	#lastHitAmtAt: number;
 
-	public readonly commands = new SvelteMap<string, Command>();
+	public readonly commands = new Map<string, Command>();
 
 	/**
 	 * An array of messages sent in the chat.
@@ -42,7 +41,7 @@ export class Chat {
 	/**
 	 * An array of messages the current user has sent in the chat.
 	 */
-	public history = $state<string[]>([]);
+	public history: string[] = [];
 
 	public constructor(public readonly channel: Channel) {
 		const now = performance.now();
