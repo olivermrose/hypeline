@@ -26,11 +26,17 @@ export class Chat {
 	#bypassNext = false;
 	#lastRecentAt: number | null = null;
 
+	// Timestamps of last messages sent by normal/elevated users.
 	#lastMessage: number[] = [];
 	#lastMessageElevated: number[] = [];
+
+	// Timestamps of the last rate limit hits by speed/amount.
 	#lastHitSpdAt: number;
 	#lastHitAmtAt: number;
 
+	/**
+	 * The commands available in the chat.
+	 */
 	public readonly commands = new Map<string, Command>();
 
 	/**
@@ -80,7 +86,7 @@ export class Chat {
 		return this;
 	}
 
-	public clearMessages(id?: string) {
+	public deleteMessages(id?: string) {
 		for (const message of this.messages) {
 			if (message.isUser() && (!id || message.author.id === id)) {
 				message.deleted = true;

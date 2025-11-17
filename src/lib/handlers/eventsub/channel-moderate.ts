@@ -60,7 +60,7 @@ export default defineHandler({
 			}
 
 			case "clear": {
-				channel.chat.clearMessages();
+				channel.chat.deleteMessages();
 				message.context = { type: "clear", moderator };
 
 				break;
@@ -102,7 +102,7 @@ export default defineHandler({
 
 			case "timeout": {
 				const viewer = await channel.viewers.fetch(data.timeout.user_id);
-				channel.chat.clearMessages(data.timeout.user_id);
+				channel.chat.deleteMessages(data.timeout.user_id);
 
 				const expiration = new Date(data.timeout.expires_at);
 				const duration = expiration.getTime() - message.timestamp.getTime();
@@ -136,7 +136,7 @@ export default defineHandler({
 				const viewer = await channel.viewers.fetch((isBan ? data.ban : data.unban).user_id);
 
 				if (isBan) {
-					channel.chat.clearMessages(data.ban.user_id);
+					channel.chat.deleteMessages(data.ban.user_id);
 				}
 
 				message.context = {

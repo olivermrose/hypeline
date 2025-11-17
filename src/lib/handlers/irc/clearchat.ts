@@ -14,7 +14,7 @@ export default defineHandler({
 		const message = new SystemMessage(data);
 
 		if (data.action.type === "clear") {
-			channel.chat.clearMessages();
+			channel.chat.deleteMessages();
 
 			message.context = { type: "clear" };
 			channel.chat.addMessage(message);
@@ -23,7 +23,7 @@ export default defineHandler({
 		}
 
 		const target = await channel.viewers.fetch(data.action.user_id);
-		channel.chat.clearMessages(target.id);
+		channel.chat.deleteMessages(target.id);
 
 		if (data.action.type === "ban") {
 			message.context = {
