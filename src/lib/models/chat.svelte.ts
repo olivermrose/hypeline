@@ -14,6 +14,14 @@ import type { UserMessage } from "./message/user-message";
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
 
+export interface ChatMode {
+	unique: boolean;
+	subOnly: boolean;
+	emoteOnly: boolean;
+	followerOnly: number | boolean;
+	slow: number | boolean;
+}
+
 export interface ChatSettings {
 	unique?: boolean;
 	subOnly?: boolean;
@@ -40,6 +48,8 @@ export class Chat {
 	 */
 	public readonly commands = new Map<string, Command>();
 
+	public mode: ChatMode;
+
 	/**
 	 * An array of messages sent in the chat.
 	 */
@@ -60,6 +70,14 @@ export class Chat {
 
 		this.#lastHitSpdAt = now - RATE_LIMIT_WINDOW * 2;
 		this.#lastHitAmtAt = now - RATE_LIMIT_WINDOW * 2;
+
+		this.mode = {
+			emoteOnly: false,
+			unique: false,
+			slow: false,
+			followerOnly: false,
+			subOnly: false,
+		};
 
 		this.addCommands(commands);
 	}
