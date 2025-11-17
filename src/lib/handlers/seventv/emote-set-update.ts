@@ -72,20 +72,21 @@ export default defineHandler({
 			}
 
 			for (const change of data.updated ?? []) {
-				const old = channel.emotes.get(change.old_value.name)!;
+				const emote = channel.emotes.get(change.old_value.name);
+				if (!emote) continue;
 
 				message.context = {
 					type: "emoteSetUpdate",
 					action: "renamed",
-					oldName: old.name,
-					emote: old,
+					oldName: emote.name,
+					emote,
 					actor,
 				};
 
-				old.name = change.value.name;
+				emote.name = change.value.name;
 
 				channel.emotes.delete(change.old_value.name);
-				channel.emotes.set(change.value.name, old);
+				channel.emotes.set(change.value.name, emote);
 			}
 
 			channel.addMessage(message);
@@ -95,6 +96,21 @@ export default defineHandler({
 
 			for (const change of data.pushed ?? []) {
 				emoteSet.emotes.push(transform(change.value));
+			}
+
+			for (const change of data.pulled ?? []) {
+				const index = emoteSet.emotes.findIndex((e) => e.id === change.old_value.id);
+
+				if (index !== -1) {
+					emoteSet.emotes.splice(index, 1);
+				}
+			}
+
+			for (const change of data.updated ?? []) {
+				const emote = emoteSet.emotes.find((e) => e.id === change.value.id);
+				if (!emote) continue;
+
+				emote.name = change.value.name;
 			}
 		}
 	},
