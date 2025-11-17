@@ -1,6 +1,7 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
+import type { Emote } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { badgeDetailsFragment } from "$lib/graphql/fragments";
 import type { Badge } from "$lib/graphql/fragments";
@@ -132,6 +133,11 @@ export class User implements PartialUser {
 	 * The 7TV paint for the user if they have one set.
 	 */
 	public readonly paint?: Paint;
+
+	/**
+	 * The emotes the user is entitled to use.
+	 */
+	public readonly emotes = new SvelteMap<string, Emote>();
 
 	public constructor(
 		public readonly client: TwitchClient,

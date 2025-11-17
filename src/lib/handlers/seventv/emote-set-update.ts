@@ -1,3 +1,4 @@
+import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
 import { SystemMessage } from "$lib/models/message/system-message";
 import type { EmoteChange } from "$lib/seventv";
@@ -39,55 +40,62 @@ function transform(emote: EmoteChange): Emote {
 export default defineHandler({
 	name: "emote_set.update",
 	async handle(data, channel) {
-		if (data.id !== channel.emoteSetId) return;
+		if (data.id === channel.emoteSetId) {
+			const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
+			if (!twitch) return;
 
-		const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
-		if (!twitch) return;
+			const actor = await channel.viewers.fetch(twitch.id);
+			const message = new SystemMessage();
 
-		const actor = await channel.viewers.fetch(twitch.id);
-		const message = new SystemMessage();
+			for (const change of data.pushed ?? []) {
+				const emote = transform(change.value);
 
-		for (const change of data.pushed ?? []) {
-			const emote = transform(change.value);
+				message.context = {
+					type: "emoteSetUpdate",
+					action: "added",
+					emote,
+					actor,
+				};
 
-			message.context = {
-				type: "emoteSetUpdate",
-				action: "added",
-				emote,
-				actor,
-			};
+				channel.emotes.set(emote.name, emote);
+			}
 
-			channel.emotes.set(emote.name, emote);
+			for (const change of data.pulled ?? []) {
+				message.context = {
+					type: "emoteSetUpdate",
+					action: "removed",
+					emote: channel.emotes.get(change.old_value.name)!,
+					actor,
+				};
+
+				channel.emotes.delete(change.old_value!.name);
+			}
+
+			for (const change of data.updated ?? []) {
+				const old = channel.emotes.get(change.old_value.name)!;
+
+				message.context = {
+					type: "emoteSetUpdate",
+					action: "renamed",
+					oldName: old.name,
+					emote: old,
+					actor,
+				};
+
+				old.name = change.value.name;
+
+				channel.emotes.delete(change.old_value.name);
+				channel.emotes.set(change.value.name, old);
+			}
+
+			channel.addMessage(message);
+		} else {
+			const emoteSet = app.emoteSets.get(data.id);
+			if (!emoteSet) return;
+
+			for (const change of data.pushed ?? []) {
+				emoteSet.emotes.push(transform(change.value));
+			}
 		}
-
-		for (const change of data.pulled ?? []) {
-			message.context = {
-				type: "emoteSetUpdate",
-				action: "removed",
-				emote: channel.emotes.get(change.old_value.name)!,
-				actor,
-			};
-
-			channel.emotes.delete(change.old_value!.name);
-		}
-
-		for (const change of data.updated ?? []) {
-			const old = channel.emotes.get(change.old_value.name)!;
-
-			message.context = {
-				type: "emoteSetUpdate",
-				action: "renamed",
-				oldName: old.name,
-				emote: old,
-				actor,
-			};
-
-			old.name = change.value.name;
-
-			channel.emotes.delete(change.old_value.name);
-			channel.emotes.set(change.value.name, old);
-		}
-
-		channel.addMessage(message);
 	},
 });

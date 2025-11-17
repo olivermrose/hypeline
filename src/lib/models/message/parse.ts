@@ -90,7 +90,7 @@ export function parse(message: UserMessage): Node[] {
 		});
 
 		const ircEmote = ircEmotes.find((e) => e.code === part);
-		const emote = message.channel.emotes.get(part);
+		const emote = message.author.emotes.get(part) ?? message.channel.emotes.get(part);
 
 		if (url && tld?.domain && tld.isIcann) {
 			nodes.push({

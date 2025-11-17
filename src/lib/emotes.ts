@@ -40,12 +40,16 @@ export interface Emote {
 	readonly zeroWidth?: boolean;
 }
 
-// 7TV
 export interface EmoteSet {
 	/**
 	 * The id of the emote set.
 	 */
 	readonly id: string;
+
+	/**
+	 * The name of the emote set.
+	 */
+	readonly name: string;
 
 	/**
 	 * The emotes in the emote set.
