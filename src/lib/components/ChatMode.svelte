@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Popover } from "bits-ui";
 	import type { Chat } from "$lib/models/chat.svelte";
+	import { formatDuration } from "$lib/util";
 
 	interface Props {
 		class?: string;
@@ -57,11 +58,11 @@
 						{mode.label}
 
 						{#if mode.key === "followerOnly" && typeof chat.mode.followerOnly === "number" && chat.mode.followerOnly > 0}
-							({chat.mode.followerOnly} minutes)
+							({formatDuration(chat.mode.followerOnly)})
 						{/if}
 
 						{#if mode.key === "slow" && typeof chat.mode.slow === "number" && chat.mode.slow > 0}
-							({chat.mode.slow} seconds)
+							({formatDuration(chat.mode.slow)})
 						{/if}
 					</li>
 				{/each}
