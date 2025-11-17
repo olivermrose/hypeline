@@ -25,6 +25,8 @@ export function clamp(min: number, value: number, max: number) {
 }
 
 export function formatDuration(seconds: number) {
+	if (seconds === 0) return "";
+
 	const parts: string[] = [];
 
 	const days = Math.floor(seconds / 86400);
