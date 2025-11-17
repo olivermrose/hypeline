@@ -10,11 +10,11 @@
 	const { class: className, chat }: Props = $props();
 
 	const config = [
-		{ key: "subOnly", label: "Subscribers only" },
-		{ key: "followerOnly", label: "Followers only" },
+		{ key: "subOnly", label: "Subscriber only" },
+		{ key: "followerOnly", label: "Follower only" },
 		{ key: "slow", label: "Slow mode" },
 		{ key: "unique", label: "Unique messages" },
-		{ key: "emoteOnly", label: "Emotes only" },
+		{ key: "emoteOnly", label: "Emote only" },
 	] as const;
 
 	const modes = $derived(
