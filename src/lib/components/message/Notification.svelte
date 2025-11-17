@@ -57,6 +57,24 @@
 						<Message {message} />
 					</div>
 				{/if}
+			{:else if type === "standard_pay_forward"}
+				{@const gifter = message.channel.viewers.get(message.event.prior_gifter.id)}
+				{@const recipient = message.channel.viewers.get(message.event.recipient.id)}
+
+				<p>
+					{@html colorizeName(message.author)}
+					is paying forward the gifted sub they received from
+					{#if gifter}
+						{@html colorizeName(gifter)}
+					{:else}
+						<span class="font-semibold">{message.event.prior_gifter.name}</span>
+					{/if} to
+					{#if recipient}
+						{@html colorizeName(recipient)}
+					{:else}
+						<span class="font-semibold">{message.event.recipient.name}</span>
+					{/if}!
+				</p>
 			{:else if type === "community_pay_forward"}
 				{@const gifter = message.channel.viewers.get(message.event.gifter.id)}
 
