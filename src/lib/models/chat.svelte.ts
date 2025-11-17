@@ -158,7 +158,11 @@ export class Chat {
 			return;
 		}
 
-		const setSlow = typeof settings.slow === "number" && settings.slow > 0;
+		const followDuration =
+			typeof this.mode.followerOnly === "number" ? this.mode.followerOnly : 0;
+
+		const slowDuration = settings.slow ?? this.mode.slow;
+		const isSlow = typeof slowDuration === "number" && slowDuration > 0;
 
 		await this.channel.client.patch("/chat/settings", {
 			params: {
@@ -166,13 +170,13 @@ export class Chat {
 				moderator_id: app.user.id,
 			},
 			body: {
-				emote_mode: settings.emoteOnly ?? false,
-				follower_mode: settings.followerOnly ?? false,
-				follower_mode_duration: settings.followerOnlyDuration ?? 0,
-				subscriber_mode: settings.subOnly ?? false,
-				slow_mode: setSlow,
-				slow_mode_wait_time: setSlow ? settings.slow : 3,
-				unique_mode: settings.unique ?? false,
+				subscriber_mode: settings.subOnly ?? this.mode.subOnly,
+				follower_mode: settings.followerOnly ?? this.mode.followerOnly,
+				follower_mode_duration: settings.followerOnlyDuration ?? followDuration,
+				slow_mode: isSlow,
+				slow_mode_wait_time: isSlow ? slowDuration : 3,
+				unique_chat_mode: settings.unique ?? this.mode.unique,
+				emote_mode: settings.emoteOnly ?? this.mode.emoteOnly,
 			},
 		});
 	}
@@ -192,6 +196,7 @@ export class Chat {
 			try {
 				await command.exec(args, this.channel, viewer.user);
 			} catch (error) {
+				console.log(error);
 				if (error instanceof Error) {
 					log.error(
 						`Error executing command ${name} in channel ${this.channel.user.username}: ${error.message}`,
