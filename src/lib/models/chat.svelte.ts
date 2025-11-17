@@ -196,7 +196,6 @@ export class Chat {
 			try {
 				await command.exec(args, this.channel, viewer.user);
 			} catch (error) {
-				console.log(error);
 				if (error instanceof Error) {
 					log.error(
 						`Error executing command ${name} in channel ${this.channel.user.username}: ${error.message}`,
