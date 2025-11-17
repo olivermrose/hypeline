@@ -71,13 +71,13 @@ export class Chat {
 		this.#lastHitSpdAt = now - RATE_LIMIT_WINDOW * 2;
 		this.#lastHitAmtAt = now - RATE_LIMIT_WINDOW * 2;
 
-		this.mode = {
+		this.mode = $state({
 			emoteOnly: false,
 			unique: false,
 			slow: false,
 			followerOnly: false,
 			subOnly: false,
-		};
+		});
 
 		this.addCommands(commands);
 	}

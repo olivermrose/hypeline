@@ -169,6 +169,7 @@ export interface RoomStateMessage {
 	unique_mode: boolean | null;
 	slow_mode: number | null;
 	subscribers_only: boolean | null;
+	is_recent: boolean;
 }
 
 export interface SubGiftPromo {

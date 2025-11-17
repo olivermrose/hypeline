@@ -10,6 +10,7 @@
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
 	import type { Chat } from "$lib/models/chat.svelte";
+	import ChatMode from "./ChatMode.svelte";
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";
@@ -174,34 +175,38 @@
 	</div>
 {/if}
 
-<div class="relative">
-	<Input
-		class={[
-			"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
-			(chat.replyTarget || error) && "rounded-t-none",
-			className,
-		]}
-		type="text"
-		autocapitalize="off"
-		autocorrect="off"
-		maxlength={500}
-		placeholder="Send a message"
-		oninput={() => completer?.search()}
-		onkeydown={send}
-		onmousedown={() => completer?.reset()}
-		{...rest}
-		bind:ref={chatInput}
-	/>
+<div class="flex flex-col gap-1.5">
+	<div class="relative">
+		<Input
+			class={[
+				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
+				(chat.replyTarget || error) && "rounded-t-none",
+				className,
+			]}
+			type="text"
+			autocapitalize="off"
+			autocorrect="off"
+			maxlength={500}
+			placeholder="Send a message"
+			oninput={() => completer?.search()}
+			onkeydown={send}
+			onmousedown={() => completer?.reset()}
+			{...rest}
+			bind:ref={chatInput}
+		/>
 
-	<div class="absolute inset-y-0 end-0 flex p-1">
-		<button
-			class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center rounded-sm transition-colors duration-150"
-			type="button"
-			onclick={() => (emotePickerOpen = !emotePickerOpen)}
-			aria-label="Open emote picker"
-			bind:this={anchor}
-		>
-			<span class="iconify lucide--smile size-5"></span>
-		</button>
+		<div class="absolute inset-y-0 end-0 flex p-1">
+			<button
+				class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center rounded-sm transition-colors duration-150"
+				type="button"
+				onclick={() => (emotePickerOpen = !emotePickerOpen)}
+				aria-label="Open emote picker"
+				bind:this={anchor}
+			>
+				<span class="iconify lucide--smile size-5"></span>
+			</button>
+		</div>
 	</div>
+
+	<ChatMode class="self-end" {chat} />
 </div>

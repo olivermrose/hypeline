@@ -3,6 +3,8 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "roomstate",
 	handle(data, channel) {
+		if (data.is_recent) return;
+
 		if (data.followers_only === -1) {
 			channel.chat.mode.followerOnly = false;
 		} else {

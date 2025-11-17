@@ -440,6 +440,7 @@ pub struct RoomStateMessage {
     pub unique_mode: Option<bool>,
     pub slow_mode: Option<u64>,
     pub subscribers_only: Option<bool>,
+    pub is_recent: bool,
     pub source: IrcMessage,
 }
 
@@ -459,6 +460,9 @@ impl TryFrom<IrcMessage> for RoomStateMessage {
             unique_mode: source.try_get_optional_bool("r9k")?,
             slow_mode: source.try_get_optional_number::<u64>("slow")?,
             subscribers_only: source.try_get_optional_bool("subs-only")?,
+            is_recent: source
+                .try_get_optional_bool("historical")?
+                .unwrap_or_default(),
             source,
         })
     }
