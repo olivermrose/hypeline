@@ -189,6 +189,7 @@ export interface SubOrResubEvent {
 	is_resub: boolean;
 	cumulative_months: number;
 	streak_months: number | null;
+	months_in_advance: number | null;
 	sub_plan: string;
 	sub_plan_name: string;
 }
