@@ -539,6 +539,7 @@ pub enum UserNoticeEvent {
         is_resub: bool,
         cumulative_months: u64,
         streak_months: Option<u64>,
+        months_in_advance: Option<u64>,
         sub_plan: String,
         sub_plan_name: String,
     },
@@ -660,6 +661,8 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                 } else {
                     None
                 },
+                months_in_advance: source
+                    .try_get_optional_number("msg-param-multimonth-duration")?,
                 sub_plan: source
                     .try_get_nonempty_tag_value("msg-param-sub-plan")?
                     .to_owned(),
