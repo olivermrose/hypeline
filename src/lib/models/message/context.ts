@@ -6,6 +6,7 @@ import type {
 	ChannelUnbanRequestResolve,
 	WarnMetadata,
 } from "$lib/twitch/eventsub";
+import type { Channel } from "../channel.svelte";
 import type { User } from "../user.svelte";
 import type { Viewer } from "../viewer.svelte";
 
@@ -42,6 +43,12 @@ export interface DeleteContext {
 	moderator?: Viewer;
 }
 
+export interface EmoteSetChangeContext {
+	type: "emoteSetChange";
+	name?: string;
+	actor: Viewer;
+}
+
 export interface EmoteSetUpdateContext {
 	type: "emoteSetUpdate";
 	action: "added" | "removed" | "renamed";
@@ -52,7 +59,7 @@ export interface EmoteSetUpdateContext {
 
 export interface JoinContext {
 	type: "join";
-	channel: User;
+	channel: Channel;
 }
 
 export interface ModeContext {
@@ -143,6 +150,7 @@ export type MessageContext =
 	| BlockStatusContext
 	| ClearContext
 	| DeleteContext
+	| EmoteSetChangeContext
 	| EmoteSetUpdateContext
 	| JoinContext
 	| ModeContext

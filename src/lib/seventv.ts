@@ -1,3 +1,8 @@
+interface EventObject {
+	id: string;
+	name: string;
+}
+
 interface HostFile {
 	format: string;
 	frame_count: number;
@@ -20,9 +25,7 @@ interface Emote {
 	owner: User;
 }
 
-export interface EmoteChange {
-	id: string;
-	name: string;
+export interface EmoteChange extends EventObject {
 	data: Emote;
 }
 
@@ -54,10 +57,8 @@ interface User {
 	style: UserStyle;
 }
 
-interface BadgeData {
-	id: string;
+interface BadgeData extends EventObject {
 	host: Host;
-	name: string;
 	tooltip: string;
 }
 
@@ -79,9 +80,7 @@ interface PaintStop {
 	at: number;
 }
 
-interface PaintData {
-	id: string;
-	name: string;
+interface PaintData extends EventObject {
 	angle: number;
 	color: number | null;
 	function: "LINEAR_GRADIENT" | "RADIAL_GRADIENT" | "URL";
@@ -100,9 +99,7 @@ interface PaintCosmetic {
 
 type CosmeticCreate = BadgeCosmetic | PaintCosmetic;
 
-interface EmoteSetCreate {
-	id: string;
-	name: string;
+interface EmoteSetCreate extends EventObject {
 	capacity: number;
 	flags: number;
 	immutable: boolean;
@@ -118,23 +115,30 @@ interface EntitlementCreate {
 	user: User;
 }
 
-interface ChangeMap {
+interface ChangeField<K, T, N> {
+	key: string;
+	old_value: K extends "pulled" | "updated" ? T : null;
+	value: N extends true ? ChangeField<K, T, false>[] : T;
+}
+
+interface ChangeMap<T, N = false> {
 	id: string;
 	kind: number;
 	actor: User;
-	pushed?: { value: EmoteChange }[];
-	pulled?: { old_value: EmoteChange }[];
-	updated?: { value: EmoteChange; old_value: EmoteChange }[];
+	pushed?: ChangeField<"pushed", T, N>[];
+	pulled?: ChangeField<"pulled", T, N>[];
+	updated?: ChangeField<"updated", T, N>[];
 }
 
 export interface DispatchPayload {
 	type: string;
-	body: { object: unknown } | ChangeMap;
+	body: { object: unknown } | ChangeMap<unknown>;
 }
 
 export interface SevenTvEventMap {
 	"cosmetic.create": CosmeticCreate;
 	"emote_set.create": EmoteSetCreate;
-	"emote_set.update": ChangeMap;
+	"emote_set.update": ChangeMap<EmoteChange>;
 	"entitlement.create": EntitlementCreate;
+	"user.update": ChangeMap<EventObject | null, true>;
 }

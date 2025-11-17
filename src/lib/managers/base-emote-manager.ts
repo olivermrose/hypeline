@@ -1,5 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
-import type { Emote } from "$lib/emotes";
+import type { Emote, EmoteProvider } from "$lib/emotes";
 import { settings } from "$lib/settings";
 
 export abstract class BaseEmoteManager extends SvelteMap<string, Emote> {
@@ -36,5 +36,19 @@ export abstract class BaseEmoteManager extends SvelteMap<string, Emote> {
 		}
 
 		return this;
+	}
+
+	/**
+	 * Removes all emotes from the specified provider or all emotes if no
+	 * provider is given.
+	 */
+	public override clear(provider?: EmoteProvider) {
+		if (provider) {
+			for (const emote of this.values()) {
+				if (emote.provider === provider) this.delete(emote.name);
+			}
+		} else {
+			super.clear();
+		}
 	}
 }

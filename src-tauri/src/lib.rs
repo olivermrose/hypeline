@@ -167,6 +167,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         server::start_server,
         seventv::connect_seventv,
         seventv::set_seventv_id,
+        seventv::resub_emote_set,
         seventv::send_presence,
     ]
 }

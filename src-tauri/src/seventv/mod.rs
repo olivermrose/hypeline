@@ -72,6 +72,25 @@ pub async fn set_seventv_id(state: State<'_, Mutex<AppState>>, id: String) -> Re
     Ok(())
 }
 
+#[tauri::command]
+pub async fn resub_emote_set(
+    state: State<'_, Mutex<AppState>>,
+    set_id: String,
+) -> Result<(), Error> {
+    let state = state.lock().await;
+
+    let Some(ref seventv) = state.seventv else {
+        return Ok(());
+    };
+
+    seventv.unsubscribe("emote_set.*").await;
+    seventv
+        .subscribe("emote_set.*", &json!({ "object_id": set_id }))
+        .await;
+
+    Ok(())
+}
+
 #[tracing::instrument(skip(state))]
 #[tauri::command]
 pub async fn send_presence(

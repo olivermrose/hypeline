@@ -15,7 +15,7 @@ export default defineHandler({
 		viewer.broadcaster = true;
 		viewer.moderator = true;
 
-		channel.messages.push(SystemMessage.fromContext({ type: "join", channel: viewer.user }));
+		channel.messages.push(SystemMessage.fromContext({ type: "join", channel }));
 
 		log.info(`Joined ${channel.user.displayName}`);
 	},
