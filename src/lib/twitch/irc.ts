@@ -117,6 +117,7 @@ export interface Emote {
 }
 
 export interface BaseMessage {
+	message_id: string;
 	sender: BasicUser;
 	badges: Badge[];
 	name_color: string;
@@ -127,7 +128,6 @@ export interface BaseUserMessage extends BaseMessage {
 	channel_login: string;
 	channel_id: string;
 	badge_info: Badge[];
-	message_id: string;
 	deleted: boolean;
 	is_recent: boolean;
 	server_timestamp: number;

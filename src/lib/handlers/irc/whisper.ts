@@ -16,7 +16,7 @@ export default defineHandler({
 		const whisper = user.whispers.get(sender.id)!;
 
 		whisper.messages.push({
-			id: crypto.randomUUID(),
+			id: data.message_id,
 			createdAt: new Date(),
 			badges: data.badges
 				.map((b) => app.twitch.badges.get(`${b.name}:${b.version}`))

@@ -824,6 +824,7 @@ impl From<UserStateMessage> for IrcMessage {
 pub struct WhisperMessage {
     pub recipient_login: String,
     pub sender: BasicUser,
+    pub message_id: String,
     pub message_text: String,
     pub name_color: String,
     pub badges: Vec<Badge>,
@@ -851,6 +852,7 @@ impl TryFrom<IrcMessage> for WhisperMessage {
                     .try_get_nonempty_tag_value("display-name")?
                     .to_owned(),
             },
+            message_id: source.try_get_nonempty_tag_value("message-id")?.to_owned(),
             message_text,
             name_color: source.try_get_color("color")?.to_owned(),
             badges: source.try_get_badges("badges")?,
