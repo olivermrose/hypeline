@@ -253,6 +253,13 @@ export interface BitsBadgeTierEvent {
 	threshold: number;
 }
 
+export interface StandardPayForwardEvent {
+	type: "standard_pay_forward";
+	is_prior_gifter_anonymous: boolean;
+	prior_gifter: BasicUser;
+	recipient: BasicUser;
+}
+
 export interface CommunityPayForwardEvent {
 	type: "community_pay_forward";
 	gifter: BasicUser;
@@ -277,6 +284,7 @@ export type UserNoticeEvent =
 	| AnonGiftPaidUpgradeEvent
 	| RitualEvent
 	| BitsBadgeTierEvent
+	| StandardPayForwardEvent
 	| CommunityPayForwardEvent
 	| WatchStreakEvent;
 

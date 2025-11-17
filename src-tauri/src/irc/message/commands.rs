@@ -527,6 +527,11 @@ pub enum UserNoticeEvent {
     Announcement {
         color: String,
     },
+    StandardPayForward {
+        is_prior_gifter_anonymous: bool,
+        prior_gifter: BasicUser,
+        recipient: BasicUser,
+    },
     CommunityPayForward {
         gifter: BasicUser,
     },
@@ -607,6 +612,32 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                 color: source
                     .try_get_nonempty_tag_value("msg-param-color")?
                     .to_owned(),
+            },
+            "standardpayforward" => UserNoticeEvent::StandardPayForward {
+                is_prior_gifter_anonymous: source
+                    .try_get_bool("msg-param-prior-gifter-anonymous")?,
+                prior_gifter: BasicUser {
+                    id: source
+                        .try_get_nonempty_tag_value("msg-param-prior-gifter-id")?
+                        .to_owned(),
+                    login: source
+                        .try_get_nonempty_tag_value("msg-param-prior-gifter-user-name")?
+                        .to_owned(),
+                    name: source
+                        .try_get_nonempty_tag_value("msg-param-prior-gifter-display-name")?
+                        .to_owned(),
+                },
+                recipient: BasicUser {
+                    id: source
+                        .try_get_nonempty_tag_value("msg-param-recipient-id")?
+                        .to_owned(),
+                    login: source
+                        .try_get_nonempty_tag_value("msg-param-recipient-user-name")?
+                        .to_owned(),
+                    name: source
+                        .try_get_nonempty_tag_value("msg-param-recipient-display-name")?
+                        .to_owned(),
+                },
             },
             "communitypayforward" => UserNoticeEvent::CommunityPayForward {
                 gifter: BasicUser {
