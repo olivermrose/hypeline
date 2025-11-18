@@ -7,8 +7,10 @@ export default defineCommand({
 	name: "vips",
 	description: "Display a list of VIPs for this channel",
 	async exec(_, channel) {
+		const message = new SystemMessage();
+
 		const { user } = await channel.client.send(
-			gql(`query GetUserVIPs($id: ID!) {
+			gql(`query GetVIPs($id: ID!) {
 				user(id: $id) {
 					vips(first: 100) {
 						edges {
@@ -22,16 +24,17 @@ export default defineCommand({
 			{ id: channel.id },
 		);
 
-		const vips: string[] = [];
+		const vips =
+			user?.vips?.edges
+				?.flatMap((edge) => (edge.node ? [edge.node.displayName] : []))
+				.sort() ?? [];
 
-		for (const edge of user?.vips?.edges ?? []) {
-			if (edge.node) {
-				vips.push(edge.node.displayName);
-			}
+		if (!vips.length) {
+			message.text = "This channel has no VIPs.";
+		} else {
+			message.text = `Channel VIPs (${vips.length}): ${vips.join(", ")}`;
 		}
 
-		const list = vips.sort().join(", ");
-
-		channel.chat.addMessage(new SystemMessage(`Channel VIPs (${vips.length}): ${list}`));
+		channel.chat.addMessage(message);
 	},
 });

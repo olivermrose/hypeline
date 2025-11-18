@@ -7,13 +7,14 @@ export default defineCommand({
 	name: "mods",
 	description: "Display a list of moderators for this channel",
 	async exec(_, channel) {
+		const message = new SystemMessage();
+
 		const { user } = await channel.client.send(
-			gql(`query GetUserMods($id: ID!) {
+			gql(`query GetMods($id: ID!) {
 				user(id: $id) {
 					mods(first: 100) {
 						edges {
 							node {
-								id
 								displayName
 							}
 						}
@@ -23,14 +24,17 @@ export default defineCommand({
 			{ id: channel.id },
 		);
 
-		const mods: string[] = [];
+		const mods =
+			user?.mods?.edges
+				.flatMap((edge) => (edge.node ? [edge.node.displayName] : []))
+				.sort() ?? [];
 
-		for (const edge of user?.mods?.edges ?? []) {
-			mods.push(edge.node.displayName);
+		if (!mods.length) {
+			message.text = "This channel has no moderators.";
+		} else {
+			message.text = `Channel moderators (${mods.length}): ${mods.join(", ")}`;
 		}
 
-		const list = mods.sort().join(", ");
-
-		channel.chat.addMessage(new SystemMessage(`Channel moderators (${mods.length}): ${list}`));
+		channel.chat.addMessage(message);
 	},
 });
