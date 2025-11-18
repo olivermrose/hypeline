@@ -1,4 +1,8 @@
 {
 	"rust-analyzer.check.command": "clippy",
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"[graphql]": {
+		"editor.tabSize": 2,
+		"editor.insertSpaces": true
+	}
 }

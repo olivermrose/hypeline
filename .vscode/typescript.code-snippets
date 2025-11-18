@@ -36,6 +36,7 @@
 			"import { defineCommand } from \"../\";",
 			"",
 			"export default defineCommand({",
+			"\tprovider: \"${1}\",",
 			"\tname: \"${TM_FILENAME_BASE}\",",
 			"\tdescription: \"${2}\",",
 			"\tasync exec(args, channel, user) {",

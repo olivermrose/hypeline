@@ -4769,6 +4769,8 @@ type Channel {
   """
   founderBadgeAvailability: Int!
 
+  founders: [Founder]
+
   """The name of the last game played on this channel."""
   game: String! @deprecated(reason: "Use user.lastBroadcast.game.name instead.")
 
@@ -18789,6 +18791,10 @@ enum FormatType {
 The details of different formats. Currently there is only 1 detail type.
 """
 union FormatTypeDetails = LeaderboardDetails
+
+type Founder {
+  user: User
+}
 
 """
 FragmentContent contains the parse content of a fragment, and can be an emote or a mention.
