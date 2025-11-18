@@ -3,12 +3,7 @@
 	import type { Chat } from "$lib/models/chat.svelte";
 	import { formatDuration } from "$lib/util";
 
-	interface Props {
-		class?: string;
-		chat: Chat;
-	}
-
-	const { class: className, chat }: Props = $props();
+	const { chat }: { chat: Chat } = $props();
 
 	const config = [
 		{ key: "subOnly", label: "Subscriber only" },
@@ -35,7 +30,7 @@
 	const topMostActive = $derived(modes.find((m) => m.active));
 </script>
 
-<div class={["text-muted-foreground px-1", className]}>
+<div class="text-muted-foreground">
 	<Popover.Root>
 		<Popover.Trigger class={["flex items-center", topMostActive && "text-green-500"]}>
 			<div class="mr-1 size-1.5 rounded-full bg-current/50"></div>

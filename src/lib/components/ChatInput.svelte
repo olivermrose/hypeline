@@ -23,6 +23,7 @@
 	const { class: className, chat, ...rest }: Props = $props();
 
 	let chatInput = $state<HTMLInputElement | null>(null);
+	let value = $state("");
 	let anchor = $state<HTMLElement>();
 
 	let emotePickerOpen = $state(false);
@@ -192,6 +193,7 @@
 			onkeydown={send}
 			onmousedown={() => completer?.reset()}
 			{...rest}
+			bind:value
 			bind:ref={chatInput}
 		/>
 
@@ -208,5 +210,12 @@
 		</div>
 	</div>
 
-	<ChatMode class="self-end" {chat} />
+	<div class="flex items-center justify-between px-1">
+		<div class="text-muted-foreground text-xs tabular-nums">
+			<span class:text-foreground={value.length === 500}>{value.length}</span>
+			/ 500
+		</div>
+
+		<ChatMode {chat} />
+	</div>
 </div>
