@@ -162,8 +162,6 @@ export class User implements PartialUser {
 
 		this.badge = $derived(app.u2b.get(this.id));
 		this.paint = $derived(app.u2p.get(this.id));
-
-		this.moderating.add(data.id);
 	}
 
 	/**

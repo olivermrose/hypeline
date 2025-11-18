@@ -31,6 +31,8 @@ export async function load({ url }) {
 	await invoke("set_seventv_id", { id: app.user.id });
 
 	if (!app.user.moderating.size) {
+		app.user.moderating.add(app.user.id);
+
 		const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
 			"/moderation/channels",
 			{ user_id: app.user.id, first: 100 },
