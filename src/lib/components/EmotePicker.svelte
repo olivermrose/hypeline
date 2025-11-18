@@ -3,7 +3,7 @@
 	import { Popover, Tabs } from "bits-ui";
 	import { onMount } from "svelte";
 	import { app } from "$lib/app.svelte";
-	import type { User } from "$lib/models";
+	import type { User } from "$lib/models/user.svelte";
 	import type { UserEmote } from "$lib/twitch/api";
 
 	interface EmoteSet {
@@ -11,28 +11,35 @@
 		emotes: UserEmote[];
 	}
 
-	interface Props {
-		input?: HTMLInputElement | null;
-	}
-
-	const { input }: Props = $props();
+	const { input }: { input?: HTMLInputElement | null } = $props();
 
 	const emoteSets = new Map<string, EmoteSet>();
 
+	let sorted = $state.raw<EmoteSet[]>([]);
+
 	onMount(async () => {
 		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "global");
+		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "twitch");
 
 		for (const [id, emotes] of grouped) {
-			// TODO: handle global "owner"
-			if (id === "global") continue;
-
 			const owner = await app.twitch.users.fetch(id, {
 				by: id === "twitch" ? "login" : "id",
 			});
 
 			emoteSets.set(id, { owner, emotes });
 		}
+
+		sorted = emoteSets
+			.values()
+			.toArray()
+			.sort((a, b) => {
+				if (app.joined) {
+					if (a.owner.id === app.joined.id) return -1;
+					if (b.owner.id === app.joined.id) return 1;
+				}
+
+				return a.owner.username.localeCompare(b.owner.username);
+			});
 	});
 
 	function appendEmote(name: string) {
@@ -56,19 +63,17 @@
 
 	<Popover.Portal>
 		<Popover.Content
-			class="bg-muted overflow-hidden rounded-md border"
+			class="overflow-hidden rounded-md border"
 			side="top"
 			sideOffset={12}
 			collisionPadding={8}
 		>
-			<Tabs.Root class="flex" orientation="vertical">
-				<Tabs.List
-					class="bg-sidebar flex max-h-100 flex-col gap-3 overflow-y-auto border-r p-2"
-				>
-					{#each emoteSets.values() as set}
+			<Tabs.Root class="flex max-h-100" orientation="vertical">
+				<Tabs.List class="bg-sidebar flex flex-col gap-3 overflow-y-auto p-2">
+					{#each sorted as set}
 						<Tabs.Trigger class="group" value={set.owner.displayName}>
 							<img
-								class="group-data-[state=active]:outline-twitch size-8 rounded-full group-data-[state=active]:outline-2"
+								class="group-data-[state=active]:outline-twitch size-7 rounded-full group-data-[state=active]:outline-2"
 								src={set.owner.avatarUrl}
 								alt={set.owner.displayName}
 							/>
@@ -76,27 +81,24 @@
 					{/each}
 				</Tabs.List>
 
-				{#each emoteSets.values() as set}
-					<Tabs.Content class="max-h-100 overflow-y-auto" value={set.owner.displayName}>
-						<div class="bg-sidebar border-b p-2">
-							{set.owner.displayName}'s emotes
-						</div>
+				{#each sorted as set}
+					<Tabs.Content
+						class="bg-muted grid grid-cols-7 content-start gap-2 overflow-y-auto border-l p-2"
+						value={set.owner.displayName}
+					>
+						{#each set.emotes as emote}
+							{@const format = emote.format.includes("animated")
+								? "animated"
+								: "static"}
 
-						<div class="grid grid-cols-6 content-start gap-2 p-2">
-							{#each set.emotes as emote}
-								{@const format = emote.format.includes("animated")
-									? "animated"
-									: "static"}
-
-								<button title={emote.name} onclick={() => appendEmote(emote.name)}>
-									<img
-										class="size-10"
-										src="https://static-cdn.jtvnw.net/emoticons/v2/{emote.id}/{format}/dark/3.0"
-										alt={emote.name}
-									/>
-								</button>
-							{/each}
-						</div>
+							<button title={emote.name} onclick={() => appendEmote(emote.name)}>
+								<img
+									class="size-8 object-contain"
+									src="https://static-cdn.jtvnw.net/emoticons/v2/{emote.id}/{format}/dark/3.0"
+									alt={emote.name}
+								/>
+							</button>
+						{/each}
 					</Tabs.Content>
 				{/each}
 			</Tabs.Root>
