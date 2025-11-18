@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
 import { SystemMessage } from "$lib/models/message/system-message";
-import { defineCommand } from "../";
+import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Twitch",

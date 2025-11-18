@@ -1,5 +1,5 @@
 import { goto } from "$app/navigation";
-import { defineCommand } from "../";
+import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Built-in",

@@ -1,7 +1,7 @@
 import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
-import { defineCommand, getTarget } from "../";
+import { defineCommand, getTarget } from "../util";
 
 export default defineCommand({
 	provider: "Twitch",

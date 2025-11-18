@@ -4,7 +4,7 @@ import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
 import { Channel } from "$lib/models/channel.svelte";
-import { defineCommand } from "../";
+import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Built-in",

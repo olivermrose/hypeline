@@ -1,6 +1,6 @@
 import { app } from "$lib/app.svelte";
 import { SystemMessage } from "$lib/models/message/system-message";
-import { defineCommand, getTarget } from "../";
+import { defineCommand, getTarget } from "../util";
 
 export default defineCommand({
 	provider: "Twitch",

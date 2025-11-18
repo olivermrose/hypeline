@@ -1,6 +1,21 @@
-import { commands as builtIn } from "./built-in";
-import { commands as twitch } from "./twitch";
+import type { Channel } from "$lib/models/channel.svelte";
+import type { User } from "$lib/models/user.svelte";
 
-export * from "./util";
+export type CommandProvider = "Built-in" | "Twitch";
 
-export const commands = [...builtIn, ...twitch];
+export interface Command {
+	provider: CommandProvider;
+	name: string;
+	description: string;
+	args?: string[];
+	broadcasterOnly?: boolean;
+	modOnly?: boolean;
+	exec: (args: string[], channel: Channel, user: User) => Promise<void>;
+}
+
+const imports = import.meta.glob(["./built-in/*.ts", "./twitch/*.ts"], {
+	eager: true,
+	import: "default",
+});
+
+export const commands = Object.values(imports) as Command[];

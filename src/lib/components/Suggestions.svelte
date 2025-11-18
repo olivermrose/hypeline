@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Command } from "$lib/commands/util";
+	import type { Command } from "$lib/commands";
 
 	interface BaseSuggestion {
 		value: string;

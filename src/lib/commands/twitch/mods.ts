@@ -1,6 +1,6 @@
 import { twitchGql as gql } from "$lib/graphql/function";
 import { SystemMessage } from "$lib/models/message/system-message";
-import { defineCommand } from "../";
+import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Twitch",

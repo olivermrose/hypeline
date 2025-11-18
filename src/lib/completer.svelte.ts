@@ -1,6 +1,6 @@
 import { app } from "./app.svelte";
 import { commands } from "./commands";
-import type { Command } from "./commands/util";
+import type { Command } from "./commands";
 import type { Suggestion } from "./components/Suggestions.svelte";
 import type { Emote } from "./emotes";
 import type { Channel } from "./models/channel.svelte";

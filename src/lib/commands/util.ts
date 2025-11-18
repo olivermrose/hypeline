@@ -3,20 +3,8 @@ import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
 import type { Channel } from "$lib/models/channel.svelte";
-import type { User } from "$lib/models/user.svelte";
 import { Viewer } from "$lib/models/viewer.svelte";
-
-export type CommandProvider = "Built-in" | "Twitch";
-
-export interface Command {
-	provider: CommandProvider;
-	name: string;
-	description: string;
-	args?: string[];
-	broadcasterOnly?: boolean;
-	modOnly?: boolean;
-	exec: (args: string[], channel: Channel, user: User) => Promise<void>;
-}
+import type { Command } from ".";
 
 export function defineCommand<const T extends Command>(command: T) {
 	return command;
