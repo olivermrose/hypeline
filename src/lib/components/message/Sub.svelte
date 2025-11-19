@@ -65,13 +65,15 @@
 						{@render prime()}
 					{:else}
 						<span class="font-semibold">Tier {sub.sub_plan[0]}</span
-						>{#if sub.months_in_advance && sub.months_in_advance > 1}
-							for
-							<span class="font-semibold">
-								{sub.months_in_advance} months
-							</span> in advance
-						{/if}
-					{/if}.
+						>{#if !sub.months_in_advance || sub.months_in_advance === 1}.{/if}
+					{/if}
+
+					{#if sub.months_in_advance && sub.months_in_advance > 1}
+						for
+						<span class="font-semibold">
+							{sub.months_in_advance} months
+						</span> in advance.
+					{/if}
 
 					{#if sub.cumulative_months > 1}
 						They've subscribed for
