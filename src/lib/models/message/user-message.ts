@@ -52,7 +52,7 @@ export class UserMessage extends Message {
 	/**
 	 * The viewer who sent the message if it was sent in a channel.
 	 */
-	public readonly viewer: Viewer | null = null;
+	public viewer: Viewer | null = null;
 
 	/**
 	 * Whether the message is an action i.e. sent with `/me`.
