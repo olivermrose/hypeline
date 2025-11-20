@@ -2,6 +2,7 @@
 	import { invoke } from "@tauri-apps/api/core";
 	import { Popover, Tabs } from "bits-ui";
 	import { onMount } from "svelte";
+	import { VList } from "virtua/svelte";
 	import { app } from "$lib/app.svelte";
 	import type { Emote, EmoteProvider } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -72,20 +73,26 @@
 				by: id === "twitch" ? "login" : "id",
 			});
 
+			const mapped = emotes.map<Emote>((emote) => ({
+				provider: "Twitch",
+				id: emote.id,
+				name: emote.name,
+				width: 56,
+				height: 56,
+				srcset: emote.scale.map(
+					(d) =>
+						`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
+				),
+			}));
+
+			if (owner.id === channel.id) {
+				mapped.push(...channel.emotes.values().filter((e) => e.provider === "7TV"));
+			}
+
 			emoteSets.set(id, {
 				owner,
 				global: id === "twitch",
-				emotes: emotes.map((emote) => ({
-					provider: "Twitch",
-					id: emote.id,
-					name: emote.name,
-					width: 56,
-					height: 56,
-					srcset: emote.scale.map(
-						(d) =>
-							`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
-					),
-				})),
+				emotes: mapped,
 			});
 		}
 
@@ -112,6 +119,16 @@
 			input.value = name;
 		}
 	}
+
+	function chunk(emotes: Emote[]) {
+		const rows = [];
+
+		for (let i = 0; i < emotes.length; i += 7) {
+			rows.push(emotes.slice(i, i + 7));
+		}
+
+		return rows;
+	}
 </script>
 
 <Popover.Root>
@@ -137,6 +154,8 @@
 								class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
 								src={set.owner.avatarUrl}
 								alt={set.owner.displayName}
+								decoding="async"
+								loading="lazy"
 							/>
 						</Tabs.Trigger>
 					{/each}
@@ -144,21 +163,39 @@
 
 				{#each sorted as set (set.owner.id)}
 					<Tabs.Content
-						class="bg-muted grid grid-cols-7 content-start gap-2 overflow-y-auto border-l p-2"
+						class="bg-muted w-[calc(var(--spacing)*56+64px)] border-l p-2"
 						value={set.owner.displayName}
 					>
-						{#each set.emotes as emote (emote.id)}
-							<button title={emote.name} onclick={() => appendEmote(emote.name)}>
-								<img
-									class="size-8 object-contain"
-									srcset={emote.srcset.join(", ")}
-									alt={emote.name}
-								/>
-							</button>
-						{/each}
+						<VList id="emote-vlist" class="overflow-y-auto" data={chunk(set.emotes)}>
+							{#snippet children(emotes)}
+								<div class="emote-row mb-2 flex items-center gap-2">
+									{#each emotes as emote (emote.id)}
+										<button
+											title={emote.name}
+											type="button"
+											onclick={() => appendEmote(emote.name)}
+										>
+											<img
+												class="size-8 object-contain"
+												srcset={emote.srcset.join(", ")}
+												alt={emote.name}
+												decoding="async"
+												loading="lazy"
+											/>
+										</button>
+									{/each}
+								</div>
+							{/snippet}
+						</VList>
 					</Tabs.Content>
 				{/each}
 			</Tabs.Root>
 		</Popover.Content>
 	</Popover.Portal>
 </Popover.Root>
+
+<style>
+	:global(#emote-vlist > div > div:last-child) .emote-row {
+		margin-bottom: 0;
+	}
+</style>
