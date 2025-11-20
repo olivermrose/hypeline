@@ -181,7 +181,7 @@
 		/>
 
 		<div class="absolute inset-y-0 end-0 flex p-1">
-			<EmotePicker input={chatInput} />
+			<EmotePicker channel={chat.channel} input={chatInput} />
 		</div>
 	</div>
 
