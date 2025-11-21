@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { getVersion } from "@tauri-apps/api/app";
-	import { invoke } from "@tauri-apps/api/core";
+	import { LogicalPosition } from "@tauri-apps/api/dpi";
 	import { appLogDir } from "@tauri-apps/api/path";
+	import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 	import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 	import { openPath } from "@tauri-apps/plugin-opener";
 	import * as os from "@tauri-apps/plugin-os";
@@ -16,15 +17,25 @@
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
 
+	const platform = os.platform();
+
 	beforeNavigate(async () => {
 		await settings.saveNow();
 		log.info("Settings saved");
 	});
 
 	async function detach() {
-		await invoke("detach_settings");
-		history.back();
+		// eslint-disable-next-line no-new
+		new WebviewWindow("settings", {
+			url: "/settings?detached",
+			title: "Settings",
+			hiddenTitle: true,
+			titleBarStyle: "overlay",
+			trafficLightPosition: new LogicalPosition(10, 15),
+			decorations: platform !== "windows",
+		});
 
+		history.back();
 		log.info("Settings detached");
 	}
 
@@ -36,7 +47,7 @@
 		const appVersion = await getVersion();
 
 		const appInfo = `Hypeline v${appVersion}`;
-		const osInfo = `${os.platform()} ${os.arch()} (${os.version()})`;
+		const osInfo = `${platform} ${os.arch()} (${os.version()})`;
 
 		await writeText(`${appInfo}\n${osInfo}`);
 		toast.success("Debug info copied to clipboard");

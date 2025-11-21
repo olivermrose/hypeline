@@ -9,7 +9,7 @@ use reqwest::header::HeaderMap;
 use seventv::SeventTvClient;
 use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
-use tauri::{AppHandle, Manager, WebviewWindowBuilder, WindowEvent};
+use tauri::{Manager, WindowEvent};
 use tauri_plugin_svelte::ManagerExt;
 use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
@@ -142,21 +142,8 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-#[tauri::command]
-async fn detach_settings(app_handle: AppHandle) {
-    let config = app_handle.config();
-
-    if let Some(settings) = config.app.windows.get(1) {
-        WebviewWindowBuilder::from_config(&app_handle, settings)
-            .unwrap()
-            .build()
-            .unwrap();
-    };
-}
-
 fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
-        detach_settings,
         api::join,
         api::leave,
         api::get_user_emotes,
