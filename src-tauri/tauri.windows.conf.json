@@ -4,13 +4,6 @@
 			{
 				"title": "Hypeline",
 				"decorations": false
-			},
-			{
-				"label": "settings",
-				"title": "Settings",
-				"url": "/settings",
-				"create": false,
-				"decorations": false
 			}
 		]
 	}
