@@ -55,6 +55,11 @@
 		{/if}
 
 		{#if sub.type === "sub_or_resub"}
+			{@const isMultimonth =
+				sub.multimonth_tenure === 0 &&
+				sub.multimonth_duration &&
+				sub.multimonth_duration > 1}
+
 			<div class="flex flex-col gap-0.5">
 				{@html colorizeName(message.author)}
 
@@ -64,14 +69,13 @@
 					{#if sub.sub_plan === "Prime"}
 						{@render prime()}
 					{:else}
-						<span class="font-semibold">Tier {sub.sub_plan[0]}</span
-						>{#if !sub.months_in_advance || sub.months_in_advance === 1}.{/if}
-					{/if}
+						<span class="font-semibold">Tier {sub.sub_plan[0]}</span>
+					{/if}{#if !isMultimonth}.{/if}
 
-					{#if sub.months_in_advance && sub.months_in_advance > 1}
+					{#if isMultimonth}
 						for
 						<span class="font-semibold">
-							{sub.months_in_advance} months
+							{sub.multimonth_duration} months
 						</span> in advance.
 					{/if}
 
