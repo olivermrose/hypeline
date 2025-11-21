@@ -7,11 +7,9 @@
 	import { openPath } from "@tauri-apps/plugin-opener";
 	import * as os from "@tauri-apps/plugin-os";
 	import { Separator, Tabs } from "bits-ui";
-	import { tick } from "svelte";
 	import { toast } from "svelte-sonner";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
-	import { app } from "$lib/app.svelte";
 	import { categories } from "$lib/components/settings/categories";
 	import Category from "$lib/components/settings/Category.svelte";
 	import { log } from "$lib/log";
@@ -51,18 +49,6 @@
 
 		await writeText(`${appInfo}\n${osInfo}`);
 		toast.success("Debug info copied to clipboard");
-	}
-
-	async function logOut() {
-		settings.state.user = null;
-		settings.state.lastJoined = null;
-		app.joined = null;
-
-		await tick();
-		await settings.saveNow();
-
-		log.info("User logged out");
-		await goto("/auth/login");
 	}
 </script>
 
@@ -120,7 +106,7 @@
 			class="text-destructive hover:bg-destructive/10!"
 			type="button"
 			data-logout
-			onclick={logOut}
+			onclick={() => goto("/auth/logout")}
 		>
 			<span class="iconify lucide--log-out size-4"></span>
 			<span class="text-sm">Log out</span>
