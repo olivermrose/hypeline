@@ -3,13 +3,9 @@ import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import type { TimeoutOptions } from "$lib/models/viewer.svelte";
 import { Viewer } from "$lib/models/viewer.svelte";
-import type { TwitchClient } from "$lib/twitch/client";
 
 export class ViewerManager extends SvelteMap<string, Viewer> {
-	public constructor(
-		public readonly client: TwitchClient,
-		public readonly channel: Channel,
-	) {
+	public constructor(public readonly channel: Channel) {
 		super();
 	}
 
@@ -19,7 +15,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 			if (cached) return cached;
 		}
 
-		const user = await this.client.users.fetch(id);
+		const user = await this.channel.client.users.fetch(id);
 		const viewer = new Viewer(this.channel, user);
 
 		this.set(id, viewer);
@@ -27,7 +23,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	}
 
 	public async vip(id: string) {
-		await this.client.post("/channels/vips", {
+		await this.channel.client.post("/channels/vips", {
 			params: {
 				broadcaster_id: this.channel.user.id,
 				user_id: id,
@@ -36,14 +32,14 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	}
 
 	public async unvip(id: string) {
-		await this.client.delete("/channels/vips", {
+		await this.channel.client.delete("/channels/vips", {
 			broadcaster_id: this.channel.user.id,
 			user_id: id,
 		});
 	}
 
 	public async mod(id: string) {
-		await this.client.post("/moderation/moderators", {
+		await this.channel.client.post("/moderation/moderators", {
 			params: {
 				broadcaster_id: this.channel.user.id,
 				user_id: id,
@@ -52,7 +48,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	}
 
 	public async unmod(id: string) {
-		await this.client.delete("/moderation/moderators", {
+		await this.channel.client.delete("/moderation/moderators", {
 			broadcaster_id: this.channel.user.id,
 			user_id: id,
 		});
@@ -61,7 +57,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	public async warn(id: string, reason: string) {
 		if (!app.user) return;
 
-		await this.client.post("/moderation/warnings", {
+		await this.channel.client.post("/moderation/warnings", {
 			params: {
 				broadcaster_id: this.channel.user.id,
 				moderator_id: app.user.id,
@@ -78,7 +74,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	public async timeout(id: string, options: TimeoutOptions) {
 		if (!app.user) return;
 
-		await this.client.post("/moderation/bans", {
+		await this.channel.client.post("/moderation/bans", {
 			params: {
 				broadcaster_id: this.channel.user.id,
 				moderator_id: app.user.id,
@@ -96,7 +92,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	public async ban(id: string, reason?: string) {
 		if (!app.user) return;
 
-		await this.client.post("/moderation/bans", {
+		await this.channel.client.post("/moderation/bans", {
 			params: {
 				broadcaster_id: this.channel.user.id,
 				moderator_id: app.user.id,
@@ -113,7 +109,7 @@ export class ViewerManager extends SvelteMap<string, Viewer> {
 	public async unban(id: string) {
 		if (!app.user) return;
 
-		await this.client.delete("/moderation/bans", {
+		await this.channel.client.delete("/moderation/bans", {
 			broadcaster_id: this.channel.user.id,
 			moderator_id: app.user.id,
 			user_id: id,

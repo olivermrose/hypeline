@@ -71,7 +71,7 @@ export class Channel {
 
 		this.chat = new Chat(this);
 		this.emotes = new ChannelEmoteManager(this);
-		this.viewers = new ViewerManager(client, this);
+		this.viewers = new ViewerManager(this);
 	}
 
 	public async join() {
