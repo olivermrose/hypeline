@@ -33,6 +33,33 @@ export interface StreamMarker {
 	description: string;
 }
 
+export type EmoteType =
+	| "none"
+	| "bitstier"
+	| "follower"
+	| "subscriptions"
+	| "channelpoints"
+	| "rewards"
+	| "hypetrain"
+	| "prime"
+	| "turbo"
+	| "smilies"
+	| "globals"
+	| "owl2019"
+	| "twofactor"
+	| "limitedtime";
+
+export interface UserEmote {
+	id: string;
+	name: string;
+	emote_type: EmoteType;
+	emote_set_id: string;
+	owner_id: string;
+	format: ("animated" | "static")[];
+	scale: string[];
+	theme_mode: ("dark" | "light")[];
+}
+
 // Not a part of Twitch's API but related. Not all fields are included.
 
 export interface SubscriptionTenure {
