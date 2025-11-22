@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Popover, Tabs } from "bits-ui";
+	import { Accordion, Popover } from "bits-ui";
 	import { onMount } from "svelte";
-	import { VList } from "virtua/svelte";
 	import { app } from "$lib/app.svelte";
 	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -133,68 +132,80 @@
 
 	<Popover.Portal>
 		<Popover.Content
-			class="bg-sidebar overflow-hidden rounded-md border"
+			class="bg-sidebar flex max-h-100 overflow-hidden rounded-md border"
 			side="top"
 			sideOffset={12}
 			collisionPadding={8}
 		>
-			<Tabs.Root class="flex max-h-100" orientation="vertical">
-				<Tabs.List class="flex flex-col gap-3 overflow-y-auto p-2">
-					{#each sorted as set (`${set.id}:${set.owner.id}`)}
-						<Tabs.Trigger class="group" value="{set.id}:{set.owner.id}">
-							<img
-								class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
-								src={set.owner.avatarUrl}
-								alt={set.owner.displayName}
-								decoding="async"
-								loading="lazy"
-							/>
-						</Tabs.Trigger>
-					{/each}
-				</Tabs.List>
-
-				{#each sorted as set (`${set.id}:${set.owner.id}`)}
-					<Tabs.Content
-						class="flex w-[calc(var(--spacing)*56+64px)] flex-col border-l"
-						value="{set.id}:{set.owner.id}"
+			<nav class="flex flex-col gap-3 overflow-y-auto p-2">
+				{#each sorted as set (set.id)}
+					<button
+						class="group"
+						type="button"
+						onclick={() => {
+							//
+						}}
 					>
-						<Input
-							class="focus-visible:outline-input rounded-none rounded-tr-md border-none focus-visible:ring-0"
-							type="search"
-							placeholder="Search {set.name}..."
+						<img
+							class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
+							src={set.owner.avatarUrl}
+							alt={set.owner.displayName}
+							decoding="async"
+							loading="lazy"
 						/>
-
-						<VList
-							id="emote-vlist"
-							class="grow overflow-y-auto border-t p-2"
-							data={chunk(set.emotes)}
-						>
-							{#snippet children(emotes)}
-								<div class="emote-row mb-2 flex items-center gap-2">
-									{#each emotes as emote (emote.id)}
-										<button
-											title={emote.name}
-											type="button"
-											onclick={() => appendEmote(emote.name)}
-										>
-											<div
-												class="size-8 bg-contain bg-center bg-no-repeat"
-												style:background-image={toImageSet(emote.srcset)}
-											></div>
-										</button>
-									{/each}
-								</div>
-							{/snippet}
-						</VList>
-					</Tabs.Content>
+					</button>
 				{/each}
-			</Tabs.Root>
+			</nav>
+
+			<div class="flex w-[calc(var(--spacing)*56+64px)] flex-col border-l">
+				<Input
+					class="focus-visible:outline-input shrink-0 rounded-none rounded-tr-md border-none focus-visible:ring-0"
+					type="search"
+					placeholder="Search..."
+				/>
+
+				<Accordion.Root
+					class="overflow-y-auto"
+					type="multiple"
+					value={sorted.map((set) => set.id)}
+				>
+					{#each sorted as set (set.id)}
+						<Accordion.Item class="group flex flex-col border-t p-2" value={set.id}>
+							<Accordion.Header>
+								<Accordion.Trigger class="group flex items-center gap-2">
+									<img
+										class="size-5 rounded-full object-contain"
+										src={set.owner.avatarUrl}
+										alt={set.owner.displayName}
+										decoding="async"
+										loading="lazy"
+									/>
+
+									<span class="text-sm">{set.owner.displayName}</span>
+									<span
+										class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
+									></span>
+								</Accordion.Trigger>
+							</Accordion.Header>
+
+							<Accordion.Content class="mt-2 grid grid-cols-7 gap-2">
+								{#each set.emotes as emote (emote.id)}
+									<button
+										title={emote.name}
+										type="button"
+										onclick={() => appendEmote(emote.name)}
+									>
+										<div
+											class="size-8 bg-contain bg-center bg-no-repeat"
+											style:background-image={toImageSet(emote.srcset)}
+										></div>
+									</button>
+								{/each}
+							</Accordion.Content>
+						</Accordion.Item>
+					{/each}
+				</Accordion.Root>
+			</div>
 		</Popover.Content>
 	</Popover.Portal>
 </Popover.Root>
-
-<style>
-	:global(#emote-vlist > div > div:last-child) .emote-row {
-		margin-bottom: 0;
-	}
-</style>
