@@ -1,5 +1,6 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import tailwindcss from "@tailwindcss/vite";
+import icons from "unplugin-icons/vite";
 import { defineConfig } from "vite";
 import devtoolsJson from "vite-plugin-devtools-json";
 
@@ -8,7 +9,7 @@ import devtoolsJson from "vite-plugin-devtools-json";
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(async () => ({
-	plugins: [devtoolsJson(), tailwindcss(), sveltekit()],
+	plugins: [devtoolsJson(), icons({ compiler: "svelte" }), tailwindcss(), sveltekit()],
 	clearScreen: false,
 	server: {
 		port: 1420,

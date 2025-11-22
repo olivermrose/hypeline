@@ -3,6 +3,10 @@
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
 	import { onMount } from "svelte";
+	import Cake from "~icons/ph/cake-fill";
+	import Heart from "~icons/ph/heart-fill";
+	import StarOutline from "~icons/ph/star";
+	import Star from "~icons/ph/star-fill";
 	import type { MentionNode } from "$lib/models/message/parse";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { User } from "$lib/models/user.svelte";
@@ -103,7 +107,7 @@
 
 		<div class="text-muted-foreground absolute top-2 right-2 space-y-1 text-xs">
 			<div class="flex items-center gap-1">
-				<span class="iconify lucide--cake size-3"></span>
+				<Cake class="mr-1 size-3" />
 
 				<time datetime={user.createdAt.toISOString()}>
 					{dayjs(user.createdAt).format("LL")}
@@ -111,7 +115,7 @@
 			</div>
 
 			<div class="flex items-center gap-1">
-				<span class="iconify lucide--heart size-3"></span>
+				<Heart class="mr-1 size-3" />
 
 				{#if relationship?.followedAt}
 					<time datetime={relationship.followedAt.toISOString()}>
@@ -123,14 +127,11 @@
 			</div>
 
 			<div class="flex items-center gap-1">
-				<span
-					class={[
-						"iconify size-3",
-						relationship?.subscription.hidden || !relationship?.subscription.tier
-							? "lucide--star-off"
-							: "lucide--star",
-					]}
-				></span>
+				{#if relationship?.subscription.hidden || !relationship?.subscription.tier}
+					<StarOutline class="mr-1 size-3" />
+				{:else}
+					<Star class="mr-1 size-3" />
+				{/if}
 
 				{#if !relationship?.subscription.hidden && relationship?.subscription.months}
 					{@const { tier, type, months } = relationship.subscription}
