@@ -94,6 +94,17 @@
 
 		return rows;
 	}
+
+	function toImageSet(srcset: string[]) {
+		const candidates: string[] = [];
+
+		for (const src of srcset) {
+			const [url, density] = src.split(" ");
+			candidates.push(`url("${url}") ${density}`);
+		}
+
+		return `image-set(${candidates.join(", ")})`;
+	}
 </script>
 
 <Popover.Root>
@@ -150,13 +161,10 @@
 											type="button"
 											onclick={() => appendEmote(emote.name)}
 										>
-											<img
-												class="size-8 object-contain"
-												srcset={emote.srcset.join(", ")}
-												alt={emote.name}
-												decoding="async"
-												loading="lazy"
-											/>
+											<div
+												class="size-8 bg-contain bg-center bg-no-repeat"
+												style:background-image={toImageSet(emote.srcset)}
+											></div>
 										</button>
 									{/each}
 								</div>
