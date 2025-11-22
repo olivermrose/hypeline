@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { getAllWebviewWindows } from "@tauri-apps/api/webviewWindow";
 	import { ScrollArea } from "bits-ui";
+	import Chat from "~icons/ph/chat";
+	import Gear from "~icons/ph/gear";
+	import Plus from "~icons/ph/plus";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import ChannelList from "./ChannelList.svelte";
@@ -35,7 +38,7 @@
 					onclick={openSettings}
 					aria-label="Open settings"
 				>
-					<span class="lucide--settings iconify"></span>
+					<Gear />
 				</button>
 
 				<a
@@ -52,7 +55,7 @@
 						</div>
 					{/if}
 
-					<span class="lucide--message-square iconify"></span>
+					<Chat />
 				</a>
 
 				<button
@@ -62,7 +65,7 @@
 					onclick={() => (joinOpen = true)}
 					aria-label="Join a channel"
 				>
-					<span class="lucide--plus iconify"></span>
+					<Plus />
 				</button>
 			</div>
 
@@ -93,7 +96,7 @@
 		height: --spacing(10);
 		border-radius: var(--radius-md);
 
-		.iconify {
+		:global(svg) {
 			width: --spacing(5);
 			height: --spacing(5);
 			color: white;

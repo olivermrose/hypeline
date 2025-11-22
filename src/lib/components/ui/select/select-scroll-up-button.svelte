@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Select as SelectPrimitive } from "bits-ui";
 	import type { WithoutChildrenOrChild } from "bits-ui";
+	import CaretUp from "~icons/ph/caret-up";
 	import { cn } from "$lib/util";
 
 	let {
@@ -16,5 +17,5 @@
 	class={cn("flex cursor-default items-center justify-center py-1", className)}
 	{...restProps}
 >
-	<span class="iconify lucide--chevron-up size-4"></span>
+	<CaretUp class="size-4" />
 </SelectPrimitive.ScrollUpButton>

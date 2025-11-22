@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
+	import Eye from "~icons/ph/eye";
+	import EyeSlash from "~icons/ph/eye-slash";
 	import { app } from "$lib/app.svelte";
 	import { transform7tvEmote } from "$lib/emotes";
 	import { send7tv as send } from "$lib/graphql";
@@ -84,7 +86,7 @@
 								aria-label="Click to view"
 								onclick={() => (blurred = false)}
 							>
-								<span class="iconify lucide--eye-off mt-1 size-5"></span>
+								<EyeSlash class="mt-1 size-5" />
 							</button>
 						{/if}
 					</div>
@@ -145,7 +147,7 @@
 							<span class="text-foreground">&bullet;</span>
 
 							<div class="flex items-center">
-								<span class="iconify lucide--eye mr-1"></span>
+								<Eye class="mr-1 size-4" />
 								{clip.viewCount} views
 							</div>
 						</div>

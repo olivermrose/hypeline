@@ -18,6 +18,7 @@ export default antfu({
 					"side-effect-style",
 					"builtin",
 					"external",
+					"icons",
 					"sveltekit",
 					"internal",
 					"internal-type",
@@ -30,11 +31,16 @@ export default antfu({
 					"object",
 					"unknown",
 				],
-				customGroups: {
-					value: {
-						sveltekit: ["\\$app/.+", "\\$env/.+", "\\$lib/.+"],
+				customGroups: [
+					{
+						groupName: "icons",
+						elementNamePattern: ["^~icons/.+"],
 					},
-				},
+					{
+						groupName: "sveltekit",
+						elementNamePattern: ["\\$app/.+", "\\$env/.+", "\\$lib/.+"],
+					},
+				],
 			},
 		],
 		"unicorn/number-literal-case": ["error", { hexadecimalValue: "lowercase" }],

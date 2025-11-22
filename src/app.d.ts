@@ -1,5 +1,8 @@
+import "unplugin-icons/types/svelte";
+import type { Component } from "svelte";
+
 interface TitleBar {
-	icon: string;
+	icon: string | Component;
 	title: string;
 }
 

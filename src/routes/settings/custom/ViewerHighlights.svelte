@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Popover } from "bits-ui";
+	import ArrowClockwise from "~icons/ph/arrow-clockwise";
 	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
 	import * as Select from "$lib/components/ui/select";
 	import { defaultHighlightTypes, settings } from "$lib/settings";
@@ -81,7 +82,7 @@
 				aria-label="Reset to default"
 				onclick={() => reset(highlight.value)}
 			>
-				<span class="iconify lucide--rotate-cw"></span>
+				<ArrowClockwise />
 			</button>
 		{/each}
 	</div>

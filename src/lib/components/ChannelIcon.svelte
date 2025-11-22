@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
+	import Users from "~icons/ph/users";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import type { Stream } from "$lib/graphql/fragments";
@@ -81,7 +82,7 @@
 			<p class="line-clamp-2">{stream.title}</p>
 
 			<div class="text-muted-foreground flex items-center">
-				<span class="lucide--users iconify mr-1 size-3"></span>
+				<Users class="mr-1 size-3" />
 
 				<p class="text-xs">
 					{stream.viewersCount} viewers

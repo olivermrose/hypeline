@@ -36,10 +36,11 @@
 	class="min-h-title-bar relative flex w-full shrink-0 items-center justify-center gap-1.5"
 	data-tauri-drag-region
 >
-	{#if icon.startsWith("lucide")}
-		<span class="iconify size-4 {icon}" data-tauri-drag-region></span>
-	{:else}
+	{#if typeof icon === "string"}
 		<img class="size-5 rounded-full" src={icon} alt={title} data-tauri-drag-region />
+	{:else}
+		{@const Icon = icon}
+		<Icon class="size-4" data-tauri-drag-region />
 	{/if}
 
 	<span class="pointer-events-none text-sm font-medium" data-tauri-drag-region>

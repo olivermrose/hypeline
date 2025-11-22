@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import WarningCircle from "~icons/ph/warning-circle";
 	import { page } from "$app/state";
 	import { log } from "$lib/log";
 
@@ -11,7 +12,7 @@
 </script>
 
 <div class="flex size-full flex-col items-center justify-center p-6 text-center">
-	<span class="iconify lucide--circle-alert mb-4 size-8"></span>
+	<WarningCircle class="mb-4 size-8" />
 
 	<span class="text-lg font-medium">This is awkward...</span>
 

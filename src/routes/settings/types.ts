@@ -58,7 +58,7 @@ export type SettingsField =
 	| ToggleField;
 
 export interface SettingsCategory {
-	icon: string;
+	icon: Component;
 	label: string;
 	fields: SettingsField[];
 }

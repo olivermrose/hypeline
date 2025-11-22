@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { Separator, Toolbar } from "bits-ui";
+	import ArrowBendUpLeft from "~icons/ph/arrow-bend-up-left";
+	import Clipboard from "~icons/ph/clipboard";
+	import Clock from "~icons/ph/clock";
+	import Gavel from "~icons/ph/gavel";
+	import Trash from "~icons/ph/trash";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { cn } from "$lib/util";
 
@@ -21,7 +26,7 @@
 		title="Copy message"
 		onclick={copy}
 	>
-		<span class="lucide--clipboard iconify size-4"></span>
+		<Clipboard class="size-4" />
 	</Toolbar.Button>
 
 	<Toolbar.Button
@@ -32,7 +37,7 @@
 			message.channel.chat.input?.focus();
 		}}
 	>
-		<span class="iconify lucide--reply size-4"></span>
+		<ArrowBendUpLeft class="size-4" />
 	</Toolbar.Button>
 
 	{#if message.actionable}
@@ -43,7 +48,7 @@
 			title="Delete message"
 			onclick={() => message.delete()}
 		>
-			<span class="iconify lucide--trash size-4"></span>
+			<Trash class="size-4" />
 		</Toolbar.Button>
 
 		<Toolbar.Button
@@ -51,7 +56,7 @@
 			title="Timeout {message.author.displayName} for 10 minutes"
 			onclick={() => message.viewer?.timeout({ duration: 600 })}
 		>
-			<span class="iconify lucide--clock-2 size-4"></span>
+			<Clock class="size-4" />
 		</Toolbar.Button>
 
 		<Toolbar.Button
@@ -59,7 +64,7 @@
 			title="Ban {message.author.displayName}"
 			onclick={() => message.viewer?.ban()}
 		>
-			<span class="iconify lucide--ban size-4"></span>
+			<Gavel class="size-4" />
 		</Toolbar.Button>
 	{/if}
 </Toolbar.Root>

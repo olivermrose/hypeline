@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { Popover, Toggle } from "bits-ui";
+	import CaseSensitive from "~icons/lucide/case-sensitive";
+	import Regex from "~icons/lucide/regex";
+	import WholeWord from "~icons/lucide/whole-word";
+	import Plus from "~icons/ph/plus";
+	import Trash from "~icons/ph/trash";
 	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
 	import Input from "$lib/components/ui/Input.svelte";
 	import * as Select from "$lib/components/ui/select";
@@ -24,7 +29,7 @@
 		type="button"
 		onclick={() => settings.state.highlights.keywords.push(defaults)}
 	>
-		<span class="lucide--plus iconify mr-1 size-4"></span>
+		<Plus class="mr-1 size-4" />
 		Add new trigger
 	</button>
 
@@ -46,7 +51,7 @@
 					aria-label="Match as regular expression"
 					bind:pressed={highlight.regex}
 				>
-					<span class="iconify lucide--regex"></span>
+					<Regex class="size-4" />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -58,7 +63,7 @@
 					aria-label="Match whole word"
 					bind:pressed={highlight.wholeWord}
 				>
-					<span class="iconify lucide--whole-word"></span>
+					<WholeWord class="size-4" />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -70,7 +75,7 @@
 					aria-label="Match case"
 					bind:pressed={highlight.matchCase}
 				>
-					<span class="iconify lucide--case-sensitive"></span>
+					<CaseSensitive class="size-4" />
 				</Toggle.Root>
 
 				<Popover.Root>
@@ -123,7 +128,7 @@
 					aria-label="Delete trigger"
 					onclick={() => settings.state.highlights.keywords.splice(i, 1)}
 				>
-					<span class="iconify lucide--trash"></span>
+					<Trash class="size-4" />
 				</button>
 			{/each}
 		</div>
