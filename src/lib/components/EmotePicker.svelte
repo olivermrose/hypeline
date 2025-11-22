@@ -43,36 +43,52 @@
 	let sorted = $state.raw<EmoteSet[]>([]);
 
 	onMount(async () => {
-		if (!app.user) return;
-
-		const channelSet = app.user.emoteSets.find((set) => set.owner.id === channel.id);
-
-		if (channelSet) {
-			channelSet.emotes.push(...channel.emotes.values().filter((e) => e.provider === "7TV"));
-		}
-
 		// const providerGlobals = Map.groupBy(app.emotes.values(), (emote) => emote.provider);
-
 		// for (const [provider, emotes] of providerGlobals) {
 		// 	// This is never true but TypeScript needs to believe it to narrow
 		// 	if (provider === "Twitch") continue;
-
 		// 	emoteSets.set(provider, {
 		// 		owner: mockAccounts[provider],
 		// 		global: true,
 		// 		emotes,
 		// 	});
 		// }
+	});
 
-		sorted = app.user.emoteSets.toSorted((a, b) => {
-			if (a.owner.id === channel.id) return -1;
-			if (b.owner.id === channel.id) return 1;
+	$effect(() => {
+		if (!app.user) return;
 
-			if (a.global && !b.global) return 1;
-			if (!a.global && b.global) return -1;
+		if (channel.emoteSetId && !app.user.emoteSets.has(channel.emoteSetId)) {
+			app.user.emoteSets.set(channel.emoteSetId, {
+				id: channel.emoteSetId,
+				name: `7TV: ${channel.user.displayName}`,
+				owner: channel.user,
+				global: false,
+				emotes: channel.emotes
+					.values()
+					.filter((emote) => emote.provider === "7TV" && !emote.global)
+					.toArray(),
+			});
+		}
 
-			return a.owner.username.localeCompare(b.owner.username);
-		});
+		sorted = app.user.emoteSets
+			.values()
+			.toArray()
+			.toSorted((a, b) => {
+				if (a.owner.id === channel.id) return -1;
+				if (b.owner.id === channel.id) return 1;
+
+				if (a.global && !b.global) return 1;
+				if (!a.global && b.global) return -1;
+
+				return a.owner.username.localeCompare(b.owner.username);
+			});
+
+		return () => {
+			if (channel.emoteSetId) {
+				app.user?.emoteSets.delete(channel.emoteSetId);
+			}
+		};
 	});
 
 	function appendEmote(name: string) {
@@ -124,8 +140,8 @@
 		>
 			<Tabs.Root class="flex max-h-100" orientation="vertical">
 				<Tabs.List class="flex flex-col gap-3 overflow-y-auto p-2">
-					{#each sorted as set (set.owner.id)}
-						<Tabs.Trigger class="group" value={set.owner.displayName}>
+					{#each sorted as set (`${set.id}:${set.owner.id}`)}
+						<Tabs.Trigger class="group" value="{set.id}:{set.owner.id}">
 							<img
 								class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
 								src={set.owner.avatarUrl}
@@ -137,10 +153,10 @@
 					{/each}
 				</Tabs.List>
 
-				{#each sorted as set (set.owner.id)}
+				{#each sorted as set (`${set.id}:${set.owner.id}`)}
 					<Tabs.Content
 						class="flex w-[calc(var(--spacing)*56+64px)] flex-col border-l"
-						value={set.owner.displayName}
+						value="{set.id}:{set.owner.id}"
 					>
 						<Input
 							class="focus-visible:outline-input rounded-none rounded-tr-md border-none focus-visible:ring-0"

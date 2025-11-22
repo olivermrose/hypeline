@@ -53,6 +53,7 @@ export const emoteDetailsFragment = seventvGql(`
 export const emoteSetDetailsFragment = seventvGql(
 	`fragment EmoteSetDetails on EmoteSet {
 		id
+		name
 		emotes {
 			items {
 				alias

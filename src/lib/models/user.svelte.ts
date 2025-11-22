@@ -2,11 +2,13 @@ import { betterFetch as fetch } from "@better-fetch/fetch";
 import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
+import { transform7tvEmote } from "$lib/emotes";
 import type { Emote, EmoteSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
-import { badgeDetailsFragment } from "$lib/graphql/fragments";
+import { send7tv as send } from "$lib/graphql";
+import { badgeDetailsFragment, emoteSetDetailsFragment } from "$lib/graphql/fragments";
 import type { Badge } from "$lib/graphql/fragments";
-import { twitchGql as gql } from "$lib/graphql/function";
+import { seventvGql, twitchGql } from "$lib/graphql/function";
 import type { User as ApiUser } from "$lib/graphql/queries";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
@@ -132,7 +134,7 @@ export class User {
 	 * The emotes the user is entitled to use.
 	 */
 	public readonly emotes = new SvelteMap<string, Emote>();
-	public readonly emoteSets: EmoteSet[] = [];
+	public readonly emoteSets = new Map<string, EmoteSet>();
 
 	public constructor(
 		public readonly client: TwitchClient,
@@ -251,13 +253,58 @@ export class User {
 				),
 			}));
 
-			this.emoteSets.push({
+			this.emoteSets.set(id, {
 				id,
 				name: owner.displayName,
 				owner,
 				global: id === "twitch",
 				emotes: mapped,
 			});
+		}
+
+		const { users } = await send(
+			seventvGql(
+				`query GetUserEmoteSets($id: String!) {
+					users {
+						userByConnection(platform: TWITCH, platformId: $id) {
+							personalEmoteSet {
+								...EmoteSetDetails
+							}
+							specialEmoteSets {
+								...EmoteSetDetails
+							}
+						}
+					}
+				}`,
+				[emoteSetDetailsFragment],
+			),
+			{ id: this.id },
+		);
+
+		if (users.userByConnection?.personalEmoteSet) {
+			const set = users.userByConnection.personalEmoteSet;
+
+			this.emoteSets.set(set.id, {
+				id: set.id,
+				name: `7TV: ${this.displayName}`,
+				owner: this,
+				global: true,
+				emotes: set.emotes.items.map((item) => transform7tvEmote(item.emote, item.alias)),
+			});
+		}
+
+		if (users.userByConnection?.specialEmoteSets) {
+			for (const set of users.userByConnection.specialEmoteSets) {
+				this.emoteSets.set(set.id, {
+					id: set.id,
+					name: set.name,
+					owner: this,
+					global: true,
+					emotes: set.emotes.items.map((item) =>
+						transform7tvEmote(item.emote, item.alias),
+					),
+				});
+			}
 		}
 
 		return this.emoteSets;
@@ -271,7 +318,7 @@ export class User {
 		if (rel) return rel;
 
 		const gqlRequest = this.client.send(
-			gql(
+			twitchGql(
 				`query GetUserBadges($user: String!, $channel: String!) {
 					channelViewer(userLogin: $user, channelLogin: $channel) {
 						earnedBadges {
