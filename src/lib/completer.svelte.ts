@@ -3,7 +3,7 @@ import { commands } from "./commands";
 import type { Command } from "./commands";
 import type { Suggestion } from "./components/Suggestions.svelte";
 import type { Emote } from "./emotes";
-import type { Channel } from "./models/channel.svelte";
+import type { Chat } from "./models/chat.svelte";
 import type { Viewer } from "./models/viewer.svelte";
 
 interface SearchOptions<T> {
@@ -13,6 +13,8 @@ interface SearchOptions<T> {
 }
 
 export class Completer {
+	#input: HTMLInputElement;
+
 	#commandOptions: SearchOptions<Command>;
 	#emoteOptions: SearchOptions<Emote>;
 	#viewerOptions: SearchOptions<Viewer>;
@@ -23,10 +25,13 @@ export class Completer {
 	public current = $state(0);
 	public suggestions = $state<Suggestion[]>([]);
 
-	public constructor(
-		private readonly channel: Channel,
-		public readonly input: HTMLInputElement,
-	) {
+	public constructor(private readonly chat: Chat) {
+		if (!chat.input) {
+			throw new Error("Chat input element is not set.");
+		}
+
+		this.#input = chat.input;
+
 		this.#commandOptions = {
 			source: () => commands,
 			comparee: (item) => item.name,
@@ -44,7 +49,7 @@ export class Completer {
 
 		this.#emoteOptions = {
 			source: () =>
-				this.channel.emotes
+				chat.channel.emotes
 					.values()
 					.toArray()
 					.concat(...(app.user?.emotes.values() ?? [])),
@@ -58,7 +63,7 @@ export class Completer {
 		};
 
 		this.#viewerOptions = {
-			source: () => channel.viewers.values().toArray(),
+			source: () => chat.channel.viewers.values().toArray(),
 			comparee: (item) => item.username,
 			map: (item) => ({
 				type: "user" as const,
@@ -71,7 +76,7 @@ export class Completer {
 
 	public tab(shift: boolean) {
 		// Ignore if in the middle of a word
-		if (this.input.value.charAt(this.input.selectionStart ?? 0).trim() !== "") {
+		if (this.#input.value.charAt(this.#input.selectionStart ?? 0).trim() !== "") {
 			return;
 		}
 
@@ -96,20 +101,20 @@ export class Completer {
 
 	public complete(reset = true) {
 		const suggestion = this.suggestions[this.current];
-		let end = this.input.value.lastIndexOf(this.query);
+		let end = this.#input.value.lastIndexOf(this.query);
 
 		if (this.query.startsWith("@")) {
 			end++;
 		}
 
-		const left = this.input.value.slice(0, end);
-		const right = this.input.value.slice(end + this.query.length);
+		const left = this.#input.value.slice(0, end);
+		const right = this.#input.value.slice(end + this.query.length);
 
-		this.input.value = `${left + suggestion.display} ${right.trim()}`;
-		this.input.focus();
+		this.#input.value = `${left + suggestion.display} ${right.trim()}`;
+		this.#input.focus();
 
 		const endPos = end + suggestion.display.length + 1;
-		this.input.setSelectionRange(endPos, endPos);
+		this.#input.setSelectionRange(endPos, endPos);
 
 		if (reset) {
 			this.reset();
@@ -119,8 +124,8 @@ export class Completer {
 	}
 
 	public search(tab = false) {
-		const text = this.input.value;
-		const cursor = this.input.selectionStart ?? text.length;
+		const text = this.#input.value;
+		const cursor = this.#input.selectionStart ?? text.length;
 
 		const left = text.slice(0, cursor);
 		const lastWord = left.split(" ").pop();
@@ -139,11 +144,11 @@ export class Completer {
 					return false;
 				}
 
-				if (suggestion.broadcasterOnly && this.channel.id !== app.user.id) {
+				if (suggestion.broadcasterOnly && this.chat.channel.id !== app.user.id) {
 					return false;
 				}
 
-				if (suggestion.modOnly && !app.user.moderating.has(this.channel.id)) {
+				if (suggestion.modOnly && !app.user.moderating.has(this.chat.channel.id)) {
 					return false;
 				}
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Separator, Toolbar } from "bits-ui";
-	import { input } from "$lib/components/ChatInput.svelte";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { cn } from "$lib/util";
 
@@ -30,7 +29,7 @@
 		title="Reply to {message.author.displayName}"
 		onclick={() => {
 			message.channel.chat.replyTarget = message;
-			input.value?.focus();
+			message.channel.chat.input?.focus();
 		}}
 	>
 		<span class="iconify lucide--reply size-4"></span>

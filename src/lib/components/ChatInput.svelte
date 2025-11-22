@@ -1,11 +1,4 @@
-<script lang="ts" module>
-	export const input = $state<{ value: HTMLInputElement | null }>({
-		value: null,
-	});
-</script>
-
 <script lang="ts">
-	import { onMount, untrack } from "svelte";
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
@@ -22,7 +15,7 @@
 
 	const { class: className, chat, ...rest }: Props = $props();
 
-	let chatInput = $state<HTMLInputElement | null>(null);
+	let input = $state<HTMLInputElement | null>(null);
 	let value = $state("");
 	let anchor = $state<HTMLElement>();
 
@@ -34,15 +27,9 @@
 
 	const showSuggestions = $derived(!!completer?.suggestions.length && completer.prefixed);
 
-	onMount(() => {
-		input.value = chatInput;
-	});
-
 	$effect(() => {
-		completer = new Completer(
-			chat.channel,
-			untrack(() => input.value!),
-		);
+		chat.input ??= input;
+		completer = new Completer(chat);
 	});
 
 	$effect(() => {
@@ -132,14 +119,14 @@
 </script>
 
 <Suggestions
-	anchor={chatInput}
+	anchor={input}
 	open={showSuggestions}
 	index={completer?.current ?? 0}
 	suggestions={completer?.suggestions ?? []}
 	onselect={() => completer?.complete()}
 />
 
-<EmotePicker {anchor} input={chatInput} bind:open={emotePickerOpen} />
+<EmotePicker {anchor} {input} bind:open={emotePickerOpen} />
 
 {#if chat.replyTarget}
 	<div
@@ -194,7 +181,7 @@
 			onmousedown={() => completer?.reset()}
 			{...rest}
 			bind:value
-			bind:ref={chatInput}
+			bind:ref={input}
 		/>
 
 		<div class="absolute inset-y-0 end-0 flex p-1">
