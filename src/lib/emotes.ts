@@ -1,4 +1,5 @@
 import type { FragmentOf } from "gql.tada";
+import type { User } from "./models/user.svelte";
 
 export type EmoteProvider = "Twitch" | "FrankerFaceZ" | "BetterTTV" | "7TV";
 
@@ -52,9 +53,19 @@ export interface EmoteSet {
 	readonly name: string;
 
 	/**
+	 * The owner of the emote set.
+	 */
+	readonly owner: User;
+
+	/**
 	 * The emotes in the emote set.
 	 */
 	readonly emotes: Emote[];
+
+	/**
+	 * Whether the emote set can be used in any channel.
+	 */
+	readonly global?: boolean;
 }
 
 export interface FfzEmote {

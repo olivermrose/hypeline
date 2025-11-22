@@ -9,6 +9,10 @@
 	onMount(async () => {
 		await app.connect();
 
+		if (app.user && !app.user.emoteSets.length) {
+			await app.user.fetchEmoteSets();
+		}
+
 		if (settings.state.lastJoined) {
 			await goto(`/channels/${settings.state.lastJoined}`);
 		}

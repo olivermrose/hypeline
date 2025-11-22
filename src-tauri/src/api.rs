@@ -181,6 +181,7 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     Ok(())
 }
 
+#[tracing::instrument(skip(state))]
 #[tauri::command]
 pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<UserEmote>, Error> {
     let state = state.lock().await;
@@ -194,6 +195,8 @@ pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<Us
         .get_user_emotes(&token.user_id, token)
         .try_collect()
         .await?;
+
+    tracing::debug!("Fetched {} user emotes", emotes.len());
 
     Ok(emotes)
 }
