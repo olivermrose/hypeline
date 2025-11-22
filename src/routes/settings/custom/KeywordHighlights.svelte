@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Popover, Toggle } from "bits-ui";
+	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
+	import Input from "$lib/components/ui/Input.svelte";
+	import * as Select from "$lib/components/ui/select";
 	import { settings } from "$lib/settings";
 	import type { KeywordHighlightConfig } from "$lib/settings";
-	import { highlightStyles as styles } from "..";
-	import ColorPicker from "../../ui/ColorPicker.svelte";
-	import Input from "../../ui/Input.svelte";
-	import * as Select from "../../ui/select";
+	import { highlightStyles as styles } from "../highlights";
 
 	const defaults: KeywordHighlightConfig = {
 		enabled: true,

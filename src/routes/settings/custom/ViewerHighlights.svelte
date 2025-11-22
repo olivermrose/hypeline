@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Popover } from "bits-ui";
+	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
+	import * as Select from "$lib/components/ui/select";
 	import { defaultHighlightTypes, settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
-	import { highlightStyles as styles } from "..";
-	import ColorPicker from "../../ui/ColorPicker.svelte";
-	import * as Select from "../../ui/select";
+	import { highlightStyles as styles } from "../highlights";
 
 	const highlights = [
 		{ label: "Mentions", value: "mention" },

@@ -10,10 +10,10 @@
 	import { toast } from "svelte-sonner";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
-	import { categories } from "$lib/components/settings/categories";
-	import Category from "$lib/components/settings/Category.svelte";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
+	import { categories } from "./categories";
+	import Category from "./Category.svelte";
 
 	const platform = os.platform();
 
