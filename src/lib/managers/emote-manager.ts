@@ -21,9 +21,12 @@ export class EmoteManager extends BaseEmoteManager {
 		}
 
 		// 3 is the global set id
-		const emotes = data.sets[3].emoticons.map(transformFfzEmote);
-		this.addAll(emotes);
+		const emotes = data.sets[3].emoticons.map((emote) => ({
+			global: true,
+			...transformFfzEmote(emote),
+		}));
 
+		this.addAll(emotes);
 		return emotes;
 	}
 
@@ -39,9 +42,12 @@ export class EmoteManager extends BaseEmoteManager {
 			throw new ApiError(error.status, error.statusText);
 		}
 
-		const emotes = data.map(transformBttvEmote);
-		this.addAll(emotes);
+		const emotes = data.map((emote) => ({
+			global: true,
+			...transformBttvEmote(emote),
+		}));
 
+		this.addAll(emotes);
 		return emotes;
 	}
 
@@ -62,9 +68,10 @@ export class EmoteManager extends BaseEmoteManager {
 			),
 		);
 
-		const emotes = emoteSets.emoteSet!.emotes.items.map((item) =>
-			transform7tvEmote(item.emote),
-		);
+		const emotes = emoteSets.emoteSet!.emotes.items.map((item) => ({
+			global: true,
+			...transform7tvEmote(item.emote),
+		}));
 
 		this.addAll(emotes);
 		return emotes;

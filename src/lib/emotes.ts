@@ -30,9 +30,15 @@ export interface Emote {
 	readonly height: number;
 
 	/**
-	 * The candidate urls to use at 1x, 2x, and 3x pixel densities.
+	 * The candidate urls to use at 1x, 2x, 3x, and optionally 4x pixel
+	 * densities.
 	 */
 	readonly srcset: string[];
+
+	/**
+	 * Whether the emote can be used in any channel.
+	 */
+	readonly global?: boolean;
 
 	/**
 	 * Whether the emote is zero-width i.e. can be used to modify other emotes.
