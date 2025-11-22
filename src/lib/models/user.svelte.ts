@@ -56,14 +56,7 @@ export interface Relationship {
 	subscription: RelationshipSubscription;
 }
 
-export interface PartialUser {
-	id: string;
-	color?: string | null;
-	username: string;
-	displayName: string;
-}
-
-export class User implements PartialUser {
+export class User {
 	#color: string | null = null;
 	#displayName: string;
 
