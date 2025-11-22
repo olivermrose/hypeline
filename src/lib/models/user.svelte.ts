@@ -1,7 +1,8 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
+import { invoke } from "@tauri-apps/api/core";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
-import type { Emote } from "$lib/emotes";
+import type { Emote, EmoteSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { badgeDetailsFragment } from "$lib/graphql/fragments";
 import type { Badge } from "$lib/graphql/fragments";
@@ -9,7 +10,7 @@ import { twitchGql as gql } from "$lib/graphql/function";
 import type { User as ApiUser } from "$lib/graphql/queries";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
-import type { SubscriptionAge } from "$lib/twitch/api";
+import type { SubscriptionAge, UserEmote } from "$lib/twitch/api";
 import type { TwitchClient } from "$lib/twitch/client";
 import { dedupe, makeReadable } from "$lib/util";
 import type { Whisper } from "./whisper.svelte";
@@ -131,6 +132,7 @@ export class User {
 	 * The emotes the user is entitled to use.
 	 */
 	public readonly emotes = new SvelteMap<string, Emote>();
+	public readonly emoteSets: EmoteSet[] = [];
 
 	public constructor(
 		public readonly client: TwitchClient,
@@ -226,6 +228,39 @@ export class User {
 		this.bannerUrl = cached.bannerUrl;
 
 		return this;
+	}
+
+	public async fetchEmoteSets() {
+		const emotes = await invoke<UserEmote[]>("get_user_emotes");
+		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "twitch");
+
+		for (const [id, emotes] of grouped) {
+			const owner = await app.twitch.users.fetch(id, {
+				by: id === "twitch" ? "login" : "id",
+			});
+
+			const mapped = emotes.map<Emote>((emote) => ({
+				provider: "Twitch",
+				id: emote.id,
+				name: emote.name,
+				width: 56,
+				height: 56,
+				srcset: emote.scale.map(
+					(d) =>
+						`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
+				),
+			}));
+
+			this.emoteSets.push({
+				id,
+				name: owner.displayName,
+				owner,
+				global: id === "twitch",
+				emotes: mapped,
+			});
+		}
+
+		return this.emoteSets;
 	}
 
 	/**
