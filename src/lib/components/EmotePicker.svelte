@@ -40,6 +40,7 @@
 	};
 
 	let sorted = $state.raw<EmoteSet[]>([]);
+	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
 
 	onMount(async () => {
 		// const providerGlobals = Map.groupBy(app.emotes.values(), (emote) => emote.provider);
@@ -110,6 +111,14 @@
 		return rows;
 	}
 
+	function scrollToSet(id: string) {
+		if (!open.includes(id)) {
+			open = [...open, id];
+		}
+
+		document.getElementById(id)?.scrollIntoView();
+	}
+
 	function toImageSet(srcset: string[]) {
 		const candidates: string[] = [];
 
@@ -139,13 +148,7 @@
 		>
 			<nav class="flex flex-col gap-3 overflow-y-auto p-2">
 				{#each sorted as set (set.id)}
-					<button
-						class="group"
-						type="button"
-						onclick={() => {
-							//
-						}}
-					>
+					<button class="group" type="button" onclick={() => scrollToSet(set.id)}>
 						<img
 							class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
 							src={set.owner.avatarUrl}
@@ -157,51 +160,50 @@
 				{/each}
 			</nav>
 
-			<div class="flex w-[calc(var(--spacing)*56+64px)] flex-col border-l">
+			<div class="flex w-md flex-col border-l">
 				<Input
-					class="focus-visible:outline-input shrink-0 rounded-none rounded-tr-md border-none focus-visible:ring-0"
+					class="border-border focus-visible:border-border shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
 					type="search"
 					placeholder="Search..."
 				/>
 
-				<Accordion.Root
-					class="overflow-y-auto"
-					type="multiple"
-					value={sorted.map((set) => set.id)}
-				>
+				<Accordion.Root class="divide-y overflow-y-auto" type="multiple" bind:value={open}>
 					{#each sorted as set (set.id)}
-						<Accordion.Item class="group flex flex-col border-t p-2" value={set.id}>
-							<Accordion.Header>
+						<Accordion.Item id={set.id} class="group flex flex-col" value={set.id}>
+							<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
 								<Accordion.Trigger class="group flex items-center gap-2">
 									<img
-										class="size-5 rounded-full object-contain"
+										class="size-6 rounded-full object-contain"
 										src={set.owner.avatarUrl}
 										alt={set.owner.displayName}
 										decoding="async"
 										loading="lazy"
 									/>
 
-									<span class="text-sm">{set.owner.displayName}</span>
+									<span class="text-sm">{set.name}</span>
 									<span
 										class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
 									></span>
 								</Accordion.Trigger>
 							</Accordion.Header>
 
-							<Accordion.Content class="mt-2 grid grid-cols-7 gap-2">
-								{#each set.emotes as emote (emote.id)}
-									<button
-										title={emote.name}
-										type="button"
-										onclick={() => appendEmote(emote.name)}
-									>
-										<div
-											class="size-8 bg-contain bg-center bg-no-repeat"
-											style:background-image={toImageSet(emote.srcset)}
-										></div>
-									</button>
-								{/each}
-							</Accordion.Content>
+							{#if open.includes(set.id)}
+								<Accordion.Content class="grid grid-cols-9 gap-1.5 px-2 pb-2">
+									{#each set.emotes as emote (emote.id)}
+										<button
+											class="w-full"
+											title={emote.name}
+											type="button"
+											onclick={() => appendEmote(emote.name)}
+										>
+											<div
+												class="aspect-square w-full bg-contain bg-center bg-no-repeat"
+												style:background-image={toImageSet(emote.srcset)}
+											></div>
+										</button>
+									{/each}
+								</Accordion.Content>
+							{/if}
 						</Accordion.Item>
 					{/each}
 				</Accordion.Root>
