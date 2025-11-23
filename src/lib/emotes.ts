@@ -36,11 +36,6 @@ export interface Emote {
 	readonly srcset: string[];
 
 	/**
-	 * Whether the emote can be used in any channel.
-	 */
-	readonly global?: boolean;
-
-	/**
 	 * Whether the emote is zero-width i.e. can be used to modify other emotes.
 	 * 7TV only.
 	 */
@@ -61,7 +56,7 @@ export interface EmoteSet {
 	/**
 	 * The owner of the emote set.
 	 */
-	readonly owner: User;
+	readonly owner: Pick<User, "id" | "displayName" | "avatarUrl">;
 
 	/**
 	 * The emotes in the emote set.

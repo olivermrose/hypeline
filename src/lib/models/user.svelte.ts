@@ -286,7 +286,7 @@ export class User {
 
 			this.emoteSets.set(set.id, {
 				id: set.id,
-				name: `7TV: ${this.displayName}`,
+				name: `${this.displayName}: 7TV Personal Emotes`,
 				owner: this,
 				global: true,
 				emotes: set.emotes.items.map((item) => transform7tvEmote(item.emote, item.alias)),

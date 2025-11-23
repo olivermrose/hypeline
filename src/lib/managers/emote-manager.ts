@@ -1,4 +1,5 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
+import { app } from "$lib/app.svelte";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
 import type { BttvEmote, GlobalSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
@@ -6,6 +7,25 @@ import { send7tv as send } from "$lib/graphql";
 import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
 import { seventvGql as gql } from "$lib/graphql/function";
 import { BaseEmoteManager } from "./base-emote-manager";
+
+const providerOwners = {
+	seventv: {
+		id: "7tv_global",
+		displayName: "7TV Global",
+		avatarUrl:
+			"https://static-cdn.jtvnw.net/jtv_user_pictures/96d6ff92-7ad5-4528-8941-2cbab55dd4e1-profile_image-150x150.png",
+	},
+	bttv: {
+		id: "bttv_global",
+		displayName: "BetterTTV Global",
+		avatarUrl: "https://betterttv.com/favicon.png",
+	},
+	ffz: {
+		id: "ffz_global",
+		displayName: "FrankerFaceZ Global",
+		avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
+	},
+};
 
 export class EmoteManager extends BaseEmoteManager {
 	/**
@@ -21,10 +41,15 @@ export class EmoteManager extends BaseEmoteManager {
 		}
 
 		// 3 is the global set id
-		const emotes = data.sets[3].emoticons.map((emote) => ({
+		const emotes = data.sets[3].emoticons.map(transformFfzEmote);
+
+		app.emoteSets.set("ffz_global", {
+			id: "ffz_global",
+			name: "Global: FrankerFaceZ",
+			owner: providerOwners.ffz,
 			global: true,
-			...transformFfzEmote(emote),
-		}));
+			emotes,
+		});
 
 		this.addAll(emotes);
 		return emotes;
@@ -42,10 +67,15 @@ export class EmoteManager extends BaseEmoteManager {
 			throw new ApiError(error.status, error.statusText);
 		}
 
-		const emotes = data.map((emote) => ({
+		const emotes = data.map(transformBttvEmote);
+
+		app.emoteSets.set("bttv_global", {
+			id: "bttv_global",
+			name: "Global: BetterTTV",
+			owner: providerOwners.bttv,
 			global: true,
-			...transformBttvEmote(emote),
-		}));
+			emotes,
+		});
 
 		this.addAll(emotes);
 		return emotes;
@@ -68,10 +98,17 @@ export class EmoteManager extends BaseEmoteManager {
 			),
 		);
 
-		const emotes = emoteSets.emoteSet!.emotes.items.map((item) => ({
+		const emotes = emoteSets.emoteSet!.emotes.items.map((item) =>
+			transform7tvEmote(item.emote, item.alias),
+		);
+
+		app.emoteSets.set(emoteSets.emoteSet!.id, {
+			id: emoteSets.emoteSet!.id,
+			name: "Global: 7TV",
+			owner: providerOwners.seventv,
 			global: true,
-			...transform7tvEmote(item.emote),
-		}));
+			emotes,
+		});
 
 		this.addAll(emotes);
 		return emotes;

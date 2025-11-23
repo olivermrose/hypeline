@@ -52,7 +52,7 @@ export class Completer {
 				chat.channel.emotes
 					.values()
 					.toArray()
-					.concat(...(app.user?.emotes.values() ?? [])),
+					.concat(...(app.user?.emotes.values() ?? []), ...app.emotes.values()),
 			comparee: (item) => item.name,
 			map: (item) => ({
 				type: "emote" as const,

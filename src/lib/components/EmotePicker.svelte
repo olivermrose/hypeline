@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { Accordion, Popover } from "bits-ui";
-	import { onMount } from "svelte";
+	import { tick } from "svelte";
 	import { app } from "$lib/app.svelte";
 	import type { EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
-	import type { User } from "$lib/models/user.svelte";
 	import Input from "./ui/Input.svelte";
-
-	type EmoteSetOwner = Pick<User, "id" | "username" | "displayName" | "avatarUrl">;
 
 	interface Props {
 		channel: Channel;
@@ -16,34 +13,13 @@
 
 	const { channel, input }: Props = $props();
 
-	// TODO: see if there's a better way to do this
-	const mockAccounts: Record<Exclude<EmoteProvider, "Twitch">, EmoteSetOwner> = {
-		"7TV": {
-			id: "7tv_global",
-			username: "7tv_global",
-			displayName: "7TV Global",
-			avatarUrl:
-				"https://static-cdn.jtvnw.net/jtv_user_pictures/96d6ff92-7ad5-4528-8941-2cbab55dd4e1-profile_image-150x150.png",
-		},
-		BetterTTV: {
-			id: "bttv_global",
-			username: "bttv_global",
-			displayName: "BetterTTV Global",
-			avatarUrl: "https://betterttv.com/favicon.png",
-		},
-		FrankerFaceZ: {
-			id: "ffz_global",
-			username: "ffz_global",
-			displayName: "FrankerFaceZ Global",
-			avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
-		},
-	};
-
 	let activeSet = $state<string>();
 	let sorted = $state.raw<EmoteSet[]>([]);
 	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
 
+	const emoteSets = new Map<string, EmoteSet>();
 	const visibleSets = new Set<string>();
+
 	const observer = new IntersectionObserver((entries) => {
 		for (const entry of entries) {
 			if (entry.isIntersecting) {
@@ -61,42 +37,19 @@
 		}
 	});
 
-	onMount(async () => {
-		// const providerGlobals = Map.groupBy(app.emotes.values(), (emote) => emote.provider);
-		// for (const [provider, emotes] of providerGlobals) {
-		// 	// This is never true but TypeScript needs to believe it to narrow
-		// 	if (provider === "Twitch") continue;
-		// 	emoteSets.set(provider, {
-		// 		owner: mockAccounts[provider],
-		// 		global: true,
-		// 		emotes,
-		// 	});
-		// }
-	});
-
-	function observe(node: HTMLElement) {
-		observer.observe(node);
-
-		return () => observer.unobserve(node);
-	}
-
 	$effect(() => {
-		if (!app.user) return;
+		app.emoteSets
+			.values()
+			.filter((set) => set.global)
+			.forEach((set) => emoteSets.set(set.id, set));
 
-		if (channel.emoteSetId && !app.user.emoteSets.has(channel.emoteSetId)) {
-			app.user.emoteSets.set(channel.emoteSetId, {
-				id: channel.emoteSetId,
-				name: `7TV: ${channel.user.displayName}`,
-				owner: channel.user,
-				global: false,
-				emotes: channel.emotes
-					.values()
-					.filter((emote) => emote.provider === "7TV" && !emote.global)
-					.toArray(),
-			});
-		}
+		app.user?.emoteSets.forEach((set) => emoteSets.set(set.id, set));
 
-		sorted = app.user.emoteSets
+		addProvider("7TV");
+		addProvider("BetterTTV");
+		addProvider("FrankerFaceZ");
+
+		sorted = emoteSets
 			.values()
 			.toArray()
 			.toSorted((a, b) => {
@@ -106,15 +59,34 @@
 				if (a.global && !b.global) return 1;
 				if (!a.global && b.global) return -1;
 
-				return a.owner.username.localeCompare(b.owner.username);
+				return a.name.localeCompare(b.name);
 			});
 
-		return () => {
-			if (channel.emoteSetId) {
-				app.user?.emoteSets.delete(channel.emoteSetId);
-			}
-		};
+		return () => emoteSets.clear();
 	});
+
+	function observe(node: HTMLElement) {
+		observer.observe(node);
+
+		return () => observer.unobserve(node);
+	}
+
+	function addProvider(provider: EmoteProvider) {
+		const emotes = channel.emotes
+			.values()
+			.filter((emote) => emote.provider === provider)
+			.toArray();
+
+		if (!emotes.length) return;
+
+		emoteSets.set(`${provider}:${channel.id}`, {
+			id: `${provider}:${channel.id}`,
+			name: `${channel.user.displayName}: ${provider}`,
+			owner: channel.user,
+			global: false,
+			emotes,
+		});
+	}
 
 	function appendEmote(name: string) {
 		if (!input) return;
@@ -126,9 +98,10 @@
 		}
 	}
 
-	function scrollToSet(id: string) {
+	async function scrollToSet(id: string) {
 		if (!open.includes(id)) {
 			open = [...open, id];
+			await tick();
 		}
 
 		document.getElementById(id)?.scrollIntoView();
@@ -216,7 +189,7 @@
 
 							{#if open.includes(set.id)}
 								<Accordion.Content class="grid grid-cols-9 gap-1.5 px-2 pb-2">
-									{#each set.emotes as emote (emote.id)}
+									{#each set.emotes as emote (`${emote.name}:${emote.id}`)}
 										<button
 											class="w-full"
 											title={emote.name}
