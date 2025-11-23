@@ -104,8 +104,19 @@
 				</p>
 			{:else if type === "one_tap_gift_redeemed"}
 				<p>
-					{@html colorizeName(message.author)} redeemed {message.event.gift_id} for {message
-						.event.bits} bits!
+					{@html colorizeName(message.author)} redeemed
+					<img
+						class="mx-1 inline"
+						title={message.event.gift_id}
+						src="https://d3aqoihi2n8ty8.cloudfront.net/one-tap/{message.event
+							.gift_id}/i/2.png"
+						alt={message.event.gift_id}
+						width="28"
+						height="28"
+						decoding="async"
+						loading="lazy"
+					/>
+					for <span class="font-medium">{message.event.bits}</span> bits!
 				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
