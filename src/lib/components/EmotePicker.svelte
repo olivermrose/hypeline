@@ -2,7 +2,7 @@
 	import { Accordion, Popover } from "bits-ui";
 	import { onMount } from "svelte";
 	import { app } from "$lib/app.svelte";
-	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
+	import type { EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import type { User } from "$lib/models/user.svelte";
 	import Input from "./ui/Input.svelte";
@@ -39,8 +39,27 @@
 		},
 	};
 
+	let activeSet = $state<string>();
 	let sorted = $state.raw<EmoteSet[]>([]);
 	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
+
+	const visibleSets = new Set<string>();
+	const observer = new IntersectionObserver((entries) => {
+		for (const entry of entries) {
+			if (entry.isIntersecting) {
+				visibleSets.add(entry.target.id);
+			} else {
+				visibleSets.delete(entry.target.id);
+			}
+		}
+
+		for (const set of sorted) {
+			if (visibleSets.has(set.id)) {
+				activeSet = set.id;
+				break;
+			}
+		}
+	});
 
 	onMount(async () => {
 		// const providerGlobals = Map.groupBy(app.emotes.values(), (emote) => emote.provider);
@@ -54,6 +73,12 @@
 		// 	});
 		// }
 	});
+
+	function observe(node: HTMLElement) {
+		observer.observe(node);
+
+		return () => observer.unobserve(node);
+	}
 
 	$effect(() => {
 		if (!app.user) return;
@@ -101,16 +126,6 @@
 		}
 	}
 
-	function chunk(emotes: Emote[]) {
-		const rows = [];
-
-		for (let i = 0; i < emotes.length; i += 7) {
-			rows.push(emotes.slice(i, i + 7));
-		}
-
-		return rows;
-	}
-
 	function scrollToSet(id: string) {
 		if (!open.includes(id)) {
 			open = [...open, id];
@@ -146,11 +161,14 @@
 			sideOffset={12}
 			collisionPadding={8}
 		>
-			<nav class="flex flex-col gap-3 overflow-y-auto p-2">
+			<div class="flex flex-col gap-3 overflow-y-auto p-2">
 				{#each sorted as set (set.id)}
 					<button class="group" type="button" onclick={() => scrollToSet(set.id)}>
 						<img
-							class="group-data-[state=active]:outline-twitch size-7 rounded-full object-contain group-data-[state=active]:outline-2"
+							class={[
+								"size-7 rounded-full object-contain",
+								activeSet === set.id && "outline-twitch outline-2",
+							]}
 							src={set.owner.avatarUrl}
 							alt={set.owner.displayName}
 							decoding="async"
@@ -158,7 +176,7 @@
 						/>
 					</button>
 				{/each}
-			</nav>
+			</div>
 
 			<div class="flex w-md flex-col border-l">
 				<Input
@@ -167,20 +185,29 @@
 					placeholder="Search..."
 				/>
 
-				<Accordion.Root class="divide-y overflow-y-auto" type="multiple" bind:value={open}>
+				<Accordion.Root
+					class="divide-y overflow-y-auto overscroll-none"
+					type="multiple"
+					bind:value={open}
+				>
 					{#each sorted as set (set.id)}
-						<Accordion.Item id={set.id} class="group flex flex-col" value={set.id}>
+						<Accordion.Item
+							id={set.id}
+							class="group flex flex-col"
+							value={set.id}
+							{@attach observe}
+						>
 							<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
 								<Accordion.Trigger class="group flex items-center gap-2">
 									<img
-										class="size-6 rounded-full object-contain"
+										class="size-5 rounded-full object-contain"
 										src={set.owner.avatarUrl}
 										alt={set.owner.displayName}
 										decoding="async"
 										loading="lazy"
 									/>
 
-									<span class="text-sm">{set.name}</span>
+									<span class="text-sm font-medium">{set.name}</span>
 									<span
 										class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
 									></span>
