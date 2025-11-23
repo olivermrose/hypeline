@@ -184,6 +184,18 @@ export interface AnnouncementEvent {
 	color: string;
 }
 
+export interface StandardPayForwardEvent {
+	type: "standard_pay_forward";
+	is_prior_gifter_anonymous: boolean;
+	prior_gifter: BasicUser;
+	recipient: BasicUser;
+}
+
+export interface CommunityPayForwardEvent {
+	type: "community_pay_forward";
+	gifter: BasicUser;
+}
+
 export interface SubOrResubEvent {
 	type: "sub_or_resub";
 	is_resub: boolean;
@@ -255,16 +267,10 @@ export interface BitsBadgeTierEvent {
 	threshold: number;
 }
 
-export interface StandardPayForwardEvent {
-	type: "standard_pay_forward";
-	is_prior_gifter_anonymous: boolean;
-	prior_gifter: BasicUser;
-	recipient: BasicUser;
-}
-
-export interface CommunityPayForwardEvent {
-	type: "community_pay_forward";
-	gifter: BasicUser;
+export interface OneTapGiftRedeemedEvent {
+	type: "one_tap_gift_redeemed";
+	bits: number;
+	gift_id: string;
 }
 
 export interface WatchStreakEvent {
@@ -275,6 +281,8 @@ export interface WatchStreakEvent {
 
 export type UserNoticeEvent =
 	| AnnouncementEvent
+	| StandardPayForwardEvent
+	| CommunityPayForwardEvent
 	| SubOrResubEvent
 	| RaidEvent
 	| UnraidEvent
@@ -286,8 +294,7 @@ export type UserNoticeEvent =
 	| AnonGiftPaidUpgradeEvent
 	| RitualEvent
 	| BitsBadgeTierEvent
-	| StandardPayForwardEvent
-	| CommunityPayForwardEvent
+	| OneTapGiftRedeemedEvent
 	| WatchStreakEvent;
 
 export interface UserNoticeMessage extends BaseUserMessage {

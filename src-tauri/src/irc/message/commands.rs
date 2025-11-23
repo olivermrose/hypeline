@@ -584,6 +584,10 @@ pub enum UserNoticeEvent {
     BitsBadgeTier {
         threshold: u64,
     },
+    OneTapGiftRedeemed {
+        bits: u32,
+        gift_id: String,
+    },
     WatchStreak {
         days: u32,
         points: u32,
@@ -730,7 +734,6 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                     .try_get_nonempty_tag_value("msg-param-sub-plan")?
                     .to_owned(),
             },
-
             "giftpaidupgrade" => UserNoticeEvent::GiftPaidUpgrade {
                 gifter_login: source
                     .try_get_nonempty_tag_value("msg-param-sender-login")?
@@ -751,6 +754,12 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
             "bitsbadgetier" => UserNoticeEvent::BitsBadgeTier {
                 threshold: source
                     .try_get_number::<u64>("msg-param-threshold")?
+                    .to_owned(),
+            },
+            "onetapgiftredeemed" => UserNoticeEvent::OneTapGiftRedeemed {
+                bits: source.try_get_number("msg-param-bits-spent")?,
+                gift_id: source
+                    .try_get_nonempty_tag_value("msg-param-gift-id")?
                     .to_owned(),
             },
             "viewermilestone" => {
