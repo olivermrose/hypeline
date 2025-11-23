@@ -583,18 +583,9 @@ pub enum UserNoticeEvent {
     BitsBadgeTier {
         threshold: u64,
     },
-    OneTapStreakStarted {
-        duration: u64,
-        gift_cost: u64,
+    OneTapGiftRedeemed {
+        bits: u32,
         gift_id: String,
-    },
-    OneTapStreakExpired {
-        gift_id: String,
-        largest_contributor_count: u64,
-        top_contributor_name: String,
-        top_contributor_taps: u64,
-        streak_size_bits: u64,
-        streak_size_taps: u64,
     },
     WatchStreak {
         days: u32,
@@ -763,25 +754,11 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                     .try_get_number::<u64>("msg-param-threshold")?
                     .to_owned(),
             },
-            "onetapstreakstarted" => UserNoticeEvent::OneTapStreakStarted {
-                duration: source.try_get_number("msg-param-ms-remaining")?,
-                gift_cost: source.try_get_number("msg-param-gift-cost")?,
+            "onetapgiftredeemed" => UserNoticeEvent::OneTapGiftRedeemed {
+                bits: source.try_get_number("msg-param-bits-spent")?,
                 gift_id: source
                     .try_get_nonempty_tag_value("msg-param-gift-id")?
                     .to_owned(),
-            },
-            "onetapstreakexpirted" => UserNoticeEvent::OneTapStreakExpired {
-                gift_id: source
-                    .try_get_nonempty_tag_value("msg-param-gift-id")?
-                    .to_owned(),
-                largest_contributor_count: source
-                    .try_get_number("msg-param-largest-contributor-count")?,
-                top_contributor_name: source
-                    .try_get_nonempty_tag_value("msg-param-contributor-1")?
-                    .to_owned(),
-                top_contributor_taps: source.try_get_number("msg-param-contributor-1-taps")?,
-                streak_size_bits: source.try_get_number("msg-param-streak-size-bits")?,
-                streak_size_taps: source.try_get_number("msg-param-streak-size-taps")?,
             },
             "viewermilestone" => {
                 let category = source.try_get_nonempty_tag_value("msg-param-category")?;

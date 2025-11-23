@@ -102,6 +102,11 @@
 				<p class="inline">
 					{@html colorizeName(message.author)} canceled the raid.
 				</p>
+			{:else if type === "one_tap_gift_redeemed"}
+				<p>
+					{@html colorizeName(message.author)} redeemed {message.event.gift_id} for {message
+						.event.bits} bits!
+				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
 					<span class="iconify lucide--flame mt-px size-4 shrink-0"></span>
