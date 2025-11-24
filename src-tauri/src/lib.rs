@@ -146,6 +146,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
         api::join,
         api::leave,
+        api::rejoin,
         api::get_user_emotes,
         eventsub::connect_eventsub,
         irc::connect_irc,

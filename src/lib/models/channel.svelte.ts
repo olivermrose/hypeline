@@ -116,6 +116,18 @@ export class Channel {
 		} finally {
 			this.reset();
 			settings.state.lastJoined = null;
+
+			if (app.user) {
+				app.user.banned = false;
+			}
+		}
+	}
+
+	public async rejoin() {
+		await invoke("rejoin", { channel: this.user.username });
+
+		if (app.user) {
+			app.user.banned = false;
 		}
 	}
 

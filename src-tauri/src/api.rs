@@ -181,6 +181,30 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     Ok(())
 }
 
+#[tauri::command]
+pub async fn rejoin(state: State<'_, Mutex<AppState>>, channel: String) -> Result<(), Error> {
+    tracing::info!("Rejoining {channel}");
+
+    let (eventsub, irc) = {
+        let state = state.lock().await;
+
+        (state.eventsub.clone(), state.irc.clone())
+    };
+
+    if let Some(eventsub) = eventsub {
+        let subscriptions = eventsub.unsubscribe_all(&channel).await?;
+        let subs_ref: Vec<_> = subscriptions.iter().map(|(e, c)| (*e, c)).collect();
+
+        eventsub.subscribe_all(&channel, subs_ref).await?;
+    }
+
+    if let Some(irc) = irc {
+        irc.join(channel);
+    }
+
+    Ok(())
+}
+
 #[tracing::instrument(skip_all)]
 #[tauri::command]
 pub async fn get_user_emotes(app_handle: AppHandle) {

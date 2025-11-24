@@ -32,10 +32,19 @@ export default defineHandler({
 					.replace("s-only", "-only");
 
 				message.text = text;
-				channel.chat.addMessage(message);
+				break;
+			}
 
+			case "msg_banned": {
+				if (app.user) {
+					app.user.banned = true;
+				}
+
+				message.context = { type: "banned", channel };
 				break;
 			}
 		}
+
+		channel.chat.addMessage(message);
 	},
 });

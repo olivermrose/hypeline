@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
-import { CurrentUser } from "$lib/models/current-user.js";
+import { CurrentUser } from "$lib/models/current-user.svelte.js";
 import { User } from "$lib/models/user.svelte";
 import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";

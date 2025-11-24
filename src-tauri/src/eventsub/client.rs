@@ -61,6 +61,7 @@ pub struct Subscription {
     pub id: String,
     #[serde(rename = "type")]
     kind: EventType,
+    condition: serde_json::Value,
 }
 
 #[derive(Debug, Deserialize)]
@@ -130,7 +131,7 @@ pub struct EventSubClient {
     helix: Arc<HelixClient<'static, reqwest::Client>>,
     pub token: Arc<UserToken>,
     session_id: Mutex<Option<String>>,
-    subscriptions: Mutex<HashMap<String, String>>,
+    pub subscriptions: Mutex<HashMap<String, Subscription>>,
     sender: mpsc::UnboundedSender<NotificationPayload>,
     connected: AtomicBool,
     reconnecting: AtomicBool,
@@ -334,10 +335,14 @@ impl EventSubClient {
             .json()
             .await?;
 
-        self.subscriptions
-            .lock()
-            .await
-            .insert(format!("{username}:{event}"), response.data.0.id.take());
+        self.subscriptions.lock().await.insert(
+            format!("{username}:{event}"),
+            Subscription {
+                id: response.data.0.id.take(),
+                kind: event,
+                condition,
+            },
+        );
 
         tracing::trace!("Subscription created");
 
@@ -354,30 +359,37 @@ impl EventSubClient {
             .iter()
             .map(|&(event, condition)| self.subscribe(channel, event, condition.clone()));
 
-        join_all(futures).await;
+        let success = join_all(futures).await.iter().filter(|r| r.is_ok()).count();
 
-        tracing::info!("{} subscriptions created", subscriptions.len());
+        tracing::info!("{} subscriptions created", success);
 
         Ok(())
     }
 
-    pub async fn unsubscribe(&self, channel: &str, event: String) -> Result<(), Error> {
-        let id = self
+    pub async fn unsubscribe(
+        &self,
+        channel: &str,
+        event: String,
+    ) -> Result<Option<Subscription>, Error> {
+        let subscription = self
             .subscriptions
             .lock()
             .await
             .remove(&format!("{channel}:{event}"));
 
-        if let Some(id) = id {
+        if let Some(ref sub) = subscription {
             self.helix
-                .delete_eventsub_subscription(id, &*self.token)
+                .delete_eventsub_subscription(&sub.id, &*self.token)
                 .await?;
         }
 
-        Ok(())
+        Ok(subscription)
     }
 
-    pub async fn unsubscribe_all(&self, channel: &str) -> Result<(), Error> {
+    pub async fn unsubscribe_all(
+        &self,
+        channel: &str,
+    ) -> Result<Vec<(EventType, serde_json::Value)>, Error> {
         let prefix = format!("{channel}:");
 
         let events = {
@@ -394,8 +406,15 @@ impl EventSubClient {
             .iter()
             .map(|event| self.unsubscribe(channel, event.clone()));
 
-        join_all(futures).await;
+        let results = join_all(futures).await;
+        let mut unsubscribed = Vec::new();
 
-        Ok(())
+        for result in results {
+            if let Ok(Some(sub)) = result {
+                unsubscribed.push((sub.kind, sub.condition));
+            }
+        }
+
+        Ok(unsubscribed)
     }
 }

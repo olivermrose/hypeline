@@ -16,6 +16,8 @@ import { User } from "./user.svelte";
 import type { Whisper } from "./whisper.svelte";
 
 export class CurrentUser extends User {
+	public banned = $state(false);
+
 	/**
 	 * The ids of the channels the current user moderates for.
 	 */

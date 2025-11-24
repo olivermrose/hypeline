@@ -32,6 +32,11 @@ export default defineHandler({
 				reason: null,
 				viewer: target,
 			};
+
+			if (!data.is_recent && target.id === app.user?.id) {
+				app.user.banned = true;
+				message.context = { type: "banned", channel };
+			}
 		} else {
 			message.context = {
 				type: "timeout",
