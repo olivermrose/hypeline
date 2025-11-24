@@ -96,9 +96,6 @@ importers:
       '@types/chroma-js':
         specifier: ^3.1.2
         version: 3.1.2
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.1
       eslint:
         specifier: ^9.39.0
         version: 9.39.0(jiti@2.6.1)
@@ -3668,6 +3665,7 @@ snapshots:
   '@types/node@24.10.1':
     dependencies:
       undici-types: 7.16.0
+    optional: true
 
   '@types/unist@3.0.3': {}
 
@@ -5494,7 +5492,8 @@ snapshots:
 
   ufo@1.6.1: {}
 
-  undici-types@7.16.0: {}
+  undici-types@7.16.0:
+    optional: true
 
   unist-util-is@6.0.1:
     dependencies:
