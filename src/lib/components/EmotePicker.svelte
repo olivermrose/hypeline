@@ -53,13 +53,11 @@
 			.values()
 			.toArray()
 			.toSorted((a, b) => {
-				if (a.owner.id === channel.id) return -1;
-				if (b.owner.id === channel.id) return 1;
+				// Priority: channel specific > channel owned > global
+				const pA = a.owner.id === channel.id ? 0 : a.global ? 2 : 1;
+				const pB = b.owner.id === channel.id ? 0 : b.global ? 2 : 1;
 
-				if (a.global && !b.global) return 1;
-				if (!a.global && b.global) return -1;
-
-				return a.name.localeCompare(b.name);
+				return pA !== pB ? pA - pB : a.name.localeCompare(b.name);
 			});
 
 		return () => emoteSets.clear();
