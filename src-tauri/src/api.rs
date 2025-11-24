@@ -2,10 +2,10 @@ use anyhow::anyhow;
 use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tauri::{State, async_runtime};
+use tauri::{AppHandle, Emitter, Manager, State, async_runtime};
 use tokio::sync::Mutex;
+use tracing::Instrument;
 use twitch_api::eventsub::EventType;
-use twitch_api::helix::chat::UserEmote;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 
 use crate::AppState;
@@ -181,22 +181,29 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     Ok(())
 }
 
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip_all)]
 #[tauri::command]
-pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<UserEmote>, Error> {
-    let state = state.lock().await;
+pub async fn get_user_emotes(app_handle: AppHandle) {
+    async_runtime::spawn(
+        async move {
+            let state = app_handle.state::<Mutex<AppState>>();
+            let state = state.lock().await;
 
-    let Some(token) = state.token.as_ref() else {
-        return Ok(vec![]);
-    };
+            let Some(token) = state.token.as_ref() else {
+                return Ok::<_, Error>(());
+            };
 
-    let emotes: Vec<_> = state
-        .helix
-        .get_user_emotes(&token.user_id, token)
-        .try_collect()
-        .await?;
+            let emotes: Vec<_> = state
+                .helix
+                .get_user_emotes(&token.user_id, token)
+                .try_collect()
+                .await?;
 
-    tracing::debug!("Fetched {} user emotes", emotes.len());
+            tracing::info!("Fetched {} user emotes", emotes.len());
 
-    Ok(emotes)
+            app_handle.emit("useremotes", emotes).unwrap();
+            Ok(())
+        }
+        .in_current_span(),
+    );
 }

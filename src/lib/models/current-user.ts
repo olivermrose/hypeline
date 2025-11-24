@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import { transform7tvEmote } from "$lib/emotes";
@@ -35,35 +36,69 @@ export class CurrentUser extends User {
 	}
 
 	public async fetchEmoteSets() {
-		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "twitch");
+		await invoke("get_user_emotes");
+		await this.#fetch7tvSets();
 
-		for (const [id, emotes] of grouped) {
-			const owner = await app.twitch.users.fetch(id, {
-				by: id === "twitch" ? "login" : "id",
-			});
+		await listen<UserEmote[]>("useremotes", async (event) => {
+			const grouped = Map.groupBy(event.payload, (emote) => emote.owner_id || "twitch");
 
-			const mapped = emotes.map<Emote>((emote) => ({
-				provider: "Twitch",
-				id: emote.id,
-				name: emote.name,
-				width: 56,
-				height: 56,
-				srcset: emote.scale.map(
-					(d) =>
-						`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
-				),
-			}));
+			for (const [id, emotes] of grouped) {
+				const owner = await app.twitch.users.fetch(id, {
+					by: id === "twitch" ? "login" : "id",
+				});
 
-			this.emoteSets.set(id, {
-				id,
-				name: owner.displayName,
-				owner,
-				global: id === "twitch",
-				emotes: mapped,
-			});
-		}
+				const mapped = emotes.map<Emote>((emote) => ({
+					provider: "Twitch",
+					id: emote.id,
+					name: emote.name,
+					width: 56,
+					height: 56,
+					srcset: emote.scale.map(
+						(d) =>
+							`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
+					),
+				}));
 
+				this.emoteSets.set(id, {
+					id,
+					name: owner.displayName,
+					owner,
+					global: id === "twitch",
+					emotes: mapped,
+				});
+			}
+		});
+	}
+
+	/**
+	 * Retrieves the list of channels the current user is following.
+	 */
+	public async fetchFollowing() {
+		const { user } = await this.client.send(
+			twitchGql(
+				`query GetUserFollowing($id: ID!) {
+					user(id: $id) {
+						follows(first: 100) {
+							edges {
+								node {
+									...UserDetails
+									stream {
+										...StreamDetails
+									}
+								}
+							}
+						}
+					}
+				}`,
+				[userDetailsFragment, streamDetailsFragment],
+			),
+			{ id: this.id },
+		);
+
+		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
+	}
+
+	async #fetch7tvSets() {
 		const { users } = await send(
 			seventvGql(
 				`query GetUserEmoteSets($id: String!) {
@@ -108,35 +143,5 @@ export class CurrentUser extends User {
 				});
 			}
 		}
-
-		return this.emoteSets;
-	}
-
-	/**
-	 * Retrieves the list of channels the current user is following.
-	 */
-	public async fetchFollowing() {
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetUserFollowing($id: ID!) {
-					user(id: $id) {
-						follows(first: 100) {
-							edges {
-								node {
-									...UserDetails
-									stream {
-										...StreamDetails
-									}
-								}
-							}
-						}
-					}
-				}`,
-				[userDetailsFragment, streamDetailsFragment],
-			),
-			{ id: this.id },
-		);
-
-		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
 	}
 }
