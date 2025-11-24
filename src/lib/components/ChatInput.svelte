@@ -16,14 +16,11 @@
 	const { class: className, chat, ...rest }: Props = $props();
 
 	let input = $state<HTMLInputElement | null>(null);
+	let completer = $state<Completer>();
 	let value = $state("");
-	let anchor = $state<HTMLElement>();
 
-	let emotePickerOpen = $state(false);
 	let historyIdx = $state(-1);
 	let error = $state<string>("");
-
-	let completer = $state<Completer>();
 
 	const showSuggestions = $derived(!!completer?.suggestions.length && completer.prefixed);
 
@@ -126,8 +123,6 @@
 	onselect={() => completer?.complete()}
 />
 
-<EmotePicker {anchor} {input} bind:open={emotePickerOpen} />
-
 {#if chat.replyTarget}
 	<div
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 pt-1.5 pb-2.5 text-sm transition-colors duration-200"
@@ -185,15 +180,7 @@
 		/>
 
 		<div class="absolute inset-y-0 end-0 flex p-1">
-			<button
-				class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center rounded-sm transition-colors duration-150"
-				type="button"
-				onclick={() => (emotePickerOpen = !emotePickerOpen)}
-				aria-label="Open emote picker"
-				bind:this={anchor}
-			>
-				<span class="iconify lucide--smile size-5"></span>
-			</button>
+			<EmotePicker channel={chat.channel} />
 		</div>
 	</div>
 

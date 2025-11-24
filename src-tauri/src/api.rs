@@ -1,5 +1,3 @@
-use std::collections::{HashMap, HashSet};
-
 use anyhow::anyhow;
 use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
@@ -7,8 +5,8 @@ use serde_json::json;
 use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
 use twitch_api::eventsub::EventType;
+use twitch_api::helix::chat::UserEmote;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
-use twitch_api::types::{Collection, EmoteAnimationSetting, UserId};
 
 use crate::AppState;
 use crate::error::Error;
@@ -183,18 +181,7 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     Ok(())
 }
 
-#[derive(Serialize)]
-pub struct UserEmote {
-    set_id: String,
-    id: String,
-    name: String,
-    #[serde(rename = "type")]
-    kind: String,
-    format: String,
-    owner: String,
-    owner_profile_picture_url: String,
-}
-
+#[tracing::instrument(skip(state))]
 #[tauri::command]
 pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<UserEmote>, Error> {
     let state = state.lock().await;
@@ -209,58 +196,7 @@ pub async fn get_user_emotes(state: State<'_, Mutex<AppState>>) -> Result<Vec<Us
         .try_collect()
         .await?;
 
-    let owner_ids: HashSet<_> = emotes
-        .iter()
-        .filter_map(|emote| {
-            let id_str = emote.owner_id.as_str();
+    tracing::debug!("Fetched {} user emotes", emotes.len());
 
-            if id_str.is_empty() || id_str == "twitch" {
-                None
-            } else {
-                Some(id_str.to_string())
-            }
-        })
-        .collect();
-
-    let owner_users = if owner_ids.is_empty() {
-        vec![]
-    } else {
-        let id_coll: Collection<UserId> = owner_ids.into_iter().collect();
-
-        state
-            .helix
-            .get_users_from_ids(&id_coll, token)
-            .try_collect()
-            .await?
-    };
-
-    let owner_map: HashMap<_, _> = owner_users
-        .into_iter()
-        .map(|user| (user.id.clone(), user))
-        .collect();
-
-    let user_emotes = emotes
-        .into_iter()
-        .filter_map(|emote| {
-            owner_map.get(&emote.owner_id).map(|owner| {
-                let format = if emote.format.contains(&EmoteAnimationSetting::Animated) {
-                    "animated"
-                } else {
-                    "static"
-                };
-
-                UserEmote {
-                    set_id: emote.emote_set_id.into(),
-                    id: emote.id.into(),
-                    name: emote.name.clone(),
-                    kind: emote.emote_type.clone(),
-                    format: format.into(),
-                    owner: owner.display_name.to_string(),
-                    owner_profile_picture_url: owner.profile_image_url.clone().unwrap_or_default(),
-                }
-            })
-        })
-        .collect();
-
-    Ok(user_emotes)
+    Ok(emotes)
 }

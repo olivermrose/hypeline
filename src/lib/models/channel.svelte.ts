@@ -94,7 +94,6 @@ export class Channel {
 		]);
 
 		this.stream = stream;
-		this.emotes.addAll(app.emotes.values());
 
 		await invoke("join", {
 			id: this.id,

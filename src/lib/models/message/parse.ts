@@ -1,4 +1,5 @@
 import { parse as parseTld } from "tldts";
+import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
 import type { CheermoteTier } from "$lib/graphql/fragments";
 import type { Range } from "$lib/twitch/irc";
@@ -90,7 +91,10 @@ export function parse(message: UserMessage): Node[] {
 		});
 
 		const ircEmote = ircEmotes.find((e) => e.code === part);
-		const emote = message.author.emotes.get(part) ?? message.channel.emotes.get(part);
+		const emote =
+			message.author.emotes.get(part) ??
+			app.emotes.get(part) ??
+			message.channel.emotes.get(part);
 
 		if (url && tld?.domain && tld.isIcann) {
 			nodes.push({

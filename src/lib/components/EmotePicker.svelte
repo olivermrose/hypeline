@@ -1,105 +1,242 @@
 <script lang="ts">
-	import { invoke } from "@tauri-apps/api/core";
-	import { Popover, Tabs } from "bits-ui";
-	import { onMount } from "svelte";
-	import type { UserEmote } from "$lib/tauri";
+	import { Accordion, Popover } from "bits-ui";
+	import { onDestroy, tick } from "svelte";
+	import { app } from "$lib/app.svelte";
+	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
+	import type { Channel } from "$lib/models/channel.svelte";
+	import Input from "./ui/Input.svelte";
 
 	interface Props {
-		open?: boolean;
-		input?: HTMLInputElement | null;
-		anchor?: HTMLElement;
+		channel: Channel;
 	}
 
-	interface EmoteGroup {
-		displayName: string;
-		profilePictureUrl: string;
-		emotes: Omit<UserEmote, "owner" | "owner_profile_picture_url">[];
-	}
+	const { channel }: Props = $props();
 
-	let { open = $bindable(false), input, anchor }: Props = $props();
+	let query = $state("");
+	let activeSet = $state("");
+	let sorted = $state.raw<EmoteSet[]>([]);
 
-	let channels = $state<EmoteGroup[]>([]);
+	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
 
-	onMount(async () => {
-		channels = await fetchEmotes();
+	const results = $derived.by(() => {
+		if (!query) return [];
+
+		return sorted
+			.flatMap((set) => set.emotes)
+			.filter((emote) => emote.name.toLowerCase().includes(query.toLowerCase()));
 	});
 
-	function appendEmote(name: string) {
-		if (!input) return;
+	const emoteSets = new Map<string, EmoteSet>();
+	const visibleSets = new Set<string>();
 
-		if (input.value.length > 0) {
-			input.value += ` ${name}`;
+	const observer = new IntersectionObserver((entries) => {
+		for (const entry of entries) {
+			if (entry.isIntersecting) {
+				visibleSets.add(entry.target.id);
+			} else {
+				visibleSets.delete(entry.target.id);
+			}
+		}
+
+		for (const set of sorted) {
+			if (visibleSets.has(set.id)) {
+				activeSet = set.id;
+				break;
+			}
+		}
+	});
+
+	onDestroy(() => observer.disconnect());
+
+	$effect(() => {
+		app.emoteSets
+			.values()
+			.filter((set) => set.global)
+			.forEach((set) => emoteSets.set(set.id, set));
+
+		app.user?.emoteSets.forEach((set) => emoteSets.set(set.id, set));
+
+		addProvider("7TV");
+		addProvider("BetterTTV");
+		addProvider("FrankerFaceZ");
+
+		sorted = emoteSets
+			.values()
+			.toArray()
+			.toSorted((a, b) => {
+				// Priority: channel specific > channel owned > global
+				const pA = a.owner.id === channel.id ? 0 : a.global ? 2 : 1;
+				const pB = b.owner.id === channel.id ? 0 : b.global ? 2 : 1;
+
+				return pA !== pB ? pA - pB : a.name.localeCompare(b.name);
+			});
+
+		return () => emoteSets.clear();
+	});
+
+	function observe(node: HTMLElement) {
+		observer.observe(node);
+
+		return () => observer.unobserve(node);
+	}
+
+	function addProvider(provider: EmoteProvider) {
+		const emotes = channel.emotes
+			.values()
+			.filter((emote) => emote.provider === provider)
+			.toArray();
+
+		if (!emotes.length) return;
+
+		emoteSets.set(`${provider}:${channel.id}`, {
+			id: `${provider}:${channel.id}`,
+			name: `${channel.user.displayName}: ${provider}`,
+			owner: channel.user,
+			global: false,
+			emotes,
+		});
+	}
+
+	function appendEmote(name: string) {
+		if (!channel.chat.input) return;
+
+		if (channel.chat.input.value.length > 0) {
+			channel.chat.input.value += ` ${name}`;
 		} else {
-			input.value = name;
+			channel.chat.input.value = name;
 		}
 	}
 
-	async function fetchEmotes() {
-		const grouped: Record<string, EmoteGroup> = {};
-
-		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		emotes.sort((a, b) => a.owner.localeCompare(b.owner));
-
-		for (const { owner, owner_profile_picture_url, ...emote } of emotes) {
-			if (!grouped[owner]) {
-				grouped[owner] = {
-					displayName: owner,
-					profilePictureUrl: owner_profile_picture_url,
-					emotes: [],
-				};
-			}
-
-			grouped[owner].emotes.push(emote);
+	async function scrollToSet(id: string) {
+		if (!open.includes(id)) {
+			open = [...open, id];
+			await tick();
 		}
 
-		return Object.values(grouped);
+		document.getElementById(id)?.scrollIntoView();
+	}
+
+	function toImageSet(srcset: string[]) {
+		const candidates: string[] = [];
+
+		for (const src of srcset) {
+			const [url, density] = src.split(" ");
+			candidates.push(`url("${url}") ${density}`);
+		}
+
+		return `image-set(${candidates.join(", ")})`;
 	}
 </script>
 
-<Popover.Root bind:open>
+<Popover.Root>
+	<Popover.Trigger
+		class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150"
+		aria-label="Open emote picker"
+	>
+		<span class="lucide--smile iconify size-5"></span>
+	</Popover.Trigger>
+
 	<Popover.Portal>
 		<Popover.Content
-			class="bg-muted overflow-hidden rounded border"
-			customAnchor={anchor}
+			class="bg-sidebar flex max-h-100 overflow-hidden rounded-md border"
 			side="top"
 			sideOffset={12}
 			collisionPadding={8}
 		>
-			<Tabs.Root class="flex" orientation="vertical">
-				<Tabs.List
-					class="bg-sidebar flex max-h-96 flex-col gap-3 overflow-y-auto border-r p-2"
-				>
-					{#each channels as channel}
-						<Tabs.Trigger value={channel.displayName}>
-							<img
-								class="size-8 rounded-full"
-								src={channel.profilePictureUrl}
-								alt={channel.displayName}
-							/>
-						</Tabs.Trigger>
-					{/each}
-				</Tabs.List>
-
-				{#each channels as channel}
-					<Tabs.Content class="max-h-96 overflow-y-auto" value={channel.displayName}>
-						<div class="bg-sidebar border-b p-2">
-							{channel.displayName}'s emotes
-						</div>
-
-						<div class="grid grid-cols-7 content-start gap-2 p-2">
-							{#each channel.emotes as emote}
-								<button title={emote.name} onclick={() => appendEmote(emote.name)}>
-									<img
-										class="size-8"
-										src="https://static-cdn.jtvnw.net/emoticons/v2/{emote.id}/{emote.format}/dark/3.0"
-										alt={emote.name}
-									/>
-								</button>
-							{/each}
-						</div>
-					</Tabs.Content>
+			<div class="flex flex-col gap-3 overflow-y-auto p-2">
+				{#each sorted as set (set.id)}
+					<button class="group" type="button" onclick={() => scrollToSet(set.id)}>
+						<img
+							class={[
+								"size-7 rounded-full object-contain",
+								activeSet === set.id && "outline-twitch outline-2",
+							]}
+							src={set.owner.avatarUrl}
+							alt={set.owner.displayName}
+							decoding="async"
+							loading="lazy"
+						/>
+					</button>
 				{/each}
-			</Tabs.Root>
+			</div>
+
+			<div class="flex w-md flex-col border-l">
+				<Input
+					class="border-border focus-visible:border-border shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
+					type="search"
+					placeholder="Search..."
+					bind:value={query}
+				/>
+
+				{#if query}
+					{#if results.length}
+						<div class="grid grid-cols-9 content-start gap-1.5 overflow-y-auto p-2">
+							{@render emoteGrid(results)}
+						</div>
+					{:else}
+						<div
+							class="text-muted-foreground flex h-full flex-col items-center justify-center p-4 text-center text-sm"
+						>
+							<span class="iconify lucide--frown mb-2 size-6"></span>
+							No emotes found.
+						</div>
+					{/if}
+				{:else}
+					<Accordion.Root
+						class="divide-y overflow-y-auto overscroll-none"
+						type="multiple"
+						bind:value={open}
+					>
+						{#each sorted as set (set.id)}
+							<Accordion.Item
+								id={set.id}
+								class="group flex flex-col"
+								value={set.id}
+								{@attach observe}
+							>
+								<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
+									<Accordion.Trigger class="group flex items-center gap-2">
+										<img
+											class="size-5 rounded-full object-contain"
+											src={set.owner.avatarUrl}
+											alt={set.owner.displayName}
+											decoding="async"
+											loading="lazy"
+										/>
+
+										<span class="text-sm font-medium">{set.name}</span>
+										<span
+											class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
+										></span>
+									</Accordion.Trigger>
+								</Accordion.Header>
+
+								{#if open.includes(set.id)}
+									<Accordion.Content class="grid grid-cols-9 gap-1.5 px-2 pb-2">
+										{@render emoteGrid(set.emotes)}
+									</Accordion.Content>
+								{/if}
+							</Accordion.Item>
+						{/each}
+					</Accordion.Root>
+				{/if}
+			</div>
 		</Popover.Content>
 	</Popover.Portal>
 </Popover.Root>
+
+{#snippet emoteGrid(emotes: Emote[])}
+	{#each emotes as emote (`${emote.name}:${emote.id}`)}
+		<button
+			class="w-full"
+			title={emote.name}
+			type="button"
+			onclick={() => appendEmote(emote.name)}
+		>
+			<div
+				class="aspect-square w-full bg-contain bg-center bg-no-repeat"
+				style:background-image={toImageSet(emote.srcset)}
+			></div>
+		</button>
+	{/each}
+{/snippet}
