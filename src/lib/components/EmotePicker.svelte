@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Accordion, Popover } from "bits-ui";
-	import { tick } from "svelte";
+	import { onDestroy, tick } from "svelte";
 	import { app } from "$lib/app.svelte";
 	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -45,6 +45,8 @@
 			}
 		}
 	});
+
+	onDestroy(() => observer.disconnect());
 
 	$effect(() => {
 		app.emoteSets
