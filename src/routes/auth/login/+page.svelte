@@ -8,6 +8,7 @@
 	import { PUBLIC_TWITCH_CLIENT_ID, PUBLIC_TWITCH_REDIRECT_URL } from "$env/static/public";
 	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
+	import { CurrentUser } from "$lib/models/current-user";
 	import { settings } from "$lib/settings";
 	import { SCOPES } from "$lib/twitch";
 
@@ -43,7 +44,8 @@
 				token: event.payload.access_token,
 			};
 
-			app.user = await app.twitch.users.fetch(event.payload.user_id);
+			const user = await app.twitch.users.fetch(event.payload.user_id);
+			app.user = new CurrentUser(user);
 
 			await tick();
 			await settings.save();

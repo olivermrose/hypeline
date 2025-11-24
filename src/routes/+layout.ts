@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
+import { CurrentUser } from "$lib/models/current-user.js";
 import { User } from "$lib/models/user.svelte";
 import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";
@@ -25,7 +26,11 @@ export async function load({ url }) {
 	}
 
 	app.twitch.token ??= settings.state.user.token;
-	app.user ??= await app.twitch.users.fetch(settings.state.user.id);
+
+	if (!app.user) {
+		const user = await app.twitch.users.fetch(settings.state.user.id);
+		app.user = new CurrentUser(user);
+	}
 
 	// TODO: remove when redoing 7TV
 	await invoke("set_seventv_id", { id: app.user.id });
@@ -44,7 +49,7 @@ export async function load({ url }) {
 	}
 
 	if (!app.channels.length) {
-		const following = await app.twitch.fetchFollowing();
+		const following = await app.user.fetchFollowing();
 
 		for (const followed of following) {
 			const user = new User(app.twitch, followed);

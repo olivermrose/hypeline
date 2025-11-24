@@ -42,38 +42,6 @@ export class TwitchClient {
 	}
 
 	/**
-	 * Retrieves the list of channels the current user is following.
-	 */
-	public async fetchFollowing() {
-		if (!app.user) {
-			throw new Error("User is not logged in");
-		}
-
-		const { user } = await this.send(
-			gql(
-				`query GetUserFollowing($id: ID!) {
-					user(id: $id) {
-						follows(first: 100) {
-							edges {
-								node {
-									...UserDetails
-									stream {
-										...StreamDetails
-									}
-								}
-							}
-						}
-					}
-				}`,
-				[userDetailsFragment, streamDetailsFragment],
-			),
-			{ id: app.user.id },
-		);
-
-		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
-	}
-
-	/**
 	 * Retrieves the streams of the specified channels if they're live.
 	 */
 	public async fetchStreams(ids: string[]) {
