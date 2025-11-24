@@ -13,7 +13,7 @@
 	let uptime = $state(getUptime());
 
 	onMount(() => {
-		let interval: number | undefined;
+		let interval: ReturnType<typeof setInterval> | undefined;
 
 		setTimeout(() => {
 			interval = setInterval(() => {

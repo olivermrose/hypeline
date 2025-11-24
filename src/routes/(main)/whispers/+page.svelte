@@ -10,7 +10,7 @@
 
 	function relative(date: Date): Attachment {
 		return (element) => {
-			let interval: number | undefined;
+			let interval: ReturnType<typeof setInterval> | undefined;
 
 			const now = new Date();
 			const offset = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
