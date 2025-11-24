@@ -116,6 +116,10 @@ export class Channel {
 		} finally {
 			this.reset();
 			settings.state.lastJoined = null;
+
+			if (app.user) {
+				app.user.banned = false;
+			}
 		}
 	}
 
