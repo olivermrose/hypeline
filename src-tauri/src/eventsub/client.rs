@@ -378,15 +378,21 @@ impl EventSubClient {
     }
 
     pub async fn unsubscribe_all(&self, channel: &str) -> Result<(), Error> {
-        let keys = {
+        let prefix = format!("{channel}:");
+
+        let events = {
             let subscriptions = self.subscriptions.lock().await;
 
-            subscriptions.keys().cloned().collect::<Vec<_>>()
+            subscriptions
+                .keys()
+                .filter(|k| k.starts_with(&prefix))
+                .map(|k| k.strip_prefix(&prefix).unwrap().to_string())
+                .collect::<Vec<_>>()
         };
 
-        let futures = keys
+        let futures = events
             .iter()
-            .map(|event| self.unsubscribe(channel, event.into()));
+            .map(|event| self.unsubscribe(channel, event.clone()));
 
         join_all(futures).await;
 
