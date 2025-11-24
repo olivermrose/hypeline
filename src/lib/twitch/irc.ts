@@ -275,7 +275,7 @@ export interface OneTapGiftRedeemedEvent {
 
 export interface WatchStreakEvent {
 	type: "watch_streak";
-	days: number;
+	streak: number;
 	points: number;
 }
 

@@ -589,7 +589,7 @@ pub enum UserNoticeEvent {
         gift_id: String,
     },
     WatchStreak {
-        days: u32,
+        streak: u32,
         points: u32,
     },
     Unknown,
@@ -767,7 +767,7 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
 
                 match category {
                     "watch-streak" => UserNoticeEvent::WatchStreak {
-                        days: source.try_get_number("msg-param-value")?,
+                        streak: source.try_get_number("msg-param-value")?,
                         points: source.try_get_number("msg-param-copoReward")?,
                     },
                     _ => UserNoticeEvent::Unknown,

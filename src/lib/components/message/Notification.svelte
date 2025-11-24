@@ -127,7 +127,8 @@
 
 					<p>
 						{@html colorizeName(message.author)}
-						reached a {message.event.days}-day watch streak!
+						reached a <span class="font-medium">{message.event.streak}-stream</span> watch
+						streak!
 					</p>
 				</div>
 
