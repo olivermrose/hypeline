@@ -2,7 +2,7 @@
 	import { Accordion, Popover } from "bits-ui";
 	import { tick } from "svelte";
 	import { app } from "$lib/app.svelte";
-	import type { EmoteProvider, EmoteSet } from "$lib/emotes";
+	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import Input from "./ui/Input.svelte";
 
@@ -13,9 +13,19 @@
 
 	const { channel, input }: Props = $props();
 
+	let query = $state("");
 	let activeSet = $state<string>();
 	let sorted = $state.raw<EmoteSet[]>([]);
+
 	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
+
+	const results = $derived.by(() => {
+		if (!query) return [];
+
+		return sorted
+			.flatMap((set) => set.emotes)
+			.filter((emote) => emote.name.toLowerCase().includes(query.toLowerCase()));
+	});
 
 	const emoteSets = new Map<string, EmoteSet>();
 	const visibleSets = new Set<string>();
@@ -154,58 +164,78 @@
 					class="border-border focus-visible:border-border shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
 					type="search"
 					placeholder="Search..."
+					bind:value={query}
 				/>
 
-				<Accordion.Root
-					class="divide-y overflow-y-auto overscroll-none"
-					type="multiple"
-					bind:value={open}
-				>
-					{#each sorted as set (set.id)}
-						<Accordion.Item
-							id={set.id}
-							class="group flex flex-col"
-							value={set.id}
-							{@attach observe}
+				{#if query}
+					{#if results.length}
+						<div class="grid grid-cols-9 content-start gap-1.5 overflow-y-auto p-2">
+							{@render emoteGrid(results)}
+						</div>
+					{:else}
+						<div
+							class="text-muted-foreground flex h-full flex-col items-center justify-center p-4 text-center text-sm"
 						>
-							<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
-								<Accordion.Trigger class="group flex items-center gap-2">
-									<img
-										class="size-5 rounded-full object-contain"
-										src={set.owner.avatarUrl}
-										alt={set.owner.displayName}
-										decoding="async"
-										loading="lazy"
-									/>
+							<span class="iconify lucide--frown mb-2 size-6"></span>
+							No emotes found.
+						</div>
+					{/if}
+				{:else}
+					<Accordion.Root
+						class="divide-y overflow-y-auto overscroll-none"
+						type="multiple"
+						bind:value={open}
+					>
+						{#each sorted as set (set.id)}
+							<Accordion.Item
+								id={set.id}
+								class="group flex flex-col"
+								value={set.id}
+								{@attach observe}
+							>
+								<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
+									<Accordion.Trigger class="group flex items-center gap-2">
+										<img
+											class="size-5 rounded-full object-contain"
+											src={set.owner.avatarUrl}
+											alt={set.owner.displayName}
+											decoding="async"
+											loading="lazy"
+										/>
 
-									<span class="text-sm font-medium">{set.name}</span>
-									<span
-										class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
-									></span>
-								</Accordion.Trigger>
-							</Accordion.Header>
+										<span class="text-sm font-medium">{set.name}</span>
+										<span
+											class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
+										></span>
+									</Accordion.Trigger>
+								</Accordion.Header>
 
-							{#if open.includes(set.id)}
-								<Accordion.Content class="grid grid-cols-9 gap-1.5 px-2 pb-2">
-									{#each set.emotes as emote (`${emote.name}:${emote.id}`)}
-										<button
-											class="w-full"
-											title={emote.name}
-											type="button"
-											onclick={() => appendEmote(emote.name)}
-										>
-											<div
-												class="aspect-square w-full bg-contain bg-center bg-no-repeat"
-												style:background-image={toImageSet(emote.srcset)}
-											></div>
-										</button>
-									{/each}
-								</Accordion.Content>
-							{/if}
-						</Accordion.Item>
-					{/each}
-				</Accordion.Root>
+								{#if open.includes(set.id)}
+									<Accordion.Content class="grid grid-cols-9 gap-1.5 px-2 pb-2">
+										{@render emoteGrid(set.emotes)}
+									</Accordion.Content>
+								{/if}
+							</Accordion.Item>
+						{/each}
+					</Accordion.Root>
+				{/if}
 			</div>
 		</Popover.Content>
 	</Popover.Portal>
 </Popover.Root>
+
+{#snippet emoteGrid(emotes: Emote[])}
+	{#each emotes as emote (`${emote.name}:${emote.id}`)}
+		<button
+			class="w-full"
+			title={emote.name}
+			type="button"
+			onclick={() => appendEmote(emote.name)}
+		>
+			<div
+				class="aspect-square w-full bg-contain bg-center bg-no-repeat"
+				style:background-image={toImageSet(emote.srcset)}
+			></div>
+		</button>
+	{/each}
+{/snippet}
