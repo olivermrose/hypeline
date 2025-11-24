@@ -1,11 +1,12 @@
 <script lang="ts">
+	import Ghost from "~icons/ph/ghost";
 	import { page } from "$app/state";
 
 	const username = $derived(page.params.username?.replace("ephemeral:", ""));
 </script>
 
 <div class="flex size-full flex-col items-center justify-center p-6 text-center">
-	<span class="iconify lucide--ghost mb-4 size-8"></span>
+	<Ghost class="mb-4 size-8" />
 
 	<span class="text-lg font-medium">Channel Not Found</span>
 

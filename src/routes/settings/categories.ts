@@ -1,3 +1,6 @@
+import Chat from "~icons/ph/chat";
+import Highlighter from "~icons/ph/highlighter";
+import Monitor from "~icons/ph/monitor";
 import { settings } from "$lib/settings";
 import KeywordHighlights from "./custom/KeywordHighlights.svelte";
 import Theme from "./custom/Theme.svelte";
@@ -11,7 +14,7 @@ function bind<T>(get: () => T, set: (value: T) => void): Binding<T> {
 export const categories: SettingsCategory[] = [
 	{
 		label: "Appearance",
-		icon: "lucide--monitor-cog",
+		icon: Monitor,
 		fields: [
 			{
 				type: "custom",
@@ -65,7 +68,7 @@ export const categories: SettingsCategory[] = [
 	},
 	{
 		label: "Chat",
-		icon: "lucide--message-square",
+		icon: Chat,
 		fields: [
 			{
 				type: "group",
@@ -203,7 +206,7 @@ export const categories: SettingsCategory[] = [
 	},
 	{
 		label: "Highlights",
-		icon: "lucide--highlighter",
+		icon: Highlighter,
 		fields: [
 			{
 				id: "highlights-enabled",

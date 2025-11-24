@@ -2,6 +2,7 @@
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { Attachment } from "svelte/attachments";
+	import ChatDots from "~icons/ph/chat-dots";
 
 	dayjs.extend(relativeTime);
 
@@ -9,7 +10,7 @@
 
 	function relative(date: Date): Attachment {
 		return (element) => {
-			let interval: number | undefined;
+			let interval: ReturnType<typeof setInterval> | undefined;
 
 			const now = new Date();
 			const offset = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
@@ -85,7 +86,7 @@
 	{/if}
 {:else}
 	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<span class="iconify lucide--message-square-dashed mb-4 size-8"></span>
+		<ChatDots class="mb-4 size-8" />
 
 		<span class="text-lg font-medium">No Whispers</span>
 		<p class="text-muted-foreground">Any whispers you receive will appear here</p>

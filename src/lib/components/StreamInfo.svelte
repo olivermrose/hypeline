@@ -2,6 +2,8 @@
 	import dayjs from "dayjs";
 	import duration from "dayjs/plugin/duration";
 	import { onMount } from "svelte";
+	import Clock from "~icons/ph/clock";
+	import Users from "~icons/ph/users";
 	import type { Stream } from "$lib/graphql/fragments";
 
 	dayjs.extend(duration);
@@ -11,7 +13,7 @@
 	let uptime = $state(getUptime());
 
 	onMount(() => {
-		let interval: number | undefined;
+		let interval: ReturnType<typeof setInterval> | undefined;
 
 		setTimeout(() => {
 			interval = setInterval(() => {
@@ -37,14 +39,14 @@
 
 	<div class="ml-[3ch] flex items-center gap-1">
 		<div class="flex items-center">
-			<span class="iconify lucide--users mr-1"></span>
+			<Users class="mr-1 size-4" />
 			<span class="font-medium">{stream.viewersCount}</span>
 		</div>
 
 		&bullet;
 
 		<div class="flex items-center">
-			<span class="iconify lucide--clock mr-1"></span>
+			<Clock class="mr-1 size-4" />
 			<span class="font-medium tabular-nums">{uptime}</span>
 		</div>
 	</div>

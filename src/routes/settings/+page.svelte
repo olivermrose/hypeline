@@ -8,6 +8,11 @@
 	import * as os from "@tauri-apps/plugin-os";
 	import { Separator, Tabs } from "bits-ui";
 	import { toast } from "svelte-sonner";
+	import ArrowSquareOut from "~icons/ph/arrow-square-out";
+	import Clipboard from "~icons/ph/clipboard";
+	import FolderOpen from "~icons/ph/folder-open";
+	import SignOut from "~icons/ph/sign-out";
+	import XIcon from "~icons/ph/x";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { log } from "$lib/log";
@@ -70,7 +75,7 @@
 					class="text-muted-foreground data-[state=active]:bg-muted data-[state=active]:text-foreground"
 					value={category.label}
 				>
-					<span class="iconify size-4 {category.icon}"></span>
+					<category.icon class="size-4" />
 					<span class="text-sm">{category.label}</span>
 				</Tabs.Trigger>
 			{/each}
@@ -85,17 +90,17 @@
 				disabled={page.data.detached}
 				onclick={detach}
 			>
-				<span class="iconify lucide--external-link size-4"></span>
+				<ArrowSquareOut class="size-4" />
 				<span class="text-sm">Popout settings</span>
 			</button>
 
 			<button class="text-muted-foreground" type="button" onclick={openLogDir}>
-				<span class="iconify lucide--folder-open size-4"></span>
+				<FolderOpen class="size-4" />
 				<span class="text-sm">Open logs</span>
 			</button>
 
 			<button class="text-muted-foreground" type="button" onclick={copyDebugInfo}>
-				<span class="iconify lucide--clipboard size-4"></span>
+				<Clipboard class="size-4" />
 				<span class="text-sm">Copy debug info</span>
 			</button>
 		</div>
@@ -108,7 +113,7 @@
 			data-logout
 			onclick={() => goto("/auth/logout")}
 		>
-			<span class="iconify lucide--log-out size-4"></span>
+			<SignOut class="size-4" />
 			<span class="text-sm">Log out</span>
 		</button>
 	</nav>
@@ -120,7 +125,7 @@
 				onclick={() => history.back()}
 				aria-label="Close settings"
 			>
-				<span class="iconify lucide--x size-6"></span>
+				<XIcon class="size-6" />
 			</button>
 		{/if}
 

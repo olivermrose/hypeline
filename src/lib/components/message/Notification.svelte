@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Confetti from "~icons/ph/confetti";
+	import Fire from "~icons/ph/fire";
+	import Megaphone from "~icons/ph/megaphone";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { colorizeName } from "$lib/util";
 	import Message from "./Message.svelte";
@@ -28,7 +31,7 @@
 			style:border-image-source="linear-gradient({stops[0]}, {stops[1]})"
 		>
 			<div class="bg-muted flex items-center px-2.5 py-1.5 text-xs font-medium">
-				<span class="iconify lucide--megaphone mr-2 size-4"></span> Announcement
+				<Megaphone class="mr-2 size-4 -scale-x-100" /> Announcement
 			</div>
 
 			<div class="bg-muted/50 p-1.5">
@@ -44,7 +47,7 @@
 		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">
-					<span class="iconify lucide--party-popper mt-px size-4 shrink-0"></span>
+					<Confetti class="mt-px size-4 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}
@@ -120,7 +123,7 @@
 				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
-					<span class="iconify lucide--flame mt-px size-4 shrink-0"></span>
+					<Fire class="mt-px size-4 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}

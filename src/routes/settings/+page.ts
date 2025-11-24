@@ -1,7 +1,9 @@
+import Gear from "~icons/ph/gear";
+
 export function load() {
 	return {
 		titleBar: {
-			icon: "lucide--settings",
+			icon: Gear,
 			title: "Settings",
 		},
 	};

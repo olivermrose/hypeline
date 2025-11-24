@@ -1,4 +1,5 @@
 import { error } from "@sveltejs/kit";
+import Chats from "~icons/ph/chats";
 import { app } from "$lib/app.svelte";
 
 export function load() {
@@ -7,7 +8,7 @@ export function load() {
 	return {
 		whispers: app.user.whispers,
 		titleBar: {
-			icon: "lucide--messages-square",
+			icon: Chats,
 			title: "Whispers",
 		},
 	};

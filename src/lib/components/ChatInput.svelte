@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
+	import Smiley from "~icons/ph/smiley";
+	import Warning from "~icons/ph/warning";
+	import XCircle from "~icons/ph/x-circle";
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
 	import type { Chat } from "$lib/models/chat.svelte";
@@ -135,9 +138,9 @@
 				aria-label="Cancel reply"
 				onclick={() => (chat.replyTarget = null)}
 			>
-				<span
-					class="text-muted-foreground hover:text-foreground lucide--circle-x iconify block size-4 transition-colors duration-150"
-				></span>
+				<XCircle
+					class="text-muted-foreground hover:text-foreground block size-4 transition-colors duration-150"
+				/>
 			</button>
 		</div>
 
@@ -150,8 +153,7 @@
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 py-2.5 text-sm transition-colors duration-200"
 	>
 		<div class="flex gap-1">
-			<span class="iconify lucide--triangle-alert mt-px size-4 shrink-0 text-yellow-400">
-			</span>
+			<Warning class="mt-px size-4 shrink-0 text-yellow-400" />
 
 			<p class="text-muted-foreground">{error}</p>
 		</div>

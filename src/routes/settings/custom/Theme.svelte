@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Label, RadioGroup } from "bits-ui";
 	import { setMode, userPrefersMode } from "mode-watcher";
+	import ArrowsClockwise from "~icons/ph/arrows-clockwise";
 
 	const themes = [
 		{ value: "light", class: "bg-white" },
@@ -24,7 +25,7 @@
 				value={theme.value}
 			>
 				{#if theme.value === "system"}
-					<span class="text-muted-foreground lucide--refresh-cw iconify size-6"></span>
+					<ArrowsClockwise class="text-muted-foreground size-6" />
 				{/if}
 			</RadioGroup.Item>
 

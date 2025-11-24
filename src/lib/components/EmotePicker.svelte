@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { Accordion, Popover } from "bits-ui";
 	import { onDestroy, tick } from "svelte";
+	import CaretRight from "~icons/ph/caret-right";
+	import Smiley from "~icons/ph/smiley";
+	import SmileySad from "~icons/ph/smiley-sad";
 	import { app } from "$lib/app.svelte";
 	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -133,7 +136,7 @@
 		class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150"
 		aria-label="Open emote picker"
 	>
-		<span class="lucide--smile iconify size-5"></span>
+		<Smiley class="size-5" />
 	</Popover.Trigger>
 
 	<Popover.Portal>
@@ -177,7 +180,7 @@
 						<div
 							class="text-muted-foreground flex h-full flex-col items-center justify-center p-4 text-center text-sm"
 						>
-							<span class="iconify lucide--frown mb-2 size-6"></span>
+							<SmileySad class="mb-2 size-6" />
 							No emotes found.
 						</div>
 					{/if}
@@ -205,9 +208,10 @@
 										/>
 
 										<span class="text-sm font-medium">{set.name}</span>
-										<span
-											class="iconify lucide--chevron-right text-muted-foreground group-data-[state=open]:rotate-90"
-										></span>
+
+										<CaretRight
+											class="text-muted-foreground size-3 group-data-[state=open]:rotate-90"
+										/>
 									</Accordion.Trigger>
 								</Accordion.Header>
 

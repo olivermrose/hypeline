@@ -125,7 +125,7 @@ export function debounce<F extends (...args: Parameters<F>) => ReturnType<F>>(
 	fn: F,
 	timeout: number,
 ) {
-	let id: number;
+	let id: ReturnType<typeof setTimeout>;
 
 	return (...args: Parameters<F>) => {
 		clearTimeout(id);

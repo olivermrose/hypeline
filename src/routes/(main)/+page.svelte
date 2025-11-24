@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import ChatDots from "~icons/ph/chat-dots";
+	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import { settings } from "$lib/settings";
@@ -23,12 +25,12 @@
 
 {#if loading}
 	<div class="flex size-full items-center justify-center gap-x-2 text-lg">
-		<span class="iconify lucide--loader-circle size-6 animate-spin"></span>
+		<Spinner class="size-6 animate-spin" />
 		Loading
 	</div>
 {:else}
 	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<span class="iconify lucide--message-square-more mb-4 size-8"></span>
+		<ChatDots class="mb-4 size-8" />
 
 		<span class="text-lg font-medium">No Channel Selected</span>
 		<p class="text-muted-foreground">
