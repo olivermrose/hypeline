@@ -227,22 +227,6 @@ export class Channel {
 		return data;
 	}
 
-	public async announce(message: string) {
-		if (!app.user?.moderating.has(this.id)) {
-			return;
-		}
-
-		await this.client.post("/chat/announcements", {
-			params: {
-				broadcaster_id: this.id,
-				moderator_id: app.user.id,
-			},
-			body: {
-				message,
-			},
-		});
-	}
-
 	public async raid(to: string) {
 		if (!app.user?.moderating.has(this.id)) {
 			return;

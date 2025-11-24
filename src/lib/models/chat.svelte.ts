@@ -138,6 +138,22 @@ export class Chat {
 		this.history = [];
 	}
 
+	public async announce(message: string) {
+		if (!app.user?.moderating.has(this.channel.id)) {
+			return;
+		}
+
+		await this.channel.client.post("/chat/announcements", {
+			params: {
+				broadcaster_id: this.channel.id,
+				moderator_id: app.user.id,
+			},
+			body: {
+				message,
+			},
+		});
+	}
+
 	public async setShieldMode(active = true) {
 		if (!app.user?.moderating.has(this.channel.id)) {
 			return;

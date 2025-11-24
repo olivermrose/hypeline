@@ -15,6 +15,6 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.MISSING_ARG(this.args[0]));
 		}
 
-		await channel.announce(message);
+		await channel.chat.announce(message);
 	},
 });
