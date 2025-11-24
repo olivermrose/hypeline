@@ -1,5 +1,5 @@
 import type { Channel } from "$lib/models/channel.svelte";
-import type { CurrentUser } from "$lib/models/current-user";
+import type { CurrentUser } from "$lib/models/current-user.svelte";
 import type { SevenTvEventMap } from "$lib/seventv";
 import type { SubscriptionEventMap } from "$lib/twitch/eventsub";
 import type { IrcMessageMap } from "$lib/twitch/irc";

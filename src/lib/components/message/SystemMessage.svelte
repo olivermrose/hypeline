@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type {
 		AutoModContext,
+		BannedContext,
 		BanStatusContext,
 		ClearContext,
 		DeleteContext,
@@ -41,6 +42,7 @@
 
 	const snippetMap = {
 		autoMod,
+		banned,
 		banStatus,
 		clear,
 		delete: deleteMsg,
@@ -96,6 +98,14 @@
 	{:else}
 		{@html colorizeName(ctx.moderator)} {ctx.status} {@html target}'s message.
 	{/if}
+{/snippet}
+
+{#snippet banned(ctx: BannedContext)}
+	You are permanently banned from {@html colorizeName(ctx.channel.user)} and cannot send messages.
+	If you have been unbanned, try
+	<button class="text-twitch-link" type="button" onclick={() => ctx.channel.rejoin()}>
+		reconnecting
+	</button>.
 {/snippet}
 
 {#snippet banStatus(ctx: BanStatusContext)}

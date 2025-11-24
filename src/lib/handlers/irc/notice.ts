@@ -40,7 +40,7 @@ export default defineHandler({
 					app.user.banned = true;
 				}
 
-				message.text = data.message_text.replace(/ \w+\.$/, " the channel.");
+				message.context = { type: "banned", channel };
 				break;
 			}
 		}

@@ -17,6 +17,11 @@ export interface AutoModContext {
 	moderator: Viewer;
 }
 
+export interface BannedContext {
+	type: "banned";
+	channel: Channel;
+}
+
 export interface BanStatusContext {
 	type: "banStatus";
 	banned: boolean;
@@ -146,6 +151,7 @@ export interface WarnAckContext {
 
 export type MessageContext =
 	| AutoModContext
+	| BannedContext
 	| BanStatusContext
 	| BlockStatusContext
 	| ClearContext

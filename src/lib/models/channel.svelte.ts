@@ -119,6 +119,14 @@ export class Channel {
 		}
 	}
 
+	public async rejoin() {
+		await invoke("rejoin", { channel: this.user.username });
+
+		if (app.user) {
+			app.user.banned = false;
+		}
+	}
+
 	public addBadges(badges: Badge[]) {
 		for (const badge of badges) {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);

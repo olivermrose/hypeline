@@ -133,7 +133,8 @@
 
 <Popover.Root>
 	<Popover.Trigger
-		class="text-muted-foreground hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150"
+		class="text-muted-foreground not-disabled:hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+		disabled={app.user?.banned}
 		aria-label="Open emote picker"
 	>
 		<Smiley class="size-5" />

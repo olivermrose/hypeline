@@ -8,7 +8,7 @@
 	import { PUBLIC_TWITCH_CLIENT_ID, PUBLIC_TWITCH_REDIRECT_URL } from "$env/static/public";
 	import { app } from "$lib/app.svelte";
 	import { log } from "$lib/log";
-	import { CurrentUser } from "$lib/models/current-user";
+	import { CurrentUser } from "$lib/models/current-user.svelte";
 	import { settings } from "$lib/settings";
 	import { SCOPES } from "$lib/twitch";
 

@@ -164,7 +164,7 @@
 	<div class="relative">
 		<Input
 			class={[
-				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0 disabled:cursor-not-allowed",
+				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
 				(chat.replyTarget || error) && "rounded-t-none",
 				className,
 			]}
