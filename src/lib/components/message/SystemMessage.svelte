@@ -104,7 +104,7 @@
 	You are permanently banned from {@html colorizeName(ctx.channel.user)} and cannot send messages.
 	If you have been unbanned, try
 	<button class="text-twitch-link" type="button" onclick={() => ctx.channel.rejoin()}>
-		reconnecting
+		rejoining
 	</button>.
 {/snippet}
 
