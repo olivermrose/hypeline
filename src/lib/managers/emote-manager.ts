@@ -8,25 +8,6 @@ import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
 import { seventvGql as gql } from "$lib/graphql/function";
 import { BaseEmoteManager } from "./base-emote-manager";
 
-const providerOwners = {
-	seventv: {
-		id: "7tv_global",
-		displayName: "7TV Global",
-		avatarUrl:
-			"https://static-cdn.jtvnw.net/jtv_user_pictures/96d6ff92-7ad5-4528-8941-2cbab55dd4e1-profile_image-150x150.png",
-	},
-	bttv: {
-		id: "bttv_global",
-		displayName: "BetterTTV Global",
-		avatarUrl: "https://betterttv.com/favicon.png",
-	},
-	ffz: {
-		id: "ffz_global",
-		displayName: "FrankerFaceZ Global",
-		avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
-	},
-};
-
 export class EmoteManager extends BaseEmoteManager {
 	/**
 	 * Retrieves the list of global FrankerFaceZ emotes.
@@ -46,7 +27,11 @@ export class EmoteManager extends BaseEmoteManager {
 		app.emoteSets.set("ffz_global", {
 			id: "ffz_global",
 			name: "Global: FrankerFaceZ",
-			owner: providerOwners.ffz,
+			owner: {
+				id: "ffz_global",
+				displayName: "FrankerFaceZ Global",
+				avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
+			},
 			global: true,
 			emotes,
 		});
@@ -72,7 +57,11 @@ export class EmoteManager extends BaseEmoteManager {
 		app.emoteSets.set("bttv_global", {
 			id: "bttv_global",
 			name: "Global: BetterTTV",
-			owner: providerOwners.bttv,
+			owner: {
+				id: "bttv_global",
+				displayName: "BetterTTV Global",
+				avatarUrl: "https://betterttv.com/favicon.png",
+			},
 			global: true,
 			emotes,
 		});
@@ -105,7 +94,12 @@ export class EmoteManager extends BaseEmoteManager {
 		app.emoteSets.set(emoteSets.emoteSet!.id, {
 			id: emoteSets.emoteSet!.id,
 			name: "Global: 7TV",
-			owner: providerOwners.seventv,
+			owner: {
+				id: "7tv_global",
+				displayName: "7TV Global",
+				avatarUrl:
+					"https://cdn.discordapp.com/icons/817075418054000661/a_a629673a6f485a3db5f5e1724904b2ce.png",
+			},
 			global: true,
 			emotes,
 		});
