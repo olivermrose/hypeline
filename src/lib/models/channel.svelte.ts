@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { SvelteMap } from "svelte/reactivity";
 import { ApiError } from "$lib/errors/api-error";
 import { ErrorMessage } from "$lib/errors/messages";
 import { send7tv as send } from "$lib/graphql";
@@ -33,7 +32,7 @@ export class Channel {
 	/**
 	 * The badges in the channel.
 	 */
-	public readonly badges = new SvelteMap<string, Badge>();
+	public readonly badges = new Map<string, Badge>();
 	public readonly emotes: ChannelEmoteManager;
 	public readonly cheermotes = $state<Cheermote[]>([]);
 

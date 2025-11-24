@@ -28,7 +28,7 @@ export class CurrentUser extends User {
 	/**
 	 * The emote sets the current user is entitled to use.
 	 */
-	public readonly emoteSets = new Map<string, EmoteSet>();
+	public readonly emoteSets = new SvelteMap<string, EmoteSet>();
 
 	public constructor(user: User) {
 		super(user.client, user.data);

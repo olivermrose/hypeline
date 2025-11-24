@@ -1,10 +1,6 @@
-import { SvelteMap } from "svelte/reactivity";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
-import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
-import { streamDetailsFragment, userDetailsFragment } from "$lib/graphql/fragments";
-import { twitchGql as gql } from "$lib/graphql/function";
 import { globalBadgesQuery } from "$lib/graphql/queries";
 import { UserManager } from "$lib/managers/user-manager";
 import { dedupe } from "$lib/util";
@@ -24,7 +20,7 @@ export class TwitchClient {
 	// API calls SHOULD have a valid token as it's set at first layout load.
 	public token: string | null = null;
 
-	public readonly badges = new SvelteMap<string, Badge>();
+	public readonly badges = new Map<string, Badge>();
 	public readonly users = new UserManager(this);
 
 	/**

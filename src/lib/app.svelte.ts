@@ -48,12 +48,12 @@ class App {
 	/**
 	 * Provider-specific global badges.
 	 */
-	public readonly badges = new SvelteMap<string, Badge>();
+	public readonly badges = new Map<string, Badge>();
 
 	/**
 	 * 7TV paints.
 	 */
-	public readonly paints = new SvelteMap<string, Paint>();
+	public readonly paints = new Map<string, Paint>();
 
 	// Associates a (u)ser id to a 7TV (b)adge or (p)aint.
 	public readonly u2b = new SvelteMap<string, Badge | undefined>();

@@ -119,7 +119,7 @@ export class User {
 	/**
 	 * The emotes the user is entitled to use.
 	 */
-	public readonly emotes = new SvelteMap<string, Emote>();
+	public readonly emotes = new Map<string, Emote>();
 
 	public constructor(
 		public readonly client: TwitchClient,
