@@ -8,10 +8,9 @@
 
 	interface Props {
 		channel: Channel;
-		input?: HTMLInputElement | null;
 	}
 
-	const { channel, input }: Props = $props();
+	const { channel }: Props = $props();
 
 	let query = $state("");
 	let activeSet = $state<string>();
@@ -97,12 +96,12 @@
 	}
 
 	function appendEmote(name: string) {
-		if (!input) return;
+		if (!channel.chat.input) return;
 
-		if (input.value.length > 0) {
-			input.value += ` ${name}`;
+		if (channel.chat.input.value.length > 0) {
+			channel.chat.input.value += ` ${name}`;
 		} else {
-			input.value = name;
+			channel.chat.input.value = name;
 		}
 	}
 

@@ -17,7 +17,6 @@
 
 	let input = $state<HTMLInputElement | null>(null);
 	let completer = $state<Completer>();
-	let chatInput = $state<HTMLInputElement | null>(null);
 	let value = $state("");
 
 	let historyIdx = $state(-1);
@@ -181,7 +180,7 @@
 		/>
 
 		<div class="absolute inset-y-0 end-0 flex p-1">
-			<EmotePicker channel={chat.channel} input={chatInput} />
+			<EmotePicker channel={chat.channel} />
 		</div>
 	</div>
 
