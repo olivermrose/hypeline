@@ -97,7 +97,7 @@
 					</mark>
 				{:else if !node.data.user}
 					<span class="font-semibold wrap-break-word">
-						{node.value.slice(1)}
+						{node.value}
 					</span>
 				{:else}
 					<User {message} mention={node} />
