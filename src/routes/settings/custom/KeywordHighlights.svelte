@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Popover, Toggle } from "bits-ui";
-	import CaseSensitive from "~icons/lucide/case-sensitive";
-	import Regex from "~icons/lucide/regex";
-	import WholeWord from "~icons/lucide/whole-word";
+	import CaseSensitive from "~icons/local/case-sensitive";
+	import Regex from "~icons/local/regex";
+	import WholeWord from "~icons/local/whole-word";
 	import Plus from "~icons/ph/plus";
 	import Trash from "~icons/ph/trash";
 	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";

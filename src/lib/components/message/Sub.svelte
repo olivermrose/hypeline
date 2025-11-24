@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PrimeCrown from "~icons/local/prime-crown";
 	import Gift from "~icons/ph/gift";
 	import Star from "~icons/ph/star-fill";
 	import type { UserMessage } from "$lib/models/message/user-message";
@@ -29,15 +30,7 @@
 	<div class="flex gap-1">
 		{#if sub.type === "sub_or_resub" || sub.type === "prime_paid_upgrade" || sub.type === "gift_paid_upgrade"}
 			{#if sub.type === "sub_or_resub" && sub.sub_plan === "Prime"}
-				<svg class="fill-current" width="20" height="20" viewBox="0 0 20 20">
-					<g>
-						<path
-							fill-rule="evenodd"
-							clip-rule="evenodd"
-							d="M18 5v8a2 2 0 0 1-2 2H4a2.002 2.002 0 0 1-2-2V5l4 3 4-4 4 4 4-3z"
-						/>
-					</g>
-				</svg>
+				<PrimeCrown class="fill-current" />
 			{:else}
 				<Star class="mt-0.5 size-4 shrink-0" />
 			{/if}
