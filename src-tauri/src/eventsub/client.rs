@@ -129,8 +129,8 @@ impl<'de> Deserialize<'de> for WebSocketMessage {
 pub struct EventSubClient {
     helix: Arc<HelixClient<'static, reqwest::Client>>,
     pub token: Arc<UserToken>,
-    session_id: Arc<Mutex<Option<String>>>,
-    subscriptions: Arc<Mutex<HashMap<String, String>>>,
+    session_id: Mutex<Option<String>>,
+    subscriptions: Mutex<HashMap<String, String>>,
     sender: mpsc::UnboundedSender<NotificationPayload>,
     connected: AtomicBool,
     reconnecting: AtomicBool,
@@ -146,8 +146,8 @@ impl EventSubClient {
         let client = Self {
             helix,
             token,
-            session_id: Arc::new(Mutex::new(None)),
-            subscriptions: Arc::new(Mutex::new(HashMap::new())),
+            session_id: Mutex::new(None),
+            subscriptions: Mutex::new(HashMap::new()),
             sender,
             connected: AtomicBool::default(),
             reconnecting: AtomicBool::default(),
@@ -306,9 +306,9 @@ impl EventSubClient {
         event: EventType,
         condition: serde_json::Value,
     ) -> Result<(), Error> {
-        let session_id = self.session_id.lock().await;
+        let session_id = self.session_id.lock().await.clone();
 
-        let Some(session_id) = session_id.as_ref() else {
+        let Some(session_id) = session_id else {
             return Err(Error::Generic(anyhow!("No EventSub connection")));
         };
 

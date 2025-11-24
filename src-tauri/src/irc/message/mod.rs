@@ -89,7 +89,7 @@ impl IrcMessage {
     }
 
     pub fn parse(mut source: &str) -> Result<IrcMessage, IrcParseError> {
-        if source.chars().any(|c| c == '\r' || c == '\n') {
+        if source.contains(['\r', '\n']) {
             return Err(IrcParseError::NewlinesInMessage);
         }
 

@@ -1,5 +1,5 @@
-use std::collections::hash_map::RandomState;
 use std::collections::HashMap;
+use std::collections::hash_map::RandomState;
 use std::fmt;
 use std::fmt::Write;
 
@@ -8,13 +8,16 @@ use serde::{Deserialize, Serialize};
 use super::AsRawIrc;
 
 fn decode_tag_value(raw: &str) -> String {
-    let mut output = String::with_capacity(raw.len());
+    if !raw.contains('\\') {
+        return raw.to_owned();
+    }
 
+    let mut output = String::with_capacity(raw.len());
     let mut iter = raw.chars();
+
     while let Some(c) = iter.next() {
         if c == '\\' {
-            let next_char = iter.next();
-            match next_char {
+            match iter.next() {
                 Some(':') => output.push(';'),   // \: escapes to ;
                 Some('s') => output.push(' '),   // \s decodes to a space
                 Some('\\') => output.push('\\'), // \\ decodes to \
@@ -28,10 +31,15 @@ fn decode_tag_value(raw: &str) -> String {
             output.push(c);
         }
     }
+
     output
 }
 
 fn encode_tag_value(raw: &str) -> String {
+    if !raw.contains([';', ' ', '\\', '\r', '\n']) {
+        return raw.to_owned();
+    }
+
     let mut output = String::with_capacity((raw.len() as f64 * 1.2) as usize);
 
     for c in raw.chars() {
