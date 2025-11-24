@@ -116,10 +116,6 @@ export class CurrentUser extends User {
 	 * Retrieves the list of channels the current user is following.
 	 */
 	public async fetchFollowing() {
-		if (!app.user) {
-			throw new Error("User is not logged in");
-		}
-
 		const { user } = await this.client.send(
 			twitchGql(
 				`query GetUserFollowing($id: ID!) {
@@ -138,7 +134,7 @@ export class CurrentUser extends User {
 				}`,
 				[userDetailsFragment, streamDetailsFragment],
 			),
-			{ id: app.user.id },
+			{ id: this.id },
 		);
 
 		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
