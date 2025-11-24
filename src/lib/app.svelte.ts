@@ -7,7 +7,7 @@ import { TwitchClient } from "./twitch/client";
 import type { EmoteSet } from "./emotes";
 import type { Badge } from "./graphql/fragments";
 import type { Channel } from "./models/channel.svelte";
-import type { User } from "./models/user.svelte";
+import type { CurrentUser } from "./models/current-user";
 import type { DispatchPayload, Paint } from "./seventv";
 import type { NotificationPayload } from "./twitch/eventsub";
 import type { IrcMessage } from "./twitch/irc";
@@ -23,7 +23,7 @@ class App {
 	/**
 	 * The currently authenticated user.
 	 */
-	public user?: User;
+	public user?: CurrentUser;
 
 	/**
 	 * The currently joined channel.

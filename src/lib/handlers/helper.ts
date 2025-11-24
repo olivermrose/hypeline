@@ -1,5 +1,5 @@
 import type { Channel } from "$lib/models/channel.svelte";
-import type { User } from "$lib/models/user.svelte";
+import type { CurrentUser } from "$lib/models/current-user";
 import type { SevenTvEventMap } from "$lib/seventv";
 import type { SubscriptionEventMap } from "$lib/twitch/eventsub";
 import type { IrcMessageMap } from "$lib/twitch/irc";
@@ -23,7 +23,7 @@ interface ChannelHandler<K> {
 interface GlobalHandler<K> {
 	name: K;
 	global: true;
-	handle: (data: HandlerData<K>, user: User) => Promise<void> | void;
+	handle: (data: HandlerData<K>, user: CurrentUser) => Promise<void> | void;
 }
 
 export type Handler<K extends HandlerKey = HandlerKey> = ChannelHandler<K> | GlobalHandler<K>;

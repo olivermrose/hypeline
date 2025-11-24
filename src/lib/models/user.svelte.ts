@@ -1,21 +1,17 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
-import { invoke } from "@tauri-apps/api/core";
-import { SvelteMap, SvelteSet } from "svelte/reactivity";
+import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
-import { transform7tvEmote } from "$lib/emotes";
-import type { Emote, EmoteSet } from "$lib/emotes";
+import type { Emote } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
-import { send7tv as send } from "$lib/graphql";
-import { badgeDetailsFragment, emoteSetDetailsFragment } from "$lib/graphql/fragments";
+import { badgeDetailsFragment } from "$lib/graphql/fragments";
 import type { Badge } from "$lib/graphql/fragments";
-import { seventvGql, twitchGql } from "$lib/graphql/function";
+import { twitchGql as gql } from "$lib/graphql/function";
 import type { User as ApiUser } from "$lib/graphql/queries";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
-import type { SubscriptionAge, UserEmote } from "$lib/twitch/api";
+import type { SubscriptionAge } from "$lib/twitch/api";
 import type { TwitchClient } from "$lib/twitch/client";
 import { dedupe, makeReadable } from "$lib/util";
-import type { Whisper } from "./whisper.svelte";
 
 export interface RelationshipSubscription {
 	/**
@@ -101,19 +97,9 @@ export class User {
 	public bannerUrl: string;
 
 	/**
-	 * The ids of the channels the current user moderates for.
-	 */
-	public readonly moderating = new SvelteSet<string>();
-
-	/**
 	 * The relationships of the user to other channels.
 	 */
 	public readonly relationships = new SvelteMap<string, Relationship>();
-
-	/**
-	 * The whisper threads the user is involved in.
-	 */
-	public readonly whispers = new SvelteMap<string, Whisper>();
 
 	/**
 	 * The username of the user.
@@ -134,11 +120,10 @@ export class User {
 	 * The emotes the user is entitled to use.
 	 */
 	public readonly emotes = new SvelteMap<string, Emote>();
-	public readonly emoteSets = new Map<string, EmoteSet>();
 
 	public constructor(
 		public readonly client: TwitchClient,
-		data: ApiUser,
+		readonly data: ApiUser,
 	) {
 		this.#color = data.chatColor;
 		this.#displayName = data.displayName;
@@ -232,84 +217,6 @@ export class User {
 		return this;
 	}
 
-	public async fetchEmoteSets() {
-		const emotes = await invoke<UserEmote[]>("get_user_emotes");
-		const grouped = Map.groupBy(emotes, (emote) => emote.owner_id || "twitch");
-
-		for (const [id, emotes] of grouped) {
-			const owner = await app.twitch.users.fetch(id, {
-				by: id === "twitch" ? "login" : "id",
-			});
-
-			const mapped = emotes.map<Emote>((emote) => ({
-				provider: "Twitch",
-				id: emote.id,
-				name: emote.name,
-				width: 56,
-				height: 56,
-				srcset: emote.scale.map(
-					(d) =>
-						`https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/${d} ${d}x`,
-				),
-			}));
-
-			this.emoteSets.set(id, {
-				id,
-				name: owner.displayName,
-				owner,
-				global: id === "twitch",
-				emotes: mapped,
-			});
-		}
-
-		const { users } = await send(
-			seventvGql(
-				`query GetUserEmoteSets($id: String!) {
-					users {
-						userByConnection(platform: TWITCH, platformId: $id) {
-							personalEmoteSet {
-								...EmoteSetDetails
-							}
-							specialEmoteSets {
-								...EmoteSetDetails
-							}
-						}
-					}
-				}`,
-				[emoteSetDetailsFragment],
-			),
-			{ id: this.id },
-		);
-
-		if (users.userByConnection?.personalEmoteSet) {
-			const set = users.userByConnection.personalEmoteSet;
-
-			this.emoteSets.set(set.id, {
-				id: set.id,
-				name: `${this.displayName}: 7TV Personal Emotes`,
-				owner: this,
-				global: true,
-				emotes: set.emotes.items.map((item) => transform7tvEmote(item.emote, item.alias)),
-			});
-		}
-
-		if (users.userByConnection?.specialEmoteSets) {
-			for (const set of users.userByConnection.specialEmoteSets) {
-				this.emoteSets.set(set.id, {
-					id: set.id,
-					name: set.name,
-					owner: this,
-					global: true,
-					emotes: set.emotes.items.map((item) =>
-						transform7tvEmote(item.emote, item.alias),
-					),
-				});
-			}
-		}
-
-		return this.emoteSets;
-	}
-
 	/**
 	 * Retrieves the user's relationship to the specified channel.
 	 */
@@ -318,7 +225,7 @@ export class User {
 		if (rel) return rel;
 
 		const gqlRequest = this.client.send(
-			twitchGql(
+			gql(
 				`query GetUserBadges($user: String!, $channel: String!) {
 					channelViewer(userLogin: $user, channelLogin: $channel) {
 						earnedBadges {
