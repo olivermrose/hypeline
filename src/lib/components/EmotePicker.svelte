@@ -13,7 +13,7 @@
 	const { channel }: Props = $props();
 
 	let query = $state("");
-	let activeSet = $state<string>();
+	let activeSet = $state("");
 	let sorted = $state.raw<EmoteSet[]>([]);
 
 	let open = $derived(sorted.filter((set) => set.owner.id === channel.id).map((set) => set.id));
