@@ -5,6 +5,7 @@ import { settings } from "$lib/settings";
 import KeywordHighlights from "./custom/KeywordHighlights.svelte";
 import Theme from "./custom/Theme.svelte";
 import ViewerHighlights from "./custom/ViewerHighlights.svelte";
+import { descriptions } from "./descriptions.svelte";
 import type { Binding, SettingsCategory } from "./types";
 
 function bind<T>(get: () => T, set: (value: T) => void): Binding<T> {
@@ -54,8 +55,7 @@ export const categories: SettingsCategory[] = [
 						id: "timestamp-format-custom",
 						type: "input",
 						label: "Custom Format",
-						description:
-							'Formats use the format tokens used by <a class="text-twitch-link" href="https://day.js.org/en">Day.js</a>; view the full list of tokens and their descriptions <a class="text-twitch-link" href="https://day.js.org/docs/en/display/format">here</a> (note that localized formats are not enabled).',
+						description: descriptions.customFormat,
 						disabled: () => settings.state.appearance.timestamps.format !== "custom",
 						binding: bind(
 							() => settings.state.appearance.timestamps.customFormat,
@@ -122,8 +122,7 @@ export const categories: SettingsCategory[] = [
 						id: "emotes-ffz",
 						type: "toggle",
 						label: "Enable FFZ emotes",
-						description:
-							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://www.frankerfacez.com/">FrankerFaceZ</a>',
+						description: descriptions.ffz,
 						binding: bind(
 							() => settings.state.chat.emotes.ffz,
 							(v) => (settings.state.chat.emotes.ffz = v),
@@ -133,8 +132,7 @@ export const categories: SettingsCategory[] = [
 						id: "emotes-bttv",
 						type: "toggle",
 						label: "Enable BTTV emotes",
-						description:
-							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://betterttv.com/">BetterTTV</a>',
+						description: descriptions.bttv,
 						binding: bind(
 							() => settings.state.chat.emotes.bttv,
 							(v) => (settings.state.chat.emotes.bttv = v),
@@ -144,8 +142,7 @@ export const categories: SettingsCategory[] = [
 						id: "emotes-7tv",
 						type: "toggle",
 						label: "Enable 7TV emotes",
-						description:
-							'Show and autocomplete emotes from <a class="text-twitch-link" href="https://7tv.app/">7TV</a>',
+						description: descriptions.seventv,
 						binding: bind(
 							() => settings.state.chat.emotes.seventv,
 							(v) => (settings.state.chat.emotes.seventv = v),
@@ -176,8 +173,7 @@ export const categories: SettingsCategory[] = [
 								id: "history-enabled",
 								type: "toggle",
 								label: "Fetch recent messages upon joining a channel",
-								description:
-									'This feature uses a <a class="text-twitch-link" href="https://recent-messages.robotty.de/">third-party API</a> that temporarily stores the messages sent in joined channels. To opt-out, disable this setting.',
+								description: descriptions.recentMessages,
 								binding: bind(
 									() => settings.state.chat.messages.history.enabled,
 									(v) => (settings.state.chat.messages.history.enabled = v),

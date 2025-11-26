@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import WarningCircle from "~icons/ph/warning-circle";
 	import { page } from "$app/state";
+	import Link from "$lib/components/Link.svelte";
 	import { log } from "$lib/log";
 
 	onMount(() => {
@@ -17,9 +18,8 @@
 	<span class="text-lg font-medium">This is awkward...</span>
 
 	<p class="text-muted-foreground mt-1 max-w-md">
-		Something went wrong. If this issue persists, please file an issue on the <a
-			class="text-twitch-link underline"
-			href="https://github.com/olivermrose/hypeline">GitHub repository</a
+		Something went wrong. If this issue persists, please file an issue on the <Link
+			href="https://github.com/olivermrose/hypeline">GitHub repository</Link
 		>.
 	</p>
 </div>
