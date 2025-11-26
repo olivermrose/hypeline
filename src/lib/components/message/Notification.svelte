@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Confetti from "~icons/ph/confetti";
 	import Fire from "~icons/ph/fire";
+	import HandHeart from "~icons/ph/hand-heart";
 	import Megaphone from "~icons/ph/megaphone";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { colorizeName } from "$lib/util";
-	import Donation from "./Donation.svelte";
 	import Message from "./Message.svelte";
 	import Sub from "./Sub.svelte";
 
@@ -19,6 +19,15 @@
 		ORANGE: ["#ffb31a", "#e0e000"],
 		PURPLE: ["#9146ff", "#ff75e6"],
 	};
+
+	function formatCurrency(value: number, code: string) {
+		const formatter = new Intl.NumberFormat(navigator.languages, {
+			style: "currency",
+			currency: code,
+		});
+
+		return formatter.format(value);
+	}
 </script>
 
 {#if message.event}
@@ -62,7 +71,22 @@
 					</div>
 				{/if}
 			{:else if type === "charity_donation"}
-				<Donation data={message.event} donor={message.author} />
+				{@const amount = message.event.donation_amount / 10 ** message.event.exponent}
+
+				<div class="flex gap-1">
+					<HandHeart class="mt-0.5 size-4 shrink-0" />
+
+					<div class="flex flex-col gap-0.5">
+						{@html colorizeName(message.author)}
+
+						<p>
+							Donated <span class="font-medium"
+								>{formatCurrency(amount, message.event.donation_currency)}</span
+							>
+							to {message.event.charity_name}!
+						</p>
+					</div>
+				</div>
 			{:else if type === "standard_pay_forward"}
 				{@const gifter = message.channel.viewers.get(message.event.prior_gifter.id)}
 				{@const recipient = message.channel.viewers.get(message.event.recipient.id)}

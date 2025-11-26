@@ -50,30 +50,6 @@ export type AutoModMessageUpdate = (AutoModAutomated | AutoModBlockedTerm) &
 		status: AutoModMessageStatus;
 	};
 
-interface CharityMetadata extends WithBroadcaster {
-	charity_name: string;
-	charity_description: string;
-	charity_logo: string;
-	charity_website: string;
-}
-
-interface CharityAmount {
-	value: number;
-	decimal_places: number;
-	currency: string;
-}
-
-export interface ChannelCharityCampaignDonate extends CharityMetadata, WithBasicUser {
-	campaign_id: string;
-	amount: CharityAmount;
-}
-
-export interface ChannelCharityCampaignProgress extends CharityMetadata {}
-
-export interface ChannelCharityCampaignStart extends CharityMetadata {}
-
-export interface ChannelCharityCampaignStop extends CharityMetadata {}
-
 export interface ChannelChatUserMessageHold extends WithBroadcaster, WithBasicUser {
 	message_id: string;
 	message: StructuredMessage;
@@ -323,10 +299,6 @@ export interface StreamOnline extends WithBroadcaster {
 export interface SubscriptionEventMap {
 	"automod.message.hold": AutoModMessageHold;
 	"automod.message.update": AutoModMessageUpdate;
-	"channel.charity_campaign.donate": ChannelCharityCampaignDonate;
-	"channel.charity_campaign.progress": ChannelCharityCampaignProgress;
-	"channel.charity_campaign.start": ChannelCharityCampaignStart;
-	"channel.charity_campaign.stop": ChannelCharityCampaignStop;
 	"channel.chat.user_message_hold": ChannelChatUserMessageHold;
 	"channel.chat.user_message_update": ChannelChatUserMessageUpdate;
 	"channel.moderate": ChannelModerate;
