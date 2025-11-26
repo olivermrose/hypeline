@@ -169,7 +169,7 @@
 					<div class="flex justify-end">
 						<Button type="submit" disabled={joining}>
 							{#if joining}
-								<Spinner /> Joining...
+								<Spinner class="animate-spin" /> Joining...
 							{:else}
 								Join
 							{/if}

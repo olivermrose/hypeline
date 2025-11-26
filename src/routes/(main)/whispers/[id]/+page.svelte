@@ -2,7 +2,7 @@
 	import { onMount, tick } from "svelte";
 	import type { KeyboardEventHandler } from "svelte/elements";
 	import Timestamp from "$lib/components/Timestamp.svelte";
-	import Input from "$lib/components/ui/Input.svelte";
+	import { Input } from "$lib/components/ui/input";
 
 	const { data } = $props();
 
@@ -64,7 +64,7 @@
 
 	<div class="p-2">
 		<Input
-			class="focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0"
+			class="h-12"
 			type="text"
 			autocapitalize="off"
 			autocorrect="off"

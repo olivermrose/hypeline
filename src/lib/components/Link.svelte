@@ -10,7 +10,7 @@
 </script>
 
 <span
-	class="text-twitch-link underline hover:cursor-pointer"
+	class="text-primary hover:text-foreground underline transition-colors hover:cursor-pointer"
 	role="link"
 	tabindex="0"
 	onclick={async () => {

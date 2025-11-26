@@ -86,7 +86,7 @@
 
 	<ScrollArea.Scrollbar
 		class={[
-			"w-2 p-0.5",
+			"w-2 p-0.5 opacity-50",
 			"data-[state=hidden]:fade-out-0 data-[state=visible]:fade-in-0 data-[state=visible]:animate-in data-[state=hidden]:animate-out",
 			"group-data-[state=collapsed]:hidden",
 		]}

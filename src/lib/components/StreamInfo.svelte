@@ -1,7 +1,7 @@
 <script lang="ts">
 	import dayjs from "dayjs";
 	import duration from "dayjs/plugin/duration";
-	import { onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import Clock from "~icons/ph/clock";
 	import Users from "~icons/ph/users";
 	import type { Stream } from "$lib/graphql/fragments";
@@ -12,16 +12,17 @@
 
 	let uptime = $state(getUptime());
 
-	onMount(() => {
-		let interval: ReturnType<typeof setInterval> | undefined;
+	let interval: ReturnType<typeof setInterval> | undefined;
 
-		setTimeout(() => {
-			interval = setInterval(() => {
-				uptime = getUptime();
-			}, 1000);
-		}, 1000 - new Date().getMilliseconds());
+	const timeout = setTimeout(() => {
+		interval = setInterval(() => {
+			uptime = getUptime();
+		}, 1000);
+	}, 1000 - new Date().getMilliseconds());
 
-		return () => clearInterval(interval);
+	onDestroy(() => {
+		clearTimeout(timeout);
+		clearInterval(interval);
 	});
 
 	function getUptime() {
@@ -33,21 +34,19 @@
 </script>
 
 <div
-	class="bg-sidebar text-muted-foreground flex items-center justify-between overflow-hidden border-b p-2 text-xs"
+	class="bg-muted text-muted-foreground flex items-center justify-between overflow-hidden p-2 text-xs shadow"
 >
 	<p class="truncate" title={stream.title}>{stream.title}</p>
 
-	<div class="ml-[3ch] flex items-center gap-1">
+	<div class="ml-[3ch] flex items-center gap-2.5">
 		<div class="flex items-center">
 			<Users class="mr-1" />
-			<span class="font-medium">{stream.viewersCount}</span>
+			<span>{stream.viewersCount}</span>
 		</div>
-
-		&bullet;
 
 		<div class="flex items-center">
 			<Clock class="mr-1" />
-			<span class="font-medium tabular-nums">{uptime}</span>
+			<span class="tabular-nums">{uptime}</span>
 		</div>
 	</div>
 </div>

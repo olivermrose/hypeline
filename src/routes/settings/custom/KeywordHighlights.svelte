@@ -5,6 +5,7 @@
 	import WholeWord from "~icons/local/whole-word";
 	import Plus from "~icons/ph/plus";
 	import Trash from "~icons/ph/trash";
+	import { Button } from "$lib/components/ui/button";
 	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
 	import Input from "$lib/components/ui/Input.svelte";
 	import * as Select from "$lib/components/ui/select";
@@ -24,14 +25,10 @@
 </script>
 
 <div>
-	<button
-		class="bg-twitch mb-4 flex items-center rounded-md px-4 py-2 text-sm font-medium"
-		type="button"
-		onclick={() => settings.state.highlights.keywords.push(defaults)}
-	>
-		<Plus class="mr-1" />
+	<Button onclick={() => settings.state.highlights.keywords.push(defaults)}>
+		<Plus />
 		Add new trigger
-	</button>
+	</Button>
 
 	<div class="overflow-x-auto">
 		<div class="grid min-w-max grid-cols-[repeat(7,auto)] gap-x-3 gap-y-4">
@@ -51,7 +48,7 @@
 					aria-label="Match as regular expression"
 					bind:pressed={highlight.regex}
 				>
-					<Regex />
+					<Regex class="size-4" />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -63,7 +60,7 @@
 					aria-label="Match whole word"
 					bind:pressed={highlight.wholeWord}
 				>
-					<WholeWord />
+					<WholeWord class="size-4" />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -75,7 +72,7 @@
 					aria-label="Match case"
 					bind:pressed={highlight.matchCase}
 				>
-					<CaseSensitive />
+					<CaseSensitive class="size-4" />
 				</Toggle.Root>
 
 				<Popover.Root>
@@ -121,15 +118,15 @@
 					</Select.Content>
 				</Select.Root>
 
-				<button
-					class="dark:hover:bg-input/50 dark:bg-input/30 border-input flex size-9 items-center justify-center rounded-md border bg-transparent"
+				<Button
 					title="Delete"
-					type="button"
+					size="icon"
+					variant="destructive"
 					aria-label="Delete trigger"
 					onclick={() => settings.state.highlights.keywords.splice(i, 1)}
 				>
 					<Trash />
-				</button>
+				</Button>
 			{/each}
 		</div>
 	</div>

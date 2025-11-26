@@ -121,7 +121,7 @@ export const categories: SettingsCategory[] = [
 					{
 						id: "emotes-ffz",
 						type: "toggle",
-						label: "Enable FFZ emotes",
+						label: "Enable FrankerFaceZ emotes",
 						description: descriptions.ffz,
 						binding: bind(
 							() => settings.state.chat.emotes.ffz,
@@ -131,7 +131,7 @@ export const categories: SettingsCategory[] = [
 					{
 						id: "emotes-bttv",
 						type: "toggle",
-						label: "Enable BTTV emotes",
+						label: "Enable BetterTTV emotes",
 						description: descriptions.bttv,
 						binding: bind(
 							() => settings.state.chat.emotes.bttv,

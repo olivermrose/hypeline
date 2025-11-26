@@ -11,16 +11,16 @@
 </script>
 
 <RadioGroup.Root
-	class="flex items-center gap-6"
+	class="flex items-center gap-4"
 	bind:value={() => userPrefersMode.current, (value) => setMode(value)}
 >
 	{#each themes as theme (theme.value)}
 		<Label.Root class="flex flex-col items-center gap-2">
 			<RadioGroup.Item
 				class={[
-					"flex size-16 items-center justify-center rounded-full border border-neutral-500",
+					"flex size-16 items-center justify-center rounded-lg border",
 					theme.class,
-					userPrefersMode.current === theme.value && "border-twitch border-2",
+					userPrefersMode.current === theme.value && "border-primary border-2",
 				]}
 				value={theme.value}
 			>

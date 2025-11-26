@@ -1,16 +1,19 @@
 <script lang="ts">
-	import Field from "./Field.svelte";
+	import * as Field from "$lib/components/ui/field";
+	import FieldControl from "./FieldControl.svelte";
 	import type { SettingsCategory } from "./types";
 
 	const { category }: { category: SettingsCategory } = $props();
 </script>
 
-<div class="space-y-6">
-	<h1>{category.label}</h1>
+<Field.Set>
+	<Field.Legend class="text-2xl!">{category.label}</Field.Legend>
 
-	<div class="divide-border divide-y *:py-6 *:first:pt-0 *:last:pb-0">
-		{#each category.fields as field}
-			<Field {field} />
-		{/each}
-	</div>
-</div>
+	{#each category.fields as field, i}
+		<FieldControl {field} />
+
+		{#if i < category.fields.length - 1}
+			<Field.Separator />
+		{/if}
+	{/each}
+</Field.Set>

@@ -12,7 +12,7 @@
 			<Sidebar />
 		{/if}
 
-		<main class={["grow overflow-hidden", settings.state.user && "border-l"]}>
+		<main class={["bg-accent/20 grow overflow-hidden", settings.state.user && "border-l"]}>
 			{@render children()}
 		</main>
 	</div>

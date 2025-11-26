@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { Popover } from "bits-ui";
 	import ArrowClockwise from "~icons/ph/arrow-clockwise";
+	import { Button } from "$lib/components/ui/button";
 	import ColorPicker from "$lib/components/ui/ColorPicker.svelte";
-	import * as Select from "$lib/components/ui/select";
+	import * as NativeSelect from "$lib/components/ui/native-select";
 	import { defaultHighlightTypes, settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
 	import { highlightStyles as styles } from "../highlights";
@@ -46,8 +47,8 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<Select.Root
-				type="single"
+			<NativeSelect.Root
+				class="min-w-36"
 				bind:value={
 					() => (hlType.enabled ? hlType.style : "disabled"),
 					(value) => {
@@ -60,30 +61,22 @@
 					}
 				}
 			>
-				<Select.Trigger class="w-full min-w-36">
-					{hlType.enabled
-						? styles.find((h) => h.value === hlType.style)!.label
-						: "Disabled"}
-				</Select.Trigger>
+				{#each styles as style}
+					<NativeSelect.Option value={style.value}>
+						{style.label}
+					</NativeSelect.Option>
+				{/each}
+			</NativeSelect.Root>
 
-				<Select.Content>
-					{#each styles as style}
-						<Select.Item class="hover:cursor-pointer" value={style.value}>
-							{style.label}
-						</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
-
-			<button
-				class="dark:hover:bg-input/50 dark:bg-input/30 border-input flex size-9 items-center justify-center rounded-md border bg-transparent"
-				title="Reset to default"
-				type="button"
+			<Button
+				title="Reset"
+				size="icon"
+				variant="outline"
 				aria-label="Reset to default"
 				onclick={() => reset(highlight.value)}
 			>
 				<ArrowClockwise />
-			</button>
+			</Button>
 		{/each}
 	</div>
 </div>

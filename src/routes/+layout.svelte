@@ -24,7 +24,7 @@
 <Toaster duration={3000} richColors />
 <ModeWatcher />
 
-<div class="flex max-h-screen flex-col">
+<div class="flex h-screen flex-col overflow-hidden">
 	<TitleBar />
 
 	{@render children()}
