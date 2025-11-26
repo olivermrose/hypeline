@@ -7,6 +7,13 @@ import type { User } from "./models/user.svelte";
 import type { Fragment } from "./twitch/eventsub";
 import type { Emote } from "./twitch/irc";
 
+export type {
+	WithElementRef,
+	WithoutChild,
+	WithoutChildren,
+	WithoutChildrenOrChild,
+} from "bits-ui";
+
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export type Prefix<T, P extends string> = {

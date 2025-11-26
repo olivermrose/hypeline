@@ -39,14 +39,14 @@
 
 	<div class="ml-[3ch] flex items-center gap-1">
 		<div class="flex items-center">
-			<Users class="mr-1 size-4" />
+			<Users class="mr-1" />
 			<span class="font-medium">{stream.viewersCount}</span>
 		</div>
 
 		&bullet;
 
 		<div class="flex items-center">
-			<Clock class="mr-1 size-4" />
+			<Clock class="mr-1" />
 			<span class="font-medium tabular-nums">{uptime}</span>
 		</div>
 	</div>

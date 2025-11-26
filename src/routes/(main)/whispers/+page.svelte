@@ -3,6 +3,7 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { Attachment } from "svelte/attachments";
 	import ChatDots from "~icons/ph/chat-dots";
+	import * as Empty from "$lib/components/ui/empty";
 
 	dayjs.extend(relativeTime);
 
@@ -85,10 +86,19 @@
 		</div>
 	{/if}
 {:else}
-	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<ChatDots class="mb-4 size-8" />
+	<Empty.Root class="h-full">
+		<Empty.Header>
+			<Empty.Media variant="icon">
+				<ChatDots />
+			</Empty.Media>
 
-		<span class="text-lg font-medium">No Whispers</span>
-		<p class="text-muted-foreground">Any whispers you receive will appear here</p>
-	</div>
+			<Empty.Title>No whispers</Empty.Title>
+
+			<Empty.Description>Any whispers you receive will appear here.</Empty.Description>
+		</Empty.Header>
+
+		<!-- <Empty.Content>
+			<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
+		</Empty.Content> -->
+	</Empty.Root>
 {/each}

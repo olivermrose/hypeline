@@ -1,18 +1,30 @@
 <script lang="ts">
-	import { Combobox, Dialog } from "bits-ui";
+	import { Combobox } from "bits-ui";
+	import type { Snippet } from "svelte";
+	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import { suggestionsQuery } from "$lib/graphql/queries";
 	import type { SearchSuggestionChannel } from "$lib/graphql/queries";
 	import { Channel } from "$lib/models/channel.svelte";
 	import { debounce } from "$lib/util";
+	import { Button } from "./ui/button";
+	import * as Dialog from "./ui/dialog";
 	import Input from "./ui/Input.svelte";
+	import { Label } from "./ui/label";
 
-	let { open = $bindable(false) } = $props();
+	interface Props {
+		children: Snippet;
+		class?: string;
+		open?: boolean;
+	}
+
+	let { children, class: className = "", open = $bindable(false) }: Props = $props();
 
 	let value = $state("");
 	let error = $state<string | null>(null);
 	let suggestions = $state<SearchSuggestionChannel[]>([]);
+	let joining = $state(false);
 
 	const suggest = debounce(search, 300);
 
@@ -38,6 +50,7 @@
 	}
 
 	async function join(event: SubmitEvent) {
+		joining = true;
 		event.preventDefault();
 
 		const form = event.currentTarget as HTMLFormElement;
@@ -65,6 +78,7 @@
 		}
 
 		await goto(`/channels/${channel.user.username}`);
+		joining = false;
 		open = false;
 	}
 </script>
@@ -79,27 +93,27 @@
 	}}
 	bind:open
 >
+	<Dialog.Trigger class={className}>
+		{@render children()}
+	</Dialog.Trigger>
+
 	<Dialog.Portal>
-		<Dialog.Overlay
-			class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50"
-		/>
+		<Dialog.Overlay />
 
-		<Dialog.Content
-			class="bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border p-4 shadow-lg duration-200"
-		>
-			<div>
-				<Dialog.Title class="text-xl font-semibold">Join a channel</Dialog.Title>
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>Join a channel</Dialog.Title>
 
-				<p class="text-muted-foreground text-sm">
+				<Dialog.Description>
 					This channel will only last during the current session. Qutting the application
 					will automatically leave the channel and remove it from the channel list.
-				</p>
-			</div>
+				</Dialog.Description>
+			</Dialog.Header>
 
 			<form class="space-y-4" onsubmit={join}>
 				<Combobox.Root type="single" loop onValueChange={(v) => (value = v)}>
 					<div class="flex flex-col gap-1.5">
-						<label class="block text-sm font-medium" for="name"> Channel name </label>
+						<Label for="name">Channel name</Label>
 
 						<Combobox.Input id="name">
 							{#snippet child({ props })}
@@ -153,12 +167,13 @@
 					{/if}
 
 					<div class="flex justify-end">
-						<button
-							class="bg-twitch rounded-md px-3.5 py-2 text-sm font-medium text-white"
-							type="submit"
-						>
-							Join
-						</button>
+						<Button type="submit" disabled={joining}>
+							{#if joining}
+								<Spinner /> Joining...
+							{:else}
+								Join
+							{/if}
+						</Button>
 					</div>
 				</Combobox.Root>
 			</form>

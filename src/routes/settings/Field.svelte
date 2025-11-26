@@ -2,7 +2,7 @@
 	import { RadioGroup, Slider, Switch } from "bits-ui";
 	import type { Snippet } from "svelte";
 	import Input from "$lib/components/ui/Input.svelte";
-	import Label from "$lib/components/ui/Label.svelte";
+	import { Label } from "$lib/components/ui/label";
 	import Field from "./Field.svelte";
 	import type { SettingsField } from "./types";
 

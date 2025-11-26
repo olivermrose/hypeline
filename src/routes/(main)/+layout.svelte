@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Tooltip } from "bits-ui";
 	import Sidebar from "$lib/components/Sidebar.svelte";
+	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { settings } from "$lib/settings";
 
 	const { children } = $props();
@@ -12,12 +12,7 @@
 			<Sidebar />
 		{/if}
 
-		<main
-			class={[
-				"grow overflow-hidden",
-				settings.state.user && "rounded-tl-lg border-t border-l",
-			]}
-		>
+		<main class={["grow overflow-hidden", settings.state.user && "border-l"]}>
 			{@render children()}
 		</main>
 	</div>

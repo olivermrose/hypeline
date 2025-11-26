@@ -29,7 +29,7 @@
 		type="button"
 		onclick={() => settings.state.highlights.keywords.push(defaults)}
 	>
-		<Plus class="mr-1 size-4" />
+		<Plus class="mr-1" />
 		Add new trigger
 	</button>
 
@@ -51,7 +51,7 @@
 					aria-label="Match as regular expression"
 					bind:pressed={highlight.regex}
 				>
-					<Regex class="size-4" />
+					<Regex />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -63,7 +63,7 @@
 					aria-label="Match whole word"
 					bind:pressed={highlight.wholeWord}
 				>
-					<WholeWord class="size-4" />
+					<WholeWord />
 				</Toggle.Root>
 
 				<Toggle.Root
@@ -75,7 +75,7 @@
 					aria-label="Match case"
 					bind:pressed={highlight.matchCase}
 				>
-					<CaseSensitive class="size-4" />
+					<CaseSensitive />
 				</Toggle.Root>
 
 				<Popover.Root>
@@ -128,7 +128,7 @@
 					aria-label="Delete trigger"
 					onclick={() => settings.state.highlights.keywords.splice(i, 1)}
 				>
-					<Trash class="size-4" />
+					<Trash />
 				</button>
 			{/each}
 		</div>

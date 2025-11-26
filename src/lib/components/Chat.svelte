@@ -35,6 +35,16 @@
 		}
 	});
 
+	function pin(element: Element) {
+		const observer = new ResizeObserver(() => {
+			if (!scrollingPaused) scrollToEnd();
+		});
+
+		observer.observe(element);
+
+		return () => observer.disconnect();
+	}
+
 	function scrollToEnd() {
 		list?.scrollToIndex(chat.messages.length - 1, { align: "end" });
 	}
@@ -52,13 +62,7 @@
 	}
 </script>
 
-<svelte:window
-	onresize={() => {
-		if (!scrollingPaused) scrollToEnd();
-	}}
-/>
-
-<div class="relative h-full">
+<div class="relative h-full" {@attach pin}>
 	{#if scrollingPaused}
 		<button
 			class="bg-twitch/40 absolute bottom-0 z-10 flex w-full items-center justify-center rounded-t-md border px-2 py-1 text-xs font-medium backdrop-blur-lg"

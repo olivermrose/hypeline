@@ -147,7 +147,7 @@
 							<span class="text-foreground">&bullet;</span>
 
 							<div class="flex items-center">
-								<Eye class="mr-1 size-4" />
+								<Eye class="mr-1" />
 								{clip.viewCount} views
 							</div>
 						</div>

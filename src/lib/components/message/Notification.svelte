@@ -41,7 +41,7 @@
 			style:border-image-source="linear-gradient({stops[0]}, {stops[1]})"
 		>
 			<div class="bg-muted flex items-center px-2.5 py-1.5 text-xs font-medium">
-				<Megaphone class="mr-2 size-4 -scale-x-100" /> Announcement
+				<Megaphone class="mr-2 -scale-x-100" /> Announcement
 			</div>
 
 			<div class="bg-muted/50 p-1.5">
@@ -57,7 +57,7 @@
 		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">
-					<Confetti class="mt-px size-4 shrink-0" />
+					<Confetti class="mt-px shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}
@@ -150,7 +150,7 @@
 				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
-					<Fire class="mt-px size-4 shrink-0" />
+					<Fire class="mt-px shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}

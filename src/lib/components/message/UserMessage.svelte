@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ArrowBendUpRight from "~icons/ph/arrow-bend-up-right";
 	import { app } from "$lib/app.svelte";
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
@@ -118,10 +119,8 @@
 		{#if message.reply}
 			{@const user = message.channel.viewers.get(message.reply.parent.user.id)}
 
-			<div class="mb-1 flex items-center gap-2">
-				<div
-					class="border-muted-foreground mt-1 ml-2 h-2 w-6 rounded-tl-lg border-2 border-r-0 border-b-0"
-				></div>
+			<div class="mb-0.5 flex items-center gap-2">
+				<ArrowBendUpRight class="text-muted-foreground ml-1 shrink-0 scale-x-125" />
 
 				<div class="line-clamp-1 text-xs">
 					<span style={getMentionStyle(user)}>

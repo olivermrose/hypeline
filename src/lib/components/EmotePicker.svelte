@@ -77,10 +77,10 @@
 		return () => emoteSets.clear();
 	});
 
-	function observe(node: HTMLElement) {
-		observer.observe(node);
+	function observe(element: HTMLElement) {
+		observer.observe(element);
 
-		return () => observer.unobserve(node);
+		return () => observer.unobserve(element);
 	}
 
 	function addProvider(provider: EmoteProvider) {

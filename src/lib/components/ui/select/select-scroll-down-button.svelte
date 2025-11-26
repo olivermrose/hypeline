@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Select as SelectPrimitive } from "bits-ui";
-	import type { WithoutChildrenOrChild } from "bits-ui";
-	import CaretDown from "~icons/ph/caret-down";
-	import { cn } from "$lib/util";
+	import ChevronDownIcon from "~icons/ph/caret-down";
+	import { cn } from "$lib/util.js";
+	import type { WithoutChildrenOrChild } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),
@@ -13,9 +13,9 @@
 
 <SelectPrimitive.ScrollDownButton
 	bind:ref
-	data-slot="select-scroll-up-button"
+	data-slot="select-scroll-down-button"
 	class={cn("flex cursor-default items-center justify-center py-1", className)}
 	{...restProps}
 >
-	<CaretDown class="size-4" />
+	<ChevronDownIcon class="size-4" />
 </SelectPrimitive.ScrollDownButton>

@@ -90,17 +90,17 @@
 				disabled={page.data.detached}
 				onclick={detach}
 			>
-				<ArrowSquareOut class="size-4" />
+				<ArrowSquareOut />
 				<span class="text-sm">Popout settings</span>
 			</button>
 
 			<button class="text-muted-foreground" type="button" onclick={openLogDir}>
-				<FolderOpen class="size-4" />
+				<FolderOpen />
 				<span class="text-sm">Open logs</span>
 			</button>
 
 			<button class="text-muted-foreground" type="button" onclick={copyDebugInfo}>
-				<Clipboard class="size-4" />
+				<Clipboard />
 				<span class="text-sm">Copy debug info</span>
 			</button>
 		</div>
@@ -113,7 +113,7 @@
 			data-logout
 			onclick={() => goto("/auth/logout")}
 		>
-			<SignOut class="size-4" />
+			<SignOut />
 			<span class="text-sm">Log out</span>
 		</button>
 	</nav>

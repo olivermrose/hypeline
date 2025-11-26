@@ -1,70 +1,154 @@
 <script lang="ts">
-	import { window } from "@tauri-apps/api";
 	import type { UnlistenFn } from "@tauri-apps/api/event";
-	import { platform } from "@tauri-apps/plugin-os";
+	import { getAllWindows, getCurrentWindow } from "@tauri-apps/api/window";
+	import { platform as getPlatform } from "@tauri-apps/plugin-os";
 	import { onDestroy, onMount } from "svelte";
 	import type { HTMLButtonAttributes } from "svelte/elements";
-	import { browser } from "$app/environment";
+	import ArrowLeft from "~icons/ph/arrow-left";
+	import ArrowRight from "~icons/ph/arrow-right";
+	import Gear from "~icons/ph/gear";
+	import User from "~icons/ph/user";
+	import { afterNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
+	import { app } from "$lib/app.svelte";
+	import { History } from "$lib/history.svelte";
+	import { Button } from "./ui/button";
 
 	type ControlType = "minimize" | "maximize" | "close";
 
+	const history = new History();
+
+	const currentWindow = getCurrentWindow();
+	const platform = getPlatform();
+
+	let unlisten: UnlistenFn | undefined;
+
+	let maximized = $state(false);
 	const { icon, title } = $derived(
 		page.data.titleBar ?? { icon: "/favicon.png", title: "Hypeline" },
 	);
 
-	const platformName = $derived(browser ? platform() : undefined);
-	const current = $derived(browser ? window.getCurrentWindow() : undefined);
-
-	let id: number | undefined;
-	let unlisten: UnlistenFn | undefined;
-
-	let maximized = $state(false);
-
 	onMount(async () => {
-		if (!current) return;
+		if (!currentWindow) return;
 
-		unlisten = await current.onResized(async () => {
-			maximized = await current.isMaximized();
+		unlisten = await currentWindow.onResized(async () => {
+			maximized = await currentWindow.isMaximized();
 		});
 	});
 
 	onDestroy(() => unlisten?.());
+
+	afterNavigate((navigation) => {
+		if (!navigation.to) return;
+
+		if (navigation.type === "link" || navigation.type === "goto") {
+			history.push(navigation.to.url.pathname);
+		}
+	});
+
+	async function openSettings() {
+		const windows = await getAllWindows();
+		const settingsWindow = windows.find((win) => win.label === "settings");
+
+		if (settingsWindow) {
+			await settingsWindow.setFocus();
+		} else {
+			await goto("/settings");
+		}
+	}
 </script>
 
 <div
-	class="min-h-title-bar relative flex w-full shrink-0 items-center justify-center gap-1.5"
+	class="min-h-title-bar relative flex w-full shrink-0 items-center justify-between border-b"
 	data-tauri-drag-region
 >
-	{#if typeof icon === "string"}
-		<img class="size-5 rounded-full" src={icon} alt={title} data-tauri-drag-region />
-	{:else}
-		{@const Icon = icon}
-		<Icon class="size-4" data-tauri-drag-region />
-	{/if}
+	<div
+		class={[
+			"text-muted-foreground flex items-center gap-0.5",
+			platform === "macos" && "pl-18",
+			platform === "windows" && "pl-3",
+		]}
+		data-tauri-drag-region
+	>
+		<Button
+			class="hover:text-foreground size-min p-1"
+			size="icon"
+			variant="ghost"
+			disabled={!history.canGoBack}
+			onclick={() => history.back()}
+		>
+			<ArrowLeft />
+		</Button>
 
-	<span class="pointer-events-none text-sm font-medium" data-tauri-drag-region>
-		{title}
-	</span>
+		<Button
+			class="hover:text-foreground size-min p-1"
+			size="icon"
+			variant="ghost"
+			disabled={!history.canGoForward}
+			onclick={() => history.forward()}
+		>
+			<ArrowRight />
+		</Button>
+	</div>
 
-	{#if platformName === "windows"}
-		<div class="absolute top-0 right-0 flex">
-			{@render control("minimize", {
-				onclick: () => current?.minimize(),
-			})}
+	<div
+		class="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1.5"
+		data-tauri-drag-region
+	>
+		{#if typeof icon === "string"}
+			<img class="size-5 rounded-full" src={icon} alt={title} data-tauri-drag-region />
+		{:else}
+			{@const Icon = icon}
+			<Icon class="size-4" data-tauri-drag-region />
+		{/if}
 
-			{@render control("maximize", {
-				onclick: () => current?.toggleMaximize(),
-			})}
+		<span class="pointer-events-none text-sm font-medium">
+			{title}
+		</span>
+	</div>
 
-			{@render control("close", {
-				onclick: () => {
-					clearTimeout(id);
-					current?.close();
-				},
-			})}
+	<div class="flex items-center justify-end" data-tauri-drag-region>
+		<div class="text-muted-foreground flex items-center gap-0.5 pr-3">
+			{#if app.user}
+				<Button
+					class="hover:text-foreground size-min p-1"
+					href="/channels/{app.user.username}"
+					size="icon"
+					variant="ghost"
+					aria-label="Go to your channel"
+					data-sveltekit-preload-data="off"
+				>
+					<User />
+				</Button>
+			{/if}
+
+			<Button
+				class="hover:text-foreground size-min p-1"
+				size="icon"
+				variant="ghost"
+				aria-label="Go to settings"
+				onclick={openSettings}
+			>
+				<Gear />
+			</Button>
 		</div>
-	{/if}
+
+		{#if platform === "windows"}
+			<div class="flex">
+				{@render control("minimize", {
+					onclick: () => currentWindow?.minimize(),
+				})}
+
+				{@render control("maximize", {
+					onclick: () => currentWindow?.toggleMaximize(),
+				})}
+
+				{@render control("close", {
+					onclick: () => currentWindow?.close(),
+				})}
+			</div>
+		{/if}
+	</div>
 </div>
 
 {#snippet control(type: ControlType, rest: HTMLButtonAttributes)}

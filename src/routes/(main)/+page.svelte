@@ -4,6 +4,9 @@
 	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
+	import JoinDialog from "$lib/components/JoinDialog.svelte";
+	import { buttonVariants } from "$lib/components/ui/button";
+	import * as Empty from "$lib/components/ui/empty";
 	import { settings } from "$lib/settings";
 
 	let loading = $state(true);
@@ -24,17 +27,26 @@
 </script>
 
 {#if loading}
-	<div class="flex size-full items-center justify-center gap-x-2 text-lg">
+	<div class="flex size-full flex-col items-center justify-center">
 		<Spinner class="size-6 animate-spin" />
-		Loading
+		<span class="mt-2 text-lg font-medium">Loading</span>
 	</div>
 {:else}
-	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<ChatDots class="mb-4 size-8" />
+	<Empty.Root class="h-full">
+		<Empty.Header>
+			<Empty.Media variant="icon">
+				<ChatDots />
+			</Empty.Media>
 
-		<span class="text-lg font-medium">No Channel Selected</span>
-		<p class="text-muted-foreground">
-			Select a channel from your following list to start chatting
-		</p>
-	</div>
+			<Empty.Title>No channel selected</Empty.Title>
+
+			<Empty.Description>
+				Select a channel from your following list or search for a channel to start chatting.
+			</Empty.Description>
+		</Empty.Header>
+
+		<Empty.Content>
+			<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
+		</Empty.Content>
+	</Empty.Root>
 {/if}

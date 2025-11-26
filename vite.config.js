@@ -18,6 +18,12 @@ export default defineConfig(async () => ({
 			customCollections: {
 				local: FileSystemIconLoader("./src/assets/icons"),
 			},
+			iconCustomizer(collection, _icon, props) {
+				if (collection === "ph") {
+					props.width = "1em";
+					props.height = "1em";
+				}
+			},
 		}),
 	],
 	clearScreen: false,

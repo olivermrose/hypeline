@@ -33,10 +33,10 @@
 			{#if sub.type === "sub_or_resub" && sub.sub_plan === "Prime"}
 				<PrimeCrown class="fill-current" />
 			{:else}
-				<Star class="mt-0.5 size-4 shrink-0" />
+				<Star class="mt-0.5 shrink-0" />
 			{/if}
 		{:else}
-			<Gift class="mt-px size-4 shrink-0" />
+			<Gift class="mt-px shrink-0" />
 		{/if}
 
 		{#if sub.type === "sub_or_resub"}

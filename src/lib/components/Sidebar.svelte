@@ -1,75 +1,86 @@
 <script lang="ts">
-	import { getAllWebviewWindows } from "@tauri-apps/api/webviewWindow";
 	import { ScrollArea } from "bits-ui";
-	import Chat from "~icons/ph/chat";
-	import Gear from "~icons/ph/gear";
+	import { MediaQuery } from "svelte/reactivity";
+	import Chats from "~icons/ph/chats";
 	import Plus from "~icons/ph/plus";
-	import { goto } from "$app/navigation";
+	import Sidebar from "~icons/ph/sidebar";
 	import { app } from "$lib/app.svelte";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
+	import { Button, buttonVariants } from "./ui/button";
 
-	let joinOpen = $state(false);
+	let collapsed = $state(new MediaQuery("(width < 48rem)").current);
 
 	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
-
-	async function openSettings() {
-		const windows = await getAllWebviewWindows();
-		const settingsWindow = windows.find((win) => win.label === "settings");
-
-		if (settingsWindow) {
-			await settingsWindow.setFocus();
-		} else {
-			await goto("/settings");
-		}
-	}
 </script>
 
-<JoinDialog bind:open={joinOpen} />
+<svelte:document
+	onkeydown={(event) => {
+		if (event.repeat) return;
 
-<ScrollArea.Root>
+		if ((event.metaKey || event.ctrlKey) && event.key === "b") {
+			collapsed = !collapsed;
+		}
+	}}
+/>
+
+<ScrollArea.Root class="group" data-state={collapsed ? "collapsed" : "expanded"}>
 	<ScrollArea.Viewport class="h-full">
-		<nav class="min-h-full space-y-4 p-3 pt-0">
-			<div class="space-y-2.5">
-				<button
-					class="sidebar-button"
-					title="Settings"
-					type="button"
-					onclick={openSettings}
-					aria-label="Open settings"
-				>
-					<Gear />
-				</button>
+		<div id="sidebar-actions" class="flex flex-col gap-1 px-1.5 py-1">
+			<Button
+				class="text-muted-foreground hover:text-foreground relative size-11 group-data-[state=expanded]:w-full"
+				href="/whispers"
+				variant="ghost"
+			>
+				{#if collapsed && unread}
+					<div
+						class="absolute -top-1/3 -right-1/3 flex size-5 -translate-x-1/3 translate-y-1/3 items-center justify-center rounded-full bg-red-500 text-xs font-medium shadow-md"
+					>
+						{unread}
+					</div>
+				{/if}
 
-				<a
-					class="sidebar-button relative"
-					title="Whispers"
-					href="/whispers"
-					aria-label="Go to whispers"
-				>
-					{#if unread}
-						<div
-							class="absolute -top-1/3 -right-1/3 flex size-5 -translate-x-1/3 translate-y-1/3 items-center justify-center rounded-full bg-red-500 text-xs font-medium shadow-md"
-						>
-							{unread > 9 ? "9+" : unread}
-						</div>
-					{/if}
+				<Chats />
 
-					<Chat />
-				</a>
+				{#if !collapsed}
+					<div class="flex w-full items-center justify-between">
+						<span>Whispers</span>
 
-				<button
-					class="sidebar-button"
-					title="Join a channel"
-					type="button"
-					onclick={() => (joinOpen = true)}
-					aria-label="Join a channel"
-				>
-					<Plus />
-				</button>
-			</div>
+						{#if unread}
+							<div
+								class="flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium"
+							>
+								{unread}
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</Button>
 
-			<ChannelList />
+			<JoinDialog
+				class={buttonVariants({
+					class: "text-muted-foreground hover:text-foreground size-11 group-data-[state=expanded]:w-full group-data-[state=expanded]:justify-start",
+					variant: "ghost",
+				})}
+			>
+				<Plus />
+
+				<span class="group-data-[state=collapsed]:hidden">Join a channel</span>
+			</JoinDialog>
+
+			<Button
+				class="text-muted-foreground hover:text-foreground size-11 group-data-[state=expanded]:w-full group-data-[state=expanded]:justify-start"
+				variant="ghost"
+				onclick={() => (collapsed = !collapsed)}
+			>
+				<Sidebar />
+
+				<span class="group-data-[state=collapsed]:hidden">Collapse sidebar</span>
+			</Button>
+		</div>
+
+		<nav class={["space-y-1.5 pb-3", collapsed ? "w-fit" : "w-56"]}>
+			<ChannelList {collapsed} />
 		</nav>
 	</ScrollArea.Viewport>
 
@@ -77,29 +88,10 @@
 		class={[
 			"w-2 p-0.5",
 			"data-[state=hidden]:fade-out-0 data-[state=visible]:fade-in-0 data-[state=visible]:animate-in data-[state=hidden]:animate-out",
+			"group-data-[state=collapsed]:hidden",
 		]}
 		orientation="vertical"
 	>
 		<ScrollArea.Thumb class="bg-muted-foreground/80 rounded-full" />
 	</ScrollArea.Scrollbar>
 </ScrollArea.Root>
-
-<style>
-	@reference "../../app.css";
-
-	.sidebar-button {
-		background: var(--color-twitch);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: --spacing(10);
-		height: --spacing(10);
-		border-radius: var(--radius-md);
-
-		:global(svg) {
-			width: --spacing(5);
-			height: --spacing(5);
-			color: white;
-		}
-	}
-</style>
