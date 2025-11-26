@@ -1,5 +1,4 @@
 import { app } from "$lib/app.svelte";
-import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -10,6 +9,6 @@ export default defineHandler({
 		const tier = data.tier === "Prime" ? "Prime" : `Tier ${data.tier[0]}`;
 		const text = `Your ${data.is_gift ? "gifted" : ""} ${tier} subscription has ended.`;
 
-		channel.chat.addMessage(new SystemMessage(text));
+		channel.chat.addSystemMessage(text);
 	},
 });

@@ -8,6 +8,7 @@ import { commands } from "../commands";
 import { SystemMessage } from "./message/system-message";
 import { Viewer } from "./viewer.svelte";
 import type { Channel } from "./channel.svelte";
+import type { MessageContext } from "./message/context";
 import type { Message } from "./message/message.svelte";
 import type { UserMessage } from "./message/user-message";
 
@@ -101,6 +102,19 @@ export class Chat {
 		}
 
 		return this;
+	}
+
+	public addSystemMessage(content: string | MessageContext) {
+		let message: SystemMessage;
+
+		if (typeof content === "string") {
+			message = new SystemMessage(this.channel, content);
+		} else {
+			message = new SystemMessage(this.channel);
+			message.context = content;
+		}
+
+		return this.addMessage(message);
 	}
 
 	public addCommands(commands: Command[]) {
@@ -266,7 +280,7 @@ export class Chat {
 			const reason = data.drop_reason.message;
 
 			log.warn(`Message dropped: ${reason}`);
-			this.addMessage(new SystemMessage(reason));
+			this.addMessage(new SystemMessage(this.channel, reason));
 		}
 	}
 

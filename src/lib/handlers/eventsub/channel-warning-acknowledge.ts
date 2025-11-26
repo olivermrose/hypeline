@@ -1,4 +1,3 @@
-import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -6,11 +5,9 @@ export default defineHandler({
 	async handle(data, channel) {
 		const viewer = await channel.viewers.fetch(data.user_id);
 
-		channel.chat.addMessage(
-			SystemMessage.fromContext({
-				type: "warnAck",
-				viewer,
-			}),
-		);
+		channel.chat.addSystemMessage({
+			type: "warnAck",
+			viewer,
+		});
 	},
 });

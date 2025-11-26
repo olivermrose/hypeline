@@ -11,7 +11,7 @@ export default defineHandler({
 			return;
 		}
 
-		const message = new SystemMessage(data);
+		const message = new SystemMessage(channel, data);
 
 		if (data.action.type === "clear") {
 			channel.chat.deleteMessages();
@@ -35,7 +35,7 @@ export default defineHandler({
 
 			if (!data.is_recent && target.id === app.user?.id) {
 				app.user.banned = true;
-				message.context = { type: "banned", channel };
+				message.context = { type: "banned" };
 			}
 		} else {
 			message.context = {

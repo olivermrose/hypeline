@@ -1,4 +1,5 @@
 import type { BaseUserMessage } from "$lib/twitch/irc";
+import type { Channel } from "../channel.svelte";
 import type { SystemMessage, SystemMessageData } from "./system-message";
 import type { UserMessage } from "./user-message";
 
@@ -33,6 +34,10 @@ export abstract class Message {
 	public recent: boolean;
 
 	public constructor(
+		/**
+		 * The channel the message was sent in.
+		 */
+		public readonly channel: Channel,
 		public readonly data: MessageData,
 		system = false,
 	) {

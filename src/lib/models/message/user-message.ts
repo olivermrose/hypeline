@@ -91,13 +91,10 @@ export class UserMessage extends Message {
 	public autoMod: AutoModMetadata | null = null;
 
 	public constructor(
-		/**
-		 * The channel the message was sent in.
-		 */
-		public readonly channel: Channel,
+		channel: Channel,
 		public readonly data: PrivmsgMessage | UserNoticeMessage,
 	) {
-		super(data);
+		super(channel, data);
 
 		const viewer = channel.viewers.get(data.sender.id);
 

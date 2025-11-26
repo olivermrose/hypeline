@@ -7,7 +7,7 @@ export default defineCommand({
 	name: "founders",
 	description: "Display a list of founders for this channel",
 	async exec(_, channel) {
-		const message = new SystemMessage();
+		const message = new SystemMessage(channel);
 
 		const { user } = await channel.client.send(
 			gql(`query GetFounders($id: ID!) {

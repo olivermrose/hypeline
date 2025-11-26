@@ -67,7 +67,7 @@
 			{#if ctx.type === "blockStatus"}
 				{ctx.blocked ? "Blocked" : "Unblocked"} {@html colorizeName(ctx.user)}
 			{:else if ctx.type === "join"}
-				Joined {@html colorizeName(ctx.channel.user)}
+				Joined {@html colorizeName(message.channel.user)}
 			{:else if ctx.type === "raid"}
 				{@html colorizeName(ctx.moderator)} is raiding {@html colorizeName(ctx.user)} with {@html ctx.viewers}
 				viewers.
@@ -101,9 +101,9 @@
 {/snippet}
 
 {#snippet banned(ctx: BannedContext)}
-	You are permanently banned from {@html colorizeName(ctx.channel.user)} and cannot send messages.
+	You are permanently banned from {@html colorizeName(message.channel.user)} and cannot send messages.
 	If you have been unbanned, try
-	<button class="text-twitch-link" type="button" onclick={() => ctx.channel.rejoin()}>
+	<button class="text-twitch-link" type="button" onclick={() => message.channel.rejoin()}>
 		rejoining
 	</button>.
 {/snippet}
@@ -172,13 +172,13 @@
 {/snippet}
 
 {#snippet roleStatus(ctx: RoleStatusContext)}
-	{@html colorizeName(ctx.broadcaster)}
+	{@html colorizeName(message.channel.user)}
 	{ctx.added ? "added" : "removed"}
 	{@html colorizeName(ctx.viewer)} as a {ctx.role}.
 {/snippet}
 
 {#snippet streamStatus(ctx: StreamStatusContext)}
-	{@html colorizeName(ctx.broadcaster)} is now {ctx.online ? "online" : "offline"}.
+	{@html colorizeName(message.channel.user)} is now {ctx.online ? "online" : "offline"}.
 {/snippet}
 
 {#snippet suspicionStatus(ctx: SuspicionStatusContext)}

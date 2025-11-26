@@ -27,10 +27,7 @@ export default defineCommand({
 		const format = duration.asHours() > 0 ? "H[h] mm[m] ss[s]" : "mm[m] ss[s]";
 
 		const echo = description ? `: ${description}` : "";
-		const message = new SystemMessage(
-			`Stream marker created at ${duration.format(format) + echo}`,
-		);
 
-		channel.chat.addMessage(message);
+		channel.chat.addSystemMessage(`Stream marker created at ${duration.format(format) + echo}`);
 	},
 });
