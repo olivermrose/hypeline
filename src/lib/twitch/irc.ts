@@ -196,6 +196,14 @@ export interface CommunityPayForwardEvent {
 	gifter: BasicUser;
 }
 
+export interface CharityDonationEvent {
+	type: "charity_donation";
+	charity_name: string;
+	donation_amount: number;
+	donation_currency: string;
+	exponent: number;
+}
+
 export interface SubOrResubEvent {
 	type: "sub_or_resub";
 	is_resub: boolean;
@@ -283,6 +291,7 @@ export type UserNoticeEvent =
 	| AnnouncementEvent
 	| StandardPayForwardEvent
 	| CommunityPayForwardEvent
+	| CharityDonationEvent
 	| SubOrResubEvent
 	| RaidEvent
 	| UnraidEvent

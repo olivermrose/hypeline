@@ -50,7 +50,7 @@ export type AutoModMessageUpdate = (AutoModAutomated | AutoModBlockedTerm) &
 		status: AutoModMessageStatus;
 	};
 
-export interface ChannelChatUserMessageHold extends WithBasicUser, WithBroadcaster {
+export interface ChannelChatUserMessageHold extends WithBroadcaster, WithBasicUser {
 	message_id: string;
 	message: StructuredMessage;
 }
@@ -208,7 +208,7 @@ export type ChannelModerate =
 	| VipAction
 	| WarnAction;
 
-export interface ChannelSubscriptionEnd extends WithBasicUser, WithBroadcaster {
+export interface ChannelSubscriptionEnd extends WithBroadcaster, WithBasicUser {
 	tier: string;
 	is_gift: boolean;
 }
@@ -251,7 +251,7 @@ export interface StructuredMessage {
 	fragments: Fragment[];
 }
 
-export interface ChannelSuspiciousUserMessage extends WithBasicUser, WithBroadcaster {
+export interface ChannelSuspiciousUserMessage extends WithBroadcaster, WithBasicUser {
 	low_trust_status: SuspiciousUserStatus;
 	shared_ban_channel_ids: string[] | null;
 	types: SuspiciousUserType[];
@@ -259,11 +259,11 @@ export interface ChannelSuspiciousUserMessage extends WithBasicUser, WithBroadca
 	message: StructuredMessage;
 }
 
-export interface ChannelSuspiciousUserUpdate extends WithBasicUser, WithBroadcaster, WithModerator {
+export interface ChannelSuspiciousUserUpdate extends WithBroadcaster, WithModerator, WithBasicUser {
 	low_trust_status: SuspiciousUserStatus;
 }
 
-export interface ChannelUnbanRequestCreate extends WithBasicUser, WithBroadcaster {
+export interface ChannelUnbanRequestCreate extends WithBroadcaster, WithBasicUser {
 	id: string;
 	text: string;
 	created_at: string;

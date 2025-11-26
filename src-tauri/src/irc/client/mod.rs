@@ -6,8 +6,8 @@ use std::sync::Arc;
 use event_loop::{ClientLoopCommand, ClientLoopWorker};
 use tokio::sync::{mpsc, oneshot};
 
-use super::message::ServerMessage;
 use super::ClientConfig;
+use super::message::ServerMessage;
 
 #[derive(Debug, Clone)]
 pub struct IrcClient {
