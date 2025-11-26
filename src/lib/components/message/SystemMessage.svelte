@@ -174,7 +174,7 @@
 {#snippet roleStatus(ctx: RoleStatusContext)}
 	{@html colorizeName(message.channel.user)}
 	{ctx.added ? "added" : "removed"}
-	{@html colorizeName(message.channel.user)} as a {ctx.role}.
+	{@html colorizeName(ctx.viewer)} as a {ctx.role}.
 {/snippet}
 
 {#snippet streamStatus(ctx: StreamStatusContext)}
