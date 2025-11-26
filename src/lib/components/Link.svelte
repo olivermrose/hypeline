@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from "svelte/elements";
 
 	interface Props extends HTMLAttributes<HTMLSpanElement> {
-		href: string;
+		href?: string;
 	}
 
 	const { children, href, ...rest }: Props = $props();
@@ -13,9 +13,13 @@
 	class="text-twitch-link underline hover:cursor-pointer"
 	role="link"
 	tabindex="0"
-	onclick={() => openUrl(href)}
-	onkeydown={(event) => {
-		if (event.key === "Enter") openUrl(href);
+	onclick={async () => {
+		if (href) await openUrl(href);
+	}}
+	onkeydown={async (event) => {
+		if (event.key === "Enter" && href) {
+			await openUrl(href);
+		}
 	}}
 	{...rest}
 >

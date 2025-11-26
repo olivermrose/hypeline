@@ -1,9 +1,11 @@
 <script lang="ts" module>
-	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
+	import type { ComponentProps } from "svelte";
+	import type { HTMLButtonAttributes } from "svelte/elements";
 	import { tv } from "tailwind-variants";
 	import type { VariantProps } from "tailwind-variants";
-	import { cn } from "$lib/util.js";
-	import type { WithElementRef } from "$lib/util.js";
+	import Link from "$lib/components/Link.svelte";
+	import { cn } from "$lib/util";
+	import type { WithElementRef } from "$lib/util";
 
 	export const buttonVariants = tv({
 		base: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-colors focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -37,7 +39,7 @@
 	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
 
 	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
-		WithElementRef<HTMLAnchorAttributes> & {
+		WithElementRef<ComponentProps<typeof Link>> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
 		};
@@ -58,18 +60,31 @@
 </script>
 
 {#if href}
-	<a
-		bind:this={ref}
-		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
-		href={disabled ? undefined : href}
-		aria-disabled={disabled}
-		role={disabled ? "link" : undefined}
-		tabindex={disabled ? -1 : undefined}
-		{...restProps}
-	>
-		{@render children?.()}
-	</a>
+	{#if href.startsWith("http")}
+		<a
+			data-slot="button"
+			class={cn(buttonVariants({ variant, size }), className)}
+			href={disabled ? undefined : href}
+			aria-disabled={disabled}
+			role={disabled ? "link" : undefined}
+			tabindex={disabled ? -1 : undefined}
+			{...restProps}
+		>
+			{@render children?.()}
+		</a>
+	{:else}
+		<Link
+			data-slot="button"
+			class={cn(buttonVariants({ variant, size }), className)}
+			href={disabled ? undefined : href}
+			aria-disabled={disabled}
+			role={disabled ? "link" : undefined}
+			tabindex={disabled ? -1 : undefined}
+			{...restProps}
+		>
+			{@render children?.()}
+		</Link>
+	{/if}
 {:else}
 	<button
 		bind:this={ref}
