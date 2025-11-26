@@ -6,12 +6,12 @@
 </script>
 
 <script lang="ts">
-	import { openUrl } from "@tauri-apps/plugin-opener";
 	import { app } from "$lib/app.svelte";
 	import type { Badge } from "$lib/graphql/fragments";
 	import type { LinkNode } from "$lib/models/message/parse";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import Emote from "../Emote.svelte";
+	import Link from "../Link.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import Tooltip from "../ui/Tooltip.svelte";
 	import User from "../User.svelte";
@@ -77,18 +77,11 @@
 >
 	{#each message.nodes as node, i}
 		{#if node.type === "link"}
-			<svelte:element
-				this={node.marked ? "mark" : "span"}
-				class={[
-					"wrap-anywhere underline hover:cursor-pointer",
-					!node.marked && "text-twitch-link",
-				]}
-				role="link"
-				tabindex="-1"
-				onclick={() => openUrl(node.data.url.toString())}
-			>
-				{node.value}
-			</svelte:element>
+			{#if node.marked}
+				<mark class="wrap-anywhere">{node.value}</mark>
+			{:else}
+				<Link href={node.data.url.toString()}>{node.value}</Link>
+			{/if}
 		{:else if node.type === "mention"}
 			{#if !message.reply || (message.reply && i > 0)}
 				{#if node.marked}
