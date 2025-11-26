@@ -61,18 +61,6 @@
 
 {#if href}
 	{#if href.startsWith("http")}
-		<a
-			data-slot="button"
-			class={cn(buttonVariants({ variant, size }), className)}
-			href={disabled ? undefined : href}
-			aria-disabled={disabled}
-			role={disabled ? "link" : undefined}
-			tabindex={disabled ? -1 : undefined}
-			{...restProps}
-		>
-			{@render children?.()}
-		</a>
-	{:else}
 		<Link
 			data-slot="button"
 			class={cn(buttonVariants({ variant, size }), className)}
@@ -84,6 +72,18 @@
 		>
 			{@render children?.()}
 		</Link>
+	{:else}
+		<a
+			data-slot="button"
+			class={cn(buttonVariants({ variant, size }), className)}
+			href={disabled ? undefined : href}
+			aria-disabled={disabled}
+			role={disabled ? "link" : undefined}
+			tabindex={disabled ? -1 : undefined}
+			{...restProps}
+		>
+			{@render children?.()}
+		</a>
 	{/if}
 {:else}
 	<button
