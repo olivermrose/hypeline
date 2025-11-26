@@ -103,6 +103,10 @@ pub async fn join(
             use EventType as Ev;
 
             let mut events = vec![
+                (Ev::ChannelCharityCampaignDonate, &ch_cond),
+                (Ev::ChannelCharityCampaignProgress, &ch_cond),
+                (Ev::ChannelCharityCampaignStart, &ch_cond),
+                (Ev::ChannelCharityCampaignStop, &ch_cond),
                 (Ev::ChannelChatUserMessageHold, &ch_with_user_cond),
                 (Ev::ChannelChatUserMessageUpdate, &ch_with_user_cond),
                 (Ev::ChannelSubscriptionEnd, &ch_cond),

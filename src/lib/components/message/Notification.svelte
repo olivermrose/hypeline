@@ -4,6 +4,7 @@
 	import Megaphone from "~icons/ph/megaphone";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { colorizeName } from "$lib/util";
+	import Donation from "./Donation.svelte";
 	import Message from "./Message.svelte";
 	import Sub from "./Sub.svelte";
 
@@ -60,6 +61,8 @@
 						<Message {message} />
 					</div>
 				{/if}
+			{:else if type === "charity_donation"}
+				<Donation data={message.event} donor={message.author} />
 			{:else if type === "standard_pay_forward"}
 				{@const gifter = message.channel.viewers.get(message.event.prior_gifter.id)}
 				{@const recipient = message.channel.viewers.get(message.event.recipient.id)}

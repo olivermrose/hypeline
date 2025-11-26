@@ -535,6 +535,12 @@ pub enum UserNoticeEvent {
     CommunityPayForward {
         gifter: BasicUser,
     },
+	CharityDonation {
+		charity_name: String,
+		donation_amount: u64,
+		donation_currency: String,
+		exponent: u64,
+	},
     SubOrResub {
         is_resub: bool,
         cumulative_months: u64,
@@ -658,6 +664,18 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                         .to_owned(),
                 },
             },
+			"charitydonation" => UserNoticeEvent::CharityDonation {
+				charity_name: source
+					.try_get_nonempty_tag_value("msg-param-charity-name")?
+					.to_owned(),
+				donation_amount: source
+					.try_get_number("msg-param-donation-amount")?,
+				donation_currency: source
+					.try_get_nonempty_tag_value("msg-param-donation-currency")?
+					.to_owned(),
+				exponent: source
+					.try_get_number("msg-param-exponent")?,
+			},
             "sub" | "resub" => UserNoticeEvent::SubOrResub {
                 is_resub: event_id == "resub",
                 cumulative_months: source.try_get_number("msg-param-cumulative-months")?,

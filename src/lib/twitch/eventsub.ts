@@ -50,7 +50,31 @@ export type AutoModMessageUpdate = (AutoModAutomated | AutoModBlockedTerm) &
 		status: AutoModMessageStatus;
 	};
 
-export interface ChannelChatUserMessageHold extends WithBasicUser, WithBroadcaster {
+interface CharityMetadata extends WithBroadcaster {
+	charity_name: string;
+	charity_description: string;
+	charity_logo: string;
+	charity_website: string;
+}
+
+interface CharityAmount {
+	value: number;
+	decimal_places: number;
+	currency: string;
+}
+
+export interface ChannelCharityCampaignDonate extends CharityMetadata, WithBasicUser {
+	campaign_id: string;
+	amount: CharityAmount;
+}
+
+export interface ChannelCharityCampaignProgress extends CharityMetadata {}
+
+export interface ChannelCharityCampaignStart extends CharityMetadata {}
+
+export interface ChannelCharityCampaignStop extends CharityMetadata {}
+
+export interface ChannelChatUserMessageHold extends WithBroadcaster, WithBasicUser {
 	message_id: string;
 	message: StructuredMessage;
 }
@@ -208,7 +232,7 @@ export type ChannelModerate =
 	| VipAction
 	| WarnAction;
 
-export interface ChannelSubscriptionEnd extends WithBasicUser, WithBroadcaster {
+export interface ChannelSubscriptionEnd extends WithBroadcaster, WithBasicUser {
 	tier: string;
 	is_gift: boolean;
 }
@@ -251,7 +275,7 @@ export interface StructuredMessage {
 	fragments: Fragment[];
 }
 
-export interface ChannelSuspiciousUserMessage extends WithBasicUser, WithBroadcaster {
+export interface ChannelSuspiciousUserMessage extends WithBroadcaster, WithBasicUser {
 	low_trust_status: SuspiciousUserStatus;
 	shared_ban_channel_ids: string[] | null;
 	types: SuspiciousUserType[];
@@ -259,11 +283,11 @@ export interface ChannelSuspiciousUserMessage extends WithBasicUser, WithBroadca
 	message: StructuredMessage;
 }
 
-export interface ChannelSuspiciousUserUpdate extends WithBasicUser, WithBroadcaster, WithModerator {
+export interface ChannelSuspiciousUserUpdate extends WithBroadcaster, WithModerator, WithBasicUser {
 	low_trust_status: SuspiciousUserStatus;
 }
 
-export interface ChannelUnbanRequestCreate extends WithBasicUser, WithBroadcaster {
+export interface ChannelUnbanRequestCreate extends WithBroadcaster, WithBasicUser {
 	id: string;
 	text: string;
 	created_at: string;
@@ -299,6 +323,10 @@ export interface StreamOnline extends WithBroadcaster {
 export interface SubscriptionEventMap {
 	"automod.message.hold": AutoModMessageHold;
 	"automod.message.update": AutoModMessageUpdate;
+	"channel.charity_campaign.donate": ChannelCharityCampaignDonate;
+	"channel.charity_campaign.progress": ChannelCharityCampaignProgress;
+	"channel.charity_campaign.start": ChannelCharityCampaignStart;
+	"channel.charity_campaign.stop": ChannelCharityCampaignStop;
 	"channel.chat.user_message_hold": ChannelChatUserMessageHold;
 	"channel.chat.user_message_update": ChannelChatUserMessageUpdate;
 	"channel.moderate": ChannelModerate;
