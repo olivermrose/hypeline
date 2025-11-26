@@ -1,10 +1,10 @@
 use serde::Deserialize;
-use tauri::{async_runtime, AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, async_runtime};
 use tracing::Instrument;
 
+use crate::HTTP;
 use crate::error::Error;
 use crate::irc::message::{IrcMessage, ServerMessage};
-use crate::HTTP;
 
 #[derive(Debug, Deserialize)]
 struct RecentMessages {

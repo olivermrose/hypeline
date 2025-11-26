@@ -4,8 +4,8 @@ use std::time::Instant;
 
 use tokio::sync::oneshot;
 
-use crate::irc::connection::Connection;
 use crate::irc::ClientConfig;
+use crate::irc::connection::Connection;
 
 pub(crate) struct PoolConnection {
     config: Arc<ClientConfig>,

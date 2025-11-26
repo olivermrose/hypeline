@@ -1,5 +1,5 @@
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use tauri::{AppHandle, Emitter, Manager, Url};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -7,9 +7,9 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::Mutex;
 use tracing::Instrument;
 
+use crate::AppState;
 use crate::api::set_access_token;
 use crate::error::Error;
-use crate::AppState;
 
 const ADDR: &str = "127.0.0.1:55331";
 
