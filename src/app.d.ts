@@ -12,10 +12,6 @@ declare global {
 			detached?: boolean;
 			titleBar?: TitleBar;
 		}
-
-		interface PageState {
-			tab?: string;
-		}
 	}
 
 	interface RegExpConstructor {
