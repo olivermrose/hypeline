@@ -1,4 +1,3 @@
-import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -9,12 +8,9 @@ export default defineHandler({
 
 		channel.stream = await channel.fetchStream();
 
-		channel.chat.addMessage(
-			SystemMessage.fromContext({
-				type: "streamStatus",
-				online: true,
-				broadcaster,
-			}),
-		);
+		channel.chat.addSystemMessage({
+			type: "streamStatus",
+			online: true,
+		});
 	},
 });

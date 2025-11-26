@@ -1,5 +1,4 @@
 import { log } from "$lib/log";
-import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -15,7 +14,7 @@ export default defineHandler({
 		viewer.broadcaster = true;
 		viewer.moderator = true;
 
-		channel.chat.messages.push(SystemMessage.fromContext({ type: "join", channel }));
+		channel.chat.addSystemMessage({ type: "join" });
 
 		log.info(`Joined ${channel.user.displayName}`);
 	},

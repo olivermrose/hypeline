@@ -1,3 +1,4 @@
+import type { Channel } from "../channel.svelte";
 import { Message } from "./message.svelte";
 import type { MessageContext } from "./context";
 
@@ -20,10 +21,11 @@ export class SystemMessage extends Message {
 	 */
 	public context: MessageContext | null = null;
 
-	public constructor(data?: string | Partial<SystemMessageData>) {
+	public constructor(channel: Channel, data?: string | Partial<SystemMessageData>) {
 		const args = typeof data === "string" ? undefined : (data ?? {});
 
 		super(
+			channel,
 			{
 				deleted: args?.deleted ?? false,
 				is_recent: args?.is_recent ?? false,
@@ -35,12 +37,5 @@ export class SystemMessage extends Message {
 		if (typeof data === "string") {
 			this.text = data;
 		}
-	}
-
-	public static fromContext(context: MessageContext) {
-		const message = new this();
-		message.context = context;
-
-		return message;
 	}
 }

@@ -1,5 +1,4 @@
 import { app } from "$lib/app.svelte";
-import { SystemMessage } from "$lib/models/message/system-message";
 import { defineCommand, getTarget } from "../util";
 
 export default defineCommand({
@@ -12,12 +11,10 @@ export default defineCommand({
 
 		await app.twitch.users.unblock(target.id);
 
-		const message = SystemMessage.fromContext({
+		channel.chat.addSystemMessage({
 			type: "blockStatus",
 			blocked: false,
 			user: target.user,
 		});
-
-		channel.chat.addMessage(message);
 	},
 });

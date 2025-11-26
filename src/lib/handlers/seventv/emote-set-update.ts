@@ -45,7 +45,7 @@ export default defineHandler({
 			if (!twitch) return;
 
 			const actor = await channel.viewers.fetch(twitch.id);
-			const message = new SystemMessage();
+			const message = new SystemMessage(channel);
 
 			for (const change of data.pushed ?? []) {
 				const emote = transform(change.value);

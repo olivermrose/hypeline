@@ -6,7 +6,6 @@ import type {
 	ChannelUnbanRequestResolve,
 	WarnMetadata,
 } from "$lib/twitch/eventsub";
-import type { Channel } from "../channel.svelte";
 import type { User } from "../user.svelte";
 import type { Viewer } from "../viewer.svelte";
 
@@ -19,7 +18,6 @@ export interface AutoModContext {
 
 export interface BannedContext {
 	type: "banned";
-	channel: Channel;
 }
 
 export interface BanStatusContext {
@@ -64,7 +62,6 @@ export interface EmoteSetUpdateContext {
 
 export interface JoinContext {
 	type: "join";
-	channel: Channel;
 }
 
 export interface ModeContext {
@@ -87,13 +84,11 @@ export interface RoleStatusContext {
 	role: string;
 	added: boolean;
 	viewer: Viewer;
-	broadcaster: Viewer;
 }
 
 export interface StreamStatusContext {
 	type: "streamStatus";
 	online: boolean;
-	broadcaster: Viewer;
 }
 
 export interface SuspicionStatusContext {

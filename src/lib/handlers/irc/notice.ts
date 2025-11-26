@@ -9,7 +9,7 @@ export default defineHandler({
 			return;
 		}
 
-		const message = new SystemMessage({
+		const message = new SystemMessage(channel, {
 			deleted: data.deleted,
 			is_recent: data.is_recent,
 			server_timestamp: data.recent_timestamp ?? Date.now(),
@@ -40,7 +40,7 @@ export default defineHandler({
 					app.user.banned = true;
 				}
 
-				message.context = { type: "banned", channel };
+				message.context = { type: "banned" };
 				break;
 			}
 		}

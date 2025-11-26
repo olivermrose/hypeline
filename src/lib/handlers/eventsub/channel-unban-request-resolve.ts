@@ -1,4 +1,3 @@
-import { SystemMessage } from "$lib/models/message/system-message";
 import type { Viewer } from "$lib/models/viewer.svelte";
 import { defineHandler } from "../helper";
 
@@ -13,13 +12,11 @@ export default defineHandler({
 			moderator = await channel.viewers.fetch(data.moderator_user_id);
 		}
 
-		channel.chat.addMessage(
-			SystemMessage.fromContext({
-				type: "unbanRequest",
-				request: data,
-				viewer,
-				moderator,
-			}),
-		);
+		channel.chat.addSystemMessage({
+			type: "unbanRequest",
+			request: data,
+			viewer,
+			moderator,
+		});
 	},
 });

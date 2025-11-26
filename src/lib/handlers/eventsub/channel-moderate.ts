@@ -4,7 +4,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "channel.moderate",
 	async handle(data, channel) {
-		const message = new SystemMessage();
+		const message = new SystemMessage(channel);
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
 		switch (data.action) {
@@ -160,7 +160,6 @@ export default defineHandler({
 					role: "moderator",
 					added,
 					viewer,
-					broadcaster: moderator,
 				};
 
 				break;
@@ -176,7 +175,6 @@ export default defineHandler({
 					role: "VIP",
 					added,
 					viewer,
-					broadcaster: moderator,
 				};
 
 				break;

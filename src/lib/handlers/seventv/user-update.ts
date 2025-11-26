@@ -5,7 +5,7 @@ import { defineHandler } from "../helper";
 export default defineHandler({
 	name: "user.update",
 	async handle(data, channel) {
-		const message = new SystemMessage();
+		const message = new SystemMessage(channel);
 
 		const root = data.updated?.find((c) => c.key === "connections");
 		if (!root) return;
