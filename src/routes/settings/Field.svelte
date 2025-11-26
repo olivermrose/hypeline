@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { RadioGroup, Slider, Switch } from "bits-ui";
+	import type { Snippet } from "svelte";
 	import Input from "$lib/components/ui/Input.svelte";
 	import Label from "$lib/components/ui/Label.svelte";
 	import Field from "./Field.svelte";
@@ -133,10 +134,14 @@
 	</div>
 {/if}
 
-{#snippet description(description?: string)}
+{#snippet description(description?: string | Snippet)}
 	{#if description}
 		<p class="text-muted-foreground text-sm">
-			{@html description}
+			{#if typeof description === "string"}
+				{@html description}
+			{:else}
+				{@render description()}
+			{/if}
 		</p>
 	{/if}
 {/snippet}
