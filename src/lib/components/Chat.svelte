@@ -127,7 +127,7 @@
 			{@const next = chat.messages.at(i + 1)}
 
 			{#if message.recent && !next?.recent}
-				<div class="text-twitch relative px-3.5">
+				<div class="relative px-3.5 text-red-500">
 					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
 
 					<div

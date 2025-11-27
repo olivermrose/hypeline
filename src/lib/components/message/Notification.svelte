@@ -37,14 +37,14 @@
 		{@const stops = colors[message.event.color]}
 
 		<div
-			class="my-1 border-x-6 [border-image-slice:1]"
+			class="my-1 border-x-4 [border-image-slice:1]"
 			style:border-image-source="linear-gradient({stops[0]}, {stops[1]})"
 		>
 			<div class="bg-muted flex items-center px-2.5 py-1.5 text-xs font-medium">
-				<Megaphone class="mr-2 -scale-x-100" /> Announcement
+				<Megaphone class="mr-2 size-4 -scale-x-100" /> Announcement
 			</div>
 
-			<div class="bg-muted/50 p-1.5">
+			<div class="bg-muted/50 p-2">
 				<Message {message} />
 			</div>
 		</div>

@@ -17,9 +17,7 @@
 
 {#if field.type === "group"}
 	<Field.Set>
-		<Field.Legend>
-			{field.label}
-		</Field.Legend>
+		<Field.Legend>{field.label}</Field.Legend>
 
 		<Field.Group>
 			{#each field.fields as subField}
@@ -93,9 +91,7 @@
 {:else if field.type === "toggle"}
 	<Field.Field orientation="horizontal">
 		<Field.Content>
-			<Field.Label for={field.id}>
-				{field.label}
-			</Field.Label>
+			<Field.Label for={field.id}>{field.label}</Field.Label>
 
 			{@render description(field.description)}
 		</Field.Content>

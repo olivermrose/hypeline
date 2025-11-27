@@ -36,7 +36,7 @@
 			<div class="mr-1 size-1.5 rounded-full bg-current/50"></div>
 
 			<span class="text-xs">
-				{topMostActive?.label ?? "No active chat modes"}
+				{topMostActive?.label ?? "No chat restrictions"}
 			</span>
 		</Popover.Trigger>
 

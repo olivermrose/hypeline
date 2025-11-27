@@ -32,15 +32,7 @@
 				href="/whispers"
 				variant="ghost"
 			>
-				{#if collapsed && unread}
-					<div
-						class="absolute -top-1/3 -right-1/3 flex size-5 -translate-x-1/3 translate-y-1/3 items-center justify-center rounded-full bg-red-500 text-xs font-medium shadow-md"
-					>
-						{unread}
-					</div>
-				{/if}
-
-				<Chats />
+				<Chats class={[collapsed && unread && "animate-pulse"]} />
 
 				{#if !collapsed}
 					<div class="flex w-full items-center justify-between">
@@ -48,12 +40,14 @@
 
 						{#if unread}
 							<div
-								class="flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium"
+								class="text-foreground flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-medium"
 							>
 								{unread}
 							</div>
 						{/if}
 					</div>
+				{:else if unread}
+					<div class="absolute top-2 right-2 size-2 rounded-full bg-red-500"></div>
 				{/if}
 			</Button>
 
