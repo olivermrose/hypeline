@@ -39,12 +39,14 @@
 					--highlight={hlType.color}
 				/>
 
-				<Popover.Content class="w-60" sideOffset={10}>
-					<ColorPicker
-						class="bg-background rounded-md border p-3"
-						bind:value={hlType.color}
-					/>
-				</Popover.Content>
+				<Popover.Portal>
+					<Popover.Content class="w-60" sideOffset={10}>
+						<ColorPicker
+							class="bg-popover rounded-md border p-3"
+							bind:value={hlType.color}
+						/>
+					</Popover.Content>
+				</Popover.Portal>
 			</Popover.Root>
 
 			<NativeSelect.Root

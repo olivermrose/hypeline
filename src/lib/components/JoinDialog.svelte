@@ -11,7 +11,7 @@
 	import { debounce } from "$lib/util";
 	import { Button } from "./ui/button";
 	import * as Dialog from "./ui/dialog";
-	import Input from "./ui/Input.svelte";
+	import { Input } from "./ui/input";
 	import { Label } from "./ui/label";
 
 	interface Props {
@@ -121,9 +121,11 @@
 					<Combobox.Input id="name">
 						{#snippet child({ props })}
 							<Input
+								class="text-sm"
 								type="text"
 								autocapitalize="off"
 								autocorrect="off"
+								placeholder="Search for a channel"
 								bind:value
 								{...props}
 							/>
