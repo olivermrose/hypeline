@@ -11,6 +11,7 @@
 	let { open = $bindable(false) } = $props();
 
 	let value = $state("");
+	let error = $state<string | null>(null);
 	let suggestions = $state<SearchSuggestionChannel[]>([]);
 
 	const suggest = debounce(search, 300);
@@ -20,6 +21,7 @@
 	});
 
 	async function search(query: string) {
+		error = null;
 		suggestions = [];
 
 		if (!query) return;
@@ -44,12 +46,22 @@
 		let channel = app.channels.find((c) => c.user.username === input.value.toLowerCase());
 
 		if (!channel) {
-			const user = await app.twitch.users.fetch(input.value, { by: "login" });
+			try {
+				const user = await app.twitch.users.fetch(input.value, { by: "login" });
 
-			channel = new Channel(app.twitch, user);
-			channel.ephemeral = true;
+				channel = new Channel(app.twitch, user);
+				channel.ephemeral = true;
 
-			app.channels.push(channel);
+				app.channels.push(channel);
+			} catch (err) {
+				if (err instanceof Error) {
+					error = err.message;
+				} else {
+					error = "An unknown error occurred.";
+				}
+
+				return;
+			}
 		}
 
 		await goto(`/channels/${channel.user.username}`);
@@ -61,6 +73,7 @@
 	onOpenChange={(open) => {
 		if (!open) {
 			value = "";
+			error = null;
 			suggestions = [];
 		}
 	}}
@@ -85,10 +98,8 @@
 
 			<form class="space-y-4" onsubmit={join}>
 				<Combobox.Root type="single" loop onValueChange={(v) => (value = v)}>
-					<div>
-						<label class="mb-1.5 block text-sm font-medium" for="name">
-							Channel name
-						</label>
+					<div class="flex flex-col gap-1.5">
+						<label class="block text-sm font-medium" for="name"> Channel name </label>
 
 						<Combobox.Input id="name">
 							{#snippet child({ props })}
@@ -101,6 +112,10 @@
 								/>
 							{/snippet}
 						</Combobox.Input>
+
+						{#if error}
+							<p class="text-destructive text-xs">{error}</p>
+						{/if}
 					</div>
 
 					{#if suggestions.length}
