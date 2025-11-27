@@ -38,7 +38,9 @@
 	export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
 	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
 
-	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
+	export type ButtonProps = (WithElementRef<HTMLButtonAttributes> & {
+		onclickwait?: (event: MouseEvent) => Promise<any>;
+	}) &
 		WithElementRef<ComponentProps<typeof Link>> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
@@ -55,6 +57,8 @@
 		type = "button",
 		disabled,
 		children,
+		onclick,
+		onclickwait,
 		...restProps
 	}: ButtonProps = $props();
 </script>
@@ -92,6 +96,15 @@
 		class={cn(buttonVariants({ variant, size }), className)}
 		{type}
 		{disabled}
+		onclick={async (event) => {
+			if (onclickwait) {
+				disabled = true;
+				await onclickwait(event);
+				disabled = false;
+			} else {
+				onclick?.(event);
+			}
+		}}
 		{...restProps}
 	>
 		{@render children?.()}
