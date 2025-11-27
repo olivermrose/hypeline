@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import WarningCircle from "~icons/ph/warning-circle";
 	import { page } from "$app/state";
 	import Link from "$lib/components/Link.svelte";
 	import { log } from "$lib/log";
 
-	onMount(() => {
-		if (page.error) {
-			log.error(`[${page.status}]: ${page.error.message}`);
-		}
-	});
+	if (page.error) {
+		log.error(`[${page.status}]: ${page.error.message}`);
+	}
 </script>
 
 <div class="flex size-full flex-col items-center justify-center p-6 text-center">
