@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Separator, Toolbar } from "bits-ui";
+	import { Toolbar } from "bits-ui";
 	import ArrowBendUpLeft from "~icons/ph/arrow-bend-up-left";
 	import Clipboard from "~icons/ph/clipboard";
 	import Clock from "~icons/ph/clock";
@@ -7,6 +7,7 @@
 	import Trash from "~icons/ph/trash";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { cn } from "$lib/util";
+	import { Separator } from "./ui/separator";
 
 	interface Props {
 		class?: string;
@@ -41,7 +42,7 @@
 	</Toolbar.Button>
 
 	{#if message.actionable}
-		<Separator.Root class="bg-border h-4 w-px" orientation="vertical" />
+		<Separator orientation="vertical" />
 
 		<Toolbar.Button
 			class="hover:bg-muted-foreground/50 flex items-center justify-center rounded-sm p-1 text-blue-400"

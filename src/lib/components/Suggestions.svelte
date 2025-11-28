@@ -53,7 +53,7 @@
 >
 	<Combobox.Portal>
 		<Combobox.Content
-			class="bg-card z-50 max-h-72 w-(--bits-combobox-anchor-width) overflow-y-auto rounded-md border p-1 shadow-lg"
+			class="bg-popover text-popover-foreground flex max-h-72 w-(--bits-combobox-anchor-width) flex-col overflow-y-auto rounded-md border p-1"
 			customAnchor={anchor}
 			side="top"
 			sideOffset={8}
@@ -61,7 +61,7 @@
 			{#each suggestions as suggestion, i (suggestion.value)}
 				<Combobox.Item
 					class={[
-						"flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none hover:cursor-pointer",
+						"relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
 						"data-current:bg-accent data-current:text-accent-foreground",
 					]}
 					title={suggestion.display}

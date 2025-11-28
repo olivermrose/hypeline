@@ -18,6 +18,7 @@
 
 	const { class: className, chat, ...rest }: Props = $props();
 
+	let anchor = $state<HTMLElement | null>(null);
 	let input = $state<HTMLInputElement | null>(null);
 	let completer = $state<Completer>();
 	let value = $state("");
@@ -119,7 +120,7 @@
 </script>
 
 <Suggestions
-	anchor={input}
+	{anchor}
 	open={showSuggestions}
 	index={completer?.current ?? 0}
 	suggestions={completer?.suggestions ?? []}
@@ -161,13 +162,13 @@
 {/if}
 
 <div class="flex flex-col gap-1.5">
-	<InputGroup.Root class="h-12">
+	<InputGroup.Root class="h-12" bind:ref={anchor}>
 		<InputGroup.Input
 			class={[(chat.replyTarget || error) && "rounded-t-none", className]}
 			type="text"
-			disabled={app.user?.banned}
 			autocapitalize="off"
 			autocorrect="off"
+			disabled={app.user?.banned}
 			maxlength={500}
 			placeholder={app.user?.banned ? "You are banned from the channel" : "Send a message"}
 			oninput={() => completer?.search()}

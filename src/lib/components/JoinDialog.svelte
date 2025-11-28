@@ -140,7 +140,9 @@
 
 				{#if suggestions.length}
 					<Combobox.Content
-						class="bg-popover mt-2 max-h-72 w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) overflow-y-auto rounded-lg border p-1"
+						class="bg-popover text-popover-foreground flex max-h-72 w-(--bits-combobox-anchor-width) flex-col overflow-y-auto rounded-md border p-1"
+						side="bottom"
+						sideOffset={8}
 					>
 						{#each suggestions as channel (channel.id)}
 							{@const { displayName } = channel.user!}
