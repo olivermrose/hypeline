@@ -28,4 +28,9 @@ export class History {
 			history.forward();
 		}
 	}
+
+	public reset() {
+		this.#stack = [];
+		this.#index = 0;
+	}
 }

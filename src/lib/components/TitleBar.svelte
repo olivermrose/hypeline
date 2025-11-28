@@ -11,12 +11,9 @@
 	import { afterNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
-	import { History } from "$lib/history.svelte";
 	import { Button } from "./ui/button";
 
 	type ControlType = "minimize" | "maximize" | "close";
-
-	const history = new History();
 
 	const currentWindow = getCurrentWindow();
 	const platform = getPlatform();
@@ -39,10 +36,12 @@
 	onDestroy(() => unlisten?.());
 
 	afterNavigate((navigation) => {
-		if (!navigation.to) return;
+		if (!navigation.to || navigation.to.route.id?.startsWith("/auth")) {
+			return;
+		}
 
 		if (navigation.type === "link" || navigation.type === "goto") {
-			history.push(navigation.to.url.pathname);
+			app.history.push(navigation.to.url.pathname);
 		}
 	});
 
@@ -74,8 +73,8 @@
 			class="hover:text-foreground size-min p-1"
 			size="icon"
 			variant="ghost"
-			disabled={!history.canGoBack}
-			onclick={() => history.back()}
+			disabled={!app.history.canGoBack}
+			onclick={() => app.history.back()}
 		>
 			<ArrowLeft />
 		</Button>
@@ -84,8 +83,8 @@
 			class="hover:text-foreground size-min p-1"
 			size="icon"
 			variant="ghost"
-			disabled={!history.canGoForward}
-			onclick={() => history.forward()}
+			disabled={!app.history.canGoForward}
+			onclick={() => app.history.forward()}
 		>
 			<ArrowRight />
 		</Button>
