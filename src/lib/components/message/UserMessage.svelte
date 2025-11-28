@@ -95,11 +95,11 @@
 		</div>
 	{:else if highlights.enabled}
 		{#if hlType && highlights[hlType].enabled}
-			<Highlight type={hlType} {info} highlight={highlights[hlType]}>
+			<Highlight type={hlType} {info} config={highlights[hlType]}>
 				{@render innerMessage(highlights[hlType].style !== "background")}
 			</Highlight>
 		{:else if customMatched?.enabled && !isSelf}
-			<Highlight type="custom" highlight={customMatched}>
+			<Highlight type="custom" config={customMatched}>
 				{@render innerMessage(customMatched.style !== "background")}
 			</Highlight>
 		{:else}

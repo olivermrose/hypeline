@@ -18,19 +18,15 @@
 	});
 </script>
 
-<svelte:document
-	onkeydown={(event) => {
-		if (event.key === "Escape") history.back();
-	}}
-/>
-
 <Tabs.Root
 	id="settings-tabs"
 	class="relative flex grow overflow-hidden"
 	orientation="vertical"
 	value={categories[0].label}
 >
-	<div class="h-full min-w-44 p-2">
+	<div
+		class="ease-out-quint h-full w-44 shrink-0 p-2 transition-[width] duration-300 md:w-64 lg:w-72"
+	>
 		<Tabs.List class="space-y-1">
 			{#each categories as category (category.label)}
 				<Tabs.Trigger value={category.label}>
@@ -81,7 +77,7 @@
 		{/if}
 
 		{#each categories as category (category.label)}
-			<Tabs.Content value={category.label}>
+			<Tabs.Content class="mx-auto max-w-xl" value={category.label}>
 				<Category {category} />
 			</Tabs.Content>
 		{/each}
