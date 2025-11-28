@@ -11,8 +11,8 @@
 	import { debounce } from "$lib/util";
 	import { Button } from "./ui/button";
 	import * as Dialog from "./ui/dialog";
+	import * as Field from "./ui/field";
 	import { Input } from "./ui/input";
-	import { Label } from "./ui/label";
 
 	interface Props {
 		children: Snippet;
@@ -117,8 +117,8 @@
 					await join();
 				}}
 			>
-				<div class="flex flex-col gap-2">
-					<Label for="name">Channel name</Label>
+				<Field.Field data-invalid={error != null}>
+					<Field.Label for="name">Channel name</Field.Label>
 
 					<Combobox.Input id="name">
 						{#snippet child({ props })}
@@ -127,6 +127,7 @@
 								autocapitalize="off"
 								autocorrect="off"
 								placeholder="Search for a channel"
+								aria-invalid={error != null}
 								bind:value
 								{...props}
 							/>
@@ -134,9 +135,9 @@
 					</Combobox.Input>
 
 					{#if error}
-						<p class="text-destructive text-xs">{error}</p>
+						<Field.Error class="text-destructive text-xs">{error}</Field.Error>
 					{/if}
-				</div>
+				</Field.Field>
 
 				{#if suggestions.length}
 					<Combobox.Content
