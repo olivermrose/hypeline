@@ -6,7 +6,7 @@
 	"description": "",
 	"license": "MIT",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev -d transform",
 		"build": "vite build",
 		"preview": "vite preview",
 		"sync": "svelte-kit sync && gql-tada generate-output && gql-tada turbo",
@@ -52,7 +52,6 @@
 		"@gql.tada/svelte-support": "^1.0.1",
 		"@iconify-json/ph": "^1.2.2",
 		"@internationalized/date": "^3.10.0",
-		"@lucide/svelte": "^0.544.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.48.4",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",

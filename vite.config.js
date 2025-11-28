@@ -41,6 +41,9 @@ export default defineConfig(async () => ({
 		watch: {
 			ignored: ["**/src-tauri/**"],
 		},
+		warmup: {
+			clientFiles: ["./src/lib/components/ui/**/*.{ts,svelte}", "./src/lib/models/**/*.ts"],
+		},
 	},
 	build: {
 		target: "esnext",
