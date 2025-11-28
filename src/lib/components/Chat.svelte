@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Separator } from "bits-ui";
 	import { VList } from "virtua/svelte";
 	import type { Chat } from "$lib/models/chat.svelte";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
 	import SystemMessage from "./message/SystemMessage.svelte";
 	import UserMessage from "./message/UserMessage.svelte";
+	import { Separator } from "./ui/separator";
 
 	interface Props {
 		class?: string;
@@ -90,7 +90,7 @@
 
 			{#if isNewDay}
 				<div class="relative px-3.5">
-					<Separator.Root class="bg-muted my-4 h-px w-full rounded-full" />
+					<Separator class="my-4" />
 
 					<div
 						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
@@ -127,8 +127,8 @@
 			{@const next = chat.messages.at(i + 1)}
 
 			{#if message.recent && !next?.recent}
-				<div class="relative px-3.5 text-red-500">
-					<Separator.Root class="my-4 h-px w-full rounded-full bg-current" />
+				<div class="relative px-3.5 text-red-400">
+					<Separator class="my-4 bg-current/70" />
 
 					<div
 						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
