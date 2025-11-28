@@ -44,6 +44,8 @@
 		const appInfo = `Hypeline v${appVersion}`;
 		const osInfo = `${platform} ${os.arch()} (${os.version()})`;
 
+		// Need to use clipboard plugin because of timing sensitivity with the
+		// Clipboard API
 		await writeText(`${appInfo}\n${osInfo}`);
 		copied = true;
 

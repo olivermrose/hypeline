@@ -56,6 +56,7 @@ export const categories: SettingsCategory[] = [
 						type: "input",
 						label: "Custom Format",
 						description: descriptions.customFormat,
+						placeholder: "e.g. HH:mm:ss",
 						disabled: () => settings.state.appearance.timestamps.format !== "custom",
 						binding: bind(
 							() => settings.state.appearance.timestamps.customFormat,

@@ -44,6 +44,7 @@
 			autocapitalize="off"
 			autocomplete="off"
 			disabled={field.disabled?.()}
+			placeholder={field.placeholder}
 			bind:value={field.binding.get, field.binding.set}
 		/>
 

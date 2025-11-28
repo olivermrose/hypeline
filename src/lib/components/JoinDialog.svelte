@@ -123,7 +123,6 @@
 					<Combobox.Input id="name">
 						{#snippet child({ props })}
 							<Input
-								class="text-sm"
 								type="text"
 								autocapitalize="off"
 								autocorrect="off"

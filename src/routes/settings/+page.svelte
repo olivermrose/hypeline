@@ -67,7 +67,7 @@
 		</Button>
 	</div>
 
-	<div class="bg-accent/20 relative grow overflow-y-auto border-l p-4 pb-8">
+	<div class="bg-accent/15 relative grow overflow-y-auto border-l p-4 pb-8">
 		{#if !page.data.detached}
 			<Button
 				class="absolute top-2 right-2"

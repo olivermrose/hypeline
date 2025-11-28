@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import { flip } from "svelte/animate";
 	import Users from "~icons/ph/users-bold";
 	import { app } from "$lib/app.svelte";
@@ -42,24 +42,22 @@
 		return [ephemeral, online, offline].filter((g) => g.channels.length);
 	});
 
-	onMount(() => {
-		const interval = setInterval(
-			async () => {
-				log.info("Updating streams");
+	const interval = setInterval(
+		async () => {
+			log.info("Updating streams");
 
-				const ids = app.channels.map((c) => c.user.id);
-				const streams = await app.twitch.fetchStreams(ids);
+			const ids = app.channels.map((c) => c.user.id);
+			const streams = await app.twitch.fetchStreams(ids);
 
-				for (const channel of app.channels) {
-					const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
-					channel.stream = stream ?? null;
-				}
-			},
-			5 * 60 * 1000,
-		);
+			for (const channel of app.channels) {
+				const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
+				channel.stream = stream ?? null;
+			}
+		},
+		5 * 60 * 1000,
+	);
 
-		return () => clearInterval(interval);
-	});
+	onDestroy(() => clearInterval(interval));
 
 	function formatViewers(viewers: number) {
 		if (viewers >= 1000) {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ScrollArea } from "bits-ui";
 	import { MediaQuery } from "svelte/reactivity";
+	import { crossfade } from "svelte/transition";
 	import Chats from "~icons/ph/chats";
 	import Plus from "~icons/ph/plus";
 	import Sidebar from "~icons/ph/sidebar";
@@ -9,8 +10,11 @@
 	import JoinDialog from "./JoinDialog.svelte";
 	import { Button, buttonVariants } from "./ui/button";
 
-	let collapsed = $state(new MediaQuery("(width < 48rem)").current);
+	const [send, receive] = crossfade({ duration: 400 });
 
+	const id = $props.id();
+
+	let collapsed = $state(new MediaQuery("(width < 48rem)").current);
 	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
 </script>
 
@@ -24,56 +28,53 @@
 	}}
 />
 
-<ScrollArea.Root class="group" data-state={collapsed ? "collapsed" : "expanded"}>
+<ScrollArea.Root
+	class={[
+		"group ease-out-quint transition-[width] duration-300",
+		collapsed ? "w-14" : "w-56 md:w-64 lg:w-72",
+	]}
+	data-state={collapsed ? "collapsed" : "expanded"}
+>
 	<ScrollArea.Viewport class="h-full">
 		<div id="sidebar-actions" class="flex flex-col gap-1 px-1.5 py-1">
-			<Button
-				class="text-muted-foreground hover:text-foreground relative size-11 group-data-[state=expanded]:w-full"
-				href="/whispers"
-				variant="ghost"
-			>
+			<Button class="relative" href="/whispers" variant="ghost">
 				<Chats class={[collapsed && unread && "animate-pulse"]} />
 
-				{#if !collapsed}
-					<div class="flex w-full items-center justify-between">
-						<span>Whispers</span>
+				<span class="group-data-[state=collapsed]:sr-only">Whispers</span>
 
-						{#if unread}
-							<div
-								class="text-foreground flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-medium"
-							>
-								{unread}
-							</div>
-						{/if}
-					</div>
+				{#if collapsed && unread}
+					<div
+						in:receive={{ key: id }}
+						out:send={{ key: id }}
+						class="absolute top-2 right-2 size-2 rounded-full bg-red-500"
+					></div>
 				{:else if unread}
-					<div class="absolute top-2 right-2 size-2 rounded-full bg-red-500"></div>
+					<div
+						in:receive={{ key: id }}
+						out:send={{ key: id }}
+						class="text-foreground ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-medium"
+					>
+						{unread}
+					</div>
 				{/if}
 			</Button>
 
-			<JoinDialog
-				class={buttonVariants({
-					class: "text-muted-foreground hover:text-foreground size-11 group-data-[state=expanded]:w-full group-data-[state=expanded]:justify-start",
-					variant: "ghost",
-				})}
-			>
+			<JoinDialog class={buttonVariants({ variant: "ghost" })}>
 				<Plus />
 
-				<span class="group-data-[state=collapsed]:hidden">Join a channel</span>
+				<span class="group-data-[state=collapsed]:sr-only">Join a channel</span>
 			</JoinDialog>
 
-			<Button
-				class="text-muted-foreground hover:text-foreground size-11 group-data-[state=expanded]:w-full group-data-[state=expanded]:justify-start"
-				variant="ghost"
-				onclick={() => (collapsed = !collapsed)}
-			>
+			<Button variant="ghost" onclick={() => (collapsed = !collapsed)}>
 				<Sidebar />
 
-				<span class="group-data-[state=collapsed]:hidden">Collapse sidebar</span>
+				<span class="group-data-[state=collapsed]:sr-only">
+					{collapsed ? "Expand" : "Collapse"} sidebar
+				</span>
 			</Button>
 		</div>
 
-		<nav class={["space-y-1.5 pb-3", collapsed ? "w-fit" : "w-56"]}>
+		<nav class="space-y-1.5 pb-3">
 			<ChannelList {collapsed} />
 		</nav>
 	</ScrollArea.Viewport>
@@ -89,3 +90,19 @@
 		<ScrollArea.Thumb class="bg-muted-foreground/80 rounded-full" />
 	</ScrollArea.Scrollbar>
 </ScrollArea.Root>
+
+<style>
+	@reference "../../app.css";
+
+	#sidebar-actions > :global(*) {
+		color: var(--color-muted-foreground);
+		height: --spacing(11);
+		justify-content: flex-start;
+		padding-left: --spacing(3.5);
+		padding-right: --spacing(3.5);
+
+		@variant hover {
+			color: var(--color-foreground);
+		}
+	}
+</style>

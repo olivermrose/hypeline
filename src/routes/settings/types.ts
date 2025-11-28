@@ -26,6 +26,7 @@ export interface CustomField extends Omit<BaseField, "id" | "binding"> {
 
 export interface InputField extends BaseField {
 	type: "input";
+	placeholder?: string;
 }
 
 export interface RadioOption {

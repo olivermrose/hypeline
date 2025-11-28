@@ -163,7 +163,7 @@
 <div class="flex flex-col gap-1.5">
 	<InputGroup.Root class="h-12">
 		<InputGroup.Input
-			class={[" text-sm", (chat.replyTarget || error) && "rounded-t-none", className]}
+			class={[(chat.replyTarget || error) && "rounded-t-none", className]}
 			type="text"
 			disabled={app.user?.banned}
 			autocapitalize="off"

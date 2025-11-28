@@ -167,7 +167,7 @@
 
 			<div class="flex w-md flex-col border-l">
 				<Input
-					class="shrink-0 rounded-none rounded-tr-md border-0 border-b text-sm focus-visible:ring-0"
+					class="shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
 					type="search"
 					placeholder="Search..."
 					bind:value={query}
