@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { UserMessage } from "$lib/models/message/user-message";
 	import type { AutoModMetadata } from "$lib/twitch/eventsub";
+	import { Button } from "../ui/button";
 	import Message from "./Message.svelte";
 
 	interface Props {
@@ -11,10 +12,13 @@
 	const { message, metadata }: Props = $props();
 </script>
 
-<div class="bg-muted/50 my-0.5 space-y-2 border-l-4 border-red-500 p-2">
-	<div
-		class={["flex w-full items-start justify-between gap-x-4", message.deleted && "opacity-30"]}
-	>
+<div
+	class={[
+		"bg-muted/50 my-0.5 space-y-2 border-l-4 border-red-500 p-2",
+		message.deleted && "opacity-50",
+	]}
+>
+	<div class="flex w-full items-start justify-between gap-x-4">
 		<div>
 			<img
 				class="inline align-middle"
@@ -36,28 +40,26 @@
 
 		{#if metadata.category !== "msg_hold"}
 			<div class="flex gap-x-4">
-				<button
-					class="text-twitch-link font-medium disabled:cursor-not-allowed"
-					type="button"
+				<Button
+					class="h-min p-0 text-green-400"
+					variant="link"
 					disabled={message.deleted}
 					onclick={() => message.allow()}
 				>
 					Allow
-				</button>
+				</Button>
 
-				<button
-					class="text-twitch-link font-medium disabled:cursor-not-allowed"
-					type="button"
+				<Button
+					class="text-destructive h-min p-0"
+					variant="link"
 					disabled={message.deleted}
 					onclick={() => message.deny()}
 				>
 					Deny
-				</button>
+				</Button>
 			</div>
 		{/if}
 	</div>
 
-	<div class={[message.deleted && "opacity-30"]}>
-		<Message {message} />
-	</div>
+	<Message {message} />
 </div>

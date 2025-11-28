@@ -56,7 +56,7 @@
 			class="text-muted-foreground"
 			variant="ghost"
 			data-logout
-			onclick={async () => await goto("/auth/logout")}
+			onclick={() => goto("/auth/logout")}
 		>
 			<SignOut />
 			<span class="text-sm">Log out</span>

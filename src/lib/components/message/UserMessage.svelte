@@ -78,7 +78,7 @@
 	}
 </script>
 
-<div class={["group relative", message.deleted && "opacity-30"]} aria-disabled={message.deleted}>
+<div class="group relative aria-disabled:opacity-50" aria-disabled={message.deleted}>
 	{#if !message.deleted && !app.user?.banned}
 		<QuickActions
 			class="absolute top-0 right-2 -translate-y-1/2 not-group-hover:hidden"
@@ -96,21 +96,21 @@
 	{:else if highlights.enabled}
 		{#if hlType && highlights[hlType].enabled}
 			<Highlight type={hlType} {info} config={highlights[hlType]}>
-				{@render innerMessage(highlights[hlType].style !== "background")}
+				{@render content(highlights[hlType].style !== "background")}
 			</Highlight>
 		{:else if customMatched?.enabled && !isSelf}
 			<Highlight type="custom" config={customMatched}>
-				{@render innerMessage(customMatched.style !== "background")}
+				{@render content(customMatched.style !== "background")}
 			</Highlight>
 		{:else}
-			{@render innerMessage(false)}
+			{@render content(false)}
 		{/if}
 	{:else}
-		{@render innerMessage(false)}
+		{@render content(false)}
 	{/if}
 </div>
 
-{#snippet innerMessage(bordered: boolean)}
+{#snippet content(bordered: boolean)}
 	<div class={["not-group-aria-disabled:hover:bg-muted/50 py-2", bordered ? "px-1.5" : "px-3"]}>
 		{#if message.reply}
 			{@const user = message.channel.viewers.get(message.reply.parent.user.id)}

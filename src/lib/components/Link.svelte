@@ -13,12 +13,12 @@
 	class={["cursor-pointer text-blue-400 underline transition-colors", className]}
 	role="link"
 	tabindex="0"
-	onclick={async () => {
-		if (href) await openUrl(href);
+	onclick={() => {
+		if (href) openUrl(href);
 	}}
-	onkeydown={async (event) => {
+	onkeydown={(event) => {
 		if (event.key === "Enter" && href) {
-			await openUrl(href);
+			openUrl(href);
 		}
 	}}
 	{...rest}

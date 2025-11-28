@@ -71,7 +71,7 @@
 <Button
 	class="bg-twitch text-primary hover:bg-twitch-600 h-12 text-base"
 	size="lg"
-	onclickwait={async () => await openUrl(authUrl.toString())}
+	onclickwait={() => openUrl(authUrl.toString())}
 >
 	<Twitch class="size-5 fill-white" />
 	Log in with Twitch

@@ -65,16 +65,12 @@
 	<span class="text-sm">Popout settings</span>
 </Button>
 
-<Button class="text-muted-foreground" variant="ghost" onclick={async () => await openLogDir()}>
+<Button class="text-muted-foreground" variant="ghost" onclick={openLogDir}>
 	<FolderOpen />
 	<span class="text-sm">Open logs</span>
 </Button>
 
-<Button
-	class="text-muted-foreground px-3"
-	variant="ghost"
-	onclick={async () => await copyDebugInfo()}
->
+<Button class="text-muted-foreground px-3" variant="ghost" onclick={copyDebugInfo}>
 	{#if copied}
 		<span in:scale={{ duration: 300, start: 0.85 }}>
 			<Check />

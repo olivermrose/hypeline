@@ -57,7 +57,7 @@
 		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">
-					<Confetti class="mt-px shrink-0" />
+					<Confetti class="mt-0.5 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}
@@ -74,7 +74,7 @@
 				{@const amount = message.event.donation_amount / 10 ** message.event.exponent}
 
 				<div class="flex gap-1">
-					<HandHeart class="mt-0.5 size-4 shrink-0" />
+					<HandHeart class="mt-0.5 shrink-0" />
 
 					<div class="flex flex-col gap-0.5">
 						{@html colorizeName(message.author)}
@@ -150,7 +150,7 @@
 				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
-					<Fire class="mt-px shrink-0" />
+					<Fire class="mt-0.5 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}

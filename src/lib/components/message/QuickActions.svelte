@@ -22,7 +22,7 @@
 	{@render button({
 		tooltip: "Copy",
 		icon: Clipboard,
-		onclick: async () => await navigator.clipboard.writeText(message.text),
+		onclick: () => navigator.clipboard.writeText(message.text),
 	})}
 
 	{@render button({
@@ -41,21 +41,21 @@
 			class: "text-red-400",
 			tooltip: "Delete",
 			icon: Trash,
-			onclick: async () => await message.delete(),
+			onclick: () => message.delete(),
 		})}
 
 		{@render button({
 			class: "text-red-400",
 			tooltip: "Timeout for 10 minutes",
 			icon: Clock,
-			onclick: async () => await message.viewer?.timeout({ duration: 600 }),
+			onclick: () => message.viewer?.timeout({ duration: 600 }),
 		})}
 
 		{@render button({
 			class: "text-red-400",
 			tooltip: "Ban",
 			icon: Gavel,
-			onclick: async () => await message.viewer?.ban(),
+			onclick: () => message.viewer?.ban(),
 		})}
 	{/if}
 </ButtonGroup.Root>
