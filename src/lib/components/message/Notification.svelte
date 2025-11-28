@@ -41,7 +41,7 @@
 			style:border-image-source="linear-gradient({stops[0]}, {stops[1]})"
 		>
 			<div class="bg-muted flex items-center px-2.5 py-1.5 text-xs font-medium">
-				<Megaphone class="mr-2 size-4 -scale-x-100" /> Announcement
+				<Megaphone class="mr-2 -scale-x-100" /> Announcement
 			</div>
 
 			<div class="bg-muted/50 p-2">

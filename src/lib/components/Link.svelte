@@ -6,11 +6,11 @@
 		href?: string;
 	}
 
-	const { children, href, ...rest }: Props = $props();
+	const { children, class: className, href, ...rest }: Props = $props();
 </script>
 
 <span
-	class="text-blue-400 underline transition-colors hover:cursor-pointer"
+	class={["cursor-pointer text-blue-400 underline transition-colors", className]}
 	role="link"
 	tabindex="0"
 	onclick={async () => {

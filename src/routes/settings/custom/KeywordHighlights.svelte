@@ -112,7 +112,7 @@
 
 						<Select.Content>
 							{#each styles as style}
-								<Select.Item class="hover:cursor-pointer" value={style.value}>
+								<Select.Item class="cursor-pointer" value={style.value}>
 									{style.label}
 								</Select.Item>
 							{/each}

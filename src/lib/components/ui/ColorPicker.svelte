@@ -94,7 +94,7 @@
 		</div>
 
 		<Slider.Thumb
-			class="bg-primary focus-visible:ring-ring block h-4 w-2 rounded-sm border shadow transition-colors hover:cursor-ew-resize focus-visible:ring-1 focus-visible:outline-none active:cursor-ew-resize"
+			class="bg-primary focus-visible:ring-ring block h-4 w-2 cursor-ew-resize rounded-sm border shadow transition-colors focus-visible:ring-1 focus-visible:outline-none active:cursor-ew-resize"
 			index={0}
 		/>
 	</Slider.Root>
