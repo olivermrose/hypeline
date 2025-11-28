@@ -30,7 +30,7 @@
 
 <ScrollArea.Root
 	class={[
-		"group ease-out-quint transition-[width] duration-300",
+		"group ease-out-quint shrink-0 transition-[width] duration-300",
 		collapsed ? "w-14" : "w-56 md:w-64 lg:w-72",
 	]}
 	data-state={collapsed ? "collapsed" : "expanded"}
