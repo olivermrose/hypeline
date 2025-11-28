@@ -4,16 +4,15 @@
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
-	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
+	import QuickActions from "./QuickActions.svelte";
 	import type { MessageProps } from "./Message.svelte";
 
 	const { message, onEmbedLoad }: MessageProps = $props();
 
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();
-	let quickActionsOpen = $state(false);
 
 	const highlights = $derived(settings.state.highlights);
 
@@ -79,15 +78,12 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class={["group relative", message.deleted && "opacity-30"]}
-	onmouseenter={() => (quickActionsOpen = true)}
-	onmouseleave={() => (quickActionsOpen = false)}
-	aria-disabled={message.deleted}
->
-	{#if quickActionsOpen && !message.deleted && !app.user?.banned}
-		<QuickActions class="absolute top-0 right-2 -translate-y-1/2" {message} />
+<div class={["group relative", message.deleted && "opacity-30"]} aria-disabled={message.deleted}>
+	{#if !message.deleted && !app.user?.banned}
+		<QuickActions
+			class="absolute top-0 right-2 -translate-y-1/2 not-group-hover:hidden"
+			{message}
+		/>
 	{/if}
 
 	{#if message.highlighted}

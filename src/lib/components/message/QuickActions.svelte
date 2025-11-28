@@ -6,9 +6,9 @@
 	import Gavel from "~icons/ph/gavel";
 	import Trash from "~icons/ph/trash";
 	import type { UserMessage } from "$lib/models/message/user-message";
-	import { Button } from "./ui/button";
-	import * as ButtonGroup from "./ui/button-group";
-	import * as Tooltip from "./ui/tooltip";
+	import { Button } from "../ui/button";
+	import * as ButtonGroup from "../ui/button-group";
+	import * as Tooltip from "../ui/tooltip";
 
 	interface Props {
 		class?: string;
@@ -20,13 +20,13 @@
 
 <ButtonGroup.Root class={className}>
 	{@render button({
-		tooltip: "Copy message",
+		tooltip: "Copy",
 		icon: Clipboard,
 		onclick: async () => await navigator.clipboard.writeText(message.text),
 	})}
 
 	{@render button({
-		tooltip: `Reply to ${message.author.displayName}`,
+		tooltip: "Reply",
 		icon: ArrowBendUpLeft,
 		onclick: () => {
 			message.channel.chat.replyTarget = message;
@@ -39,21 +39,21 @@
 
 		{@render button({
 			class: "text-red-400",
-			tooltip: "Delete message",
+			tooltip: "Delete",
 			icon: Trash,
 			onclick: async () => await message.delete(),
 		})}
 
 		{@render button({
 			class: "text-red-400",
-			tooltip: `Timeout ${message.author.displayName} for 10 minutes`,
+			tooltip: "Timeout for 10 minutes",
 			icon: Clock,
 			onclick: async () => await message.viewer?.timeout({ duration: 600 }),
 		})}
 
 		{@render button({
 			class: "text-red-400",
-			tooltip: `Ban ${message.author.displayName}`,
+			tooltip: "Ban",
 			icon: Gavel,
 			onclick: async () => await message.viewer?.ban(),
 		})}
