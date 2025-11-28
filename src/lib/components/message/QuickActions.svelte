@@ -65,12 +65,12 @@
 		<Tooltip.Trigger>
 			{#snippet child({ props: childProps })}
 				<Button
+					{...props}
+					{...childProps}
 					size="icon-sm"
 					variant="secondary"
 					aria-label={props.tooltip}
-					onclick={() => message.viewer?.ban()}
-					{...props}
-					{...childProps}
+					onclick={props.onclick}
 				>
 					<props.icon />
 				</Button>
