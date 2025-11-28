@@ -18,7 +18,15 @@ const ADDR: &str = "127.0.0.1:55331";
 pub async fn start_server(app_handle: AppHandle) -> Result<(), Error> {
     tracing::info!("Starting temporary server");
 
-    let listener = TcpListener::bind(ADDR).await?;
+    let listener = match TcpListener::bind(ADDR).await {
+        Ok(l) => l,
+        Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => {
+            tracing::warn!("Server already running");
+            return Ok(());
+        }
+        Err(e) => return Err(e.into()),
+    };
+
     tracing::info!("Server listening on {ADDR}");
 
     let should_break = Arc::new(AtomicBool::default());
