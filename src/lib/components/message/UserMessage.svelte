@@ -1,18 +1,18 @@
 <script lang="ts">
+	import ArrowBendUpRight from "~icons/ph/arrow-bend-up-right";
 	import { app } from "$lib/app.svelte";
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
-	import QuickActions from "../QuickActions.svelte";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
+	import QuickActions from "./QuickActions.svelte";
 	import type { MessageProps } from "./Message.svelte";
 
 	const { message, onEmbedLoad }: MessageProps = $props();
 
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();
-	let quickActionsOpen = $state(false);
 
 	const highlights = $derived(settings.state.highlights);
 
@@ -78,15 +78,12 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class={["group relative", message.deleted && "opacity-30"]}
-	onmouseenter={() => (quickActionsOpen = true)}
-	onmouseleave={() => (quickActionsOpen = false)}
-	aria-disabled={message.deleted}
->
-	{#if quickActionsOpen && !message.deleted && !app.user?.banned}
-		<QuickActions class="absolute top-0 right-2 -translate-y-1/2" {message} />
+<div class="group relative aria-disabled:opacity-50" aria-disabled={message.deleted}>
+	{#if !message.deleted && !app.user?.banned}
+		<QuickActions
+			class="absolute top-0 right-2 -translate-y-1/2 not-group-hover:hidden"
+			{message}
+		/>
 	{/if}
 
 	{#if message.highlighted}
@@ -98,30 +95,28 @@
 		</div>
 	{:else if highlights.enabled}
 		{#if hlType && highlights[hlType].enabled}
-			<Highlight type={hlType} {info} highlight={highlights[hlType]}>
-				{@render innerMessage(highlights[hlType].style !== "background")}
+			<Highlight type={hlType} {info} config={highlights[hlType]}>
+				{@render content(highlights[hlType].style !== "background")}
 			</Highlight>
 		{:else if customMatched?.enabled && !isSelf}
-			<Highlight type="custom" highlight={customMatched}>
-				{@render innerMessage(customMatched.style !== "background")}
+			<Highlight type="custom" config={customMatched}>
+				{@render content(customMatched.style !== "background")}
 			</Highlight>
 		{:else}
-			{@render innerMessage(false)}
+			{@render content(false)}
 		{/if}
 	{:else}
-		{@render innerMessage(false)}
+		{@render content(false)}
 	{/if}
 </div>
 
-{#snippet innerMessage(bordered: boolean)}
+{#snippet content(bordered: boolean)}
 	<div class={["not-group-aria-disabled:hover:bg-muted/50 py-2", bordered ? "px-1.5" : "px-3"]}>
 		{#if message.reply}
 			{@const user = message.channel.viewers.get(message.reply.parent.user.id)}
 
-			<div class="mb-1 flex items-center gap-2">
-				<div
-					class="border-muted-foreground mt-1 ml-2 h-2 w-6 rounded-tl-lg border-2 border-r-0 border-b-0"
-				></div>
+			<div class="mb-0.5 flex items-center gap-2">
+				<ArrowBendUpRight class="text-muted-foreground ml-1 shrink-0 scale-x-125" />
 
 				<div class="line-clamp-1 text-xs">
 					<span style={getMentionStyle(user)}>

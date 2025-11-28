@@ -3,7 +3,7 @@
 	import chroma from "chroma-js";
 	import type { HTMLAttributes } from "svelte/elements";
 	import { clamp, cn } from "$lib/util";
-	import Input from "./Input.svelte";
+	import { Input } from "./input";
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
 		value?: chroma.ChromaInput;
@@ -64,7 +64,7 @@
 <div class={cn("grid w-full gap-4", className)} {...rest}>
 	<div
 		id="color-picker-well"
-		class="border-muted relative aspect-[4/3] w-full cursor-crosshair rounded-md border"
+		class="border-muted relative aspect-4/3 w-full cursor-crosshair rounded-md border"
 		style:--color-picker-well-hue={h}
 		onpointerdown={(event) => {
 			event.preventDefault();
@@ -94,7 +94,7 @@
 		</div>
 
 		<Slider.Thumb
-			class="bg-primary focus-visible:ring-ring block h-4 w-2 rounded-sm border shadow transition-colors hover:cursor-ew-resize focus-visible:ring-1 focus-visible:outline-none active:cursor-ew-resize"
+			class="bg-primary focus-visible:ring-ring block h-4 w-2 cursor-ew-resize rounded-sm border shadow transition-colors focus-visible:ring-1 focus-visible:outline-none active:cursor-ew-resize"
 			index={0}
 		/>
 	</Slider.Root>

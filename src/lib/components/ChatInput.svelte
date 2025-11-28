@@ -10,7 +10,7 @@
 	import EmotePicker from "./EmotePicker.svelte";
 	import Message from "./message/Message.svelte";
 	import Suggestions from "./Suggestions.svelte";
-	import Input from "./ui/Input.svelte";
+	import * as InputGroup from "./ui/input-group";
 
 	interface Props extends HTMLInputAttributes {
 		chat: Chat;
@@ -18,6 +18,7 @@
 
 	const { class: className, chat, ...rest }: Props = $props();
 
+	let anchor = $state<HTMLElement | null>(null);
 	let input = $state<HTMLInputElement | null>(null);
 	let completer = $state<Completer>();
 	let value = $state("");
@@ -119,7 +120,7 @@
 </script>
 
 <Suggestions
-	anchor={input}
+	{anchor}
 	open={showSuggestions}
 	index={completer?.current ?? 0}
 	suggestions={completer?.suggestions ?? []}
@@ -139,7 +140,7 @@
 				onclick={() => (chat.replyTarget = null)}
 			>
 				<XCircle
-					class="text-muted-foreground hover:text-foreground block size-4 transition-colors duration-150"
+					class="text-muted-foreground hover:text-foreground block transition-colors duration-150"
 				/>
 			</button>
 		</div>
@@ -153,7 +154,7 @@
 		class="bg-muted/50 border-muted has-[+div>input:focus-visible]:border-input rounded-t-md border border-b-0 px-3 py-2.5 text-sm transition-colors duration-200"
 	>
 		<div class="flex gap-1">
-			<Warning class="mt-px size-4 shrink-0 text-yellow-400" />
+			<Warning class="mt-px shrink-0 text-yellow-400" />
 
 			<p class="text-muted-foreground">{error}</p>
 		</div>
@@ -161,17 +162,13 @@
 {/if}
 
 <div class="flex flex-col gap-1.5">
-	<div class="relative">
-		<Input
-			class={[
-				"focus-visible:border-input border-muted h-12 pr-10 transition-colors duration-200 focus-visible:ring-0",
-				(chat.replyTarget || error) && "rounded-t-none",
-				className,
-			]}
+	<InputGroup.Root class="h-12" bind:ref={anchor}>
+		<InputGroup.Input
+			class={[(chat.replyTarget || error) && "rounded-t-none", className]}
 			type="text"
-			disabled={app.user?.banned}
 			autocapitalize="off"
 			autocorrect="off"
+			disabled={app.user?.banned}
 			maxlength={500}
 			placeholder={app.user?.banned ? "You are banned from the channel" : "Send a message"}
 			oninput={() => completer?.search()}
@@ -182,10 +179,10 @@
 			bind:ref={input}
 		/>
 
-		<div class="absolute inset-y-0 end-0 flex p-1">
+		<InputGroup.Addon align="inline-end">
 			<EmotePicker channel={chat.channel} />
-		</div>
-	</div>
+		</InputGroup.Addon>
+	</InputGroup.Root>
 
 	<div class="flex items-center justify-between px-1">
 		<div class="text-muted-foreground text-xs tabular-nums">

@@ -26,6 +26,7 @@ export interface CustomField extends Omit<BaseField, "id" | "binding"> {
 
 export interface InputField extends BaseField {
 	type: "input";
+	placeholder?: string;
 }
 
 export interface RadioOption {
@@ -58,7 +59,7 @@ export type SettingsField =
 	| ToggleField;
 
 export interface SettingsCategory {
-	icon: Component;
 	label: string;
+	icon: Component;
 	fields: SettingsField[];
 }

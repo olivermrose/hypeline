@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { openUrl } from "@tauri-apps/plugin-opener";
 	import dayjs from "dayjs";
 	import Eye from "~icons/ph/eye";
 	import EyeSlash from "~icons/ph/eye-slash";
@@ -9,6 +8,7 @@
 	import { emoteDetailsFragment } from "$lib/graphql/fragments";
 	import { seventvGql as gql } from "$lib/graphql/function";
 	import { clipQuery } from "$lib/graphql/queries";
+	import Link from "../Link.svelte";
 
 	interface Props {
 		url: URL;
@@ -23,7 +23,7 @@
 	async function fetchEmote() {
 		const { emotes } = await send(
 			gql(
-				`query GetEmote($id: Id!){
+				`query GetEmote($id: Id!) {
 					emotes {
 						emote(id: $id) {
 							...EmoteDetails
@@ -65,16 +65,25 @@
 
 		return clip;
 	}
+
+	function formatDuration(seconds: number) {
+		const m = Math.floor(seconds / 60);
+		const s = seconds % 60;
+
+		return `${m}:${s.toString().padStart(2, "0")}`;
+	}
 </script>
 
-<div class="w-full max-w-[400px]">
+<div class="group w-full max-w-[400px]">
 	{#if tld.domain === "7tv.app"}
 		{#await fetchEmote() then emote}
-			<div class="bg-sidebar flex h-14 gap-2 overflow-hidden rounded-md border">
-				{#if emote}
+			{#if emote}
+				<div class="bg-card relative flex h-18 gap-2 overflow-hidden rounded-md border">
+					<Link class="absolute inset-0 z-10" href={url.href}></Link>
+
 					<div class="relative h-full shrink-0">
 						<img
-							class="h-full w-auto"
+							class="h-full w-auto p-1.5"
 							srcset={emote.srcset.join(", ")}
 							alt={emote.name}
 							decoding="async"
@@ -93,7 +102,7 @@
 
 					<div class="flex flex-col overflow-hidden py-1 pr-1">
 						<div class="flex items-center">
-							<span class="truncate text-sm font-medium" title={emote.name}>
+							<span class="truncate" title={emote.name}>
 								{emote.name}
 							</span>
 
@@ -106,8 +115,8 @@
 							by {emote.owner?.mainConnection?.platformDisplayName ?? "Unknown"}
 						</span>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 		{/await}
 	{:else if tld.hostname === "open.spotify.com"}
 		<div class="overflow-hidden rounded-xl">
@@ -123,19 +132,28 @@
 	{:else if tld.domain === "twitch.tv"}
 		{#await fetchClip() then clip}
 			{#if clip}
-				<div class="bg-sidebar flex h-18 gap-2 overflow-hidden rounded-md border">
-					<img src={clip.thumbnailURL} alt={clip.title} decoding="async" />
+				<div
+					class="bg-card relative flex h-20 gap-2 overflow-hidden rounded-md border transition-colors"
+				>
+					<Link class="absolute inset-0 z-10" href={clip.url}></Link>
+
+					<div class="relative">
+						<img
+							class="h-full"
+							src={clip.thumbnailURL}
+							alt={clip.title}
+							decoding="async"
+						/>
+
+						<div
+							class="absolute right-2 bottom-1 rounded bg-black/70 px-1 py-0.5 text-[10px] font-medium text-white"
+						>
+							{formatDuration(clip.durationSeconds)}
+						</div>
+					</div>
 
 					<div class="flex flex-col gap-0.5 overflow-hidden py-1 pr-1">
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<span
-							class="text-twitch-link truncate text-sm font-medium hover:cursor-pointer"
-							role="link"
-							tabindex="-1"
-							onclick={() => openUrl(clip.url)}
-						>
-							{clip.title}
-						</span>
+						{clip.title}
 
 						<span class="text-muted-foreground text-xs">
 							{dayjs(clip.createdAt).format("MMMM D, YYYY")}
@@ -147,7 +165,7 @@
 							<span class="text-foreground">&bullet;</span>
 
 							<div class="flex items-center">
-								<Eye class="mr-1 size-4" />
+								<Eye class="mr-1" />
 								{clip.viewCount} views
 							</div>
 						</div>

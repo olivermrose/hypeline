@@ -1,82 +1,89 @@
 <script lang="ts">
-	import { getAllWebviewWindows } from "@tauri-apps/api/webviewWindow";
 	import { ScrollArea } from "bits-ui";
-	import Chat from "~icons/ph/chat";
-	import Gear from "~icons/ph/gear";
+	import { MediaQuery } from "svelte/reactivity";
+	import { crossfade } from "svelte/transition";
+	import Chats from "~icons/ph/chats";
 	import Plus from "~icons/ph/plus";
-	import { goto } from "$app/navigation";
+	import Sidebar from "~icons/ph/sidebar";
 	import { app } from "$lib/app.svelte";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
+	import { Button, buttonVariants } from "./ui/button";
 
-	let joinOpen = $state(false);
+	const [send, receive] = crossfade({ duration: 400 });
 
+	const id = $props.id();
+
+	let collapsed = $state(new MediaQuery("(width < 48rem)").current);
 	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
-
-	async function openSettings() {
-		const windows = await getAllWebviewWindows();
-		const settingsWindow = windows.find((win) => win.label === "settings");
-
-		if (settingsWindow) {
-			await settingsWindow.setFocus();
-		} else {
-			await goto("/settings");
-		}
-	}
 </script>
 
-<JoinDialog bind:open={joinOpen} />
+<svelte:document
+	onkeydown={(event) => {
+		if (event.repeat) return;
 
-<ScrollArea.Root>
+		if ((event.metaKey || event.ctrlKey) && event.key === "b") {
+			collapsed = !collapsed;
+		}
+	}}
+/>
+
+<ScrollArea.Root
+	class={[
+		"group ease-out-quint shrink-0 transition-[width] duration-300",
+		collapsed ? "w-14" : "w-56 md:w-64 lg:w-72",
+	]}
+	data-state={collapsed ? "collapsed" : "expanded"}
+>
 	<ScrollArea.Viewport class="h-full">
-		<nav class="min-h-full space-y-4 p-3 pt-0">
-			<div class="space-y-2.5">
-				<button
-					class="sidebar-button"
-					title="Settings"
-					type="button"
-					onclick={openSettings}
-					aria-label="Open settings"
-				>
-					<Gear />
-				</button>
+		<div id="sidebar-actions" class="flex flex-col gap-1 px-1.5 py-1">
+			<Button class="relative" href="/whispers" variant="ghost">
+				<Chats class={[collapsed && unread && "animate-pulse"]} />
 
-				<a
-					class="sidebar-button relative"
-					title="Whispers"
-					href="/whispers"
-					aria-label="Go to whispers"
-				>
-					{#if unread}
-						<div
-							class="absolute -top-1/3 -right-1/3 flex size-5 -translate-x-1/3 translate-y-1/3 items-center justify-center rounded-full bg-red-500 text-xs font-medium shadow-md"
-						>
-							{unread > 9 ? "9+" : unread}
-						</div>
-					{/if}
+				<span class="group-data-[state=collapsed]:sr-only">Whispers</span>
 
-					<Chat />
-				</a>
+				{#if collapsed && unread}
+					<div
+						in:receive={{ key: id }}
+						out:send={{ key: id }}
+						class="absolute top-2 right-2 size-2 rounded-full bg-red-500"
+					></div>
+				{:else if unread}
+					<div
+						in:receive={{ key: id }}
+						out:send={{ key: id }}
+						class="text-foreground ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-medium"
+					>
+						{unread}
+					</div>
+				{/if}
+			</Button>
 
-				<button
-					class="sidebar-button"
-					title="Join a channel"
-					type="button"
-					onclick={() => (joinOpen = true)}
-					aria-label="Join a channel"
-				>
-					<Plus />
-				</button>
-			</div>
+			<JoinDialog class={buttonVariants({ variant: "ghost" })}>
+				<Plus />
 
-			<ChannelList />
+				<span class="group-data-[state=collapsed]:sr-only">Join a channel</span>
+			</JoinDialog>
+
+			<Button variant="ghost" onclick={() => (collapsed = !collapsed)}>
+				<Sidebar />
+
+				<span class="group-data-[state=collapsed]:sr-only">
+					{collapsed ? "Expand" : "Collapse"} sidebar
+				</span>
+			</Button>
+		</div>
+
+		<nav class="space-y-1.5 pb-3">
+			<ChannelList {collapsed} />
 		</nav>
 	</ScrollArea.Viewport>
 
 	<ScrollArea.Scrollbar
 		class={[
-			"w-2 p-0.5",
+			"w-2 p-0.5 opacity-50",
 			"data-[state=hidden]:fade-out-0 data-[state=visible]:fade-in-0 data-[state=visible]:animate-in data-[state=hidden]:animate-out",
+			"group-data-[state=collapsed]:hidden",
 		]}
 		orientation="vertical"
 	>
@@ -87,19 +94,15 @@
 <style>
 	@reference "../../app.css";
 
-	.sidebar-button {
-		background: var(--color-twitch);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: --spacing(10);
-		height: --spacing(10);
-		border-radius: var(--radius-md);
+	#sidebar-actions > :global(*) {
+		color: var(--color-muted-foreground);
+		height: --spacing(11);
+		justify-content: flex-start;
+		padding-left: --spacing(3.5);
+		padding-right: --spacing(3.5);
 
-		:global(svg) {
-			width: --spacing(5);
-			height: --spacing(5);
-			color: white;
+		@variant hover {
+			color: var(--color-foreground);
 		}
 	}
 </style>

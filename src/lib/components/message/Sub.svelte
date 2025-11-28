@@ -33,10 +33,10 @@
 			{#if sub.type === "sub_or_resub" && sub.sub_plan === "Prime"}
 				<PrimeCrown class="fill-current" />
 			{:else}
-				<Star class="mt-0.5 size-4 shrink-0" />
+				<Star class="mt-0.5 shrink-0" />
 			{/if}
 		{:else}
-			<Gift class="mt-px size-4 shrink-0" />
+			<Gift class="mt-px shrink-0" />
 		{/if}
 
 		{#if sub.type === "sub_or_resub"}
@@ -82,7 +82,7 @@
 				{@html colorizeName(message.author)}
 
 				<p>
-					Gifting
+					Gifted
 					{singular ? "a" : sub.mass_gift_count}
 					<span class="font-semibold"> Tier {sub.sub_plan[0]}</span>
 					sub{singular ? null : "s"}!
@@ -111,7 +111,7 @@
 				{@html colorizeName(message.author)}
 
 				<p>
-					Continuing the gifted sub they got from {#if gifter}
+					Continued the gifted sub they got from {#if gifter}
 						{@html colorizeName(gifter)}
 					{:else}
 						<span class="font-semibold">{sub.gifter_name}</span>
@@ -127,7 +127,7 @@
 
 			<p>
 				{#if sub.is_sender_anonymous}
-					<span class="font-semibold">An Anonymous Viewer</span>
+					<span class="font-semibold">An anonymous viewer</span>
 				{:else}
 					{@html colorizeName(message.author)}
 				{/if}

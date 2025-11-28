@@ -6,7 +6,7 @@ export default defineHandler({
 	handle(data, channel) {
 		const message = new UserMessage(channel, data);
 
-		if (message.event?.type === "raid" && channel.stream?.viewersCount) {
+		if (message.event?.type === "raid" && channel.stream?.viewersCount && !data.is_recent) {
 			channel.stream.viewersCount += message.event.viewer_count;
 		}
 

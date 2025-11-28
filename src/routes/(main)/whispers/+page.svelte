@@ -3,6 +3,7 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { Attachment } from "svelte/attachments";
 	import ChatDots from "~icons/ph/chat-dots";
+	import * as Empty from "$lib/components/ui/empty";
 
 	dayjs.extend(relativeTime);
 
@@ -75,7 +76,7 @@
 
 					{#if whisper.unread}
 						<div
-							class="bg-twitch mt-1 flex size-6 items-center justify-center rounded-full p-1 text-xs font-medium"
+							class="text-foreground mt-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium"
 						>
 							{whisper.unread > 9 ? "9+" : whisper.unread}
 						</div>
@@ -85,10 +86,15 @@
 		</div>
 	{/if}
 {:else}
-	<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-		<ChatDots class="mb-4 size-8" />
+	<Empty.Root class="h-full">
+		<Empty.Header>
+			<Empty.Media variant="icon">
+				<ChatDots />
+			</Empty.Media>
 
-		<span class="text-lg font-medium">No Whispers</span>
-		<p class="text-muted-foreground">Any whispers you receive will appear here</p>
-	</div>
+			<Empty.Title>No whispers</Empty.Title>
+
+			<Empty.Description>Any whispers you receive will appear here.</Empty.Description>
+		</Empty.Header>
+	</Empty.Root>
 {/each}

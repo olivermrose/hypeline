@@ -4,9 +4,11 @@
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { openUrl } from "@tauri-apps/plugin-opener";
 	import { onDestroy, onMount, tick } from "svelte";
+	import Twitch from "~icons/local/twitch";
 	import { goto, invalidateAll } from "$app/navigation";
 	import { PUBLIC_TWITCH_CLIENT_ID, PUBLIC_TWITCH_REDIRECT_URL } from "$env/static/public";
 	import { app } from "$lib/app.svelte";
+	import { Button } from "$lib/components/ui/button";
 	import { log } from "$lib/log";
 	import { CurrentUser } from "$lib/models/current-user.svelte";
 	import { settings } from "$lib/settings";
@@ -58,23 +60,19 @@
 	onDestroy(() => unlisten?.());
 </script>
 
-<div class="flex h-screen items-center justify-center">
-	<button
-		class="bg-twitch m-auto flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white"
-		type="button"
-		onclick={() => openUrl(authUrl)}
-	>
-		<svg
-			class="size-5 fill-white"
-			role="img"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"
-			/>
-		</svg>
+<img class="size-14" src="/favicon.png" alt="Hypeline logo" />
 
-		Log in with Twitch
-	</button>
+<div class="space-y-2">
+	<h1 class="text-4xl font-semibold">Hypeline</h1>
+
+	<p class="text-muted-foreground max-w-sm">Connect your Twitch account to start chatting.</p>
 </div>
+
+<Button
+	class="bg-twitch text-primary hover:bg-twitch-600 h-12 text-base"
+	size="lg"
+	onclickwait={() => openUrl(authUrl.toString())}
+>
+	<Twitch class="size-5 fill-white" />
+	Log in with Twitch
+</Button>

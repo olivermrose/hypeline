@@ -13,7 +13,7 @@
 	import Emote from "../Emote.svelte";
 	import Link from "../Link.svelte";
 	import Timestamp from "../Timestamp.svelte";
-	import Tooltip from "../ui/Tooltip.svelte";
+	import * as Tooltip from "../ui/tooltip";
 	import User from "../User.svelte";
 	import Embed from "./Embed.svelte";
 
@@ -54,19 +54,24 @@
 <Timestamp date={message.timestamp} />
 
 {#each badges as badge (badge.title)}
-	<Tooltip class="p-1 text-xs" side="top" sideOffset={4}>
-		{#snippet trigger()}
-			<img
-				class="inline-block align-middle"
-				src={badge.imageURL}
-				alt={badge.description}
-				width="18"
-				height="18"
-			/>
-		{/snippet}
+	<Tooltip.Root>
+		<Tooltip.Trigger>
+			{#snippet child({ props })}
+				<img
+					{...props}
+					class="inline-block align-middle"
+					src={badge.imageURL}
+					alt={badge.description}
+					width="18"
+					height="18"
+				/>
+			{/snippet}
+		</Tooltip.Trigger>
 
-		{badge.title}
-	</Tooltip>
+		<Tooltip.Content class="p-1 text-xs" side="top" sideOffset={4}>
+			{badge.title}
+		</Tooltip.Content>
+	</Tooltip.Root>
 {/each}
 
 <User {message} {nested} />

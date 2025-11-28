@@ -3,19 +3,23 @@
 	import type { HTMLAttributes } from "svelte/elements";
 
 	interface Props extends HTMLAttributes<HTMLSpanElement> {
-		href: string;
+		href?: string;
 	}
 
-	const { children, href, ...rest }: Props = $props();
+	const { children, class: className, href, ...rest }: Props = $props();
 </script>
 
 <span
-	class="text-twitch-link underline hover:cursor-pointer"
+	class={["cursor-pointer text-blue-400 underline transition-colors", className]}
 	role="link"
 	tabindex="0"
-	onclick={() => openUrl(href)}
+	onclick={() => {
+		if (href) openUrl(href);
+	}}
 	onkeydown={(event) => {
-		if (event.key === "Enter") openUrl(href);
+		if (event.key === "Enter" && href) {
+			openUrl(href);
+		}
 	}}
 	{...rest}
 >

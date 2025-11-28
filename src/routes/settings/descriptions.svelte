@@ -37,5 +37,5 @@
 <!------->
 
 {#snippet emotes(href: string, label: string)}
-	Show and autocomplete emotes from <Link {href}>{label}</Link>
+	Show and autocomplete emotes from <Link {href}>{label}</Link>.
 {/snippet}

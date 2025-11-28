@@ -1,7 +1,8 @@
 <script lang="ts">
 	import WarningCircle from "~icons/ph/warning-circle";
 	import { page } from "$app/state";
-	import Link from "$lib/components/Link.svelte";
+	import { Button } from "$lib/components/ui/button";
+	import * as Empty from "$lib/components/ui/empty";
 	import { log } from "$lib/log";
 
 	if (page.error) {
@@ -9,14 +10,20 @@
 	}
 </script>
 
-<div class="flex size-full flex-col items-center justify-center p-6 text-center">
-	<WarningCircle class="mb-4 size-8" />
+<Empty.Root class="h-full">
+	<Empty.Header>
+		<Empty.Media variant="icon">
+			<WarningCircle />
+		</Empty.Media>
 
-	<span class="text-lg font-medium">This is awkward...</span>
+		<Empty.Title>This is awkward...</Empty.Title>
 
-	<p class="text-muted-foreground mt-1 max-w-md">
-		Something went wrong. If this issue persists, please file an issue on the <Link
-			href="https://github.com/olivermrose/hypeline">GitHub repository</Link
-		>.
-	</p>
-</div>
+		<Empty.Description>
+			Something went wrong. If this issue persists, please file an issue.
+		</Empty.Description>
+	</Empty.Header>
+
+	<Empty.Content>
+		<Button href="https://github.com/hypeline/hypeline/issues">File an issue</Button>
+	</Empty.Content>
+</Empty.Root>

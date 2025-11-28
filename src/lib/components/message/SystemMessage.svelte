@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type {
 		AutoModContext,
-		BannedContext,
 		BanStatusContext,
 		ClearContext,
 		DeleteContext,
@@ -21,6 +20,7 @@
 	import { colorizeName, formatDuration } from "$lib/util";
 	import Emote from "../Emote.svelte";
 	import Timestamp from "../Timestamp.svelte";
+	import { Button } from "../ui/button";
 
 	interface Props {
 		message: SystemMessage;
@@ -59,7 +59,10 @@
 	};
 </script>
 
-<div class={["text-muted-foreground px-3 py-2", message.deleted && "opacity-30"]}>
+<div
+	class="text-muted-foreground px-3 py-2 aria-disabled:opacity-50"
+	aria-disabled={message.deleted}
+>
 	<Timestamp date={message.timestamp} />
 
 	<p class="inline">
@@ -100,12 +103,12 @@
 	{/if}
 {/snippet}
 
-{#snippet banned(ctx: BannedContext)}
+{#snippet banned()}
 	You are permanently banned from {@html colorizeName(message.channel.user)} and cannot send messages.
 	If you have been unbanned, try
-	<button class="text-twitch-link" type="button" onclick={() => message.channel.rejoin()}>
+	<Button class="h-min p-0" variant="link" onclick={() => message.channel.rejoin()}>
 		rejoining
-	</button>.
+	</Button>.
 {/snippet}
 
 {#snippet banStatus(ctx: BanStatusContext)}

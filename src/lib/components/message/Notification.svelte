@@ -37,14 +37,14 @@
 		{@const stops = colors[message.event.color]}
 
 		<div
-			class="my-1 border-x-6 [border-image-slice:1]"
+			class="my-1 border-x-4 [border-image-slice:1]"
 			style:border-image-source="linear-gradient({stops[0]}, {stops[1]})"
 		>
 			<div class="bg-muted flex items-center px-2.5 py-1.5 text-xs font-medium">
-				<Megaphone class="mr-2 size-4 -scale-x-100" /> Announcement
+				<Megaphone class="mr-2 -scale-x-100" /> Announcement
 			</div>
 
-			<div class="bg-muted/50 p-1.5">
+			<div class="bg-muted/50 p-2">
 				<Message {message} />
 			</div>
 		</div>
@@ -57,7 +57,7 @@
 		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">
-					<Confetti class="mt-px size-4 shrink-0" />
+					<Confetti class="mt-0.5 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}
@@ -74,7 +74,7 @@
 				{@const amount = message.event.donation_amount / 10 ** message.event.exponent}
 
 				<div class="flex gap-1">
-					<HandHeart class="mt-0.5 size-4 shrink-0" />
+					<HandHeart class="mt-0.5 shrink-0" />
 
 					<div class="flex flex-col gap-0.5">
 						{@html colorizeName(message.author)}
@@ -150,7 +150,7 @@
 				</p>
 			{:else if type === "watch_streak"}
 				<div class="flex gap-1">
-					<Fire class="mt-px size-4 shrink-0" />
+					<Fire class="mt-0.5 shrink-0" />
 
 					<p>
 						{@html colorizeName(message.author)}

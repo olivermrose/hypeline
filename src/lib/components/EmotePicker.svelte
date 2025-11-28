@@ -7,7 +7,8 @@
 	import { app } from "$lib/app.svelte";
 	import type { Emote, EmoteProvider, EmoteSet } from "$lib/emotes";
 	import type { Channel } from "$lib/models/channel.svelte";
-	import Input from "./ui/Input.svelte";
+	import { Input } from "./ui/input";
+	import * as InputGroup from "./ui/input-group";
 
 	interface Props {
 		channel: Channel;
@@ -77,10 +78,10 @@
 		return () => emoteSets.clear();
 	});
 
-	function observe(node: HTMLElement) {
-		observer.observe(node);
+	function observe(element: HTMLElement) {
+		observer.observe(element);
 
-		return () => observer.unobserve(node);
+		return () => observer.unobserve(element);
 	}
 
 	function addProvider(provider: EmoteProvider) {
@@ -132,12 +133,12 @@
 </script>
 
 <Popover.Root>
-	<Popover.Trigger
-		class="text-muted-foreground not-disabled:hover:text-foreground flex size-10 items-center justify-center transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50"
-		disabled={app.user?.banned}
-		aria-label="Open emote picker"
-	>
-		<Smiley class="size-5" />
+	<Popover.Trigger disabled={app.user?.banned} aria-label="Open emote picker">
+		{#snippet child({ props })}
+			<InputGroup.Button class="size-9" size="icon-sm" {...props}>
+				<Smiley />
+			</InputGroup.Button>
+		{/snippet}
 	</Popover.Trigger>
 
 	<Popover.Portal>
@@ -153,7 +154,7 @@
 						<img
 							class={[
 								"size-7 rounded-full object-contain",
-								activeSet === set.id && "outline-twitch outline-2",
+								activeSet === set.id && "outline-primary outline-1",
 							]}
 							src={set.owner.avatarUrl}
 							alt={set.owner.displayName}
@@ -166,7 +167,7 @@
 
 			<div class="flex w-md flex-col border-l">
 				<Input
-					class="border-border focus-visible:border-border shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
+					class="shrink-0 rounded-none rounded-tr-md border-0 border-b focus-visible:ring-0"
 					type="search"
 					placeholder="Search..."
 					bind:value={query}
@@ -199,19 +200,23 @@
 								{@attach observe}
 							>
 								<Accordion.Header class="bg-sidebar sticky top-0 z-10 p-2">
-									<Accordion.Trigger class="group flex items-center gap-2">
-										<img
-											class="size-5 rounded-full object-contain"
-											src={set.owner.avatarUrl}
-											alt={set.owner.displayName}
-											decoding="async"
-											loading="lazy"
-										/>
+									<Accordion.Trigger
+										class="group flex w-full items-center justify-between"
+									>
+										<div class="flex items-center">
+											<img
+												class="mr-2 size-5 rounded-full object-contain"
+												src={set.owner.avatarUrl}
+												alt={set.owner.displayName}
+												decoding="async"
+												loading="lazy"
+											/>
 
-										<span class="text-sm font-medium">{set.name}</span>
+											<span class="text-sm font-medium">{set.name}</span>
+										</div>
 
 										<CaretRight
-											class="text-muted-foreground size-3 group-data-[state=open]:rotate-90"
+											class="text-muted-foreground group-data-[state=open]:rotate-90"
 										/>
 									</Accordion.Trigger>
 								</Accordion.Header>

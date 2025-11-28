@@ -8,6 +8,7 @@ export const clipQuery = gql(`
 			createdAt
 			title
 			viewCount
+			durationSeconds
 			url
 			thumbnailURL
 			curator {

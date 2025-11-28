@@ -3,6 +3,7 @@
 		"windows": [
 			{
 				"title": "Hypeline",
+				"minWidth": 500,
 				"decorations": false
 			}
 		]

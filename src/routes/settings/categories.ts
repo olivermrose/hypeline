@@ -2,9 +2,9 @@ import Chat from "~icons/ph/chat";
 import Highlighter from "~icons/ph/highlighter";
 import Monitor from "~icons/ph/monitor";
 import { settings } from "$lib/settings";
-import KeywordHighlights from "./custom/KeywordHighlights.svelte";
+import KeywordHighlights from "./custom/highlights/Keyword.svelte";
+import ViewerHighlights from "./custom/highlights/Viewer.svelte";
 import Theme from "./custom/Theme.svelte";
-import ViewerHighlights from "./custom/ViewerHighlights.svelte";
 import { descriptions } from "./descriptions.svelte";
 import type { Binding, SettingsCategory } from "./types";
 
@@ -56,6 +56,7 @@ export const categories: SettingsCategory[] = [
 						type: "input",
 						label: "Custom Format",
 						description: descriptions.customFormat,
+						placeholder: "e.g. HH:mm:ss",
 						disabled: () => settings.state.appearance.timestamps.format !== "custom",
 						binding: bind(
 							() => settings.state.appearance.timestamps.customFormat,
@@ -121,7 +122,7 @@ export const categories: SettingsCategory[] = [
 					{
 						id: "emotes-ffz",
 						type: "toggle",
-						label: "Enable FFZ emotes",
+						label: "Enable FrankerFaceZ emotes",
 						description: descriptions.ffz,
 						binding: bind(
 							() => settings.state.chat.emotes.ffz,
@@ -131,7 +132,7 @@ export const categories: SettingsCategory[] = [
 					{
 						id: "emotes-bttv",
 						type: "toggle",
-						label: "Enable BTTV emotes",
+						label: "Enable BetterTTV emotes",
 						description: descriptions.bttv,
 						binding: bind(
 							() => settings.state.chat.emotes.bttv,
@@ -218,6 +219,8 @@ export const categories: SettingsCategory[] = [
 			{
 				type: "custom",
 				label: "Viewers",
+				description:
+					"Switch individual highlights on or off to focus on the types of viewers you want to recognize.",
 				component: ViewerHighlights,
 			},
 			{

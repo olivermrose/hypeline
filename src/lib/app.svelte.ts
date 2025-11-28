@@ -1,6 +1,7 @@
 import { invoke, Channel as IpcChannel } from "@tauri-apps/api/core";
 import { SvelteMap } from "svelte/reactivity";
 import { handlers } from "./handlers";
+import { History } from "./history.svelte";
 import { log } from "./log";
 import { EmoteManager } from "./managers/emote-manager";
 import { TwitchClient } from "./twitch/client";
@@ -23,7 +24,7 @@ class App {
 	/**
 	 * The currently authenticated user.
 	 */
-	public user?: CurrentUser;
+	public user = $state<CurrentUser | null>(null);
 
 	/**
 	 * The currently joined channel.
@@ -34,6 +35,11 @@ class App {
 	 * The list of channels the app is able to join.
 	 */
 	public channels = $state<Channel[]>([]);
+
+	/**
+	 * Route history.
+	 */
+	public readonly history = new History();
 
 	/**
 	 * Provider-specific global emotes.
