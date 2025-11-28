@@ -1,5 +1,6 @@
 <script lang="ts" module>
-	import { tv, type VariantProps } from "tailwind-variants";
+	import { tv } from "tailwind-variants";
+	import type { VariantProps } from "tailwind-variants";
 
 	export const emptyMediaVariants = tv({
 		base: "mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -18,8 +19,9 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/util.js";
 	import type { HTMLAttributes } from "svelte/elements";
+	import { cn } from "$lib/util.js";
+	import type { WithElementRef } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),

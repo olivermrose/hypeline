@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/util.js";
 	import type { HTMLAttributes } from "svelte/elements";
+	import { cn } from "$lib/util.js";
+	import type { WithElementRef } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),
@@ -13,8 +14,8 @@
 <span
 	bind:this={ref}
 	class={cn(
-		"text-muted-foreground flex items-center gap-2 text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
-		className
+		"text-muted-foreground flex items-center gap-2 text-sm [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+		className,
 	)}
 	{...restProps}
 >

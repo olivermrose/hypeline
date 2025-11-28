@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/util.js";
 	import type { HTMLFieldsetAttributes } from "svelte/elements";
+	import { cn } from "$lib/util.js";
+	import type { WithElementRef } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),
@@ -16,7 +17,7 @@
 	class={cn(
 		"flex flex-col gap-6",
 		"has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3",
-		className
+		className,
 	)}
 	{...restProps}
 >

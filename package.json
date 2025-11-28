@@ -13,7 +13,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"tauri": "tauri",
-		"lint": "eslint src/**/*.{ts,d.ts,svelte} && prettier --check src/**/*"
+		"lint": "eslint \"src/**/*.{ts,svelte}\" && prettier --check src/**/*",
+		"lint:fix": "eslint \"src/**/*.{ts,svelte}\" --fix && prettier --write src/**/*"
 	},
 	"prettier": {
 		"printWidth": 100,

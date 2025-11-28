@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Separator } from "$lib/components/ui/separator/index.js";
-	import { cn, type WithElementRef } from "$lib/util.js";
-	import type { HTMLAttributes } from "svelte/elements";
 	import type { Snippet } from "svelte";
+	import type { HTMLAttributes } from "svelte/elements";
+	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { cn } from "$lib/util.js";
+	import type { WithElementRef } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),
@@ -22,7 +23,7 @@
 	data-content={hasContent}
 	class={cn(
 		"relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2",
-		className
+		className,
 	)}
 	{...restProps}
 >

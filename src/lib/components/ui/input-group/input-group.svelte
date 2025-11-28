@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/util.js";
 	import type { HTMLAttributes } from "svelte/elements";
+	import { cn } from "$lib/util.js";
+	import type { WithElementRef } from "$lib/util.js";
 
 	let {
 		ref = $bindable(null),
@@ -15,7 +16,7 @@
 	data-slot="input-group"
 	role="group"
 	class={cn(
-		"group/input-group border-input dark:bg-input/30 shadow-xs relative flex w-full items-center rounded-md border outline-none transition-[color,box-shadow]",
+		"group/input-group border-input dark:bg-input/30 relative flex w-full items-center rounded-md border shadow-xs transition-[color,box-shadow] outline-none",
 		"h-9 has-[>textarea]:h-auto",
 
 		// Variants based on alignment.
@@ -30,7 +31,7 @@
 		// Error state.
 		"has-[[data-slot][aria-invalid=true]]:ring-destructive/20 has-[[data-slot][aria-invalid=true]]:border-destructive dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40",
 
-		className
+		className,
 	)}
 	{...props}
 >
