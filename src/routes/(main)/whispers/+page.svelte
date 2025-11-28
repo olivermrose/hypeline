@@ -76,7 +76,7 @@
 
 					{#if whisper.unread}
 						<div
-							class="bg-twitch mt-1 flex size-6 items-center justify-center rounded-full p-1 text-xs font-medium"
+							class="text-foreground mt-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium"
 						>
 							{whisper.unread > 9 ? "9+" : whisper.unread}
 						</div>
@@ -96,9 +96,5 @@
 
 			<Empty.Description>Any whispers you receive will appear here.</Empty.Description>
 		</Empty.Header>
-
-		<!-- <Empty.Content>
-			<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
-		</Empty.Content> -->
 	</Empty.Root>
 {/each}
