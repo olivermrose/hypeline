@@ -14,8 +14,7 @@
 		"windows": [
 			{
 				"title": "Hypeline",
-				"width": 800,
-				"height": 600,
+				"minWidth": 500,
 				"hiddenTitle": true,
 				"titleBarStyle": "Overlay",
 				"trafficLightPosition": {
