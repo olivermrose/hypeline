@@ -54,6 +54,8 @@
 	}
 
 	async function join() {
+		if (!value) return;
+
 		try {
 			let channel = app.channels.find((c) => c.user.username === value.toLowerCase());
 
@@ -64,12 +66,12 @@
 				channel.ephemeral = true;
 
 				app.channels.push(channel);
-
-				await goto(`/channels/${channel.user.username}`);
-
-				open = false;
-				reset();
 			}
+
+			await goto(`/channels/${channel.user.username}`);
+
+			open = false;
+			reset();
 		} catch (err) {
 			if (err instanceof Error) {
 				error = err.message;
