@@ -3,7 +3,6 @@
 	import { flip } from "svelte/animate";
 	import Users from "~icons/ph/users-bold";
 	import { app } from "$lib/app.svelte";
-	import { log } from "$lib/log";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import StreamTooltip from "./StreamTooltip.svelte";
 	import { Separator } from "./ui/separator";
@@ -44,8 +43,6 @@
 
 	const interval = setInterval(
 		async () => {
-			log.info("Updating streams");
-
 			const ids = app.channels.map((c) => c.user.id);
 			const streams = await app.twitch.fetchStreams(ids);
 
