@@ -58,6 +58,8 @@ export class TwitchClient {
 			);
 		}
 
+		await Promise.all(streams.map((s) => s.fetchGuests()));
+
 		return streams;
 	}
 

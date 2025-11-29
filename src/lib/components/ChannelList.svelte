@@ -48,11 +48,7 @@
 
 			for (const channel of app.channels) {
 				const stream = streams.find((s) => s.channelId === channel.user.id);
-
-				if (stream) {
-					await stream.fetchGuests();
-					channel.stream = stream;
-				}
+				channel.stream = stream ?? null;
 			}
 		},
 		5 * 60 * 1000,
