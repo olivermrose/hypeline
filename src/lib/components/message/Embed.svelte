@@ -21,6 +21,9 @@
 	let blurred = $state(true);
 
 	async function fetchEmote() {
+		const parts = url.pathname.split("/");
+		if (parts[1] !== "emotes") return;
+
 		const { emotes } = await send(
 			gql(
 				`query GetEmote($id: Id!) {
@@ -40,7 +43,7 @@
 				}`,
 				[emoteDetailsFragment],
 			),
-			{ id: url.pathname.split("/")[2] },
+			{ id: parts[2] },
 		);
 
 		if (!emotes.emote) return;
