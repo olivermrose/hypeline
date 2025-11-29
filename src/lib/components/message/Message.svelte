@@ -1,7 +1,6 @@
 <script lang="ts" module>
 	export interface MessageProps {
 		message: UserMessage;
-		onEmbedLoad?: () => void;
 	}
 </script>
 
@@ -21,7 +20,7 @@
 		nested?: boolean;
 	}
 
-	const { message, nested = false, onEmbedLoad }: Props = $props();
+	const { message, nested = false }: Props = $props();
 
 	const badges = $state<Badge[]>([]);
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
@@ -136,7 +135,7 @@
 {#if !nested && linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
-			<Embed onLoad={onEmbedLoad} {...node.data} />
+			<Embed {...node.data} />
 		{/each}
 	</div>
 {/if}

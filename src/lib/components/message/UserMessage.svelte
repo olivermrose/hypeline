@@ -9,7 +9,7 @@
 	import QuickActions from "./QuickActions.svelte";
 	import type { MessageProps } from "./Message.svelte";
 
-	const { message, onEmbedLoad }: MessageProps = $props();
+	const { message }: MessageProps = $props();
 
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();
@@ -91,7 +91,7 @@
 			class="bg-muted/50 my-0.5 border-l-4 p-2"
 			style:border-color={message.channel.user.color}
 		>
-			<Message {message} {onEmbedLoad} />
+			<Message {message} />
 		</div>
 	{:else if highlights.enabled}
 		{#if hlType && highlights[hlType].enabled}
@@ -130,6 +130,6 @@
 			</div>
 		{/if}
 
-		<Message {message} {onEmbedLoad} />
+		<Message {message} />
 	</div>
 {/snippet}

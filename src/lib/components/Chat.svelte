@@ -115,12 +115,7 @@
 				{:else if message.autoMod}
 					<AutoMod {message} metadata={message.autoMod} />
 				{:else}
-					<UserMessage
-						{message}
-						onEmbedLoad={() => {
-							if (!scrollingPaused) scrollToEnd();
-						}}
-					/>
+					<UserMessage {message} />
 				{/if}
 			{/if}
 

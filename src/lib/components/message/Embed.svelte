@@ -13,10 +13,9 @@
 	interface Props {
 		url: URL;
 		tld: ReturnType<typeof import("tldts").parse>;
-		onLoad?: () => void;
 	}
 
-	const { url, tld, onLoad }: Props = $props();
+	const { url, tld }: Props = $props();
 
 	let blurred = $state(true);
 
@@ -47,7 +46,6 @@
 		);
 
 		if (!emotes.emote) return;
-		onLoad?.();
 
 		return {
 			...transform7tvEmote(emotes.emote),
@@ -64,8 +62,6 @@
 		}
 
 		const { clip } = await app.twitch.send(clipQuery, { slug });
-		onLoad?.();
-
 		return clip;
 	}
 
