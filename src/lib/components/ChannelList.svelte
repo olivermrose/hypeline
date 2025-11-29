@@ -95,7 +95,7 @@
 									class="flex items-center gap-1 text-xs font-medium text-red-400"
 								>
 									<Users />
-									{formatViewers(channel.stream.viewers ?? 0)}
+									{formatViewers(channel.stream.viewers)}
 								</div>
 							</div>
 
