@@ -57,6 +57,7 @@ export async function load({ url }) {
 
 			if (followed.stream) {
 				stream = new Stream(app.twitch, followed.id, followed.stream);
+				await stream.fetchGuests();
 			}
 
 			const user = new User(app.twitch, followed);
