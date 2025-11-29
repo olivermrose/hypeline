@@ -1,6 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ApiError } from "$lib/errors/api-error";
-import { ErrorMessage } from "$lib/errors/messages";
 import { send7tv as send } from "$lib/graphql";
 import { seventvGql, twitchGql } from "$lib/graphql/function";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
@@ -12,10 +10,11 @@ import {
 } from "../graphql/fragments";
 import { ViewerManager } from "../managers/viewer-manager";
 import { settings } from "../settings";
-import type { Badge, Cheermote, Stream } from "../graphql/fragments";
+import type { Badge, Cheermote } from "../graphql/fragments";
 import type { StreamMarker } from "../twitch/api";
 import type { TwitchClient } from "../twitch/client";
 import { Chat } from "./chat.svelte";
+import { Stream } from "./stream.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { User } from "./user.svelte";
 
@@ -33,7 +32,15 @@ export class Channel {
 	 * The badges in the channel.
 	 */
 	public readonly badges = new Map<string, Badge>();
+
+	/**
+	 * The emotes in the channel.
+	 */
 	public readonly emotes: ChannelEmoteManager;
+
+	/**
+	 * The cheermotes in the channel.
+	 */
 	public readonly cheermotes = $state<Cheermote[]>([]);
 
 	/**
@@ -84,7 +91,7 @@ export class Channel {
 			this.viewers.set(this.id, viewer);
 		}
 
-		const [stream] = await Promise.all([
+		await Promise.all([
 			this.fetchStream(),
 			this.#fetch7tvId(),
 			this.emotes.fetch(),
@@ -92,7 +99,7 @@ export class Channel {
 			this.fetchCheermotes(),
 		]);
 
-		this.stream = stream;
+		await this.stream?.fetchGuests();
 
 		await invoke("join", {
 			id: this.id,
@@ -220,11 +227,11 @@ export class Channel {
 			{ id: this.id },
 		);
 
-		if (!user) {
-			throw new ApiError(404, ErrorMessage.USER_NOT_FOUND(this.user.username));
+		if (user?.stream) {
+			this.stream = new Stream(this.client, this.id, user.stream);
 		}
 
-		return user.stream;
+		return this.stream;
 	}
 
 	public async createMarker(description?: string) {

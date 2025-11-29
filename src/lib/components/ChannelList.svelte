@@ -13,7 +13,7 @@
 	const sorted = $derived(
 		app.channels.toSorted((a, b) => {
 			if (a.stream && b.stream) {
-				return (b.stream.viewersCount ?? 0) - (a.stream.viewersCount ?? 0);
+				return b.stream.viewers - a.stream.viewers;
 			}
 
 			if (a.stream && !b.stream) return -1;
@@ -50,8 +50,12 @@
 			const streams = await app.twitch.fetchStreams(ids);
 
 			for (const channel of app.channels) {
-				const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
-				channel.stream = stream ?? null;
+				const stream = streams.find((s) => s.channelId === channel.user.id);
+
+				if (stream) {
+					await stream.fetchGuests();
+					channel.stream = stream;
+				}
 			}
 		},
 		5 * 60 * 1000,
@@ -84,20 +88,26 @@
 					{#if channel.stream}
 						<div class="min-w-0 flex-1">
 							<div class="flex items-center justify-between">
-								<span class="text-sidebar-foreground truncate text-sm font-medium">
+								<div
+									class="text-sidebar-foreground flex items-center gap-x-1 truncate text-sm font-medium"
+								>
 									{channel.user.displayName}
-								</span>
+
+									{#if channel.stream.guests.size}
+										<span class="text-xs">+{channel.stream.guests.size}</span>
+									{/if}
+								</div>
 
 								<div
 									class="flex items-center gap-1 text-xs font-medium text-red-400"
 								>
 									<Users />
-									{formatViewers(channel.stream.viewersCount ?? 0)}
+									{formatViewers(channel.stream.viewers ?? 0)}
 								</div>
 							</div>
 
 							<p class="text-muted-foreground truncate text-xs">
-								{channel.stream.game?.displayName}
+								{channel.stream.game}
 							</p>
 						</div>
 					{:else}

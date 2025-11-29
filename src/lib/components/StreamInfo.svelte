@@ -4,7 +4,7 @@
 	import { onDestroy } from "svelte";
 	import Clock from "~icons/ph/clock";
 	import Users from "~icons/ph/users";
-	import type { Stream } from "$lib/graphql/fragments";
+	import type { Stream } from "$lib/models/stream.svelte";
 
 	dayjs.extend(duration);
 
@@ -38,10 +38,10 @@
 >
 	<p class="truncate" title={stream.title}>{stream.title}</p>
 
-	<div class="ml-[3ch] flex items-center gap-2.5">
+	<div class="ml-[3ch] flex items-center gap-x-2.5">
 		<div class="flex items-center">
 			<Users class="mr-1" />
-			<span>{stream.viewersCount}</span>
+			<span>{stream.viewers}</span>
 		</div>
 
 		<div class="flex items-center">

@@ -22,6 +22,7 @@ export async function load({ params, parent }) {
 		titleBar: {
 			icon: channel.user.avatarUrl,
 			title: channel.user.displayName,
+			guests: channel.stream?.guests.size ?? 0,
 		},
 	};
 }

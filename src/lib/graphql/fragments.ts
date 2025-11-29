@@ -68,9 +68,6 @@ export const emoteSetDetailsFragment = seventvGql(
 
 export const streamDetailsFragment = twitchGql(`
 	fragment StreamDetails on Stream {
-		broadcaster {
-			id
-		}
 		title
 		game {
 			displayName

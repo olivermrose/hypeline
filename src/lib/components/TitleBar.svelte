@@ -11,6 +11,7 @@
 	import { afterNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
+	import GuestList from "./GuestList.svelte";
 	import { Button } from "./ui/button";
 
 	type ControlType = "minimize" | "maximize" | "close";
@@ -21,7 +22,7 @@
 	let unlisten: UnlistenFn | undefined;
 
 	let maximized = $state(false);
-	const { icon, title } = $derived(
+	const { icon, title, guests } = $derived(
 		page.data.titleBar ?? { icon: "/favicon.png", title: "Hypeline" },
 	);
 
@@ -104,6 +105,10 @@
 		<span class="pointer-events-none text-sm font-medium">
 			{title}
 		</span>
+
+		{#if app.joined?.stream && guests}
+			<GuestList channel={app.joined} />
+		{/if}
 	</div>
 
 	<div class="flex items-center justify-end" data-tauri-drag-region>

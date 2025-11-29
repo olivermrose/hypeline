@@ -6,6 +6,7 @@
 	import { app } from "$lib/app.svelte";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import { settings } from "$lib/settings";
+	import GuestList from "./GuestList.svelte";
 	import * as Tooltip from "./ui/tooltip";
 
 	interface Props {
@@ -67,8 +68,8 @@
 					class="absolute inset-0 z-10"
 					href="/channels/{channel.user.username}"
 					data-sveltekit-preload-data="off"
+					aria-label="Join {channel.user.displayName}"
 				>
-					<span class="sr-only">Join {channel.user.displayName}</span>
 				</a>
 
 				<img
@@ -95,7 +96,7 @@
 					<div
 						class="dark:text-twitch text-twitch-link overflow-hidden overflow-ellipsis whitespace-nowrap"
 					>
-						{channel.user.displayName} &bullet; {channel.stream.game?.displayName}
+						{channel.user.displayName} &bullet; {channel.stream.game}
 					</div>
 				{/if}
 
@@ -106,9 +107,13 @@
 						<Users class="mr-1 size-3" />
 
 						<p class="text-xs">
-							{channel.stream.viewersCount} viewers
+							{channel.stream.viewers} viewers
 						</p>
 					</div>
+				{/if}
+
+				{#if channel.stream.guests.size}
+					<GuestList {channel} tooltip />
 				{/if}
 			</div>
 		{:else if collapsed}
