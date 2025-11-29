@@ -4774,6 +4774,8 @@ type Channel {
   """The name of the last game played on this channel."""
   game: String! @deprecated(reason: "Use user.lastBroadcast.game.name instead.")
 
+  guestStarSessionCall: GuestStarSessionForViewers
+
   """The Home of a channel."""
   home: ChannelHome
 
@@ -19634,6 +19636,15 @@ enum Granularity {
 
   """Bucketed by month intervals."""
   MONTH
+}
+
+type GuestStarSessionForViewers {
+  guests: [GuestStarSlotForViewers!]!
+}
+
+type GuestStarSlotForViewers {
+  id: ID!
+  user: User!
 }
 
 """The hearthstone game mode that was played."""

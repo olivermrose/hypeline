@@ -4,6 +4,7 @@ import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
 import { CurrentUser } from "$lib/models/current-user.svelte.js";
+import { Stream } from "$lib/models/stream.svelte.js";
 import { User } from "$lib/models/user.svelte";
 import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";
@@ -52,8 +53,15 @@ export async function load({ url }) {
 		const following = await app.user.fetchFollowing();
 
 		for (const followed of following) {
+			let stream: Stream | null = null;
+
+			if (followed.stream) {
+				stream = new Stream(app.twitch, followed.id, followed.stream);
+				await stream.fetchGuests();
+			}
+
 			const user = new User(app.twitch, followed);
-			const channel = new Channel(app.twitch, user, followed.stream);
+			const channel = new Channel(app.twitch, user, stream);
 
 			app.channels.push(channel);
 		}

@@ -4,6 +4,7 @@ import type { Component } from "svelte";
 interface TitleBar {
 	icon: string | Component;
 	title: string;
+	guests?: number;
 }
 
 declare global {

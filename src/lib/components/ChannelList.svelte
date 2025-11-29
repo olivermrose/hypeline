@@ -3,7 +3,6 @@
 	import { flip } from "svelte/animate";
 	import Users from "~icons/ph/users-bold";
 	import { app } from "$lib/app.svelte";
-	import { log } from "$lib/log";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import StreamTooltip from "./StreamTooltip.svelte";
 	import { Separator } from "./ui/separator";
@@ -13,7 +12,7 @@
 	const sorted = $derived(
 		app.channels.toSorted((a, b) => {
 			if (a.stream && b.stream) {
-				return (b.stream.viewersCount ?? 0) - (a.stream.viewersCount ?? 0);
+				return b.stream.viewers - a.stream.viewers;
 			}
 
 			if (a.stream && !b.stream) return -1;
@@ -44,13 +43,11 @@
 
 	const interval = setInterval(
 		async () => {
-			log.info("Updating streams");
-
 			const ids = app.channels.map((c) => c.user.id);
 			const streams = await app.twitch.fetchStreams(ids);
 
 			for (const channel of app.channels) {
-				const stream = streams.find((s) => s.broadcaster?.id === channel.user.id);
+				const stream = streams.find((s) => s.channelId === channel.user.id);
 				channel.stream = stream ?? null;
 			}
 		},
@@ -84,20 +81,26 @@
 					{#if channel.stream}
 						<div class="min-w-0 flex-1">
 							<div class="flex items-center justify-between">
-								<span class="text-sidebar-foreground truncate text-sm font-medium">
+								<div
+									class="text-sidebar-foreground flex items-center gap-x-1 truncate text-sm font-medium"
+								>
 									{channel.user.displayName}
-								</span>
+
+									{#if channel.stream.guests.size}
+										<span class="text-xs">+{channel.stream.guests.size}</span>
+									{/if}
+								</div>
 
 								<div
 									class="flex items-center gap-1 text-xs font-medium text-red-400"
 								>
 									<Users />
-									{formatViewers(channel.stream.viewersCount ?? 0)}
+									{formatViewers(channel.stream.viewers)}
 								</div>
 							</div>
 
 							<p class="text-muted-foreground truncate text-xs">
-								{channel.stream.game?.displayName}
+								{channel.stream.game}
 							</p>
 						</div>
 					{:else}

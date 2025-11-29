@@ -3,8 +3,9 @@ import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/queries";
 import { UserManager } from "$lib/managers/user-manager";
+import { Stream } from "$lib/models/stream.svelte";
 import { dedupe } from "$lib/util";
-import type { Badge, Stream } from "../graphql/fragments";
+import type { Badge } from "../graphql/fragments";
 import type { Stream as HelixStream } from "./api";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;
@@ -45,18 +46,19 @@ export class TwitchClient {
 		const streams: Stream[] = [];
 
 		for (const stream of response.data) {
-			streams.push({
-				broadcaster: {
-					id: stream.user_id,
-				},
-				title: stream.title,
-				game: {
-					displayName: stream.game_name,
-				},
-				viewersCount: stream.viewer_count,
-				createdAt: stream.started_at,
-			});
+			streams.push(
+				new Stream(this, stream.user_id, {
+					title: stream.title,
+					game: {
+						displayName: stream.game_name,
+					},
+					viewersCount: stream.viewer_count,
+					createdAt: stream.started_at,
+				}),
+			);
 		}
+
+		await Promise.all(streams.map((s) => s.fetchGuests()));
 
 		return streams;
 	}
