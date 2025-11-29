@@ -6,8 +6,8 @@ export default defineHandler({
 	handle(data, channel) {
 		const message = new UserMessage(channel, data);
 
-		if (message.event?.type === "raid" && channel.stream?.viewersCount && !data.is_recent) {
-			channel.stream.viewersCount += message.event.viewer_count;
+		if (message.event?.type === "raid" && !data.is_recent && channel.stream) {
+			channel.stream.viewers += message.event.viewer_count;
 		}
 
 		channel.chat.addMessage(message);
