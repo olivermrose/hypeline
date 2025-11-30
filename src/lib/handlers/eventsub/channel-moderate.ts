@@ -5,12 +5,7 @@ export default defineHandler({
 	name: "channel.moderate",
 	async handle(data, channel) {
 		const message = new SystemMessage(channel);
-
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
-		const source =
-			data.source_broadcaster_user_id === data.broadcaster_user_id
-				? null
-				: await channel.viewers.fetch(data.source_broadcaster_user_id);
 
 		switch (data.action) {
 			case "emoteonly":
@@ -81,7 +76,6 @@ export default defineHandler({
 					text: metadata.message_body,
 					user: viewer.user,
 					moderator,
-					source,
 				};
 
 				break;
@@ -125,7 +119,6 @@ export default defineHandler({
 					reason: metadata.reason,
 					viewer,
 					moderator,
-					source,
 				};
 
 				break;
@@ -141,7 +134,6 @@ export default defineHandler({
 					type: "untimeout",
 					viewer,
 					moderator,
-					source,
 				};
 
 				break;
@@ -162,7 +154,6 @@ export default defineHandler({
 					reason: isBan ? data.ban.reason : null,
 					viewer,
 					moderator,
-					source,
 				};
 
 				break;
@@ -185,7 +176,6 @@ export default defineHandler({
 					reason: isBan ? data.shared_chat_ban.reason : null,
 					viewer,
 					moderator,
-					source,
 				};
 
 				break;
