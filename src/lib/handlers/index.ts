@@ -3,10 +3,10 @@ import type { Handler } from "./helper";
 
 export const handlers = new Map<string, Handler>();
 
-const imports = import.meta.glob(["./eventsub/*.ts", "./irc/*.ts", "./seventv/*.ts"], {
+const imports = import.meta.glob<Handler>(["./eventsub/*.ts", "./irc/*.ts", "./seventv/*.ts"], {
 	eager: true,
 	import: "default",
-}) as Record<string, Handler>;
+});
 
 for (const handler of Object.values(imports)) {
 	handlers.set(handler.name, handler);

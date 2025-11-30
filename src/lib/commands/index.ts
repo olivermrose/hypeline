@@ -13,9 +13,9 @@ export interface Command {
 	exec: (args: string[], channel: Channel, user: User) => Promise<void>;
 }
 
-const imports = import.meta.glob(["./built-in/*.ts", "./twitch/*.ts"], {
+const imports = import.meta.glob<Command>(["./built-in/*.ts", "./twitch/*.ts"], {
 	eager: true,
 	import: "default",
 });
 
-export const commands = Object.values(imports) as Command[];
+export const commands = Object.values(imports);
