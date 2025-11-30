@@ -2,6 +2,7 @@ import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/queries";
+import { ChannelManager } from "$lib/managers/channel-manager";
 import { UserManager } from "$lib/managers/user-manager";
 import { Stream } from "$lib/models/stream.svelte";
 import { dedupe } from "$lib/util";
@@ -23,6 +24,7 @@ export class TwitchClient {
 
 	public readonly badges = new Map<string, Badge>();
 	public readonly users = new UserManager(this);
+	public readonly channels = new ChannelManager(this);
 
 	/**
 	 * Retrieves the list of global badges and caches them for later use.

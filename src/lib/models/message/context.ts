@@ -44,6 +44,7 @@ export interface DeleteContext {
 	text: string;
 	user: User;
 	moderator?: Viewer;
+	source?: Viewer | null;
 }
 
 export interface EmoteSetChangeContext {

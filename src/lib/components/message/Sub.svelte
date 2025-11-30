@@ -27,7 +27,7 @@
 	const { message, sub }: Props = $props();
 </script>
 
-<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={message.channel.user.color}>
+<div class="bg-muted/50 my-0.5 border-l-4 p-2" style:border-color={message.source.user.color}>
 	<div class="flex gap-1">
 		{#if sub.type === "sub_or_resub" || sub.type === "prime_paid_upgrade" || sub.type === "gift_paid_upgrade"}
 			{#if sub.type === "sub_or_resub" && sub.sub_plan === "Prime"}
@@ -55,13 +55,18 @@
 						<Link href="https://gaming.amazon.com/home">Prime</Link>
 					{:else}
 						<span class="font-semibold">Tier {sub.sub_plan[0]}</span>
-					{/if}{#if !isMultimonth}.{/if}
+					{/if}{#if !isMultimonth && !message.shared}.{/if}
 
 					{#if isMultimonth}
 						for
 						<span class="font-semibold">
 							{sub.multimonth_duration} months
-						</span> in advance.
+						</span>
+						in advance{#if !message.shared}.{/if}
+					{/if}
+
+					{#if message.shared}
+						to {@html colorizeName(message.source.user)}.
 					{/if}
 
 					{#if sub.cumulative_months > 1}
@@ -85,7 +90,11 @@
 					Gifted
 					{singular ? "a" : sub.mass_gift_count}
 					<span class="font-semibold"> Tier {sub.sub_plan[0]}</span>
-					sub{singular ? null : "s"}!
+					sub{singular ? null : "s"}{#if !message.shared}!{/if}
+
+					{#if message.shared}
+						to {@html colorizeName(message.source.user)}'s community!
+					{/if}
 
 					{#if sub.sender_total_gifts && sub.sender_total_gifts > sub.mass_gift_count}
 						They've gifted a total of
@@ -142,7 +151,11 @@
 					{@html colorizeName(recipient)}
 				{:else}
 					<span class="font-semibold">{sub.recipient.name}</span>
-				{/if}!
+				{/if}{#if !message.shared}!{/if}
+
+				{#if message.shared}
+					in {@html colorizeName(message.source.user)}'s channel!
+				{/if}
 
 				{#if sub.sender_total_months > sub.num_gifted_months}
 					They've gifted a total of

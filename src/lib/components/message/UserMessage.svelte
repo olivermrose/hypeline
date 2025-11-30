@@ -89,7 +89,7 @@
 	{#if message.highlighted}
 		<div
 			class="bg-muted/50 my-0.5 border-l-4 p-2"
-			style:border-color={message.channel.user.color}
+			style:border-color={message.source.user.color}
 		>
 			<Message {message} />
 		</div>

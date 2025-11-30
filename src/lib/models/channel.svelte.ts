@@ -164,7 +164,9 @@ export class Channel {
 	/**
 	 * Retrieves the list of badges in the channel and caches them for later use.
 	 */
-	public async fetchBadges() {
+	public async fetchBadges(force = false) {
+		if (!force && this.badges.size) return;
+
 		const { user } = await this.client.send(
 			twitchGql(
 				`query GetChannelBadges($id: ID!) {

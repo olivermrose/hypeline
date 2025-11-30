@@ -3,11 +3,15 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "usernotice",
-	handle(data, channel) {
+	async handle(data, channel) {
 		const message = new UserMessage(channel, data);
 
 		if (message.event?.type === "raid" && !data.is_recent && channel.stream) {
 			channel.stream.viewers += message.event.viewer_count;
+		}
+
+		if (data.source) {
+			await message.setSource(data.source);
 		}
 
 		channel.chat.addMessage(message);

@@ -17,6 +17,10 @@ export default defineHandler({
 		message.viewer.returning = data.is_returning_chatter;
 		message.viewer.new = data.is_first_msg;
 
+		if (data.source) {
+			await message.setSource(data.source);
+		}
+
 		channel.chat.addMessage(message);
 	},
 });

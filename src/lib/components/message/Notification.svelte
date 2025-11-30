@@ -10,7 +10,7 @@
 
 	const { message }: { message: UserMessage } = $props();
 
-	const primary = message.channel.user.color ?? "inherit";
+	const primary = message.source.user.color ?? "inherit";
 
 	const colors: Record<string, string[]> = {
 		PRIMARY: [primary, primary],
@@ -53,7 +53,7 @@
 	{:else}
 		<div
 			class="bg-muted/50 my-0.5 border-l-4 p-2"
-			style:border-color={message.channel.user.color}
+			style:border-color={message.source.user.color}
 		>
 			{#if type === "bits_badge_tier"}
 				<div class="flex gap-1">

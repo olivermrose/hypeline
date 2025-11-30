@@ -186,6 +186,33 @@ export interface WarnAction extends BaseAction<"warn"> {
 	warn: WarnMetadata;
 }
 
+export interface SharedChatBanAction extends BaseAction<"shared_chat_ban"> {
+	shared_chat_ban: BanMetadata;
+}
+
+export interface SharedChatDeleteAction extends BaseAction<"shared_chat_delete"> {
+	shared_chat_delete: DeleteMetadata;
+}
+
+export interface SharedChatTimeoutAction extends BaseAction<"shared_chat_timeout"> {
+	shared_chat_timeout: TimeoutMetadata;
+}
+
+export interface SharedChatUnbanAction extends BaseAction<"shared_chat_unban"> {
+	shared_chat_unban: WithBasicUser;
+}
+
+export interface SharedChatUntimeoutAction extends BaseAction<"shared_chat_untimeout"> {
+	shared_chat_untimeout: WithBasicUser;
+}
+
+export type SharedChatAction =
+	| SharedChatBanAction
+	| SharedChatDeleteAction
+	| SharedChatTimeoutAction
+	| SharedChatUnbanAction
+	| SharedChatUntimeoutAction;
+
 export type ChannelModerate =
 	| AutoModTermsAction
 	| BanAction
@@ -206,7 +233,8 @@ export type ChannelModerate =
 	| UntimeoutAction
 	| UnvipAction
 	| VipAction
-	| WarnAction;
+	| WarnAction
+	| SharedChatAction;
 
 export interface ChannelSubscriptionEnd extends WithBroadcaster, WithBasicUser {
 	tier: string;
