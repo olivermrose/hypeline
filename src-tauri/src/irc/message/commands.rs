@@ -381,7 +381,7 @@ impl TryFrom<IrcMessage> for PrivmsgMessage {
             is_subscriber: raw.try_get_bool("subscriber")?,
             deleted: raw.try_get_optional_bool("rm-deleted")?.unwrap_or_default(),
             is_recent: raw.try_get_optional_bool("historical")?.unwrap_or_default(),
-            source_only: raw.try_get_bool("source_only").ok(),
+            source_only: raw.try_get_bool("source-only").ok(),
             source: raw.try_get_source()?,
             raw,
         })
