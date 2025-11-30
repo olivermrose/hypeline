@@ -598,9 +598,15 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
             name: raw.try_get_nonempty_tag_value("display-name")?.to_owned(),
         };
 
-        let event_id = raw.try_get_nonempty_tag_value("msg-id")?.to_owned();
+        let msg_id = raw.try_get_nonempty_tag_value("msg-id")?;
 
-        let event = match event_id.as_str() {
+        let event_id = if msg_id == "sharedchatnotice" {
+            raw.try_get_nonempty_tag_value("source-msg-id")?
+        } else {
+            msg_id
+        };
+
+        let event = match event_id {
             "announcement" => UserNoticeEvent::Announcement {
                 color: raw
                     .try_get_nonempty_tag_value("msg-param-color")?
@@ -796,7 +802,7 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
             message_text,
             system_message,
             event,
-            event_id,
+            event_id: event_id.to_owned(),
             badge_info: raw.try_get_badges("badge-info")?,
             badges: raw.try_get_badges("badges")?,
             emotes,
