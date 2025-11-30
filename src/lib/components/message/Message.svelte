@@ -22,28 +22,23 @@
 
 	const { message, nested = false }: Props = $props();
 
-	const badges = $state<Badge[]>([]);
+	const badges: Badge[] = [];
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
 
-	if (message.source) {
-		const user =
-			message.source.channel_id === message.channel.id
-				? message.channel.user
-				: message.channel.viewers.get(message.source.channel_id)?.user;
+	if (message.shared) {
+		const { user } = message.source;
 
-		if (user) {
-			badges.push({
-				setID: user.id,
-				version: "1",
-				title: user.displayName,
-				description: user.displayName,
-				imageURL: user.avatarUrl,
-			});
-		}
+		badges.push({
+			setID: user.id,
+			version: "1",
+			title: user.displayName,
+			description: user.displayName,
+			imageURL: user.avatarUrl,
+		});
 	}
 
 	for (const badge of message.badges) {
-		const chatBadge = message.channel.badges.get(badge);
+		const chatBadge = message.source.badges.get(badge);
 		const globalBadge = app.twitch.badges.get(badge);
 
 		const resolved = chatBadge ?? globalBadge;

@@ -66,6 +66,11 @@ export class UserMessage extends Message {
 	public readonly highlighted: boolean;
 
 	/**
+	 * Whether the message was sent in a shared chat.
+	 */
+	public readonly shared: boolean;
+
+	/**
 	 * The badges sent with the message. This is in the form of `setID:version`.
 	 */
 	public readonly badges: string[];
@@ -87,9 +92,10 @@ export class UserMessage extends Message {
 	public readonly reply: Reply | null;
 
 	/**
-	 * The source metadata for the message if it was sent in a shared chat.
+	 * The source channel for the message if it was sent in a shared chat. By
+	 * default, this is the same value as {@linkcode channel}.
 	 */
-	public readonly source: Source | null;
+	public source: Channel;
 
 	/**
 	 * The AutoMod metadata attached to the message if it was caught by AutoMod.
@@ -115,12 +121,15 @@ export class UserMessage extends Message {
 
 		this.action = "is_action" in data && data.is_action;
 		this.highlighted = "is_highlighted" in data && data.is_highlighted;
+		this.shared = data.source != null;
 
-		this.badges = data.badges.map((b) => `${b.name}:${b.version}`);
+		const { badges } = data.source ?? data;
+		this.badges = badges.map((b) => `${b.name}:${b.version}`);
+
 		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
 		this.event = "event" in data ? data.event : null;
 		this.reply = "reply" in data ? data.reply : null;
-		this.source = "source" in data ? data.source : null;
+		this.source = this.channel;
 	}
 
 	/**
@@ -191,6 +200,15 @@ export class UserMessage extends Message {
 		}
 
 		return this.#nodes;
+	}
+
+	public async setSource(source: Source) {
+		if (source.channel_id === this.channel.id) {
+			return;
+		}
+
+		this.source = await this.channel.client.channels.fetch(source.channel_id);
+		await this.source.fetchBadges();
 	}
 
 	/**

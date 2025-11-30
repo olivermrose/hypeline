@@ -10,12 +10,8 @@ export default defineHandler({
 			channel.stream.viewers += message.event.viewer_count;
 		}
 
-		if (message.source && message.source.channel_id !== channel.id) {
-			const source = await channel.viewers.fetch(message.source.channel_id);
-
-			if (!source.user.avatarUrl) {
-				await source.user.fetch();
-			}
+		if (data.source) {
+			await message.setSource(data.source);
 		}
 
 		channel.chat.addMessage(message);
