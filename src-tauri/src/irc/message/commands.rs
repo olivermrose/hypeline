@@ -810,7 +810,7 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
             message_id: raw.try_get_nonempty_tag_value("id")?.to_owned(),
             deleted: raw.try_get_optional_bool("rm-deleted")?.unwrap_or_default(),
             is_recent: raw.try_get_optional_bool("historical")?.unwrap_or_default(),
-            source_only: raw.try_get_bool("source_only").ok(),
+            source_only: raw.try_get_bool("source-only").ok(),
             source: raw.try_get_source()?,
             server_timestamp: raw.try_get_timestamp("tmi-sent-ts")?.to_owned(),
             raw,
