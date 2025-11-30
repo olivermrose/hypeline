@@ -442,17 +442,11 @@ impl TryFrom<IrcMessage> for RoomStateMessage {
             channel_login: raw.try_get_channel_login()?.to_owned(),
             channel_id: raw.try_get_nonempty_tag_value("room-id")?.to_owned(),
             emote_only: raw.try_get_optional_bool("emote-only")?,
-            followers_only: raw.try_get_optional_number::<i64>("followers-only")?.map(
-                |n| match n {
-                    n if n >= 0 => FollowersOnlyMode::Enabled(Duration::from_secs((n * 60) as u64)),
-                    _ => FollowersOnlyMode::Disabled,
-                },
-            ),
-            r9k: raw.try_get_optional_bool("r9k")?,
-            slow_mode: raw
-                .try_get_optional_number::<u64>("slow")?
-                .map(Duration::from_secs),
+            followers_only: raw.try_get_optional_number::<i64>("followers-only")?,
+            unique_mode: raw.try_get_optional_bool("r9k")?,
+            slow_mode: raw.try_get_optional_number::<u64>("slow")?,
             subscribers_only: raw.try_get_optional_bool("subs-only")?,
+            is_recent: raw.try_get_optional_bool("historical")?.unwrap_or_default(),
             raw,
         })
     }
@@ -613,27 +607,26 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                     .to_owned(),
             },
             "standardpayforward" => UserNoticeEvent::StandardPayForward {
-                is_prior_gifter_anonymous: source
-                    .try_get_bool("msg-param-prior-gifter-anonymous")?,
+                is_prior_gifter_anonymous: raw.try_get_bool("msg-param-prior-gifter-anonymous")?,
                 prior_gifter: BasicUser {
-                    id: source
+                    id: raw
                         .try_get_nonempty_tag_value("msg-param-prior-gifter-id")?
                         .to_owned(),
-                    login: source
+                    login: raw
                         .try_get_nonempty_tag_value("msg-param-prior-gifter-user-name")?
                         .to_owned(),
-                    name: source
+                    name: raw
                         .try_get_nonempty_tag_value("msg-param-prior-gifter-display-name")?
                         .to_owned(),
                 },
                 recipient: BasicUser {
-                    id: source
+                    id: raw
                         .try_get_nonempty_tag_value("msg-param-recipient-id")?
                         .to_owned(),
-                    login: source
+                    login: raw
                         .try_get_nonempty_tag_value("msg-param-recipient-user-name")?
                         .to_owned(),
-                    name: source
+                    name: raw
                         .try_get_nonempty_tag_value("msg-param-recipient-display-name")?
                         .to_owned(),
                 },
@@ -652,14 +645,14 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                 },
             },
             "charitydonation" => UserNoticeEvent::CharityDonation {
-                charity_name: source
+                charity_name: raw
                     .try_get_nonempty_tag_value("msg-param-charity-name")?
                     .to_owned(),
-                donation_amount: source.try_get_number("msg-param-donation-amount")?,
-                donation_currency: source
+                donation_amount: raw.try_get_number("msg-param-donation-amount")?,
+                donation_currency: raw
                     .try_get_nonempty_tag_value("msg-param-donation-currency")?
                     .to_owned(),
-                exponent: source.try_get_number("msg-param-exponent")?,
+                exponent: raw.try_get_number("msg-param-exponent")?,
             },
             "sub" | "resub" => UserNoticeEvent::SubOrResub {
                 is_resub: event_id == "resub",
@@ -669,8 +662,8 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                 } else {
                     None
                 },
-                multimonth_tenure: source.try_get_optional_number("msg-param-multimonth-tenure")?,
-                multimonth_duration: source
+                multimonth_tenure: raw.try_get_optional_number("msg-param-multimonth-tenure")?,
+                multimonth_duration: raw
                     .try_get_optional_number("msg-param-multimonth-duration")?,
                 sub_plan: raw
                     .try_get_nonempty_tag_value("msg-param-sub-plan")?
@@ -758,8 +751,8 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                 threshold: raw.try_get_number::<u64>("msg-param-threshold")?.to_owned(),
             },
             "onetapgiftredeemed" => UserNoticeEvent::OneTapGiftRedeemed {
-                bits: source.try_get_number("msg-param-bits-spent")?,
-                gift_id: source
+                bits: raw.try_get_number("msg-param-bits-spent")?,
+                gift_id: raw
                     .try_get_nonempty_tag_value("msg-param-gift-id")?
                     .to_owned(),
             },
@@ -768,8 +761,8 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
 
                 match category {
                     "watch-streak" => UserNoticeEvent::WatchStreak {
-                        streak: source.try_get_number("msg-param-value")?,
-                        points: source.try_get_number("msg-param-copoReward")?,
+                        streak: raw.try_get_number("msg-param-value")?,
+                        points: raw.try_get_number("msg-param-copoReward")?,
                     },
                     _ => UserNoticeEvent::Unknown,
                 }
@@ -892,7 +885,7 @@ impl TryFrom<IrcMessage> for WhisperMessage {
                 login: raw.try_get_prefix_nickname()?.to_owned(),
                 name: raw.try_get_nonempty_tag_value("display-name")?.to_owned(),
             },
-            message_id: source.try_get_nonempty_tag_value("message-id")?.to_owned(),
+            message_id: raw.try_get_nonempty_tag_value("message-id")?.to_owned(),
             message_text,
             name_color: raw.try_get_color("color")?.to_owned(),
             badges: raw.try_get_badges("badges")?,
