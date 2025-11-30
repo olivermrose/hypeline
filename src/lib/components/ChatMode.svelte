@@ -3,7 +3,11 @@
 	import { formatDuration } from "$lib/util";
 	import * as Popover from "./ui/popover";
 
-	const { chat }: { chat: Chat } = $props();
+	interface Props {
+		chat: Chat;
+	}
+
+	const { chat }: Props = $props();
 
 	const config = [
 		{ key: "subOnly", label: "Subscriber only" },

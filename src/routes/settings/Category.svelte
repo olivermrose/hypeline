@@ -3,7 +3,11 @@
 	import FieldControl from "./FieldControl.svelte";
 	import type { SettingsCategory } from "./types";
 
-	const { category }: { category: SettingsCategory } = $props();
+	interface Props {
+		category: SettingsCategory
+	}
+
+	const { category }: Props = $props();
 </script>
 
 <Field.Set>

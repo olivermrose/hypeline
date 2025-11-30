@@ -8,7 +8,11 @@
 
 	dayjs.extend(duration);
 
-	const { stream }: { stream: Stream } = $props();
+	interface Props {
+		stream: Stream;
+	}
+
+	const { stream }: Props = $props();
 
 	let uptime = $state(getUptime());
 

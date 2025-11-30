@@ -1,15 +1,18 @@
 <script lang="ts">
 	import ArrowBendUpRight from "~icons/ph/arrow-bend-up-right";
 	import { app } from "$lib/app.svelte";
+	import type { UserMessage } from "$lib/models/message/user-message";
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
 	import QuickActions from "./QuickActions.svelte";
-	import type { MessageProps } from "./Message.svelte";
+	interface Props {
+		message: UserMessage
+	}
 
-	const { message }: MessageProps = $props();
+	const { message }: Props = $props();
 
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();

@@ -2,7 +2,11 @@
 	import dayjs from "dayjs";
 	import { settings } from "$lib/settings";
 
-	const { date }: { date: Date } = $props();
+	interface Props {
+		date: Date;
+	}
+
+	const { date }: Props = $props();
 
 	const timestamps = $derived(settings.state.appearance.timestamps);
 

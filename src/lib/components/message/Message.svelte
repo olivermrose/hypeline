@@ -1,9 +1,3 @@
-<script lang="ts" module>
-	export interface MessageProps {
-		message: UserMessage;
-	}
-</script>
-
 <script lang="ts">
 	import { app } from "$lib/app.svelte";
 	import type { Badge } from "$lib/graphql/fragments";
@@ -16,7 +10,8 @@
 	import User from "../User.svelte";
 	import Embed from "./Embed.svelte";
 
-	interface Props extends MessageProps {
+	interface Props {
+		message: UserMessage;
 		nested?: boolean;
 	}
 

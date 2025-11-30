@@ -8,7 +8,11 @@
 	import Message from "./Message.svelte";
 	import Sub from "./Sub.svelte";
 
-	const { message }: { message: UserMessage } = $props();
+	interface Props {
+		message: UserMessage;
+	}
+
+	const { message }: Props = $props();
 
 	const primary = message.source.user.color ?? "inherit";
 
