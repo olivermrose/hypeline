@@ -754,7 +754,7 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
                     .to_owned(),
             },
             "bitsbadgetier" => UserNoticeEvent::BitsBadgeTier {
-                threshold: raw.try_get_number::<u64>("msg-param-threshold")?.to_owned(),
+                threshold: raw.try_get_number::<u64>("msg-param-threshold")?,
             },
             "onetapgiftredeemed" => UserNoticeEvent::OneTapGiftRedeemed {
                 bits: raw.try_get_number("msg-param-bits-spent")?,
@@ -812,7 +812,7 @@ impl TryFrom<IrcMessage> for UserNoticeMessage {
             is_recent: raw.try_get_optional_bool("historical")?.unwrap_or_default(),
             source_only: raw.try_get_bool("source-only").ok(),
             source: raw.try_get_source()?,
-            server_timestamp: raw.try_get_timestamp("tmi-sent-ts")?.to_owned(),
+            server_timestamp: raw.try_get_timestamp("tmi-sent-ts")?,
             raw,
         })
     }
