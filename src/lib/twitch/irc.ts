@@ -130,6 +130,8 @@ export interface BaseUserMessage extends BaseMessage {
 	badge_info: Badge[];
 	deleted: boolean;
 	is_recent: boolean;
+	source_only: boolean | null;
+	source: Source | null;
 	server_timestamp: number;
 }
 
@@ -147,6 +149,14 @@ export interface ReplyThread {
 export interface Reply {
 	parent: ReplyParent;
 	thread: ReplyThread;
+}
+
+export interface Source {
+	message_id: string;
+	event_id: string | null;
+	channel_id: string;
+	badges: Badge[];
+	badge_info: Badge[];
 }
 
 export interface PrivmsgMessage extends BaseUserMessage {
