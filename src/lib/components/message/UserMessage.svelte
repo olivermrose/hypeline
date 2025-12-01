@@ -8,8 +8,9 @@
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
 	import QuickActions from "./QuickActions.svelte";
+
 	interface Props {
-		message: UserMessage
+		message: UserMessage;
 	}
 
 	const { message }: Props = $props();
@@ -20,16 +21,16 @@
 	const highlights = $derived(settings.state.highlights);
 
 	const customMatched = $derived(
-		highlights.keywords.find((hl) => {
-			if (!hl.pattern.trim()) return false;
+		highlights.keywords.find((cfg) => {
+			if (!cfg.pattern.trim()) return false;
 
-			let pattern = hl.regex ? hl.pattern : RegExp.escape(hl.pattern);
+			let pattern = cfg.regex ? cfg.pattern : RegExp.escape(cfg.pattern);
 
-			if (hl.wholeWord) {
+			if (cfg.wholeWord) {
 				pattern = `\\b${pattern}\\b`;
 			}
 
-			return new RegExp(pattern, hl.matchCase ? "g" : "gi").test(message.text);
+			return new RegExp(pattern, cfg.matchCase ? "g" : "gi").test(message.text);
 		}),
 	);
 
@@ -49,6 +50,17 @@
 			hlType = "moderator";
 		} else if (message.viewer.suspicious) {
 			hlType = "suspicious";
+
+			const likelihood = message.viewer.banEvasion;
+
+			if (message.viewer.monitored) {
+				info = "Monitoring";
+			} else if (message.viewer.restricted) {
+				info = "Restricted";
+			} else if (likelihood !== "unknown") {
+				const status = likelihood[0].toUpperCase() + likelihood.slice(1);
+				info = `${status} Ban Evader`;
+			}
 		} else if (message.viewer.vip) {
 			hlType = "vip";
 		} else if (message.viewer.subscriber) {
@@ -56,27 +68,16 @@
 		}
 	}
 
-	if (message.viewer?.suspicious) {
-		const likelihood = message.viewer.banEvasion;
-
-		if (message.viewer.monitored) {
-			info = "Monitoring";
-		} else if (message.viewer.restricted) {
-			info = "Restricted";
-		} else if (likelihood !== "unknown") {
-			const status = likelihood[0].toUpperCase() + likelihood.slice(1);
-			info = `${status} Ban Evader`;
-		}
-	}
-
 	function getMentionStyle(viewer?: Viewer) {
+		if (!viewer) return null;
+
 		switch (settings.state.chat.usernames.mentionStyle) {
 			case "none":
 				return null;
 			case "colored":
-				return `color: ${viewer?.user.color}`;
+				return `color: ${viewer.user.color}`;
 			case "painted":
-				return viewer?.user.style;
+				return viewer.user.style;
 		}
 	}
 </script>
@@ -116,13 +117,13 @@
 {#snippet content(bordered: boolean)}
 	<div class={["not-group-aria-disabled:hover:bg-muted/50 py-2", bordered ? "px-1.5" : "px-3"]}>
 		{#if message.reply}
-			{@const user = message.channel.viewers.get(message.reply.parent.user.id)}
+			{@const viewer = message.channel.viewers.get(message.reply.parent.user.id)}
 
 			<div class="mb-0.5 flex items-center gap-2">
 				<ArrowBendUpRight class="text-muted-foreground ml-1 shrink-0 scale-x-125" />
 
 				<div class="line-clamp-1 text-xs">
-					<span style={getMentionStyle(user)}>
+					<span style={getMentionStyle(viewer)}>
 						@{message.reply.parent.user.name}
 					</span>:
 
