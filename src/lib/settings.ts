@@ -27,6 +27,7 @@ export interface EmoteSettings {
 export interface HistorySettings {
 	enabled: boolean;
 	limit: number;
+	separator: boolean;
 }
 
 export interface MessageSettings {
@@ -134,6 +135,7 @@ export const settings = new RuneStore<Settings>("settings", {
 			history: {
 				enabled: true,
 				limit: 250,
+				separator: true,
 			},
 		},
 	},

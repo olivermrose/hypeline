@@ -182,6 +182,16 @@ export default {
 								(v) => (settings.state.chat.messages.history.limit = v),
 							),
 						},
+						{
+							id: "history-separator",
+							type: "switch",
+							label: "Separate recent messages",
+							description: "Show a separator between recent and live messages.",
+							binding: bind(
+								() => settings.state.chat.messages.history.separator,
+								(v) => (settings.state.chat.messages.history.separator = v),
+							),
+						},
 					],
 				},
 			],

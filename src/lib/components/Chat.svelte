@@ -126,7 +126,7 @@
 
 			{@const next = chat.messages.at(i + 1)}
 
-			{#if message.recent && !next?.recent}
+			{#if message.recent && !next?.recent && settings.state.chat.messages.history.separator}
 				<div class="relative px-3.5 text-red-400">
 					<Separator class="my-4 bg-current/70" />
 
