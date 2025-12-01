@@ -10,6 +10,7 @@ use seventv::SeventTvClient;
 use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
 use tauri::{Manager, WindowEvent};
+use tauri_plugin_cache::{CacheConfig, CompressionMethod};
 use tauri_plugin_svelte::ManagerExt;
 use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
@@ -60,7 +61,7 @@ impl Default for AppState {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut builder = tauri::Builder::default().plugin(tauri_plugin_cache::init());
+    let mut builder = tauri::Builder::default();
     let mut state = AppState::default();
 
     #[cfg(desktop)]
@@ -74,6 +75,11 @@ pub fn run() {
     }
 
     builder
+        .plugin(tauri_plugin_cache::init_with_config(CacheConfig {
+            compression_level: Some(8),
+            compression_method: Some(CompressionMethod::Lzma2),
+            ..Default::default()
+        }))
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_svelte::init())
         .plugin(tauri_plugin_window_state::Builder::new().build())
