@@ -12,8 +12,8 @@
 	import Clipboard from "~icons/ph/clipboard";
 	import FolderOpen from "~icons/ph/folder-open";
 	import { page } from "$app/state";
+	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
-	import { log } from "$lib/log";
 
 	let copied = $state(false);
 
@@ -30,8 +30,7 @@
 			decorations: platform !== "windows",
 		});
 
-		history.back();
-		log.info("Settings detached");
+		app.history.back();
 	}
 
 	async function openLogDir() {
