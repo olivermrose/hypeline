@@ -1,8 +1,8 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
+import * as cache from "tauri-plugin-cache-api";
 import { app } from "$lib/app.svelte";
-import { cache } from "$lib/cache";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
-import type { BttvEmote, GlobalSet } from "$lib/emotes";
+import type { BttvEmote, Emote, GlobalSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { send7tv as send } from "$lib/graphql";
 import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
@@ -13,8 +13,12 @@ export class EmoteManager extends BaseEmoteManager {
 	// public addGlobalSet
 
 	public override async fetch() {
-		const emotes = await super.fetch();
-		cache.state.emotes = emotes;
+		let emotes = await cache.get<Emote[]>("global_emotes");
+
+		if (!emotes) {
+			emotes = await super.fetch();
+			await cache.set("global_emotes", emotes);
+		}
 
 		return emotes;
 	}

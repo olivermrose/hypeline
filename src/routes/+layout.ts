@@ -1,7 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
-import { cache } from "$lib/cache";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
 import { CurrentUser } from "$lib/models/current-user.svelte";
@@ -85,23 +84,10 @@ export async function load({ url }) {
 	}
 
 	if (!app.emotes.size) {
-		if (cache.state.emotes.length) {
-			app.emotes.addAll(cache.state.emotes);
-			log.info(`Loaded ${cache.state.emotes.length} global emotes from cache`);
-		} else {
-			await app.emotes.fetch();
-		}
+		await app.emotes.fetch();
 	}
 
 	if (!app.twitch.badges.size) {
-		if (cache.state.badges.length) {
-			for (const badge of cache.state.badges) {
-				app.twitch.badges.set(`${badge.setID}:${badge.version}`, badge);
-			}
-
-			log.info(`Loaded ${cache.state.badges.length} global badges from cache`);
-		} else {
-			await app.twitch.fetchBadges();
-		}
+		await app.twitch.fetchBadges();
 	}
 }

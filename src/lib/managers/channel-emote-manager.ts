@@ -1,6 +1,7 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
+import * as cache from "tauri-plugin-cache-api";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
-import type { BttvEmote, FfzEmoteSet } from "$lib/emotes";
+import type { BttvEmote, Emote, FfzEmoteSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { send7tv as send } from "$lib/graphql";
 import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
@@ -21,6 +22,19 @@ interface BttvUser {
 export class ChannelEmoteManager extends BaseEmoteManager {
 	public constructor(public readonly channel: Channel) {
 		super();
+	}
+
+	public override async fetch() {
+		let emotes = await cache.get<Emote[]>("global_emotes");
+
+		if (!emotes) {
+			emotes = await super.fetch();
+			await cache.set(`emotes:${this.channel.id}`, emotes);
+		} else {
+			this.addAll(emotes);
+		}
+
+		return emotes;
 	}
 
 	/**

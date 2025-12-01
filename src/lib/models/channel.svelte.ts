@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import * as cache from "tauri-plugin-cache-api";
 import { send7tv as send } from "$lib/graphql";
 import { seventvGql, twitchGql } from "$lib/graphql/function";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
@@ -165,23 +166,28 @@ export class Channel {
 	 * Retrieves the list of badges in the channel and caches them for later use.
 	 */
 	public async fetchBadges(force = false) {
-		if (!force && this.badges.size) return;
+		let badges = await cache.get<Badge[]>(`badges:${this.id}`);
 
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetChannelBadges($id: ID!) {
-					user(id: $id) {
-						broadcastBadges {
-							...BadgeDetails
+		if (!badges) {
+			const { user } = await this.client.send(
+				twitchGql(
+					`query GetChannelBadges($id: ID!) {
+						user(id: $id) {
+							broadcastBadges {
+								...BadgeDetails
+							}
 						}
-					}
-				}`,
-				[badgeDetailsFragment],
-			),
-			{ id: this.id },
-		);
+					}`,
+					[badgeDetailsFragment],
+				),
+				{ id: this.id },
+			);
 
-		for (const badge of user?.broadcastBadges?.filter((b) => b != null) ?? []) {
+			badges = user?.broadcastBadges?.filter((b) => b != null) ?? [];
+			await cache.set(`badges:${this.id}`, badges);
+		}
+
+		for (const badge of badges) {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 	}
@@ -191,23 +197,30 @@ export class Channel {
 	 * use.
 	 */
 	public async fetchCheermotes() {
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetCheermotes($id: ID!) {
-					user(id: $id) {
-						cheer {
-							emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
-							...CheermoteDetails
+		let cheermotes = await cache.get<Cheermote[]>(`cheermotes:${this.id}`);
+
+		if (!cheermotes) {
+			const { user } = await this.client.send(
+				twitchGql(
+					`query GetCheermotes($id: ID!) {
+						user(id: $id) {
+							cheer {
+								emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
+								...CheermoteDetails
+								}
 							}
 						}
-					}
-				}`,
-				[cheermoteDetailsFragment],
-			),
-			{ id: this.id },
-		);
+					}`,
+					[cheermoteDetailsFragment],
+				),
+				{ id: this.id },
+			);
 
-		this.cheermotes.push(...(user?.cheer?.emotes.filter((e) => e != null) ?? []));
+			cheermotes = user?.cheer?.emotes.filter((e) => e != null) ?? [];
+			await cache.set(`cheermotes:${this.id}`, cheermotes);
+		}
+
+		this.cheermotes.push(...cheermotes);
 		return this.cheermotes;
 	}
 
