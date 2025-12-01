@@ -280,7 +280,7 @@ export class Chat {
 			const reason = data.drop_reason.message;
 
 			log.warn(`Message dropped: ${reason}`);
-			this.addMessage(new SystemMessage(this.channel, reason));
+			this.addSystemMessage(reason);
 		}
 	}
 
