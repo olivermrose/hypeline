@@ -163,12 +163,16 @@ export class User {
 	}
 
 	/**
-	 * The CSS style for the user's name.
+	 * The CSS style for the user's username.
 	 */
 	public get style() {
 		const color = `color: ${this.color};`;
 
-		return this.paint ? `${this.paint.css}; ${color}` : color;
+		if (this.paint && settings.state.chat.usernames.paint) {
+			return `${this.paint.css}; ${color}`;
+		}
+
+		return color;
 	}
 
 	/**

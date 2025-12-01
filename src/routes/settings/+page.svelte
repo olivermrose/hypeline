@@ -4,13 +4,21 @@
 	import X from "~icons/ph/x";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
+	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { Separator } from "$lib/components/ui/separator";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
-	import { categories } from "./categories";
 	import Category from "./Category.svelte";
 	import SidebarActions from "./SidebarActions.svelte";
+	import type { SettingsCategory } from "./types";
+
+	const imports = import.meta.glob<SettingsCategory>(
+		["./categories/*.ts", "!./categories/util.ts"],
+		{ eager: true, import: "default" },
+	);
+
+	const categories = Object.values(imports).sort((a, b) => a.order - b.order);
 
 	beforeNavigate(async () => {
 		await settings.saveNow();
@@ -52,12 +60,7 @@
 
 		<Separator />
 
-		<Button
-			class="text-muted-foreground"
-			variant="ghost"
-			data-logout
-			onclick={() => goto("/auth/logout")}
-		>
+		<Button class="text-muted-foreground" variant="ghost" onclick={() => goto("/auth/logout")}>
 			<SignOut />
 			<span class="text-sm">Log out</span>
 		</Button>
@@ -69,7 +72,7 @@
 				class="absolute top-2 right-2"
 				size="icon"
 				variant="ghost"
-				onclick={() => history.back()}
+				onclick={() => app.history.back()}
 				aria-label="Close settings"
 			>
 				<X />
@@ -95,10 +98,5 @@
 		width: 100%;
 		display: flex;
 		justify-content: flex-start;
-
-		&:not([data-logout]):hover {
-			color: var(--color-foreground);
-			background-color: var(--color-muted);
-		}
 	}
 </style>

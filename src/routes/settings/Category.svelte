@@ -4,7 +4,7 @@
 	import type { SettingsCategory } from "./types";
 
 	interface Props {
-		category: SettingsCategory
+		category: SettingsCategory;
 	}
 
 	const { category }: Props = $props();

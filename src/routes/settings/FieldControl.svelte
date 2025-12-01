@@ -17,7 +17,9 @@
 
 {#if field.type === "group"}
 	<Field.Set>
-		<Field.Legend>{field.label}</Field.Legend>
+		{#if field.label}
+			<Field.Legend>{field.label}</Field.Legend>
+		{/if}
 
 		<Field.Group>
 			{#each field.fields as subField}
@@ -82,6 +84,8 @@
 			id={field.id}
 			class="relative flex items-center"
 			type="single"
+			thumbLabel={field.thumbLabel}
+			tickLabel={field.tickLabel}
 			min={field.min}
 			max={field.max}
 			step={field.step}
@@ -89,7 +93,7 @@
 			bind:value={field.binding.get, field.binding.set}
 		/>
 	</Field.Field>
-{:else if field.type === "toggle"}
+{:else if field.type === "switch"}
 	<Field.Field orientation="horizontal">
 		<Field.Content>
 			<Field.Label for={field.id}>{field.label}</Field.Label>

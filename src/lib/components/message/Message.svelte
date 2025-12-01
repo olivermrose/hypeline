@@ -3,6 +3,7 @@
 	import type { Badge } from "$lib/graphql/fragments";
 	import type { LinkNode } from "$lib/models/message/parse";
 	import type { UserMessage } from "$lib/models/message/user-message";
+	import { settings } from "$lib/settings";
 	import Emote from "../Emote.svelte";
 	import Link from "../Link.svelte";
 	import Timestamp from "../Timestamp.svelte";
@@ -139,7 +140,7 @@
 	{/each}
 </p>
 
-{#if !nested && linkNodes.some(canEmbed)}
+{#if settings.state.chat.embeds && !nested && linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed {...node.data} />

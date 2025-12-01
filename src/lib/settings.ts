@@ -13,6 +13,7 @@ export interface AppearanceSettings {
 export interface UsernameSettings {
 	localized: boolean;
 	readable: boolean;
+	paint: boolean;
 	mentionStyle: "none" | "colored" | "painted";
 }
 
@@ -20,11 +21,13 @@ export interface EmoteSettings {
 	ffz: boolean;
 	bttv: boolean;
 	seventv: boolean;
+	padding: number;
 }
 
 export interface HistorySettings {
 	enabled: boolean;
 	limit: number;
+	separator: boolean;
 }
 
 export interface MessageSettings {
@@ -33,6 +36,8 @@ export interface MessageSettings {
 }
 
 export interface ChatSettings {
+	scrollbar: boolean;
+	embeds: boolean;
 	usernames: UsernameSettings;
 	emotes: EmoteSettings;
 	messages: MessageSettings;
@@ -64,6 +69,10 @@ export interface KeywordHighlightConfig extends HighlightConfig {
 export interface HighlightSettings extends Record<HighlightType, HighlightConfig> {
 	enabled: boolean;
 	keywords: KeywordHighlightConfig[];
+}
+
+export interface AdvancedSettings {
+	streamRefreshInterval: number;
 }
 
 interface StoredUser {
@@ -107,21 +116,26 @@ export const settings = new RuneStore<Settings>("settings", {
 		},
 	},
 	chat: {
+		scrollbar: true,
+		embeds: true,
 		usernames: {
 			localized: true,
 			readable: true,
+			paint: true,
 			mentionStyle: "painted",
 		},
 		emotes: {
 			ffz: true,
 			bttv: true,
 			seventv: true,
+			padding: 0,
 		},
 		messages: {
 			duplicateBypass: true,
 			history: {
 				enabled: true,
 				limit: 250,
+				separator: true,
 			},
 		},
 	},
