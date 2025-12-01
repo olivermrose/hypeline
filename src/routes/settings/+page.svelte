@@ -60,12 +60,7 @@
 
 		<Separator />
 
-		<Button
-			class="text-muted-foreground"
-			variant="ghost"
-			data-logout
-			onclick={() => goto("/auth/logout")}
-		>
+		<Button class="text-muted-foreground" variant="ghost" onclick={() => goto("/auth/logout")}>
 			<SignOut />
 			<span class="text-sm">Log out</span>
 		</Button>
@@ -103,10 +98,5 @@
 		width: 100%;
 		display: flex;
 		justify-content: flex-start;
-
-		&:not([data-logout]):hover {
-			color: var(--color-foreground);
-			background-color: var(--color-muted);
-		}
 	}
 </style>
