@@ -56,7 +56,7 @@ export interface Relationship {
 }
 
 export class User {
-	#color: string | null = null;
+	#color: string;
 	#displayName: string;
 
 	public readonly id: string;
@@ -125,7 +125,7 @@ export class User {
 		public readonly client: TwitchClient,
 		readonly data: ApiUser,
 	) {
-		this.#color = data.chatColor;
+		this.#color = data.chatColor ?? "inherit";
 		this.#displayName = data.displayName;
 
 		this.id = data.id;
@@ -151,14 +151,10 @@ export class User {
 	 * if the user doesn't have a color set.
 	 */
 	public get color() {
-		if (this.#color && settings.state.chat.usernames.readable) {
-			return makeReadable(this.#color);
-		}
-
-		return this.#color ?? "inherit";
+		return settings.state.chat.usernames.readable ? makeReadable(this.#color) : this.#color;
 	}
 
-	public set color(color: string | null) {
+	public set color(color: string) {
 		this.#color = color;
 	}
 
