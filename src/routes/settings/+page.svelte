@@ -4,6 +4,7 @@
 	import X from "~icons/ph/x";
 	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
+	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { Separator } from "$lib/components/ui/separator";
 	import { log } from "$lib/log";
@@ -76,7 +77,7 @@
 				class="absolute top-2 right-2"
 				size="icon"
 				variant="ghost"
-				onclick={() => history.back()}
+				onclick={() => app.history.back()}
 				aria-label="Close settings"
 			>
 				<X />
