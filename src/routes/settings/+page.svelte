@@ -17,7 +17,7 @@
 		{ eager: true, import: "default" },
 	);
 
-	const categories = Object.values(imports);
+	const categories = Object.values(imports).sort((a, b) => a.order - b.order);
 
 	beforeNavigate(async () => {
 		await settings.saveNow();
