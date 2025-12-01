@@ -85,9 +85,9 @@ export async function load({ url }) {
 	}
 
 	if (!app.emotes.size) {
-		if (cache.state.emotes.global.length) {
-			app.emotes.addAll(cache.state.emotes.global);
-			log.info(`Loaded ${cache.state.emotes.global.length} global emotes from cache`);
+		if (cache.state.emotes.length) {
+			app.emotes.addAll(cache.state.emotes);
+			log.info(`Loaded ${cache.state.emotes.length} global emotes from cache`);
 		} else {
 			await app.emotes.fetch();
 		}
