@@ -63,23 +63,23 @@
 
 {#if href}
 	<a
-		data-slot="button"
 		class={cn(buttonVariants({ variant, size }), className)}
 		href={disabled ? undefined : href}
-		aria-disabled={disabled}
-		role={disabled ? "link" : undefined}
+		target={href.startsWith("http") ? "_blank" : undefined}
 		tabindex={disabled ? -1 : undefined}
+		role={disabled ? "link" : undefined}
+		aria-disabled={disabled}
+		data-slot="button"
 		{...restProps}
 	>
 		{@render children?.()}
 	</a>
 {:else}
 	<button
-		bind:this={ref}
-		data-slot="button"
 		class={cn(buttonVariants({ variant, size }), className)}
 		{type}
 		{disabled}
+		data-slot="button"
 		onclick={async (event) => {
 			if (onclickwait) {
 				disabled = true;
@@ -89,6 +89,7 @@
 				onclick?.(event);
 			}
 		}}
+		bind:this={ref}
 		{...restProps}
 	>
 		{@render children?.()}
