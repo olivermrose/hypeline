@@ -37,6 +37,7 @@ export interface MessageSettings {
 
 export interface ChatSettings {
 	scrollbar: boolean;
+	newSeparator: boolean;
 	embeds: boolean;
 	usernames: UsernameSettings;
 	emotes: EmoteSettings;
@@ -117,6 +118,7 @@ export const settings = new RuneStore<Settings>("settings", {
 	},
 	chat: {
 		scrollbar: true,
+		newSeparator: false,
 		embeds: true,
 		usernames: {
 			localized: true,

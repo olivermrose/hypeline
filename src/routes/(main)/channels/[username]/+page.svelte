@@ -2,8 +2,8 @@
 	import { listen } from "@tauri-apps/api/event";
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { onDestroy, onMount } from "svelte";
-	import Chat from "$lib/components/Chat.svelte";
-	import ChatInput from "$lib/components/ChatInput.svelte";
+	import Chat from "$lib/components/chat/Chat.svelte";
+	import ChatInput from "$lib/components/chat/Input.svelte";
 	import StreamInfo from "$lib/components/StreamInfo.svelte";
 	import { handlers } from "$lib/handlers";
 	import type { IrcMessage } from "$lib/twitch/irc";
