@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { VList } from "virtua/svelte";
 	import type { Chat } from "$lib/models/chat.svelte";
+	import type { Message } from "$lib/models/message/message.svelte";
 	import { settings } from "$lib/settings";
-	import AutoMod from "./message/AutoMod.svelte";
-	import Notification from "./message/Notification.svelte";
-	import SystemMessage from "./message/SystemMessage.svelte";
-	import UserMessage from "./message/UserMessage.svelte";
-	import { Separator } from "./ui/separator";
+	import AutoMod from "../message/AutoMod.svelte";
+	import Notification from "../message/Notification.svelte";
+	import SystemMessage from "../message/SystemMessage.svelte";
+	import UserMessage from "../message/UserMessage.svelte";
+	import Separator from "./Separator.svelte";
 
 	interface Props {
 		class?: string;
@@ -19,10 +20,14 @@
 
 	const { class: className, chat }: Props = $props();
 
-	let list = $state<VList<any>>();
+	let list = $state<VList<Message>>();
 	let scrollingPaused = $state(false);
 	let countSnapshot = $state(0);
-	let lastReadId = $state<string | null>(null);
+	let lastRead = $state<Message | null>(null);
+
+	const observer = new ResizeObserver(() => {
+		if (!scrollingPaused) scrollToEnd();
+	});
 
 	const newMessageCount = $derived.by(() => {
 		if (!list) return "0";
@@ -36,16 +41,6 @@
 			scrollToEnd();
 		}
 	});
-
-	function pin(element: Element) {
-		const observer = new ResizeObserver(() => {
-			if (!scrollingPaused) scrollToEnd();
-		});
-
-		observer.observe(element);
-
-		return () => observer.disconnect();
-	}
 
 	function scrollToEnd() {
 		list?.scrollToIndex(chat.messages.length - 1, { align: "end" });
@@ -66,11 +61,11 @@
 
 <svelte:window
 	onblur={() => {
-		lastReadId = chat.messages.at(-1)?.id ?? null;
+		lastRead = chat.messages.at(-1) ?? null;
 	}}
 	onfocus={() => {
-		if (lastReadId === chat.messages.at(-1)?.id) {
-			lastReadId = null;
+		if (lastRead === chat.messages.at(-1)) {
+			lastRead = null;
 		}
 	}}
 />
@@ -78,7 +73,11 @@
 <div
 	class="group/chat relative h-full"
 	data-scrollbar={settings.state.chat.scrollbar}
-	{@attach pin}
+	{@attach (element) => {
+		observer.observe(element);
+
+		return () => observer.disconnect();
+	}}
 >
 	{#if scrollingPaused}
 		<button
@@ -106,22 +105,16 @@
 			{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
 			{#if isNewDay}
-				<div class="relative px-3.5">
-					<Separator class="my-4" />
-
-					<div
-						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
+				<Separator>
+					<time
+						class="text-muted-foreground/90"
+						datetime={message.timestamp.toISOString()}
 					>
-						<time
-							class="text-muted-foreground/90"
-							datetime={message.timestamp.toISOString()}
-						>
-							{message.timestamp.toLocaleDateString(navigator.languages, {
-								dateStyle: "long",
-							})}
-						</time>
-					</div>
-				</div>
+						{message.timestamp.toLocaleDateString(navigator.languages, {
+							dateStyle: "long",
+						})}
+					</time>
+				</Separator>
 			{/if}
 
 			{#if message.isSystem()}
@@ -138,28 +131,12 @@
 
 			{@const next = chat.messages.at(i + 1)}
 
-			{#if message.id === lastReadId && next && settings.state.chat.newSeparator}
-				<div class="relative px-3.5 text-red-400">
-					<Separator class="my-4 bg-current/70" />
-
-					<div
-						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
-					>
-						New messages
-					</div>
-				</div>
+			{#if message === lastRead && next && settings.state.chat.newSeparator}
+				<Separator class="text-red-400">New messages</Separator>
 			{/if}
 
 			{#if message.recent && !next?.recent && settings.state.chat.messages.history.separator}
-				<div class="relative px-3.5 text-red-400">
-					<Separator class="my-4 bg-current/70" />
-
-					<div
-						class="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs font-semibold uppercase"
-					>
-						Live messages
-					</div>
-				</div>
+				<Separator class="text-red-400">Live messages</Separator>
 			{/if}
 		{/snippet}
 	</VList>

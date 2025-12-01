@@ -15,17 +15,27 @@ export default {
 					id: "hide-scrollbar",
 					type: "switch",
 					label: "Hide scrollbar",
-					description: "Toggle the visibility of the scrollbar in chat.",
+					description: "Toggle the visibility of the scrollbar.",
 					binding: bind(
 						() => !settings.state.chat.scrollbar,
 						(v) => (settings.state.chat.scrollbar = !v),
 					),
 				},
 				{
+					id: "new-separator",
+					type: "switch",
+					label: "New message separator",
+					description: "Show a separator for new messages when the window loses focus.",
+					binding: bind(
+						() => settings.state.chat.newSeparator,
+						(v) => (settings.state.chat.newSeparator = v),
+					),
+				},
+				{
 					id: "embeds",
 					type: "switch",
 					label: "Enable embeds",
-					description: "Show embedded content for supported links in chat.",
+					description: "Show embedded content for supported links.",
 					binding: bind(
 						() => settings.state.chat.embeds,
 						(v) => (settings.state.chat.embeds = v),

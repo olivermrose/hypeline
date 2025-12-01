@@ -6,11 +6,11 @@
 	import { Completer } from "$lib/completer.svelte";
 	import { CommandError } from "$lib/errors/command-error";
 	import type { Chat } from "$lib/models/chat.svelte";
-	import ChatMode from "./ChatMode.svelte";
-	import EmotePicker from "./EmotePicker.svelte";
-	import Message from "./message/Message.svelte";
-	import Suggestions from "./Suggestions.svelte";
-	import * as InputGroup from "./ui/input-group";
+	import EmotePicker from "../EmotePicker.svelte";
+	import Message from "../message/Message.svelte";
+	import Suggestions from "../Suggestions.svelte";
+	import * as InputGroup from "../ui/input-group";
+	import Restrictions from "./Restrictions.svelte";
 
 	interface Props extends HTMLInputAttributes {
 		chat: Chat;
@@ -190,6 +190,6 @@
 			/ 500
 		</div>
 
-		<ChatMode {chat} />
+		<Restrictions {chat} />
 	</div>
 </div>
