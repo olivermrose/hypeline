@@ -24,7 +24,7 @@ export default {
 				{
 					id: "new-separator",
 					type: "switch",
-					label: "New message separator",
+					label: "New messages separator",
 					description: "Show a separator for new messages when the window loses focus.",
 					binding: bind(
 						() => settings.state.chat.newSeparator,
