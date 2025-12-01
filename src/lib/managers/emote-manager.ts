@@ -1,5 +1,6 @@
 import { betterFetch as fetch } from "@better-fetch/fetch";
 import { app } from "$lib/app.svelte";
+import { cache } from "$lib/cache";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
 import type { BttvEmote, GlobalSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
@@ -9,6 +10,15 @@ import { seventvGql as gql } from "$lib/graphql/function";
 import { BaseEmoteManager } from "./base-emote-manager";
 
 export class EmoteManager extends BaseEmoteManager {
+	// public addGlobalSet
+
+	public override async fetch() {
+		const emotes = await super.fetch();
+		cache.state.emotes = emotes;
+
+		return emotes;
+	}
+
 	/**
 	 * Retrieves the list of global FrankerFaceZ emotes.
 	 */

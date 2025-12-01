@@ -7,6 +7,7 @@ import type { Emote, EmoteSet } from "$lib/emotes";
 import { send7tv as send } from "$lib/graphql";
 import {
 	emoteSetDetailsFragment,
+	guestStarDetailsFragment,
 	streamDetailsFragment,
 	userDetailsFragment,
 } from "$lib/graphql/fragments";
@@ -84,6 +85,9 @@ export class CurrentUser extends User {
 							edges {
 								node {
 									...UserDetails
+									channel {
+										...GuestStarDetails
+									}
 									stream {
 										...StreamDetails
 									}
@@ -92,7 +96,7 @@ export class CurrentUser extends User {
 						}
 					}
 				}`,
-				[userDetailsFragment, streamDetailsFragment],
+				[userDetailsFragment, guestStarDetailsFragment, streamDetailsFragment],
 			),
 			{ id: this.id },
 		);

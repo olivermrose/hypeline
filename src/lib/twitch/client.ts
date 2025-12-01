@@ -1,4 +1,5 @@
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
+import { cache } from "$lib/cache";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/queries";
@@ -37,6 +38,7 @@ export class TwitchClient {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
 
+		cache.state.badges = badges;
 		return badges;
 	}
 
