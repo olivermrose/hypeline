@@ -1,9 +1,7 @@
 <script lang="ts" module>
-	import type { ComponentProps } from "svelte";
-	import type { HTMLButtonAttributes } from "svelte/elements";
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
 	import { tv } from "tailwind-variants";
 	import type { VariantProps } from "tailwind-variants";
-	import Link from "$lib/components/Link.svelte";
 	import { cn } from "$lib/util";
 	import type { WithElementRef } from "$lib/util";
 
@@ -41,7 +39,7 @@
 	export type ButtonProps = (WithElementRef<HTMLButtonAttributes> & {
 		onclickwait?: (event: MouseEvent) => Promise<any>;
 	}) &
-		WithElementRef<ComponentProps<typeof Link>> & {
+		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
 		};
@@ -64,31 +62,17 @@
 </script>
 
 {#if href}
-	{#if href.startsWith("http")}
-		<Link
-			data-slot="button"
-			class={cn(buttonVariants({ variant, size }), className)}
-			href={disabled ? undefined : href}
-			aria-disabled={disabled}
-			role={disabled ? "link" : undefined}
-			tabindex={disabled ? -1 : undefined}
-			{...restProps}
-		>
-			{@render children?.()}
-		</Link>
-	{:else}
-		<a
-			data-slot="button"
-			class={cn(buttonVariants({ variant, size }), className)}
-			href={disabled ? undefined : href}
-			aria-disabled={disabled}
-			role={disabled ? "link" : undefined}
-			tabindex={disabled ? -1 : undefined}
-			{...restProps}
-		>
-			{@render children?.()}
-		</a>
-	{/if}
+	<a
+		data-slot="button"
+		class={cn(buttonVariants({ variant, size }), className)}
+		href={disabled ? undefined : href}
+		aria-disabled={disabled}
+		role={disabled ? "link" : undefined}
+		tabindex={disabled ? -1 : undefined}
+		{...restProps}
+	>
+		{@render children?.()}
+	</a>
 {:else}
 	<button
 		bind:this={ref}

@@ -1,6 +1,5 @@
 import Chat from "~icons/ph/chat";
 import { settings } from "$lib/settings";
-import { descriptions } from "../descriptions.svelte";
 import type { SettingsCategory } from "../types";
 import { bind } from "./util";
 
@@ -96,7 +95,8 @@ export default {
 					id: "emotes-ffz",
 					type: "switch",
 					label: "Enable FrankerFaceZ emotes",
-					description: descriptions.ffz,
+					description:
+						'Show and autocomplete emotes from <a href="https://www.frankerfacez.com/" target="_blank">FrankerFaceZ</a>.',
 					binding: bind(
 						() => settings.state.chat.emotes.ffz,
 						(v) => (settings.state.chat.emotes.ffz = v),
@@ -106,7 +106,8 @@ export default {
 					id: "emotes-bttv",
 					type: "switch",
 					label: "Enable BetterTTV emotes",
-					description: descriptions.bttv,
+					description:
+						'Show and autocomplete emotes from <a href="https://betterttv.com/" target="_blank">BetterTTV</a>.',
 					binding: bind(
 						() => settings.state.chat.emotes.bttv,
 						(v) => (settings.state.chat.emotes.bttv = v),
@@ -116,7 +117,8 @@ export default {
 					id: "emotes-7tv",
 					type: "switch",
 					label: "Enable 7TV emotes",
-					description: descriptions.seventv,
+					description:
+						'Show and autocomplete emotes from <a href="https://7tv.app/" target="_blank">7TV</a>.',
 					binding: bind(
 						() => settings.state.chat.emotes.seventv,
 						(v) => (settings.state.chat.emotes.seventv = v),
@@ -161,7 +163,8 @@ export default {
 							id: "history-enabled",
 							type: "switch",
 							label: "Fetch recent messages upon joining a channel",
-							description: descriptions.recentMessages,
+							description:
+								'This feature uses a <a href="https://recent-messages.robotty.de/" target="_blank">third-party API</a> that temporarily stores the messages sent in joined channels. To opt-out, disable this setting.',
 							binding: bind(
 								() => settings.state.chat.messages.history.enabled,
 								(v) => (settings.state.chat.messages.history.enabled = v),

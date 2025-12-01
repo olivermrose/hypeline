@@ -152,4 +152,12 @@
 	button:hover {
 		cursor: pointer;
 	}
+
+	a[href^="http"] {
+		@apply transition-colors;
+
+		cursor: pointer;
+		color: var(--color-blue-400);
+		text-decoration: underline;
+	}
 }

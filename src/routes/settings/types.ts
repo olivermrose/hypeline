@@ -1,4 +1,4 @@
-import type { Component, Snippet } from "svelte";
+import type { Component } from "svelte";
 
 export interface Binding<T> {
 	get: () => T;
@@ -14,7 +14,7 @@ export interface GroupField {
 export interface BaseField {
 	id: string;
 	label: string;
-	description?: string | Snippet;
+	description?: string;
 	disabled?: () => boolean;
 	binding: Binding<any>;
 }

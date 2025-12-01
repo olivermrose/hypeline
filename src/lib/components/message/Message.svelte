@@ -5,7 +5,6 @@
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { settings } from "$lib/settings";
 	import Emote from "../Emote.svelte";
-	import Link from "../Link.svelte";
 	import Timestamp from "../Timestamp.svelte";
 	import * as Tooltip from "../ui/tooltip";
 	import User from "../User.svelte";
@@ -92,7 +91,7 @@
 			{#if node.marked}
 				<mark class="wrap-anywhere">{node.value}</mark>
 			{:else}
-				<Link href={node.data.url.toString()}>{node.value}</Link>
+				<a href={node.data.url.toString()} target="_blank">{node.value}</a>
 			{/if}
 		{:else if node.type === "mention"}
 			{#if !message.reply || (message.reply && i > 0)}
