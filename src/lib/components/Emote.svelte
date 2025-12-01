@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Emote } from "$lib/emotes";
+	import { settings } from "$lib/settings";
 	import * as Tooltip from "./ui/tooltip";
 
 	interface Props {
@@ -15,7 +16,12 @@
 <Tooltip.Root>
 	<Tooltip.Trigger>
 		{#snippet child({ props })}
-			<button {...props} class="-my-2 inline-grid align-middle" type="button">
+			<button
+				{...props}
+				class="-my-2 inline-grid align-middle"
+				type="button"
+				style:padding="{settings.state.chat.emotes.padding}px"
+			>
 				<img
 					class="col-start-1 row-start-1 object-contain"
 					{srcset}

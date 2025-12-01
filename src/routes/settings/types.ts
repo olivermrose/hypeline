@@ -7,7 +7,7 @@ export interface Binding<T> {
 
 export interface GroupField {
 	type: "group";
-	label: string;
+	label?: string;
 	fields: SettingsField[];
 }
 
@@ -41,13 +41,15 @@ export interface RadioField extends BaseField {
 
 export interface SliderField extends BaseField {
 	type: "slider";
-	min: number;
-	max: number;
-	step?: number;
+	thumbLabel?: string;
+	tickLabel?: string;
+	min?: number;
+	max?: number;
+	step?: number | number[];
 }
 
-export interface ToggleField extends BaseField {
-	type: "toggle";
+export interface SwitchField extends BaseField {
+	type: "switch";
 }
 
 export type SettingsField =
@@ -56,9 +58,10 @@ export type SettingsField =
 	| InputField
 	| RadioField
 	| SliderField
-	| ToggleField;
+	| SwitchField;
 
 export interface SettingsCategory {
+	order: number;
 	label: string;
 	icon: Component;
 	fields: SettingsField[];

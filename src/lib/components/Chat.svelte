@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { VList } from "virtua/svelte";
 	import type { Chat } from "$lib/models/chat.svelte";
+	import { settings } from "$lib/settings";
 	import AutoMod from "./message/AutoMod.svelte";
 	import Notification from "./message/Notification.svelte";
 	import SystemMessage from "./message/SystemMessage.svelte";
@@ -62,7 +63,11 @@
 	}
 </script>
 
-<div class="relative h-full" {@attach pin}>
+<div
+	class="group/chat relative h-full"
+	data-scrollbar={settings.state.chat.scrollbar}
+	{@attach pin}
+>
 	{#if scrollingPaused}
 		<button
 			class="bg-twitch/40 absolute bottom-0 z-10 flex w-full items-center justify-center rounded-t-md border px-2 py-1 text-xs font-medium backdrop-blur-lg"
@@ -78,7 +83,7 @@
 	{/if}
 
 	<VList
-		class="{className} overflow-y-auto text-sm"
+		class="{className} overflow-y-auto text-sm group-data-[scrollbar=false]/chat:[&::-webkit-scrollbar]:hidden"
 		data={chat.messages}
 		getKey={(message) => message.id}
 		onscroll={handleScroll}

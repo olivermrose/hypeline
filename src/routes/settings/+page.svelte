@@ -8,9 +8,16 @@
 	import { Separator } from "$lib/components/ui/separator";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
-	import { categories } from "./categories";
 	import Category from "./Category.svelte";
 	import SidebarActions from "./SidebarActions.svelte";
+	import type { SettingsCategory } from "./types";
+
+	const imports = import.meta.glob<SettingsCategory>(
+		["./categories/*.ts", "!./categories/util.ts"],
+		{ eager: true, import: "default" },
+	);
+
+	const categories = Object.values(imports);
 
 	beforeNavigate(async () => {
 		await settings.saveNow();
