@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
 	import * as Field from "$lib/components/ui/field";
 	import { Input } from "$lib/components/ui/input";
 	import * as RadioGroup from "$lib/components/ui/radio-group";
@@ -105,14 +104,10 @@
 	</Field.Field>
 {/if}
 
-{#snippet description(description?: string | Snippet)}
+{#snippet description(description?: string)}
 	{#if description}
 		<Field.Description>
-			{#if typeof description === "string"}
-				{description}
-			{:else}
-				{@render description()}
-			{/if}
+			{@html description}
 		</Field.Description>
 	{/if}
 {/snippet}

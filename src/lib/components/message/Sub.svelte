@@ -11,7 +11,6 @@
 		SubOrResubEvent,
 	} from "$lib/twitch/irc";
 	import { colorizeName } from "$lib/util";
-	import Link from "../Link.svelte";
 	import Message from "./Message.svelte";
 
 	interface Props {
@@ -52,7 +51,7 @@
 					Subscribed with
 
 					{#if sub.sub_plan === "Prime"}
-						<Link href="https://gaming.amazon.com/home">Prime</Link>
+						<a href="https://gaming.amazon.com/home" target="_blank">Prime</a>
 					{:else}
 						<span class="font-semibold">Tier {sub.sub_plan[0]}</span>
 					{/if}{#if !isMultimonth && !message.shared}.{/if}
@@ -107,7 +106,10 @@
 				{@html colorizeName(message.author)}
 
 				<p>
-					Converted their <Link href="https://gaming.amazon.com/home">Prime</Link> sub to a
+					Converted their <a href="https://gaming.amazon.com/home" target="_blank">
+						Prime
+					</a>
+					sub to a
 					<span class="font-semibold">Tier {sub.sub_plan[0]}</span> sub!
 				</p>
 			</div>

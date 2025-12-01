@@ -8,7 +8,6 @@
 	import { emoteDetailsFragment } from "$lib/graphql/fragments";
 	import { seventvGql as gql } from "$lib/graphql/function";
 	import { clipQuery } from "$lib/graphql/queries";
-	import Link from "../Link.svelte";
 
 	interface Props {
 		url: URL;
@@ -78,7 +77,12 @@
 		{#await fetchEmote() then emote}
 			{#if emote}
 				<div class="bg-card relative flex h-18 gap-2 overflow-hidden rounded-md border">
-					<Link class="absolute inset-0 z-10" href={url.href}></Link>
+					<a
+						class="absolute inset-0 z-10"
+						href={url.href}
+						target="_blank"
+						aria-label={emote.name}
+					></a>
 
 					<div class="relative h-full shrink-0">
 						<img
@@ -134,7 +138,12 @@
 				<div
 					class="bg-card relative flex h-20 gap-2 overflow-hidden rounded-md border transition-colors"
 				>
-					<Link class="absolute inset-0 z-10" href={clip.url}></Link>
+					<a
+						class="absolute inset-0 z-10"
+						href={clip.url}
+						target="_blank"
+						aria-label={clip.title}
+					></a>
 
 					<div class="relative">
 						<img

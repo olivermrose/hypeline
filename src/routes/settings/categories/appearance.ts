@@ -1,7 +1,6 @@
 import Monitor from "~icons/ph/monitor";
 import { settings } from "$lib/settings";
 import Theme from "../custom/Theme.svelte";
-import { descriptions } from "../descriptions.svelte";
 import type { SettingsCategory } from "../types";
 import { bind } from "./util";
 
@@ -48,7 +47,8 @@ export default {
 					id: "timestamp-format-custom",
 					type: "input",
 					label: "Custom format",
-					description: descriptions.customFormat,
+					description:
+						'Formats use the same <a href="https://day.js.org/docs/en/display/format" target="_blank">tokens</a> as <a href="https://day.js.org/en" target="_blank">Day.js</a>. Localized formats are not enabled.',
 					placeholder: "e.g. HH:mm:ss",
 					disabled: () => settings.state.appearance.timestamps.format !== "custom",
 					binding: bind(
