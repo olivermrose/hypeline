@@ -49,7 +49,7 @@
 
 	<ul class="flex flex-col gap-y-1">
 		{#each stream.guests as [id, guest] (id)}
-			<li class="flex items-center justify-between gap-x-8">
+			<li>
 				{@render participant(guest, guest.viewers)}
 			</li>
 		{/each}
@@ -57,27 +57,29 @@
 {/snippet}
 
 {#snippet participant(guest: Omit<Guest, "viewers">, viewers: number | null)}
-	<div class={["flex items-center", tooltip ? "gap-x-1 text-xs" : "gap-x-2 text-sm"]}>
-		<img
-			src={guest.avatarUrl}
-			alt={guest.displayName}
-			class={["rounded-full", tooltip ? "size-5" : "size-6"]}
-			width="50"
-			height="50"
-		/>
+	<div class="flex items-center justify-between gap-x-8">
+		<div class={["flex items-center", tooltip ? "gap-x-1 text-xs" : "gap-x-2 text-sm"]}>
+			<img
+				src={guest.avatarUrl}
+				alt={guest.displayName}
+				class={["rounded-full", tooltip ? "size-5" : "size-6"]}
+				width="50"
+				height="50"
+			/>
 
-		<span
-			class="font-medium"
-			style:color={tooltip ? "var(--color-text-primary-foreground)" : guest.color}
-		>
-			{guest.displayName}
-		</span>
-	</div>
-
-	{#if viewers != null}
-		<div class="flex items-center text-xs text-red-400 dark:text-red-500">
-			<Users class="mr-1" />
-			{viewers}
+			<span
+				class="font-medium"
+				style:color={tooltip ? "var(--color-text-primary-foreground)" : guest.color}
+			>
+				{guest.displayName}
+			</span>
 		</div>
-	{/if}
+
+		{#if viewers != null}
+			<div class="flex items-center text-xs text-red-400 dark:text-red-500">
+				<Users class="mr-1" />
+				{viewers}
+			</div>
+		{/if}
+	</div>
 {/snippet}
