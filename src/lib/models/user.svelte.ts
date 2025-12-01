@@ -125,7 +125,7 @@ export class User {
 		public readonly client: TwitchClient,
 		readonly data: ApiUser,
 	) {
-		this.#color = data.chatColor ?? "inherit";
+		this.#color = data.chatColor || "inherit";
 		this.#displayName = data.displayName;
 
 		this.id = data.id;
