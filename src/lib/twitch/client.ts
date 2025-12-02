@@ -34,6 +34,8 @@ export class TwitchClient {
 		let badges = await cache.get<Badge[]>("global_badges");
 
 		if (force || !badges) {
+			if (force) this.badges.clear();
+
 			const { badges: data } = await this.send(globalBadgesQuery);
 			badges = data?.filter((b) => b != null) ?? [];
 

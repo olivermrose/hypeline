@@ -155,6 +155,8 @@ export class Channel {
 		let badges = await cache.get<Badge[]>(`badges:${this.id}`);
 
 		if (force || !badges) {
+			if (force) this.badges.clear();
+
 			const { user } = await this.client.send(
 				twitchGql(
 					`query GetChannelBadges($id: ID!) {
@@ -188,6 +190,8 @@ export class Channel {
 		let cheermotes = await cache.get<Cheermote[]>(`cheermotes:${this.id}`);
 
 		if (force || !cheermotes) {
+			if (force) this.cheermotes.length = 0;
+
 			const { user } = await this.client.send(
 				twitchGql(
 					`query GetCheermotes($id: ID!) {
@@ -206,10 +210,6 @@ export class Channel {
 
 			cheermotes = user?.cheer?.emotes.filter((e) => e != null) ?? [];
 			await cache.set(`cheermotes:${this.id}`, cheermotes);
-		}
-
-		if (force) {
-			this.cheermotes.length = 0;
 		}
 
 		this.cheermotes.push(...cheermotes);

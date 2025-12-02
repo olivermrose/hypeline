@@ -14,6 +14,8 @@ export class EmoteManager extends BaseEmoteManager {
 		let emotes = await cache.get<Emote[]>("global_emotes");
 
 		if (force || !emotes) {
+			if (force) this.clear();
+
 			emotes = await super.fetch();
 			await cache.set("global_emotes", emotes, { ttl: 7 * 24 * 60 * 60 });
 		}

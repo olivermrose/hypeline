@@ -28,6 +28,8 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 		let emotes = await cache.get<Emote[]>(`emotes:${this.channel.id}`);
 
 		if (force || !emotes) {
+			if (force) this.clear();
+
 			emotes = await super.fetch();
 			await cache.set(`emotes:${this.channel.id}`, emotes);
 		} else {
