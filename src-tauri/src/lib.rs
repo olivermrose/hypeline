@@ -43,7 +43,6 @@ pub struct AppState {
     irc: Option<IrcClient>,
     eventsub: Option<Arc<EventSubClient>>,
     seventv: Option<Arc<SeventTvClient>>,
-    seventv_id: Option<String>,
 }
 
 impl Default for AppState {
@@ -54,7 +53,6 @@ impl Default for AppState {
             irc: None,
             eventsub: None,
             seventv: None,
-            seventv_id: None,
         }
     }
 }
@@ -179,8 +177,6 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         recent_messages::fetch_recent_messages,
         server::start_server,
         seventv::connect_seventv,
-        seventv::set_seventv_id,
         seventv::resub_emote_set,
-        seventv::send_presence,
     ]
 }

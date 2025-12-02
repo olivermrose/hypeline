@@ -1,5 +1,4 @@
 import { redirect } from "@sveltejs/kit";
-import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
@@ -34,9 +33,6 @@ export async function load({ url }) {
 
 		app.user = new CurrentUser(user);
 	}
-
-	// TODO: remove when redoing 7TV
-	await invoke("set_seventv_id", { id: app.user.id });
 
 	if (!app.user.moderating.size) {
 		app.user.moderating.add(app.user.id);

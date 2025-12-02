@@ -10,7 +10,6 @@ use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 
 use crate::AppState;
 use crate::error::Error;
-use crate::seventv::send_presence;
 
 #[derive(Debug, Deserialize)]
 pub struct Response<T> {
@@ -160,8 +159,6 @@ pub async fn join(
     );
 
     irc.join(login);
-
-    send_presence(state, id).await?;
 
     Ok(())
 }

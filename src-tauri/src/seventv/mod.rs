@@ -2,15 +2,14 @@ pub mod client;
 
 use std::sync::Arc;
 
-use anyhow::anyhow;
 pub use client::SeventTvClient;
 use serde_json::json;
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, State, async_runtime};
 use tokio::sync::Mutex;
 
+use crate::AppState;
 use crate::error::Error;
-use crate::{AppState, HTTP};
 
 #[tauri::command]
 pub async fn connect_seventv(
@@ -51,28 +50,6 @@ pub async fn connect_seventv(
 }
 
 #[tauri::command]
-pub async fn set_seventv_id(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
-    let mut state = state.lock().await;
-
-    if state.seventv_id.is_some() {
-        return Ok(());
-    }
-
-    let stv_user = HTTP
-        .get(format!("https://7tv.io/v3/users/twitch/{id}"))
-        .send()
-        .await?
-        .json::<serde_json::Value>()
-        .await;
-
-    state.seventv_id = stv_user
-        .ok()
-        .and_then(|u| Some(u["user"]["id"].as_str()?.to_string()));
-
-    Ok(())
-}
-
-#[tauri::command]
 pub async fn resub_emote_set(
     state: State<'_, Mutex<AppState>>,
     set_id: String,
@@ -87,55 +64,6 @@ pub async fn resub_emote_set(
     seventv
         .subscribe("emote_set.*", &json!({ "object_id": set_id }))
         .await;
-
-    Ok(())
-}
-
-#[tracing::instrument(skip(state))]
-#[tauri::command]
-pub async fn send_presence(
-    state: State<'_, Mutex<AppState>>,
-    channel_id: String,
-) -> Result<(), Error> {
-    tracing::debug!("Sending presence");
-
-    let state = state.lock().await;
-
-    let Some(ref id) = state.seventv_id else {
-        tracing::error!("Missing 7TV user id");
-        return Err(Error::Generic(anyhow!("7TV id not set")));
-    };
-
-    let response = HTTP
-        .post(format!("https://7tv.io/v3/users/{id}/presences"))
-        .json(&json!({
-            "kind": 1,
-            "passive": false,
-            "session_id": serde_json::Value::Null,
-            "data": {
-                "platform": "TWITCH",
-                "id": channel_id
-            }
-        }))
-        .send()
-        .await;
-
-    match response {
-        Ok(resp) => {
-            if resp.status().is_success() {
-                tracing::debug!("Presence sent");
-            } else {
-                tracing::error!(
-                    "Failed to send presence: {} {}",
-                    resp.status(),
-                    resp.text().await.unwrap_or_default()
-                );
-            }
-        }
-        Err(err) => {
-            tracing::error!(%err, "Error sending presence");
-        }
-    }
 
     Ok(())
 }

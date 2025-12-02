@@ -1,4 +1,5 @@
 import { log } from "$lib/log";
+import { sendPresence } from "$lib/seventv";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -10,6 +11,8 @@ export default defineHandler({
 			.find((user) => user.username === data.channel_login);
 
 		if (!viewer) return;
+
+		void sendPresence(channel.id);
 
 		viewer.broadcaster = true;
 		viewer.moderator = true;
