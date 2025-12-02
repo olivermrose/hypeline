@@ -1,8 +1,8 @@
-import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
 import type { Command } from "$lib/commands";
 import { log } from "$lib/log";
 import { settings } from "$lib/settings";
+import { sendPresence } from "$lib/seventv";
 import type { SentMessage } from "$lib/twitch/api";
 import { commands } from "../commands";
 import { SystemMessage } from "./message/system-message";
@@ -275,7 +275,7 @@ export class Chat {
 
 		if (data.is_sent) {
 			log.info("Message sent");
-			await invoke("send_presence", { channelId: this.channel.id });
+			await sendPresence(this.channel.id);
 		} else if (data.drop_reason) {
 			const reason = data.drop_reason.message;
 

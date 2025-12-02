@@ -17,6 +17,7 @@ import { User } from "./user.svelte";
 import type { Whisper } from "./whisper.svelte";
 
 export class CurrentUser extends User {
+	public seventvId: string | null = null;
 	public banned = $state(false);
 
 	/**
@@ -110,6 +111,7 @@ export class CurrentUser extends User {
 				`query GetUserEmoteSets($id: String!) {
 					users {
 						userByConnection(platform: TWITCH, platformId: $id) {
+							id
 							personalEmoteSet {
 								...EmoteSetDetails
 							}
@@ -123,6 +125,8 @@ export class CurrentUser extends User {
 			),
 			{ id: this.id },
 		);
+
+		this.seventvId = users.userByConnection?.id ?? null;
 
 		if (users.userByConnection?.personalEmoteSet) {
 			const set = users.userByConnection.personalEmoteSet;

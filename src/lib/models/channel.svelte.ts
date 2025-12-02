@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import * as cache from "tauri-plugin-cache-api";
-import { send7tv as send } from "$lib/graphql";
-import { seventvGql, twitchGql } from "$lib/graphql/function";
+import { twitchGql } from "$lib/graphql/function";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
+import { fetch7tvId } from "$lib/seventv";
 import { app } from "../app.svelte";
 import {
 	badgeDetailsFragment,
@@ -20,8 +20,6 @@ import { Viewer } from "./viewer.svelte";
 import type { User } from "./user.svelte";
 
 export class Channel {
-	#seventvId: string | null = null;
-
 	public readonly id: string;
 
 	/**
@@ -92,9 +90,9 @@ export class Channel {
 			this.viewers.set(this.id, viewer);
 		}
 
-		await Promise.all([
+		const [seventvId] = await Promise.all([
+			fetch7tvId(this.id),
 			this.fetchStream(),
-			this.#fetch7tvId(),
 			this.emotes.fetch(),
 			this.fetchBadges(),
 			this.fetchCheermotes(),
@@ -105,7 +103,7 @@ export class Channel {
 		// Don't resolve to avoid blocking the UI
 		void invoke("join", {
 			id: this.id,
-			stvId: this.#seventvId,
+			stvId: seventvId,
 			setId: this.emoteSetId,
 			login: this.user.username,
 			isMod: app.user?.moderating.has(this.id),
@@ -286,22 +284,5 @@ export class Channel {
 				moderator_id: app.user.id,
 			},
 		});
-	}
-
-	async #fetch7tvId() {
-		const response = await send(
-			seventvGql(
-				`query GetUser($id: String!) {
-					users {
-						userByConnection(platform: TWITCH, platformId: $id) {
-							id
-						}
-					}
-				}`,
-			),
-			{ id: this.id },
-		).catch(() => null);
-
-		this.#seventvId = response?.users.userByConnection?.id ?? null;
 	}
 }
