@@ -120,15 +120,19 @@ impl SeventTvClient {
             }
         });
 
-        if self
+        match self
             .message_tx
             .send(Message::Text(payload.to_string().into()))
-            .is_ok()
         {
-            let mut subscriptions = self.subscriptions.lock().await;
-            subscriptions.insert(event.to_string(), condition.clone());
+            Ok(_) => {
+                let mut subscriptions = self.subscriptions.lock().await;
+                subscriptions.insert(event.to_string(), condition.clone());
 
-            tracing::trace!("Subscription created");
+                tracing::trace!("Subscription created");
+            }
+            Err(err) => {
+                tracing::error!(%err, "Failed to send subscription message");
+            }
         }
     }
 

@@ -102,7 +102,8 @@ export class Channel {
 
 		await this.stream?.fetchGuests();
 
-		await invoke("join", {
+		// Don't resolve to avoid blocking the UI
+		void invoke("join", {
 			id: this.id,
 			stvId: this.#seventvId,
 			setId: this.emoteSetId,

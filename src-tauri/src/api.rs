@@ -82,78 +82,84 @@ pub async fn join(
         )
     };
 
-    if let Some(eventsub) = eventsub {
-        let login = login.clone();
+    let login_clone = login.clone();
+    let id_clone = id.clone();
 
-        let ch_cond = json!({
-            "broadcaster_user_id": id
-        });
+    async_runtime::spawn(
+        async move {
+            if let Some(eventsub) = eventsub {
+                let ch_cond = json!({
+                    "broadcaster_user_id": id_clone
+                });
 
-        let ch_with_user_cond = json!({
-            "broadcaster_user_id": id,
-            "user_id": token.user_id
-        });
+                let ch_with_user_cond = json!({
+                    "broadcaster_user_id": id_clone,
+                    "user_id": token.user_id
+                });
 
-        let ch_with_mod_cond = json!({
-            "broadcaster_user_id": id,
-            "moderator_user_id": token.user_id
-        });
+                let ch_with_mod_cond = json!({
+                    "broadcaster_user_id": id_clone,
+                    "moderator_user_id": token.user_id
+                });
 
-        async_runtime::spawn(async move {
-            use EventType as Ev;
+                use EventType as Ev;
 
-            let mut events = vec![
-                (Ev::ChannelChatUserMessageHold, &ch_with_user_cond),
-                (Ev::ChannelChatUserMessageUpdate, &ch_with_user_cond),
-                (Ev::ChannelSubscriptionEnd, &ch_cond),
-                (Ev::ChannelUpdate, &ch_cond),
-                (Ev::StreamOffline, &ch_cond),
-                (Ev::StreamOnline, &ch_cond),
-            ];
-
-            if is_mod {
-                let mod_events = vec![
-                    (Ev::AutomodMessageHold, &ch_with_mod_cond),
-                    (Ev::AutomodMessageUpdate, &ch_with_mod_cond),
-                    (Ev::ChannelModerate, &ch_with_mod_cond),
-                    (Ev::ChannelSuspiciousUserMessage, &ch_with_mod_cond),
-                    (Ev::ChannelSuspiciousUserUpdate, &ch_with_mod_cond),
-                    (Ev::ChannelUnbanRequestCreate, &ch_with_mod_cond),
-                    (Ev::ChannelUnbanRequestResolve, &ch_with_mod_cond),
-                    (Ev::ChannelWarningAcknowledge, &ch_with_mod_cond),
+                let mut events = vec![
+                    (Ev::ChannelChatUserMessageHold, &ch_with_user_cond),
+                    (Ev::ChannelChatUserMessageUpdate, &ch_with_user_cond),
+                    (Ev::ChannelSubscriptionEnd, &ch_cond),
+                    (Ev::ChannelUpdate, &ch_cond),
+                    (Ev::StreamOffline, &ch_cond),
+                    (Ev::StreamOnline, &ch_cond),
                 ];
 
-                events.extend(mod_events)
+                if is_mod {
+                    let mod_events = vec![
+                        (Ev::AutomodMessageHold, &ch_with_mod_cond),
+                        (Ev::AutomodMessageUpdate, &ch_with_mod_cond),
+                        (Ev::ChannelModerate, &ch_with_mod_cond),
+                        (Ev::ChannelSuspiciousUserMessage, &ch_with_mod_cond),
+                        (Ev::ChannelSuspiciousUserUpdate, &ch_with_mod_cond),
+                        (Ev::ChannelUnbanRequestCreate, &ch_with_mod_cond),
+                        (Ev::ChannelUnbanRequestResolve, &ch_with_mod_cond),
+                        (Ev::ChannelWarningAcknowledge, &ch_with_mod_cond),
+                    ];
+
+                    events.extend(mod_events)
+                }
+
+                if let Err(err) = eventsub.subscribe_all(login_clone.as_str(), events).await {
+                    tracing::error!(%err, "Failed to batch subscribe to EventSub events");
+                }
             }
 
-            eventsub.subscribe_all(login.as_str(), events).await
-        });
-    }
+            if let Some(seventv) = seventv {
+                let channel_cond = json!({
+                    "ctx": "channel",
+                    "platform": "TWITCH",
+                    "id": id_clone
+                });
 
-    if let Some(seventv) = seventv {
-        let channel_cond = json!({
-            "ctx": "channel",
-            "platform": "TWITCH",
-            "id": id
-        });
+                seventv.subscribe("cosmetic.create", &channel_cond).await;
+                seventv.subscribe("entitlement.create", &channel_cond).await;
 
-        seventv.subscribe("cosmetic.create", &channel_cond).await;
-        seventv.subscribe("entitlement.create", &channel_cond).await;
+                if let Some(ref set_id) = set_id {
+                    seventv
+                        .subscribe("emote_set.*", &json!({ "object_id": set_id }))
+                        .await;
+                }
 
-        if let Some(ref set_id) = set_id {
-            seventv
-                .subscribe("emote_set.*", &json!({ "object_id": set_id }))
-                .await;
+                if let Some(ref stv_id) = stv_id {
+                    seventv
+                        .subscribe("user.update", &json!({ "object_id": stv_id }))
+                        .await;
+                }
+            }
         }
+        .in_current_span(),
+    );
 
-        if let Some(ref stv_id) = stv_id {
-            seventv
-                .subscribe("user.update", &json!({ "object_id": stv_id }))
-                .await;
-        }
-    }
-
-    irc.join(login.to_string());
+    irc.join(login);
 
     send_presence(state, id).await?;
 
