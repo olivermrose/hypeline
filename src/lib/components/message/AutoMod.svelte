@@ -12,13 +12,8 @@
 	const { message, metadata }: Props = $props();
 </script>
 
-<div
-	class={[
-		"bg-muted/50 my-0.5 space-y-2 border-l-4 border-red-500 p-2",
-		message.deleted && "opacity-50",
-	]}
->
-	<div class="flex w-full items-start justify-between gap-x-4">
+<div class={["bg-muted/50 my-0.5 border-l-4 border-red-500 p-2", message.deleted && "opacity-50"]}>
+	<div class="mb-2 flex w-full items-start justify-between gap-x-4">
 		<div>
 			<img
 				class="inline align-middle"
