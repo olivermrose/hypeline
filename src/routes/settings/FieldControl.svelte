@@ -5,7 +5,7 @@
 	import { Slider } from "$lib/components/ui/slider";
 	import { Switch } from "$lib/components/ui/switch";
 	import FieldControl from "./FieldControl.svelte";
-	import type { SettingsField } from "./types";
+	import type { BaseField, SettingsField } from "./types";
 
 	interface Props {
 		field: SettingsField;
@@ -27,13 +27,21 @@
 		</Field.Group>
 	</Field.Set>
 {:else if field.type === "custom"}
-	<Field.Set>
-		<Field.Legend>{field.label}</Field.Legend>
+	{#if field.renderAs === "field"}
+		<Field.Field>
+			{@render content(field)}
 
-		{@render description(field.description)}
+			<field.component />
+		</Field.Field>
+	{:else}
+		<Field.Set>
+			<Field.Legend>{field.label}</Field.Legend>
 
-		<field.component />
-	</Field.Set>
+			{@render description(field.description)}
+
+			<field.component />
+		</Field.Set>
+	{/if}
 {:else if field.type === "input"}
 	<Field.Field>
 		<Field.Label for={field.id}>{field.label}</Field.Label>
@@ -53,16 +61,14 @@
 	</Field.Field>
 {:else if field.type === "radio"}
 	<Field.Set>
-		<Field.Label for={field.id}>{field.label}</Field.Label>
-
-		{@render description(field.description)}
+		{@render content(field)}
 
 		<RadioGroup.Root
 			id={field.id}
 			disabled={field.disabled?.()}
 			bind:value={field.binding.get, field.binding.set}
 		>
-			{#each field.options as option (option.value)}
+			{#each field.items as option (option.value)}
 				<Field.Field orientation="horizontal">
 					<RadioGroup.Item value={option.value} />
 
@@ -75,9 +81,7 @@
 	</Field.Set>
 {:else if field.type === "slider"}
 	<Field.Field>
-		<Field.Label for={field.id}>{field.label}</Field.Label>
-
-		{@render description(field.description)}
+		{@render content(field)}
 
 		<Slider
 			id={field.id}
@@ -94,11 +98,7 @@
 	</Field.Field>
 {:else if field.type === "switch"}
 	<Field.Field orientation="horizontal">
-		<Field.Content>
-			<Field.Label for={field.id}>{field.label}</Field.Label>
-
-			{@render description(field.description)}
-		</Field.Content>
+		{@render content(field)}
 
 		<Switch id={field.id} bind:checked={field.binding.get, field.binding.set} />
 	</Field.Field>
@@ -110,4 +110,12 @@
 			{@html description}
 		</Field.Description>
 	{/if}
+{/snippet}
+
+{#snippet content(field: BaseField)}
+	<Field.Content>
+		<Field.Label for={field.id}>{field.label}</Field.Label>
+
+		{@render description(field.description)}
+	</Field.Content>
 {/snippet}

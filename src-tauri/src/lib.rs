@@ -9,8 +9,8 @@ use reqwest::header::HeaderMap;
 use seventv::SeventTvClient;
 use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
-use tauri::{Manager, WindowEvent};
-use tauri_plugin_cache::{CacheConfig, CompressionMethod};
+use tauri::{AppHandle, Manager, WindowEvent};
+use tauri_plugin_cache::{CacheConfig, CacheExt, CompressionMethod};
 use tauri_plugin_svelte::ManagerExt;
 use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
@@ -148,6 +148,24 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
+#[tauri::command]
+fn get_cache_size(app_handle: AppHandle) -> i64 {
+    let cache_path = app_handle.cache().get_cache_file_path();
+
+    match std::fs::metadata(cache_path) {
+        Ok(metadata) => {
+            let size = metadata.len() as i64;
+
+            // Empty cache files contain an empty object i.e. "{}"
+            if size == 2 { 0 } else { size }
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to get cache size");
+            0
+        }
+    }
+}
+
 fn get_handler() -> impl Fn(Invoke) -> bool {
     tauri::generate_handler![
         api::join,
@@ -155,6 +173,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::rejoin,
         api::get_user_emotes,
         eventsub::connect_eventsub,
+        get_cache_size,
         irc::connect_irc,
         log::log,
         recent_messages::fetch_recent_messages,
