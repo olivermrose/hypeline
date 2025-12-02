@@ -17,7 +17,7 @@
 				"schemas": [
 					{
 						"name": "twitch",
-						"schema": "./src/lib/graphql/twitch.graphql",
+						"schema": "https://twitch-gql-schema.up.railway.app/graphql",
 						"tadaOutputLocation": "./src/lib/graphql/twitch-env.d.ts",
 						"tadaTurboLocation": "./src/lib/graphql/twitch-cache.d.ts"
 					},
