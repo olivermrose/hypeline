@@ -73,10 +73,6 @@ export interface HighlightSettings extends Record<HighlightType, HighlightConfig
 	keywords: KeywordHighlightConfig[];
 }
 
-export interface AdvancedSettings {
-	streamRefreshInterval: number;
-}
-
 interface StoredUser {
 	id: string;
 	token: string;
