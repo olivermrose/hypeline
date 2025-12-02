@@ -139,22 +139,6 @@ export class Channel {
 		}
 	}
 
-	public addBadges(badges: Badge[]) {
-		for (const badge of badges) {
-			this.badges.set(`${badge.setID}:${badge.version}`, badge);
-		}
-
-		return this;
-	}
-
-	public addCheermotes(cheermotes: Cheermote[]) {
-		for (const cheermote of cheermotes) {
-			this.cheermotes.push(cheermote);
-		}
-
-		return this;
-	}
-
 	public reset() {
 		this.chat.reset();
 		this.badges.clear();
@@ -166,9 +150,11 @@ export class Channel {
 	 * Retrieves the list of badges in the channel and caches them for later use.
 	 */
 	public async fetchBadges(force = false) {
+		if (!force && this.badges.size) return;
+
 		let badges = await cache.get<Badge[]>(`badges:${this.id}`);
 
-		if (!badges) {
+		if (force || !badges) {
 			const { user } = await this.client.send(
 				twitchGql(
 					`query GetChannelBadges($id: ID!) {
@@ -190,16 +176,18 @@ export class Channel {
 		for (const badge of badges) {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
+
+		return this.badges;
 	}
 
 	/**
 	 * Retrieves the list of cheermotes in the channel and caches them for later
 	 * use.
 	 */
-	public async fetchCheermotes() {
+	public async fetchCheermotes(force = false) {
 		let cheermotes = await cache.get<Cheermote[]>(`cheermotes:${this.id}`);
 
-		if (!cheermotes) {
+		if (force || !cheermotes) {
 			const { user } = await this.client.send(
 				twitchGql(
 					`query GetCheermotes($id: ID!) {
@@ -218,6 +206,10 @@ export class Channel {
 
 			cheermotes = user?.cheer?.emotes.filter((e) => e != null) ?? [];
 			await cache.set(`cheermotes:${this.id}`, cheermotes);
+		}
+
+		if (force) {
+			this.cheermotes.length = 0;
 		}
 
 		this.cheermotes.push(...cheermotes);

@@ -10,14 +10,12 @@ import { seventvGql as gql } from "$lib/graphql/function";
 import { BaseEmoteManager } from "./base-emote-manager";
 
 export class EmoteManager extends BaseEmoteManager {
-	// public addGlobalSet
-
-	public override async fetch() {
+	public override async fetch(force = false) {
 		let emotes = await cache.get<Emote[]>("global_emotes");
 
-		if (!emotes) {
+		if (force || !emotes) {
 			emotes = await super.fetch();
-			await cache.set("global_emotes", emotes);
+			await cache.set("global_emotes", emotes, { ttl: 7 * 24 * 60 * 60 });
 		}
 
 		return emotes;

@@ -30,14 +30,16 @@ export class TwitchClient {
 	/**
 	 * Retrieves the list of global badges and caches them for later use.
 	 */
-	public async fetchBadges() {
+	public async fetchBadges(force = false) {
 		let badges = await cache.get<Badge[]>("global_badges");
 
-		if (!badges) {
+		if (force || !badges) {
 			const { badges: data } = await this.send(globalBadgesQuery);
 			badges = data?.filter((b) => b != null) ?? [];
 
-			await cache.set("global_badges", badges);
+			// Twitch adds new badges fairly often, so ttl is lower than the
+			// global emote cache
+			await cache.set("global_badges", badges, { ttl: 3 * 24 * 60 * 60 });
 		}
 
 		for (const badge of badges) {
