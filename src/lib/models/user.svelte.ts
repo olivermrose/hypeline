@@ -263,4 +263,8 @@ export class User {
 		this.relationships.set(channel, relationship);
 		return relationship;
 	}
+
+	public toJSON() {
+		return this.data;
+	}
 }

@@ -33,7 +33,7 @@
 		"scope": "typescript",
 		"prefix": "cmd",
 		"body": [
-			"import { defineCommand } from \"../\";",
+			"import { defineCommand } from \"../util\";",
 			"",
 			"export default defineCommand({",
 			"\tprovider: \"${1}\",",

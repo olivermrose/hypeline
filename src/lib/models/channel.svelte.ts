@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import * as cache from "tauri-plugin-cache-api";
 import { send7tv as send } from "$lib/graphql";
 import { seventvGql, twitchGql } from "$lib/graphql/function";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
@@ -138,22 +139,6 @@ export class Channel {
 		}
 	}
 
-	public addBadges(badges: Badge[]) {
-		for (const badge of badges) {
-			this.badges.set(`${badge.setID}:${badge.version}`, badge);
-		}
-
-		return this;
-	}
-
-	public addCheermotes(cheermotes: Cheermote[]) {
-		for (const cheermote of cheermotes) {
-			this.cheermotes.push(cheermote);
-		}
-
-		return this;
-	}
-
 	public reset() {
 		this.chat.reset();
 		this.badges.clear();
@@ -167,47 +152,67 @@ export class Channel {
 	public async fetchBadges(force = false) {
 		if (!force && this.badges.size) return;
 
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetChannelBadges($id: ID!) {
-					user(id: $id) {
-						broadcastBadges {
-							...BadgeDetails
-						}
-					}
-				}`,
-				[badgeDetailsFragment],
-			),
-			{ id: this.id },
-		);
+		let badges = await cache.get<Badge[]>(`badges:${this.id}`);
 
-		for (const badge of user?.broadcastBadges?.filter((b) => b != null) ?? []) {
+		if (force || !badges) {
+			if (force) this.badges.clear();
+
+			const { user } = await this.client.send(
+				twitchGql(
+					`query GetChannelBadges($id: ID!) {
+						user(id: $id) {
+							broadcastBadges {
+								...BadgeDetails
+							}
+						}
+					}`,
+					[badgeDetailsFragment],
+				),
+				{ id: this.id },
+			);
+
+			badges = user?.broadcastBadges?.filter((b) => b != null) ?? [];
+			await cache.set(`badges:${this.id}`, badges);
+		}
+
+		for (const badge of badges) {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);
 		}
+
+		return this.badges;
 	}
 
 	/**
 	 * Retrieves the list of cheermotes in the channel and caches them for later
 	 * use.
 	 */
-	public async fetchCheermotes() {
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetCheermotes($id: ID!) {
-					user(id: $id) {
-						cheer {
-							emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
-							...CheermoteDetails
+	public async fetchCheermotes(force = false) {
+		let cheermotes = await cache.get<Cheermote[]>(`cheermotes:${this.id}`);
+
+		if (force || !cheermotes) {
+			if (force) this.cheermotes.length = 0;
+
+			const { user } = await this.client.send(
+				twitchGql(
+					`query GetCheermotes($id: ID!) {
+						user(id: $id) {
+							cheer {
+								emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
+								...CheermoteDetails
+								}
 							}
 						}
-					}
-				}`,
-				[cheermoteDetailsFragment],
-			),
-			{ id: this.id },
-		);
+					}`,
+					[cheermoteDetailsFragment],
+				),
+				{ id: this.id },
+			);
 
-		this.cheermotes.push(...(user?.cheer?.emotes.filter((e) => e != null) ?? []));
+			cheermotes = user?.cheer?.emotes.filter((e) => e != null) ?? [];
+			await cache.set(`cheermotes:${this.id}`, cheermotes);
+		}
+
+		this.cheermotes.push(...cheermotes);
 		return this.cheermotes;
 	}
 

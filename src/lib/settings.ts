@@ -1,4 +1,5 @@
 import { RuneStore } from "@tauri-store/svelte";
+import type { User } from "./graphql/queries";
 
 export interface TimestampSettings {
 	show: boolean;
@@ -72,13 +73,11 @@ export interface HighlightSettings extends Record<HighlightType, HighlightConfig
 	keywords: KeywordHighlightConfig[];
 }
 
-export interface AdvancedSettings {
-	streamRefreshInterval: number;
-}
-
 interface StoredUser {
 	id: string;
 	token: string;
+	data: User;
+	moderating: string[];
 }
 
 export interface Settings {

@@ -1,12 +1,11 @@
-import { app } from "$lib/app.svelte";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
 import { defineCommand, parseBool } from "../util";
 
 export default defineCommand({
 	provider: "Built-in",
-	name: "refresh-emotes",
-	description: "Refresh all emotes for the channel and optionally global emotes",
+	name: "refresh-badges",
+	description: "Refresh all badges for the channel and optionally global badges",
 	args: ["include-global"],
 	async exec(args, channel) {
 		const includeGlobal = parseBool(args[0]);
@@ -15,7 +14,7 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
 		}
 
-		await app.emotes.fetch(includeGlobal);
-		await channel.emotes.fetch(true);
+		await channel.client.fetchBadges(includeGlobal);
+		await channel.fetchBadges(true);
 	},
 });

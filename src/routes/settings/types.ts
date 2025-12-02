@@ -5,7 +5,7 @@ export interface Binding<T> {
 	set: (value: T) => void;
 }
 
-export interface GroupField {
+interface GroupField {
 	type: "group";
 	label?: string;
 	fields: SettingsField[];
@@ -16,30 +16,34 @@ export interface BaseField {
 	label: string;
 	description?: string;
 	disabled?: () => boolean;
+}
+
+interface BindableField extends BaseField {
 	binding: Binding<any>;
 }
 
-export interface CustomField extends Omit<BaseField, "id" | "binding"> {
+interface CustomField extends BaseField {
 	type: "custom";
+	renderAs?: "field" | "set";
 	component: Component;
 }
 
-export interface InputField extends BaseField {
+interface InputField extends BindableField {
 	type: "input";
 	placeholder?: string;
 }
 
-export interface RadioOption {
+interface RadioItem {
 	label: string;
 	value: string;
 }
 
-export interface RadioField extends BaseField {
+interface RadioField extends BindableField {
 	type: "radio";
-	options: RadioOption[];
+	items: RadioItem[];
 }
 
-export interface SliderField extends BaseField {
+interface SliderField extends BindableField {
 	type: "slider";
 	thumbLabel?: string;
 	tickLabel?: string;
@@ -48,7 +52,7 @@ export interface SliderField extends BaseField {
 	step?: number | number[];
 }
 
-export interface SwitchField extends BaseField {
+interface SwitchField extends BindableField {
 	type: "switch";
 }
 

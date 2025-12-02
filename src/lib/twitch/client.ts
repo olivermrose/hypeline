@@ -1,3 +1,4 @@
+import * as cache from "tauri-plugin-cache-api";
 import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
@@ -29,9 +30,19 @@ export class TwitchClient {
 	/**
 	 * Retrieves the list of global badges and caches them for later use.
 	 */
-	public async fetchBadges() {
-		const { badges: data } = await this.send(globalBadgesQuery);
-		const badges = data?.filter((b) => b != null) ?? [];
+	public async fetchBadges(force = false) {
+		let badges = await cache.get<Badge[]>("global_badges");
+
+		if (force || !badges) {
+			if (force) this.badges.clear();
+
+			const { badges: data } = await this.send(globalBadgesQuery);
+			badges = data?.filter((b) => b != null) ?? [];
+
+			// Twitch adds new badges fairly often, so ttl is lower than the
+			// global emote cache
+			await cache.set("global_badges", badges, { ttl: 3 * 24 * 60 * 60 });
+		}
 
 		for (const badge of badges) {
 			this.badges.set(`${badge.setID}:${badge.version}`, badge);

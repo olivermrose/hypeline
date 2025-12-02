@@ -1,4 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
+import { guestStarDetailsFragment } from "$lib/graphql/fragments";
 import type { Stream as ApiStream } from "$lib/graphql/fragments";
 import { twitchGql } from "$lib/graphql/function";
 import type { TwitchClient } from "$lib/twitch/client";
@@ -54,6 +55,12 @@ export class Stream {
 		this.viewers = $state(data?.viewersCount ?? 0);
 	}
 
+	public addGuest(guest: Guest) {
+		if (guest.id !== this.channelId) {
+			this.guests.set(guest.id, guest);
+		}
+	}
+
 	/**
 	 * Retrieves the list of guests in the Stream Together session if there is
 	 * one active.
@@ -63,30 +70,16 @@ export class Stream {
 			twitchGql(
 				`query GetGuests($id: ID!) {
 					channel(id: $id) {
-						guestStarSessionCall {
-							guests {
-								user {
-									id
-									color: chatColor
-									username: login
-									displayName
-									avatarUrl: profileImageURL(width: 150)
-									stream {
-										viewersCount
-									}
-								}
-							}
-						}
+						...GuestStarDetails
 					}
 				}`,
+				[guestStarDetailsFragment],
 			),
 			{ id: this.channelId },
 		);
 
 		for (const { user } of channel?.guestStarSessionCall?.guests ?? []) {
-			if (user.id === this.channelId) continue;
-
-			this.guests.set(user.id, {
+			this.addGuest({
 				...user,
 				viewers: user.stream?.viewersCount ?? null,
 			});

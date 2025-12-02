@@ -85,7 +85,7 @@ export default {
 					label: "Mention style",
 					description:
 						"Choose how mentions in messages are displayed. Painted mentions will fallback to the user's color if they have no 7TV paint.",
-					options: [
+					items: [
 						{ label: "None", value: "none" },
 						{ label: "Colored", value: "colored" },
 						{ label: "Painted", value: "painted" },

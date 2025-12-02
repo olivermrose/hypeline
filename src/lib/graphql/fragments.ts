@@ -66,6 +66,25 @@ export const emoteSetDetailsFragment = seventvGql(
 	[emoteDetailsFragment],
 );
 
+export const guestStarDetailsFragment = twitchGql(`
+	fragment GuestStarDetails on Channel {
+		guestStarSessionCall {
+			guests {
+				user {
+					id
+					color: chatColor
+					username: login
+					displayName
+					avatarUrl: profileImageURL(width: 150)
+					stream {
+						viewersCount
+					}
+				}
+			}
+		}
+	}
+`);
+
 export const streamDetailsFragment = twitchGql(`
 	fragment StreamDetails on Stream {
 		title

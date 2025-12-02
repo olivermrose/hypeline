@@ -22,6 +22,7 @@ export default {
 			),
 		},
 		{
+			id: "viewer-highlights",
 			type: "custom",
 			label: "Viewers",
 			description:
@@ -29,6 +30,7 @@ export default {
 			component: Viewer,
 		},
 		{
+			id: "keyword-highlights",
 			type: "custom",
 			label: "Keywords",
 			// TODO: temporary description, link to docs when site is up

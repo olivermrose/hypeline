@@ -3,9 +3,9 @@
 	import { listen } from "@tauri-apps/api/event";
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { openUrl } from "@tauri-apps/plugin-opener";
-	import { onDestroy, onMount, tick } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import Twitch from "~icons/local/twitch";
-	import { goto, invalidateAll } from "$app/navigation";
+	import { goto } from "$app/navigation";
 	import { PUBLIC_TWITCH_CLIENT_ID, PUBLIC_TWITCH_REDIRECT_URL } from "$env/static/public";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
@@ -41,18 +41,18 @@
 		unlisten = await listen<TokenInfo>("tokeninfo", async (event) => {
 			log.info("User authenticated");
 
+			const user = await app.twitch.users.fetch(event.payload.user_id);
+
 			settings.state.user = {
 				id: event.payload.user_id,
 				token: event.payload.access_token,
+				data: user.data,
+				moderating: [],
 			};
 
-			const user = await app.twitch.users.fetch(event.payload.user_id);
 			app.user = new CurrentUser(user);
 
-			await tick();
 			await settings.save();
-
-			await invalidateAll();
 			await goto("/");
 		});
 	});

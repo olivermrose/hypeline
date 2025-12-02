@@ -3,8 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { Channel } from "$lib/models/channel.svelte";
-import { CurrentUser } from "$lib/models/current-user.svelte.js";
-import { Stream } from "$lib/models/stream.svelte.js";
+import { CurrentUser } from "$lib/models/current-user.svelte";
+import { Stream } from "$lib/models/stream.svelte";
 import { User } from "$lib/models/user.svelte";
 import { settings } from "$lib/settings";
 import type { BasicUser } from "$lib/twitch/irc";
@@ -29,7 +29,9 @@ export async function load({ url }) {
 	app.twitch.token ??= settings.state.user.token;
 
 	if (!app.user) {
-		const user = await app.twitch.users.fetch(settings.state.user.id);
+		const user = new User(app.twitch, settings.state.user.data);
+		app.twitch.users.set(user.id, user);
+
 		app.user = new CurrentUser(user);
 	}
 
@@ -39,13 +41,18 @@ export async function load({ url }) {
 	if (!app.user.moderating.size) {
 		app.user.moderating.add(app.user.id);
 
-		const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
-			"/moderation/channels",
-			{ user_id: app.user.id, first: 100 },
-		);
+		if (!settings.state.user.moderating.length) {
+			const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
+				"/moderation/channels",
+				{ user_id: app.user.id, first: 100 },
+			);
 
-		for (const channel of data) {
-			app.user.moderating.add(channel.broadcaster_id);
+			settings.state.user.moderating = data.map((channel) => channel.broadcaster_id);
+			await settings.saveNow();
+		}
+
+		for (const id of settings.state.user.moderating) {
+			app.user.moderating.add(id);
 		}
 	}
 
@@ -57,7 +64,13 @@ export async function load({ url }) {
 
 			if (followed.stream) {
 				stream = new Stream(app.twitch, followed.id, followed.stream);
-				await stream.fetchGuests();
+
+				for (const { user } of followed.channel?.guestStarSessionCall?.guests ?? []) {
+					stream.addGuest({
+						...user,
+						viewers: user.stream?.viewersCount ?? null,
+					});
+				}
 			}
 
 			const user = new User(app.twitch, followed);

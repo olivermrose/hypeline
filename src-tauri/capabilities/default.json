@@ -25,6 +25,7 @@
 				}
 			]
 		},
-		"clipboard-manager:allow-write-text"
+		"clipboard-manager:allow-write-text",
+		"cache:default"
 	]
 }

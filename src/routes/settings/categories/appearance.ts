@@ -10,6 +10,7 @@ export default {
 	icon: Monitor,
 	fields: [
 		{
+			id: "theme",
 			type: "custom",
 			label: "Theme",
 			component: Theme,
@@ -31,7 +32,7 @@ export default {
 					id: "timestamp-format",
 					type: "radio",
 					label: "Format",
-					options: [
+					items: [
 						{ label: "Auto", value: "auto" },
 						{ label: "12-hour", value: "12" },
 						{ label: "24-hour", value: "24" },
