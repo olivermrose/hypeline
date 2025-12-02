@@ -1,3 +1,4 @@
+import * as cache from "tauri-plugin-cache-api";
 import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
 import { SystemMessage } from "$lib/models/message/system-message";
@@ -113,5 +114,8 @@ export default defineHandler({
 				emote.name = change.value.name;
 			}
 		}
+
+		await cache.remove(`emotes:${channel.id}`);
+		await cache.set(`emotes:${channel.id}`, channel.emotes.values().toArray());
 	},
 });
