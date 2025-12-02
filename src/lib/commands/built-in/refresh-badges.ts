@@ -2,9 +2,9 @@ import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Built-in",
-	name: "refresh-emotes",
-	description: "Refresh all emotes for the channel",
+	name: "refresh-badges",
+	description: "Refresh all badges for the channel",
 	async exec(_, channel) {
-		await channel.emotes.fetch(true);
+		await channel.fetchBadges(true);
 	},
 });
