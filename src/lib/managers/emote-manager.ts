@@ -18,6 +18,8 @@ export class EmoteManager extends BaseEmoteManager {
 
 			emotes = await super.fetch();
 			await cache.set("global_emotes", emotes, { ttl: 7 * 24 * 60 * 60 });
+		} else {
+			this.addAll(emotes);
 		}
 
 		return emotes;
