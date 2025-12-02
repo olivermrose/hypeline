@@ -1,4 +1,5 @@
 import { SvelteMap } from "svelte/reactivity";
+import { guestStarDetailsFragment } from "$lib/graphql/fragments";
 import type { Stream as ApiStream } from "$lib/graphql/fragments";
 import { twitchGql } from "$lib/graphql/function";
 import type { TwitchClient } from "$lib/twitch/client";
@@ -69,22 +70,10 @@ export class Stream {
 			twitchGql(
 				`query GetGuests($id: ID!) {
 					channel(id: $id) {
-						guestStarSessionCall {
-							guests {
-								user {
-									id
-									color: chatColor
-									username: login
-									displayName
-									avatarUrl: profileImageURL(width: 150)
-									stream {
-										viewersCount
-									}
-								}
-							}
-						}
+						...GuestStarDetails
 					}
 				}`,
+				[guestStarDetailsFragment],
 			),
 			{ id: this.channelId },
 		);
