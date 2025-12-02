@@ -25,7 +25,7 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 	}
 
 	public override async fetch() {
-		let emotes = await cache.get<Emote[]>("global_emotes");
+		let emotes = await cache.get<Emote[]>(`emotes:${this.channel.id}`);
 
 		if (!emotes) {
 			emotes = await super.fetch();
