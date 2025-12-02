@@ -4,8 +4,8 @@ import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/e
 import type { BttvEmote, Emote, FfzEmoteSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { send7tv as send } from "$lib/graphql";
-import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
-import { seventvGql as gql } from "$lib/graphql/function";
+import { activeEmoteSetQuery } from "$lib/graphql/queries";
+import type { ActiveEmoteSet } from "$lib/graphql/queries";
 import type { Channel } from "$lib/models/channel.svelte";
 import { BaseEmoteManager } from "./base-emote-manager";
 
@@ -33,6 +33,9 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 			emotes = await super.fetch();
 			await cache.set(`emotes:${this.channel.id}`, emotes);
 		} else {
+			const set = await this.#fetchActiveSet(false);
+			this.channel.emoteSetId = set?.id ?? null;
+
 			this.addAll(emotes);
 		}
 
@@ -87,34 +90,23 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 	 * Retrieves the active 7TV emote set for the channel.
 	 */
 	public override async fetch7tv() {
-		const { users } = await send(
-			gql(
-				`query GetActiveEmoteSet($id: String!) {
-					users {
-						userByConnection(platform: TWITCH, platformId: $id) {
-							style {
-								activeEmoteSet {
-									...EmoteSetDetails
-								}
-							}
-						}
-					}
-				}`,
-				[emoteSetDetailsFragment],
-			),
-			{ id: this.channel.id },
-		);
+		const set = (await this.#fetchActiveSet()) as Extract<ActiveEmoteSet, { name: string }>;
+		if (!set) return [];
 
-		if (!users.userByConnection || !users.userByConnection.style.activeEmoteSet) {
-			return [];
-		}
-
-		const set = users.userByConnection.style.activeEmoteSet;
 		this.channel.emoteSetId = set.id;
 
 		const emotes = set.emotes.items.map((item) => transform7tvEmote(item.emote, item.alias));
 		this.addAll(emotes);
 
 		return emotes;
+	}
+
+	async #fetchActiveSet(details = true): Promise<ActiveEmoteSet | null> {
+		const { users } = await send(activeEmoteSetQuery, {
+			id: this.channel.id,
+			details,
+		});
+
+		return users.userByConnection?.style.activeEmoteSet ?? null;
 	}
 }

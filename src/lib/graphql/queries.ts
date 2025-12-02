@@ -1,8 +1,30 @@
 import type { ResultOf } from "gql.tada";
-import { badgeDetailsFragment, userDetailsFragment } from "./fragments";
-import { twitchGql as gql } from "./function";
+import { badgeDetailsFragment, emoteSetDetailsFragment, userDetailsFragment } from "./fragments";
+import { seventvGql, twitchGql } from "./function";
 
-export const clipQuery = gql(`
+export const activeEmoteSetQuery = seventvGql(
+	`query GetActiveEmoteSet($id: String!, $details: Boolean!) {
+		users {
+			userByConnection(platform: TWITCH, platformId: $id) {
+				style {
+					activeEmoteSet {
+						id
+						...EmoteSetDetails @include(if: $details)
+					}
+				}
+			}
+		}
+	}`,
+	[emoteSetDetailsFragment],
+);
+
+export type ActiveEmoteSet = NonNullable<
+	NonNullable<
+		NonNullable<ResultOf<typeof activeEmoteSetQuery>["users"]>["userByConnection"]
+	>["style"]["activeEmoteSet"]
+>;
+
+export const clipQuery = twitchGql(`
 	query GetClip($slug: ID!) {
 		clip(slug: $slug) {
 			createdAt
@@ -19,7 +41,7 @@ export const clipQuery = gql(`
 
 export type Clip = NonNullable<ResultOf<typeof clipQuery>["clip"]>;
 
-export const globalBadgesQuery = gql(
+export const globalBadgesQuery = twitchGql(
 	`query {
 		badges {
 			...BadgeDetails
@@ -28,7 +50,7 @@ export const globalBadgesQuery = gql(
 	[badgeDetailsFragment],
 );
 
-export const suggestionsQuery = gql(`
+export const suggestionsQuery = twitchGql(`
 	query GetSearchSuggestions($query: String!) {
 		searchSuggestions(queryFragment: $query, withOfflineChannelContent: true) {
 			edges {
@@ -62,7 +84,7 @@ export type SearchSuggestionChannel = Extract<
 	{ __typename: "SearchSuggestionChannel" }
 >;
 
-export const userQuery = gql(
+export const userQuery = twitchGql(
 	`query GetUser($id: ID, $login: String) {
 		user(id: $id, login: $login) {
 			...UserDetails
