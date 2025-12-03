@@ -21,6 +21,7 @@
 	const { children, class: className = "" }: Props = $props();
 
 	let open = $state(false);
+	let loading = $state(false);
 	let value = $state("");
 	let error = $state<string | null>(null);
 	let suggestions = $state<SearchSuggestionChannel[]>([]);
@@ -57,6 +58,8 @@
 		value = value.toLowerCase();
 
 		try {
+			loading = true;
+
 			let channel = app.channels.getByLogin(value);
 
 			if (!channel) {
@@ -76,6 +79,8 @@
 			} else {
 				error = "An unknown error occurred.";
 			}
+		} finally {
+			loading = false;
 		}
 	}
 </script>
@@ -96,7 +101,7 @@
 	<Dialog.Portal>
 		<Dialog.Overlay />
 
-		<Dialog.Content>
+		<Dialog.Content class="group" data-loading={loading}>
 			<Dialog.Header>
 				<Dialog.Title>Join a channel</Dialog.Title>
 
@@ -176,11 +181,11 @@
 			</Combobox.Root>
 
 			<Dialog.Footer>
-				<Button class="group" onclickwait={join}>
-					<Spinner class="hidden animate-spin group-disabled:inline" />
+				<Button disabled={loading} onclickwait={join}>
+					<Spinner class="hidden animate-spin group-data-[loading=true]:inline" />
 
 					<span>
-						Join<span class="hidden group-disabled:inline">ing</span>
+						Join<span class="hidden group-data-[loading=true]:inline">ing</span>
 					</span>
 				</Button>
 			</Dialog.Footer>
