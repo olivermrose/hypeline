@@ -25,9 +25,7 @@ export class ChannelManager extends SvelteMap<string, Channel> {
 		const user = await this.client.users.fetch(idOrLogin, { by });
 		const channel = new Channel(this.client, user);
 
-		if (by === "id") {
-			this.set(idOrLogin, channel);
-		}
+		this.set(channel.id, channel);
 
 		return channel;
 	}
