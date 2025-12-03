@@ -28,9 +28,9 @@ class App {
 	public user = $state<CurrentUser | null>(null);
 
 	/**
-	 * The currently active channel in the list of {@linkcode channels}.
+	 * The currently focused channel in {@linkcode channels}.
 	 */
-	public joined = $state<Channel | null>(null);
+	public focused = $state<Channel | null>(null);
 
 	/**
 	 * The channels the app is able to join.

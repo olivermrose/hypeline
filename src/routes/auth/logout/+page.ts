@@ -8,7 +8,7 @@ export async function load() {
 	settings.state.lastJoined = null;
 
 	app.user = null;
-	app.joined = null;
+	app.focused = null;
 
 	await tick();
 	await settings.saveNow();

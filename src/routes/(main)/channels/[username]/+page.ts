@@ -9,16 +9,16 @@ export async function load({ params, parent }) {
 	const channel = app.channels.getByLogin(params.username);
 
 	if (!channel) {
-		await app.joined?.leave();
+		await app.focused?.leave();
 		error(404);
 	}
 
-	if (app.joined !== channel) {
+	if (app.focused !== channel) {
 		if (channel.joined) {
-			app.joined = channel;
+			app.focused = channel;
 		} else {
 			if (settings.state.advanced.singleConnection) {
-				await app.joined?.leave();
+				await app.focused?.leave();
 			}
 
 			// If it's not the same channel and it's not already joined, join it

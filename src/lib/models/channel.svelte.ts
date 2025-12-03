@@ -88,7 +88,7 @@ export class Channel {
 
 	public async join() {
 		app.channels.set(this.id, this);
-		app.joined = this;
+		app.focused = this;
 		this.joined = true;
 
 		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
