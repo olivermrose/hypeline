@@ -1,7 +1,3 @@
-// Local copy of https://github.com/robotty/twitch-irc-rs since there are some
-// missing features and extra things not needed. Might move to a seperate repo
-// later.
-
 pub mod client;
 mod config;
 mod connection;
