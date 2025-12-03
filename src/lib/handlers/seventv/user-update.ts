@@ -1,10 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
+import { app } from "$lib/app.svelte";
 import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "user.update",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.values().find((c) => c.seventvId === data.id);
+		if (!channel) return;
+
 		const message = new SystemMessage(channel);
 
 		const root = data.updated?.find((c) => c.key === "connections");

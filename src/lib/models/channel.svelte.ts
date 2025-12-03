@@ -22,6 +22,8 @@ import type { User } from "./user.svelte";
 export class Channel {
 	public readonly id: string;
 
+	public seventvId: string | null = null;
+
 	/**
 	 * The chat associated with the channel.
 	 */
@@ -53,6 +55,11 @@ export class Channel {
 	public stream = $state<Stream | null>(null);
 
 	/**
+	 * Whether the channel is joined.
+	 */
+	public joined = false;
+
+	/**
 	 * Whether the channel is ephemeral.
 	 */
 	public ephemeral = false;
@@ -80,7 +87,10 @@ export class Channel {
 	}
 
 	public async join() {
-		app.joined = this;
+		app.channels.set(this.id, this);
+		app.focused = this;
+		this.joined = true;
+
 		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
 
 		if (!this.viewers.has(this.id)) {
@@ -98,12 +108,13 @@ export class Channel {
 			this.fetchCheermotes(),
 		]);
 
+		this.seventvId = seventvId;
 		await this.stream?.fetchGuests();
 
 		// Don't resolve to avoid blocking the UI
 		void invoke("join", {
 			id: this.id,
-			stvId: seventvId,
+			stvId: this.seventvId,
 			setId: this.emoteSetId,
 			login: this.user.username,
 			isMod: app.user?.moderating.has(this.id),
@@ -127,6 +138,10 @@ export class Channel {
 			if (app.user) {
 				app.user.banned = false;
 			}
+
+			if (this.ephemeral) {
+				app.channels.delete(this.id);
+			}
 		}
 	}
 
@@ -139,6 +154,7 @@ export class Channel {
 	}
 
 	public reset() {
+		this.joined = false;
 		this.chat.reset();
 		this.badges.clear();
 		this.emotes.clear();

@@ -40,8 +40,13 @@ function transform(emote: EmoteChange): Emote {
 
 export default defineHandler({
 	name: "emote_set.update",
-	async handle(data, channel) {
-		if (data.id === channel.emoteSetId) {
+	async handle(data) {
+		const updated = data.pulled || data.pushed || data.updated;
+		if (!updated?.length) return;
+
+		const channel = app.channels.values().find((c) => c.emoteSetId === data.id);
+
+		if (channel) {
 			const twitch = data.actor.connections.find((c) => c.platform === "TWITCH");
 			if (!twitch) return;
 
@@ -62,14 +67,17 @@ export default defineHandler({
 			}
 
 			for (const change of data.pulled ?? []) {
+				const emote = channel.emotes.get(change.old_value.name);
+				if (!emote) continue;
+
 				message.context = {
 					type: "emoteSetUpdate",
 					action: "removed",
-					emote: channel.emotes.get(change.old_value.name)!,
+					emote,
 					actor,
 				};
 
-				channel.emotes.delete(change.old_value!.name);
+				channel.emotes.delete(change.old_value.name);
 			}
 
 			for (const change of data.updated ?? []) {
@@ -91,7 +99,12 @@ export default defineHandler({
 			}
 
 			channel.chat.addMessage(message);
-		} else {
+
+			await cache.remove(`emotes:${channel.id}`);
+			await cache.set(`emotes:${channel.id}`, channel.emotes.values().toArray());
+		}
+		// Personal set was updated
+		else {
 			const emoteSet = app.emoteSets.get(data.id);
 			if (!emoteSet) return;
 
@@ -114,8 +127,5 @@ export default defineHandler({
 				emote.name = change.value.name;
 			}
 		}
-
-		await cache.remove(`emotes:${channel.id}`);
-		await cache.set(`emotes:${channel.id}`, channel.emotes.values().toArray());
 	},
 });

@@ -3,9 +3,7 @@
 	import type { Snippet } from "svelte";
 	import Users from "~icons/ph/users-bold";
 	import { goto } from "$app/navigation";
-	import { app } from "$lib/app.svelte";
 	import type { Channel } from "$lib/models/channel.svelte";
-	import { settings } from "$lib/settings";
 	import GuestList from "./GuestList.svelte";
 	import * as Tooltip from "./ui/tooltip";
 
@@ -25,23 +23,21 @@
 		const joinItem = await MenuItem.new({
 			id: "join",
 			text: "Join",
+			enabled: !channel.joined,
 			async action() {
 				await goto(`/channels/${channel.user.username}`);
 			},
 		});
 
-		joinItem.setEnabled(settings.state.lastJoined !== channel.user.username);
-
 		const leaveItem = await MenuItem.new({
 			id: "leave",
 			text: "Leave",
+			enabled: channel.joined,
 			async action() {
-				await app.joined?.leave();
+				await channel.leave();
 				await goto("/");
 			},
 		});
-
-		leaveItem.setEnabled(settings.state.lastJoined === channel.user.username);
 
 		return Menu.new({
 			items: [joinItem, separator, leaveItem],

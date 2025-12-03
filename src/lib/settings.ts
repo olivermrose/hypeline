@@ -73,6 +73,10 @@ export interface HighlightSettings extends Record<HighlightType, HighlightConfig
 	keywords: KeywordHighlightConfig[];
 }
 
+export interface AdvancedSettings {
+	singleConnection: boolean;
+}
+
 interface StoredUser {
 	id: string;
 	token: string;
@@ -92,6 +96,7 @@ export interface Settings {
 	appearance: AppearanceSettings;
 	chat: ChatSettings;
 	highlights: HighlightSettings;
+	advanced: AdvancedSettings;
 }
 
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
@@ -144,5 +149,8 @@ export const settings = new RuneStore<Settings>("settings", {
 		enabled: true,
 		keywords: [],
 		...defaultHighlightTypes,
+	},
+	advanced: {
+		singleConnection: false,
 	},
 });

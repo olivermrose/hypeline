@@ -5,7 +5,10 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "clearmsg",
-	handle(data, channel) {
+	handle(data) {
+		const channel = app.channels.getByLogin(data.channel_login);
+		if (!channel) return;
+
 		const message = channel.chat.messages.find(
 			(m): m is UserMessage => m.isUser() && m.id === data.message_id,
 		);

@@ -106,8 +106,8 @@
 			{title}
 		</span>
 
-		{#if app.joined?.stream && guests}
-			<GuestList channel={app.joined} />
+		{#if app.focused?.stream && guests}
+			<GuestList channel={app.focused} />
 		{/if}
 	</div>
 

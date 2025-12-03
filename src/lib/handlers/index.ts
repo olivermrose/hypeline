@@ -1,12 +1,12 @@
 import { log } from "$lib/log";
 import type { Handler } from "./helper";
 
-export const handlers = new Map<string, Handler>();
+export const handlers = new Map<string, Handler<any>>();
 
-const imports = import.meta.glob<Handler>(["./eventsub/*.ts", "./irc/*.ts", "./seventv/*.ts"], {
-	eager: true,
-	import: "default",
-});
+const imports = import.meta.glob<Handler<any>>(
+	["./eventsub/*.ts", "./irc/*.ts", "./seventv/*.ts"],
+	{ eager: true, import: "default" },
+);
 
 for (const handler of Object.values(imports)) {
 	handlers.set(handler.name, handler);

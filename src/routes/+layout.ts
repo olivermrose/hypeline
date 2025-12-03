@@ -52,7 +52,7 @@ export async function load({ url }) {
 		}
 	}
 
-	if (!app.channels.length) {
+	if (!app.channels.size) {
 		const following = await app.user.fetchFollowing();
 
 		for (const followed of following) {
@@ -72,11 +72,11 @@ export async function load({ url }) {
 			const user = new User(app.twitch, followed);
 			const channel = new Channel(app.twitch, user, stream);
 
-			app.channels.push(channel);
+			app.channels.set(channel.id, channel);
 		}
 
 		const self = new Channel(app.twitch, app.user);
-		app.channels.push(self);
+		app.channels.set(self.id, self);
 	}
 
 	if (!app.emotes.size) {

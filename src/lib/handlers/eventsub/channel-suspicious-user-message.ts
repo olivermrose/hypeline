@@ -1,9 +1,13 @@
+import { app } from "$lib/app.svelte";
 import { UserMessage } from "$lib/models/message/user-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.suspicious_user.message",
-	handle(data, channel) {
+	handle(data) {
+		const channel = app.channels.get(data.broadcaster_user_id);
+		if (!channel) return;
+
 		const message = UserMessage.from(channel, data.message, {
 			id: data.user_id,
 			login: data.user_login,

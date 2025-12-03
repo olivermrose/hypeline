@@ -3,7 +3,6 @@ import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
-import { Channel } from "$lib/models/channel.svelte";
 import { defineCommand } from "../util";
 
 export default defineCommand({
@@ -16,16 +15,14 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.MISSING_ARG(this.args[0]));
 		}
 
-		let channel = app.channels.find((c) => c.user.username === args[0]);
+		let channel = app.channels.getByLogin(args[0]);
 
 		if (!channel) {
 			try {
-				const user = await app.twitch.users.fetch(args[0], { by: "login" });
-
-				channel = new Channel(app.twitch, user);
+				channel = await app.channels.fetch(args[0], { by: "login" });
 				channel.ephemeral = true;
 
-				app.channels.push(channel);
+				app.channels.set(channel.id, channel);
 			} catch (error) {
 				if (error instanceof ApiError && error.status === 404) {
 					throw new CommandError(ErrorMessage.USER_NOT_FOUND(args[0]));

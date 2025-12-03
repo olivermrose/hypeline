@@ -3,7 +3,6 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "emote_set.create",
-	global: true,
 	async handle(data) {
 		const twitch = data.owner.connections.find((c) => c.platform === "TWITCH");
 		if (!twitch) return;

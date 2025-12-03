@@ -7,7 +7,6 @@
 	import { app } from "$lib/app.svelte";
 	import { suggestionsQuery } from "$lib/graphql/queries";
 	import type { SearchSuggestionChannel } from "$lib/graphql/queries";
-	import { Channel } from "$lib/models/channel.svelte";
 	import { debounce } from "$lib/util";
 	import { Button } from "./ui/button";
 	import * as Dialog from "./ui/dialog";
@@ -54,18 +53,17 @@
 	}
 
 	async function join() {
-		if (!value) return;
+		if (!value.trim()) return;
+		value = value.toLowerCase();
 
 		try {
-			let channel = app.channels.find((c) => c.user.username === value.toLowerCase());
+			let channel = app.channels.getByLogin(value);
 
 			if (!channel) {
-				const user = await app.twitch.users.fetch(value, { by: "login" });
-
-				channel = new Channel(app.twitch, user);
+				channel = await app.channels.fetch(value, { by: "login" });
 				channel.ephemeral = true;
 
-				app.channels.push(channel);
+				app.channels.set(channel.id, channel);
 			}
 
 			await goto(`/channels/${channel.user.username}`);

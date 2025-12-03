@@ -10,16 +10,19 @@
 	const { collapsed = false } = $props();
 
 	const sorted = $derived(
-		app.channels.toSorted((a, b) => {
-			if (a.stream && b.stream) {
-				return b.stream.viewers - a.stream.viewers;
-			}
+		app.channels
+			.values()
+			.toArray()
+			.sort((a, b) => {
+				if (a.stream && b.stream) {
+					return b.stream.viewers - a.stream.viewers;
+				}
 
-			if (a.stream && !b.stream) return -1;
-			if (!a.stream && b.stream) return 1;
+				if (a.stream && !b.stream) return -1;
+				if (!a.stream && b.stream) return 1;
 
-			return a.user.username.localeCompare(b.user.username);
-		}),
+				return a.user.username.localeCompare(b.user.username);
+			}),
 	);
 
 	const groups = $derived.by(() => {
@@ -43,10 +46,10 @@
 
 	const interval = setInterval(
 		async () => {
-			const ids = app.channels.map((c) => c.user.id);
+			const ids = app.channels.keys().toArray();
 			const streams = await app.twitch.fetchStreams(ids);
 
-			for (const channel of app.channels) {
+			for (const channel of app.channels.values()) {
 				const stream = streams.find((s) => s.channelId === channel.user.id);
 				channel.stream = stream ?? null;
 			}
