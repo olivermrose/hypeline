@@ -66,7 +66,7 @@
 		class={[
 			"text-muted-foreground flex items-center gap-0.5",
 			platform === "macos" && "pl-18",
-			platform === "windows" && "pl-3",
+			["windows", "linux"].includes(platform) && "pl-3",
 		]}
 		data-tauri-drag-region
 	>
