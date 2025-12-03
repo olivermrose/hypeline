@@ -3,7 +3,6 @@ import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
 import { ErrorMessage } from "$lib/errors/messages";
-import { Channel } from "$lib/models/channel.svelte";
 import { defineCommand } from "../util";
 
 export default defineCommand({
@@ -20,9 +19,7 @@ export default defineCommand({
 
 		if (!channel) {
 			try {
-				const user = await app.twitch.users.fetch(args[0], { by: "login" });
-
-				channel = new Channel(app.twitch, user);
+				channel = await app.channels.fetch(args[0], { by: "login" });
 				channel.ephemeral = true;
 
 				app.channels.set(channel.id, channel);

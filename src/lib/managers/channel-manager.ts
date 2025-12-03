@@ -2,6 +2,11 @@ import { SvelteMap } from "svelte/reactivity";
 import { Channel } from "$lib/models/channel.svelte";
 import type { TwitchClient } from "$lib/twitch/client";
 
+export interface ChannelFetchOptions {
+	by?: "id" | "login";
+	force?: boolean;
+}
+
 export class ChannelManager extends SvelteMap<string, Channel> {
 	public constructor(public readonly client: TwitchClient) {
 		super();
@@ -11,16 +16,18 @@ export class ChannelManager extends SvelteMap<string, Channel> {
 		return this.values().find((c) => c.user.username === login);
 	}
 
-	public async fetch(id: string, force = false) {
+	public async fetch(idOrLogin: string, { by = "id", force = false }: ChannelFetchOptions = {}) {
 		if (!force) {
-			const cached = this.get(id);
+			const cached = by === "id" ? this.get(idOrLogin) : this.getByLogin(idOrLogin);
 			if (cached) return cached;
 		}
 
-		const user = await this.client.users.fetch(id);
+		const user = await this.client.users.fetch(idOrLogin, { by });
 		const channel = new Channel(this.client, user);
 
-		this.set(id, channel);
+		if (by === "id") {
+			this.set(idOrLogin, channel);
+		}
 
 		return channel;
 	}
