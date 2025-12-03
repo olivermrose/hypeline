@@ -6,13 +6,13 @@
 	import { onDestroy, onMount } from "svelte";
 	import Twitch from "~icons/local/twitch";
 	import { goto } from "$app/navigation";
-	import { PUBLIC_TWITCH_CLIENT_ID, PUBLIC_TWITCH_REDIRECT_URL } from "$env/static/public";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { log } from "$lib/log";
 	import { CurrentUser } from "$lib/models/current-user.svelte";
 	import { settings } from "$lib/settings";
 	import { SCOPES } from "$lib/twitch";
+	import { TwitchClient } from "$lib/twitch/client";
 
 	interface TokenInfo {
 		user_id: string;
@@ -20,8 +20,8 @@
 	}
 
 	const params = {
-		client_id: PUBLIC_TWITCH_CLIENT_ID,
-		redirect_uri: PUBLIC_TWITCH_REDIRECT_URL,
+		client_id: TwitchClient.CLIENT_ID,
+		redirect_uri: TwitchClient.REDIRECT_URL,
 		response_type: "token",
 		scope: SCOPES.join(" "),
 	};

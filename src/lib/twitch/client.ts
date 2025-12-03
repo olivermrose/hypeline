@@ -1,5 +1,4 @@
 import * as cache from "tauri-plugin-cache-api";
-import { PUBLIC_TWITCH_CLIENT_ID } from "$env/static/public";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/queries";
@@ -18,6 +17,9 @@ interface FetchOptions {
 }
 
 export class TwitchClient {
+	public static readonly CLIENT_ID = "2z7vk7rabefjdhey6m5cxfxsbspw7c";
+	public static readonly REDIRECT_URL = "http://localhost:55331/auth/callback";
+
 	// This should only be null between the time of app start up and settings
 	// synchronization because of browser restrictions; however, any subsequent
 	// API calls SHOULD have a valid token as it's set at first layout load.
@@ -132,7 +134,7 @@ export class TwitchClient {
 				method,
 				headers: {
 					Authorization: `Bearer ${this.token}`,
-					"Client-Id": PUBLIC_TWITCH_CLIENT_ID,
+					"Client-Id": TwitchClient.CLIENT_ID,
 					"Content-Type": "application/json",
 				},
 				body,
