@@ -22,6 +22,8 @@ import type { User } from "./user.svelte";
 export class Channel {
 	public readonly id: string;
 
+	public seventvId: string | null = null;
+
 	/**
 	 * The chat associated with the channel.
 	 */
@@ -106,12 +108,13 @@ export class Channel {
 			this.fetchCheermotes(),
 		]);
 
+		this.seventvId = seventvId;
 		await this.stream?.fetchGuests();
 
 		// Don't resolve to avoid blocking the UI
 		void invoke("join", {
 			id: this.id,
-			stvId: seventvId,
+			stvId: this.seventvId,
 			setId: this.emoteSetId,
 			login: this.user.username,
 			isMod: app.user?.moderating.has(this.id),
