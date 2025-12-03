@@ -60,10 +60,10 @@
 	onDestroy(() => unlisten?.());
 </script>
 
-<img class="size-14" src="/favicon.png" alt="Hypeline logo" />
+<img class="size-14" src="/favicon.png" alt="Hyperion logo" />
 
 <div class="space-y-2">
-	<h1 class="text-4xl font-semibold">Hypeline</h1>
+	<h1 class="text-4xl font-semibold">Hyperion</h1>
 
 	<p class="text-muted-foreground max-w-sm">Connect your Twitch account to start chatting.</p>
 </div>

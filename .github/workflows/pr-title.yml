@@ -10,7 +10,7 @@ on:
 jobs:
   main:
     name: Check PR Title
-    if: github.repository == 'olivermrose/hypeline'
+    if: github.repository == 'usehyperion/hyperion'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read

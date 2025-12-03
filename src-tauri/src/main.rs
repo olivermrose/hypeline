@@ -11,5 +11,5 @@ fn main() {
         .install_default()
         .expect("Failed to install rustls crypto provider");
 
-    hypeline_lib::run()
+    hyperion_lib::run()
 }

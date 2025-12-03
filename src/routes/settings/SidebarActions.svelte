@@ -40,7 +40,7 @@
 	async function copyDebugInfo() {
 		const appVersion = await getVersion();
 
-		const appInfo = `Hypeline v${appVersion}`;
+		const appInfo = `Hyperion v${appVersion}`;
 		const osInfo = `${platform} ${os.arch()} (${os.version()})`;
 
 		// Need to use clipboard plugin because of timing sensitivity with the

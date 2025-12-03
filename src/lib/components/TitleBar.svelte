@@ -23,7 +23,7 @@
 
 	let maximized = $state(false);
 	const { icon, title, guests } = $derived(
-		page.data.titleBar ?? { icon: "/favicon.png", title: "Hypeline" },
+		page.data.titleBar ?? { icon: "/favicon.png", title: "Hyperion" },
 	);
 
 	onMount(async () => {

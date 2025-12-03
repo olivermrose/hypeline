@@ -24,6 +24,6 @@
 	</Empty.Header>
 
 	<Empty.Content>
-		<Button href="https://github.com/hypeline/hypeline/issues">File an issue</Button>
+		<Button href="https://github.com/usehyperion/hyperion/issues">File an issue</Button>
 	</Empty.Content>
 </Empty.Root>

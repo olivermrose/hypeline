@@ -1,11 +1,11 @@
-<h1 align="center">Hypeline</h1>
+<h1 align="center">Hyperion</h1>
 
 <p align="center">A sleek, batteries included chat client for Twitch.</p>
 
 ![Preview](.github/assets/preview.png)
 
 > [!IMPORTANT]
-> Hypeline is still under heavy development and currently has no public releases. If you want to test out the application early, you'll have to build from source.
+> Hyperion is still under heavy development and currently has no public releases. If you want to test out the application early, you'll have to build from source.
 
 ## Building
 

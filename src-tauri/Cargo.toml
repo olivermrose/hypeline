@@ -1,5 +1,5 @@
 [package]
-name = "hypeline"
+name = "hyperion"
 version = "0.1.0"
 authors = ["Oliver Rose <hello@olivermrose.com>"]
 edition = "2024"
@@ -9,7 +9,7 @@ publish = false
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "hypeline_lib"
+name = "hyperion_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [profile.dev]

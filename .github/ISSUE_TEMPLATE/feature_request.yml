@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature for Hypeline
+description: Suggest a new feature for Hyperion
 labels: [enhancement]
 body:
   - type: markdown
