@@ -13,13 +13,17 @@ export async function load({ params, parent }) {
 		error(404);
 	}
 
-	// If it's not the same channel and it's not already joined, join it
-	if (app.joined !== channel && !channel.joined) {
-		if (settings.state.advanced.singleConnection) {
-			await app.joined?.leave();
-		}
+	if (app.joined !== channel) {
+		if (channel.joined) {
+			app.joined = channel;
+		} else {
+			if (settings.state.advanced.singleConnection) {
+				await app.joined?.leave();
+			}
 
-		await channel.join();
+			// If it's not the same channel and it's not already joined, join it
+			await channel.join();
+		}
 	}
 
 	return {
