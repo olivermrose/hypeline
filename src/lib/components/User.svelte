@@ -2,7 +2,6 @@
 	import { Popover } from "bits-ui";
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
-	import { onMount } from "svelte";
 	import Cake from "~icons/ph/cake-fill";
 	import Heart from "~icons/ph/heart-fill";
 	import StarOutline from "~icons/ph/star";
@@ -28,16 +27,6 @@
 	let showAllBadges = $state(false);
 	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
-	onMount(async () => {
-		if (user.partial) {
-			await user.fetch();
-		}
-
-		if (!relationship) {
-			await user.fetchRelationship(message.channel.user.username);
-		}
-	});
-
 	function getMentionStyle() {
 		switch (settings.state["chat.usernames.mentionStyle"]) {
 			case "none":
@@ -50,7 +39,17 @@
 	}
 </script>
 
-<Popover.Root>
+<Popover.Root
+	onOpenChange={async () => {
+		if (user.partial) {
+			await user.fetch();
+		}
+
+		if (!relationship) {
+			await user.fetchRelationship(message.channel.user.username);
+		}
+	}}
+>
 	{#if mention}
 		<Popover.Trigger
 			class="font-semibold wrap-break-word disabled:cursor-default"
