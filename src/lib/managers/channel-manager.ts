@@ -7,6 +7,10 @@ export class ChannelManager extends SvelteMap<string, Channel> {
 		super();
 	}
 
+	public getByLogin(login: string) {
+		return this.values().find((c) => c.user.username === login);
+	}
+
 	public async fetch(id: string, force = false) {
 		if (!force) {
 			const cached = this.get(id);

@@ -4,7 +4,10 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "clearchat",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.get(data.channel_id);
+		if (!channel) return;
+
 		// Return early if the message isn't recent and the user is a moderator
 		// in the channel to prevent showing two different messages.
 		if (!data.is_recent && app.user?.moderating.has(channel.id)) {

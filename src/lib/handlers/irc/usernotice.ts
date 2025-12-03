@@ -1,9 +1,13 @@
+import { app } from "$lib/app.svelte";
 import { UserMessage } from "$lib/models/message/user-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "usernotice",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.get(data.channel_id);
+		if (!channel) return;
+
 		const message = new UserMessage(channel, data);
 
 		if (message.event?.type === "raid" && !data.is_recent && channel.stream) {

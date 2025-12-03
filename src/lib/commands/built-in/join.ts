@@ -16,7 +16,7 @@ export default defineCommand({
 			throw new CommandError(ErrorMessage.MISSING_ARG(this.args[0]));
 		}
 
-		let channel = app.channels.find((c) => c.user.username === args[0]);
+		let channel = app.channels.getByLogin(args[0]);
 
 		if (!channel) {
 			try {
@@ -25,7 +25,7 @@ export default defineCommand({
 				channel = new Channel(app.twitch, user);
 				channel.ephemeral = true;
 
-				app.channels.push(channel);
+				app.channels.set(channel.id, channel);
 			} catch (error) {
 				if (error instanceof ApiError && error.status === 404) {
 					throw new CommandError(ErrorMessage.USER_NOT_FOUND(args[0]));

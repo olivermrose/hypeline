@@ -5,15 +5,16 @@ import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "whisper",
-	global: true,
-	async handle(data, user) {
+	async handle(data) {
+		if (!app.user) return;
+
 		const sender = await app.twitch.users.fetch(data.sender.id);
 
-		if (!user.whispers.has(sender.id)) {
-			user.whispers.set(sender.id, new Whisper(app.twitch, sender));
+		if (!app.user.whispers.has(sender.id)) {
+			app.user.whispers.set(sender.id, new Whisper(app.twitch, sender));
 		}
 
-		const whisper = user.whispers.get(sender.id)!;
+		const whisper = app.user.whispers.get(sender.id)!;
 
 		whisper.messages.push({
 			id: data.message_id,

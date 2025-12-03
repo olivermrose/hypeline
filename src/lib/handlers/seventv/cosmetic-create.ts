@@ -12,7 +12,6 @@ function toRgb(decimal: number) {
 
 export default defineHandler({
 	name: "cosmetic.create",
-	global: true,
 	handle(cosmetic) {
 		if (cosmetic.kind === "BADGE") {
 			const file = cosmetic.data.host.files.find((f) => f.name.startsWith("4x"))!;

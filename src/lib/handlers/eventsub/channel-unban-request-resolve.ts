@@ -1,9 +1,13 @@
+import { app } from "$lib/app.svelte";
 import type { Viewer } from "$lib/models/viewer.svelte";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.unban_request.resolve",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.get(data.broadcaster_user_id);
+		if (!channel) return;
+
 		const viewer = await channel.viewers.fetch(data.user_id);
 
 		let moderator: Viewer | undefined;

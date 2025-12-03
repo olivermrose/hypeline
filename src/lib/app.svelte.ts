@@ -3,6 +3,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { handlers } from "./handlers";
 import { History } from "./history.svelte";
 import { log } from "./log";
+import { ChannelManager } from "./managers/channel-manager";
 import { EmoteManager } from "./managers/emote-manager";
 import { TwitchClient } from "./twitch/client";
 import type { EmoteSet } from "./emotes";
@@ -27,14 +28,14 @@ class App {
 	public user = $state<CurrentUser | null>(null);
 
 	/**
-	 * The currently joined channel.
+	 * The currently active channel in the list of {@linkcode channels}.
 	 */
 	public joined = $state<Channel | null>(null);
 
 	/**
-	 * The list of channels the app is able to join.
+	 * The channels the app is able to join.
 	 */
-	public channels = $state<Channel[]>([]);
+	public readonly channels = new ChannelManager(this.twitch);
 
 	/**
 	 * Route history.
@@ -94,14 +95,7 @@ class App {
 	}
 
 	async #handle(key: string, payload: any) {
-		const handler = handlers.get(key);
-
-		// Need to explicitly compare against false to make TypeScript happy
-		if (this.joined && handler?.global === false) {
-			await handler.handle(payload, this.joined);
-		} else if (this.user && handler?.global) {
-			await handler.handle(payload, this.user);
-		}
+		await handlers.get(key)?.handle(payload);
 	}
 }
 

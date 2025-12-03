@@ -207,7 +207,7 @@ export class UserMessage extends Message {
 			return;
 		}
 
-		this.source = await this.channel.client.channels.fetch(source.channel_id);
+		this.source = await app.channels.fetch(source.channel_id);
 		await this.source.fetchBadges();
 	}
 

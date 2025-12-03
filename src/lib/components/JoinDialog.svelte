@@ -57,7 +57,9 @@
 		if (!value) return;
 
 		try {
-			let channel = app.channels.find((c) => c.user.username === value.toLowerCase());
+			let channel = app.channels
+				.values()
+				.find((c) => c.user.username === value.toLowerCase());
 
 			if (!channel) {
 				const user = await app.twitch.users.fetch(value, { by: "login" });
@@ -65,7 +67,7 @@
 				channel = new Channel(app.twitch, user);
 				channel.ephemeral = true;
 
-				app.channels.push(channel);
+				app.channels.set(channel.id, channel);
 			}
 
 			await goto(`/channels/${channel.user.username}`);

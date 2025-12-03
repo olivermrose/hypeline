@@ -1,10 +1,14 @@
+import { app } from "$lib/app.svelte";
 import { UserMessage } from "$lib/models/message/user-message";
 import type { Boundary } from "$lib/twitch/eventsub";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "automod.message.hold",
-	handle(data, channel) {
+	handle(data) {
+		const channel = app.channels.get(data.broadcaster_user_id);
+		if (!channel) return;
+
 		const isAutoMod = data.reason === "automod";
 		data.message.message_id = data.message_id;
 

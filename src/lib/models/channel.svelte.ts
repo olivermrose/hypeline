@@ -53,6 +53,11 @@ export class Channel {
 	public stream = $state<Stream | null>(null);
 
 	/**
+	 * Whether the channel is joined.
+	 */
+	public joined = false;
+
+	/**
 	 * Whether the channel is ephemeral.
 	 */
 	public ephemeral = false;
@@ -80,7 +85,10 @@ export class Channel {
 	}
 
 	public async join() {
+		app.channels.set(this.id, this);
 		app.joined = this;
+		this.joined = true;
+
 		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
 
 		if (!this.viewers.has(this.id)) {
@@ -127,6 +135,10 @@ export class Channel {
 			if (app.user) {
 				app.user.banned = false;
 			}
+
+			if (this.ephemeral) {
+				app.channels.delete(this.id);
+			}
 		}
 	}
 
@@ -139,6 +151,7 @@ export class Channel {
 	}
 
 	public reset() {
+		this.joined = false;
 		this.chat.reset();
 		this.badges.clear();
 		this.emotes.clear();

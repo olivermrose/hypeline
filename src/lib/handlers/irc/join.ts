@@ -1,10 +1,14 @@
+import { app } from "$lib/app.svelte";
 import { log } from "$lib/log";
 import { sendPresence } from "$lib/seventv";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "join",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.getByLogin(data.channel_login);
+		if (!channel) return;
+
 		// Channel should always have itself in its viewers map
 		const viewer = channel.viewers
 			.values()

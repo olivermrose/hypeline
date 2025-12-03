@@ -1,9 +1,13 @@
+import { app } from "$lib/app.svelte";
 import { SystemMessage } from "$lib/models/message/system-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
 	name: "channel.moderate",
-	async handle(data, channel) {
+	async handle(data) {
+		const channel = app.channels.get(data.broadcaster_user_id);
+		if (!channel) return;
+
 		const message = new SystemMessage(channel);
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
