@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getVersion } from "@tauri-apps/api/app";
+	import { invoke } from "@tauri-apps/api/core";
 	import { LogicalPosition } from "@tauri-apps/api/dpi";
 	import { appLogDir } from "@tauri-apps/api/path";
 	import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 	import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 	import { openPath } from "@tauri-apps/plugin-opener";
-	import * as os from "@tauri-apps/plugin-os";
+	import { platform as getPlatform } from "@tauri-apps/plugin-os";
 	import { scale } from "svelte/transition";
 	import ArrowSquareOut from "~icons/ph/arrow-square-out";
 	import Check from "~icons/ph/check";
@@ -17,7 +17,7 @@
 
 	let copied = $state(false);
 
-	const platform = os.platform();
+	const platform = getPlatform();
 
 	async function detach() {
 		// eslint-disable-next-line no-new
@@ -38,14 +38,11 @@
 	}
 
 	async function copyDebugInfo() {
-		const appVersion = await getVersion();
-
-		const appInfo = `Hyperion v${appVersion}`;
-		const osInfo = `${platform} ${os.arch()} (${os.version()})`;
+		const info = await invoke<string>("get_debug_info");
 
 		// Need to use clipboard plugin because of timing sensitivity with the
 		// Clipboard API
-		await writeText(`${appInfo}\n${osInfo}`);
+		await writeText(info);
 		copied = true;
 
 		setTimeout(() => {

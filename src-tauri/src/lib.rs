@@ -7,6 +7,7 @@ use eventsub::EventSubClient;
 use irc::IrcClient;
 use reqwest::header::HeaderMap;
 use seventv::SeventTvClient;
+use sysinfo::System;
 use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
 use tauri::{AppHandle, Manager, WindowEvent};
@@ -59,6 +60,9 @@ impl Default for AppState {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let mut sys = sysinfo::System::new_all();
+    sys.refresh_all();
+
     let mut builder = tauri::Builder::default();
     let mut state = AppState::default();
 
@@ -114,6 +118,7 @@ pub fn run() {
 
             app.manage(Mutex::new(state));
             app.manage(log_guard);
+            app.manage(sys);
 
             Ok(())
         })
@@ -158,10 +163,60 @@ fn get_cache_size(app_handle: AppHandle) -> i64 {
             if size == 2 { 0 } else { size }
         }
         Err(error) => {
-            tracing::error!(?error, "Failed to get cache size");
+            tracing::error!(%error, "Failed to get cache size");
             0
         }
     }
+}
+
+fn format_bytes(bytes: u64) -> String {
+    let i = ((bytes as f64).ln() / 1024_f64.ln()).floor();
+
+    if i == 0.0 {
+        "0 bytes".to_string()
+    } else {
+        let value = bytes as f64 / 1024_f64.powf(i);
+        let unit = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
+
+        format!("{value:.2} {unit}")
+    }
+}
+
+#[tauri::command]
+fn get_debug_info(app_handle: AppHandle) -> String {
+    use tauri_plugin_os as os;
+
+    let pkg_info = app_handle.package_info();
+    let sys = app_handle.state::<sysinfo::System>();
+    let cpus = sys.cpus();
+
+    let app_info = format!("{} v{}", pkg_info.name, pkg_info.version);
+    let os_info = format!("OS: {} {}", os::platform(), os::version());
+
+    let chip_info = format!(
+        "Chip: {}",
+        cpus.first().map(|cpu| cpu.brand()).unwrap_or("unknown")
+    );
+
+    let cpu_info = format!("CPU: {} cores ({})", cpus.len(), System::cpu_arch());
+
+    let mem_info = format!(
+        "Memory: {} / {}",
+        format_bytes(sys.used_memory()),
+        format_bytes(sys.total_memory())
+    );
+
+    let wv_info = format!(
+        "WebView: {} {}",
+        if std::env::consts::FAMILY == "windows" {
+            "WebView2"
+        } else {
+            "WebKit"
+        },
+        tauri::webview_version().unwrap_or_default()
+    );
+
+    format!("{app_info}\n{os_info}\n{chip_info}\n{cpu_info}\n{mem_info}\n{wv_info}")
 }
 
 fn get_handler() -> impl Fn(Invoke) -> bool {
@@ -172,6 +227,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         api::get_user_emotes,
         eventsub::connect_eventsub,
         get_cache_size,
+        get_debug_info,
         irc::connect_irc,
         log::log,
         recent_messages::fetch_recent_messages,
