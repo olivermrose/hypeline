@@ -21,12 +21,12 @@
 </script>
 
 <div class="flex flex-col gap-y-2.5">
-	<Button class="self-start" onclick={() => settings.state.highlights.keywords.push(defaults)}>
+	<Button class="self-start" onclick={() => settings.state["highlights.keywords"].push(defaults)}>
 		<Plus />
 		Add new trigger
 	</Button>
 
-	{#each settings.state.highlights.keywords as config, i}
+	{#each settings.state["highlights.keywords"] as config, i}
 		<Highlight class="m-0" type="custom" config={{ ...config, style: "default" }}>
 			<div class="flex items-center gap-x-1.5 p-1.5">
 				<Color bind:value={config.color} />
@@ -41,7 +41,7 @@
 						size="icon"
 						variant="destructive"
 						aria-label="Delete trigger"
-						onclick={() => settings.state.highlights.keywords.splice(i, 1)}
+						onclick={() => settings.state["highlights.keywords"].splice(i, 1)}
 					>
 						<Trash />
 					</Button>

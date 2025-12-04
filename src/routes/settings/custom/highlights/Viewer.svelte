@@ -18,14 +18,16 @@
 		{ label: "VIPs", value: "vip" },
 	] as const;
 
+	const viewers = $derived(settings.state["highlights.viewers"]);
+
 	function reset(key: HighlightType) {
-		settings.state.highlights[key] = defaultHighlightTypes[key];
+		viewers[key] = defaultHighlightTypes[key];
 	}
 </script>
 
 <div class="flex flex-col gap-y-2.5">
 	{#each highlights as highlight}
-		{@const config = settings.state.highlights[highlight.value]}
+		{@const config = viewers[highlight.value]}
 
 		<Highlight
 			class="m-0"
@@ -35,7 +37,7 @@
 			<div class="flex items-center gap-x-1.5 p-1.5">
 				<Color bind:value={config.color} />
 
-				<StyleSelect bind:config={settings.state.highlights[highlight.value]} />
+				<StyleSelect bind:config={viewers[highlight.value]} />
 
 				<Button
 					class="ml-auto"

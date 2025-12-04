@@ -139,7 +139,7 @@
 	{/each}
 </p>
 
-{#if settings.state.chat.embeds && !nested && linkNodes.some(canEmbed)}
+{#if settings.state["chat.embeds"] && !nested && linkNodes.some(canEmbed)}
 	<div class="mt-2 flex gap-2">
 		{#each linkNodes as node}
 			<Embed {...node.data} />

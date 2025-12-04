@@ -1,50 +1,6 @@
 import { RuneStore } from "@tauri-store/svelte";
 import type { User } from "./graphql/twitch";
 
-export interface TimestampSettings {
-	show: boolean;
-	format: "auto" | "12" | "24" | "custom";
-	customFormat: string;
-}
-
-export interface AppearanceSettings {
-	timestamps: TimestampSettings;
-}
-
-export interface UsernameSettings {
-	localized: boolean;
-	readable: boolean;
-	paint: boolean;
-	mentionStyle: "none" | "colored" | "painted";
-}
-
-export interface EmoteSettings {
-	ffz: boolean;
-	bttv: boolean;
-	seventv: boolean;
-	padding: number;
-}
-
-export interface HistorySettings {
-	enabled: boolean;
-	limit: number;
-	separator: boolean;
-}
-
-export interface MessageSettings {
-	duplicateBypass: boolean;
-	history: HistorySettings;
-}
-
-export interface ChatSettings {
-	scrollbar: boolean;
-	newSeparator: boolean;
-	embeds: boolean;
-	usernames: UsernameSettings;
-	emotes: EmoteSettings;
-	messages: MessageSettings;
-}
-
 export type HighlightType =
 	| "mention"
 	| "new"
@@ -68,15 +24,6 @@ export interface KeywordHighlightConfig extends HighlightConfig {
 	matchCase: boolean;
 }
 
-export interface HighlightSettings extends Record<HighlightType, HighlightConfig> {
-	enabled: boolean;
-	keywords: KeywordHighlightConfig[];
-}
-
-export interface AdvancedSettings {
-	singleConnection: boolean;
-}
-
 interface StoredUser {
 	id: string;
 	token: string;
@@ -84,19 +31,40 @@ interface StoredUser {
 	moderating: string[];
 }
 
-export interface Settings {
-	// Index signature needed for RuneStore
-	[key: string]: unknown;
+export interface UserSettings {
+	"appearance.timestamps.show": boolean;
+	"appearance.timestamps.format": "auto" | "12" | "24" | "custom";
+	"appearance.timestamps.customFormat": string;
+
+	"chat.hideScrollbar": boolean;
+	"chat.newSeparator": boolean;
+	"chat.embeds": boolean;
+	"chat.usernames.localized": boolean;
+	"chat.usernames.readable": boolean;
+	"chat.usernames.paint": boolean;
+	"chat.usernames.mentionStyle": "none" | "colored" | "painted";
+	"chat.emotes.ffz": boolean;
+	"chat.emotes.bttv": boolean;
+	"chat.emotes.seventv": boolean;
+	"chat.emotes.padding": number;
+	"chat.messages.duplicateBypass": boolean;
+	"chat.messages.history.enabled": boolean;
+	"chat.messages.history.limit": number;
+	"chat.messages.history.separator": boolean;
+
+	"highlights.enabled": boolean;
+	"highlights.viewers": Record<HighlightType, HighlightConfig>;
+	"highlights.keywords": KeywordHighlightConfig[];
+
+	"advanced.singleConnection": boolean;
+}
+
+interface Settings extends UserSettings {
+	[key: string]: any;
 
 	// Internal
 	user: StoredUser | null;
 	lastJoined: string | null;
-
-	// User
-	appearance: AppearanceSettings;
-	chat: ChatSettings;
-	highlights: HighlightSettings;
-	advanced: AdvancedSettings;
 }
 
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
@@ -110,47 +78,32 @@ export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 	vip: { enabled: false, color: "#db00b3", style: "default" },
 };
 
-export const settings = new RuneStore<Settings>("settings", {
+export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
-	appearance: {
-		timestamps: {
-			show: true,
-			format: "auto",
-			customFormat: "",
-		},
-	},
-	chat: {
-		scrollbar: true,
-		newSeparator: false,
-		embeds: true,
-		usernames: {
-			localized: true,
-			readable: true,
-			paint: true,
-			mentionStyle: "painted",
-		},
-		emotes: {
-			ffz: true,
-			bttv: true,
-			seventv: true,
-			padding: 0,
-		},
-		messages: {
-			duplicateBypass: true,
-			history: {
-				enabled: true,
-				limit: 250,
-				separator: true,
-			},
-		},
-	},
-	highlights: {
-		enabled: true,
-		keywords: [],
-		...defaultHighlightTypes,
-	},
-	advanced: {
-		singleConnection: false,
-	},
-});
+
+	"appearance.timestamps.show": true,
+	"appearance.timestamps.format": "auto",
+	"appearance.timestamps.customFormat": "",
+	"chat.hideScrollbar": false,
+	"chat.newSeparator": false,
+	"chat.embeds": true,
+	"chat.usernames.localized": true,
+	"chat.usernames.readable": true,
+	"chat.usernames.paint": true,
+	"chat.usernames.mentionStyle": "painted",
+	"chat.emotes.ffz": true,
+	"chat.emotes.bttv": true,
+	"chat.emotes.seventv": true,
+	"chat.emotes.padding": 0,
+	"chat.messages.duplicateBypass": true,
+	"chat.messages.history.enabled": true,
+	"chat.messages.history.limit": 250,
+	"chat.messages.history.separator": true,
+	"highlights.enabled": true,
+	"highlights.viewers": { ...defaultHighlightTypes },
+	"highlights.keywords": [],
+	"advanced.singleConnection": false,
+};
+
+export const settings = new RuneStore<Settings>("settings", defaults, {});

@@ -8,14 +8,12 @@
 
 	const { date }: Props = $props();
 
-	const timestamps = $derived(settings.state.appearance.timestamps);
-
 	const format = $derived.by(() => {
-		let format = timestamps.format;
+		let format = settings.state["appearance.timestamps.format"];
 
 		if (format === "custom") {
-			if (timestamps.customFormat) {
-				return timestamps.customFormat;
+			if (settings.state["appearance.timestamps.customFormat"]) {
+				return settings.state["appearance.timestamps.customFormat"];
 			}
 
 			format = "auto";
@@ -34,7 +32,7 @@
 	const formatted = $derived(dayjs(date).format(format));
 </script>
 
-{#if timestamps.show}
+{#if settings.state["appearance.timestamps.show"]}
 	<time class="text-muted-foreground text-xs tabular-nums" datetime={date.toISOString()}>
 		{formatted}
 	</time>

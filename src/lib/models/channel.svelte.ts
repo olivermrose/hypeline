@@ -115,10 +115,10 @@ export class Channel {
 			isMod: app.user?.moderating.has(this.id),
 		});
 
-		if (settings.state.chat.messages.history.enabled) {
+		if (settings.state["chat.messages.history.enabled"]) {
 			await invoke("fetch_recent_messages", {
 				channel: this.user.username,
-				historyLimit: settings.state.chat.messages.history.limit,
+				historyLimit: settings.state["chat.messages.history.limit"],
 			});
 		}
 	}

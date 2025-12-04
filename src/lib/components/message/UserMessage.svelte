@@ -20,10 +20,8 @@
 	let hlType = $state<HighlightType>();
 	let info = $state<string>();
 
-	const highlights = $derived(settings.state.highlights);
-
 	const customMatched = $derived(
-		highlights.keywords.find((cfg) => {
+		settings.state["highlights.keywords"].find((cfg) => {
 			if (!cfg.pattern.trim()) return false;
 
 			let pattern = cfg.regex ? cfg.pattern : RegExp.escape(cfg.pattern);
@@ -73,7 +71,7 @@
 	function getMentionStyle(viewer?: Viewer) {
 		if (!viewer) return null;
 
-		switch (settings.state.chat.usernames.mentionStyle) {
+		switch (settings.state["chat.usernames.mentionStyle"]) {
 			case "none":
 				return null;
 			case "colored":
@@ -104,10 +102,12 @@
 		>
 			<Message {message} />
 		</div>
-	{:else if highlights.enabled}
-		{#if hlType && highlights[hlType].enabled}
-			<Highlight type={hlType} {info} config={highlights[hlType]}>
-				{@render content(highlights[hlType].style !== "background")}
+	{:else if settings.state["highlights.enabled"]}
+		{@const config = hlType ? settings.state["highlights.viewers"][hlType] : null}
+
+		{#if config && config.enabled}
+			<Highlight type={hlType!} {info} {config}>
+				{@render content(config.style !== "background")}
 			</Highlight>
 		{:else if customMatched?.enabled && !isSelf}
 			<Highlight type="custom" config={customMatched}>
