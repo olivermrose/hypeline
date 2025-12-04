@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 	import type { Snippet } from "svelte";
+	import DotsThreeCircle from "~icons/ph/dots-three-circle";
 	import Users from "~icons/ph/users-bold";
 	import { goto } from "$app/navigation";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -75,6 +76,14 @@
 					width="150"
 					height="150"
 				/>
+
+				{#if collapsed && channel.stream?.guests.size}
+					<div
+						class="bg-muted/70 absolute right-1 bottom-1 flex items-center justify-center rounded-full"
+					>
+						<DotsThreeCircle class="size-5" />
+					</div>
+				{/if}
 
 				{@render children()}
 			</div>
