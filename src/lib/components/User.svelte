@@ -30,6 +30,22 @@
 
 	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
+	async function fetchInfo() {
+		try {
+			loading = true;
+
+			if (user.partial) {
+				await user.fetch();
+			}
+
+			if (!relationship) {
+				await user.fetchRelationship(message.channel.user.username);
+			}
+		} finally {
+			loading = false;
+		}
+	}
+
 	function getMentionStyle() {
 		switch (settings.state["chat.usernames.mentionStyle"]) {
 			case "none":
@@ -44,19 +60,7 @@
 
 <Popover.Root
 	onOpenChange={async (open) => {
-		if (!open) return;
-
-		loading = true;
-
-		if (user.partial) {
-			await user.fetch();
-		}
-
-		if (!relationship) {
-			await user.fetchRelationship(message.channel.user.username);
-		}
-
-		loading = false;
+		if (open) await fetchInfo();
 	}}
 >
 	{#if mention}
