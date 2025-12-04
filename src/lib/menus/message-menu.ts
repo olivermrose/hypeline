@@ -14,6 +14,7 @@ export async function createMessageMenu(message: UserMessage) {
 	const reply = await MenuItem.new({
 		id: "reply",
 		text: "Reply",
+		enabled: !message.deleted,
 		action() {
 			message.channel.chat.replyTarget = message;
 		},
@@ -25,7 +26,7 @@ export async function createMessageMenu(message: UserMessage) {
 		const deleteMsg = await MenuItem.new({
 			id: "delete",
 			text: "Delete",
-			enabled: message.actionable,
+			enabled: !message.deleted && message.actionable,
 			action: () => message.delete(),
 		});
 
