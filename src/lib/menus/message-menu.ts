@@ -9,7 +9,13 @@ export async function createMessageMenu(message: UserMessage) {
 		item: "Separator",
 	});
 
-	const copy = await PredefinedMenuItem.new({ item: "Copy" });
+	const copy = await MenuItem.new({
+		id: "copy",
+		text: "Copy",
+		action() {
+			navigator.clipboard.writeText(message.text);
+		},
+	});
 
 	const reply = await MenuItem.new({
 		id: "reply",
@@ -17,6 +23,7 @@ export async function createMessageMenu(message: UserMessage) {
 		enabled: !message.deleted,
 		action() {
 			message.channel.chat.replyTarget = message;
+			message.channel.chat.input?.focus();
 		},
 	});
 
