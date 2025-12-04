@@ -106,4 +106,4 @@ export const defaults: Settings = {
 	"advanced.singleConnection": false,
 };
 
-export const settings = new RuneStore<Settings>("settings", defaults, {});
+export const settings = new RuneStore<Settings>("settings", defaults);
