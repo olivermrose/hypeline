@@ -1,17 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import * as cache from "tauri-plugin-cache-api";
-import { twitchGql } from "$lib/graphql/function";
+import { channelBadgesQuery, cheermoteQuery, streamQuery } from "$lib/graphql/twitch";
+import type { Badge, Cheermote } from "$lib/graphql/twitch";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
 import { fetch7tvId } from "$lib/seventv";
 import { app } from "../app.svelte";
-import {
-	badgeDetailsFragment,
-	cheermoteDetailsFragment,
-	streamDetailsFragment,
-} from "../graphql/fragments";
 import { ViewerManager } from "../managers/viewer-manager";
 import { settings } from "../settings";
-import type { Badge, Cheermote } from "../graphql/fragments";
 import type { StreamMarker } from "../twitch/api";
 import type { TwitchClient } from "../twitch/client";
 import { Chat } from "./chat.svelte";
@@ -172,19 +167,7 @@ export class Channel {
 		if (force || !badges) {
 			if (force) this.badges.clear();
 
-			const { user } = await this.client.send(
-				twitchGql(
-					`query GetChannelBadges($id: ID!) {
-						user(id: $id) {
-							broadcastBadges {
-								...BadgeDetails
-							}
-						}
-					}`,
-					[badgeDetailsFragment],
-				),
-				{ id: this.id },
-			);
+			const { user } = await this.client.send(channelBadgesQuery, { id: this.id });
 
 			badges = user?.broadcastBadges?.filter((b) => b != null) ?? [];
 			await cache.set(`badges:${this.id}`, badges);
@@ -207,21 +190,7 @@ export class Channel {
 		if (force || !cheermotes) {
 			if (force) this.cheermotes.length = 0;
 
-			const { user } = await this.client.send(
-				twitchGql(
-					`query GetCheermotes($id: ID!) {
-						user(id: $id) {
-							cheer {
-								emotes(type: [FIRST_PARTY, THIRD_PARTY, CUSTOM]) {
-								...CheermoteDetails
-								}
-							}
-						}
-					}`,
-					[cheermoteDetailsFragment],
-				),
-				{ id: this.id },
-			);
+			const { user } = await this.client.send(cheermoteQuery, { id: this.id });
 
 			cheermotes = user?.cheer?.emotes.filter((e) => e != null) ?? [];
 			await cache.set(`cheermotes:${this.id}`, cheermotes);
@@ -235,19 +204,7 @@ export class Channel {
 	 * Retrieves the stream of the channel if it's live.
 	 */
 	public async fetchStream() {
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetStream($id: ID!) {
-					user(id: $id) {
-						stream {
-							...StreamDetails
-						}
-					}
-				}`,
-				[streamDetailsFragment],
-			),
-			{ id: this.id },
-		);
+		const { user } = await this.client.send(streamQuery, { id: this.id });
 
 		if (user?.stream) {
 			this.stream = new Stream(this.client, this.id, user.stream);

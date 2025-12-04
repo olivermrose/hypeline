@@ -4,8 +4,8 @@ import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/e
 import type { BttvEmote, Emote, FfzEmoteSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { send7tv as send } from "$lib/graphql";
-import { activeEmoteSetQuery } from "$lib/graphql/queries";
-import type { ActiveEmoteSet } from "$lib/graphql/queries";
+import { activeEmoteSetQuery } from "$lib/graphql/7tv";
+import type { ActiveEmoteSet } from "$lib/graphql/7tv";
 import type { Channel } from "$lib/models/channel.svelte";
 import { BaseEmoteManager } from "./base-emote-manager";
 
@@ -90,7 +90,7 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 	 * Retrieves the active 7TV emote set for the channel.
 	 */
 	public override async fetch7tv() {
-		const set = (await this.#fetchActiveSet()) as Extract<ActiveEmoteSet, { name: string }>;
+		const set = await this.#fetchActiveSet();
 		if (!set) return [];
 
 		this.channel.emoteSetId = set.id;
@@ -101,7 +101,9 @@ export class ChannelEmoteManager extends BaseEmoteManager {
 		return emotes;
 	}
 
-	async #fetchActiveSet(details = true): Promise<ActiveEmoteSet | null> {
+	async #fetchActiveSet(): Promise<ActiveEmoteSet | null>;
+	async #fetchActiveSet(details: false): Promise<ActiveEmoteSet<false> | null>;
+	async #fetchActiveSet(details = true): Promise<ActiveEmoteSet<boolean> | null> {
 		const { users } = await send(activeEmoteSetQuery, {
 			id: this.channel.id,
 			details,

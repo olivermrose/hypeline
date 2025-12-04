@@ -5,9 +5,8 @@
 	import { app } from "$lib/app.svelte";
 	import { transform7tvEmote } from "$lib/emotes";
 	import { send7tv as send } from "$lib/graphql";
-	import { emoteDetailsFragment } from "$lib/graphql/fragments";
-	import { seventvGql as gql } from "$lib/graphql/function";
-	import { clipQuery } from "$lib/graphql/queries";
+	import { emoteQuery } from "$lib/graphql/7tv";
+	import { clipQuery } from "$lib/graphql/twitch";
 
 	interface Props {
 		url: URL;
@@ -22,28 +21,7 @@
 		const parts = url.pathname.split("/");
 		if (parts[1] !== "emotes") return;
 
-		const { emotes } = await send(
-			gql(
-				`query GetEmote($id: Id!) {
-					emotes {
-						emote(id: $id) {
-							...EmoteDetails
-							flags {
-								publicListed
-							}
-							owner {
-								mainConnection {
-									platformDisplayName
-								}
-							}
-						}
-					}
-				}`,
-				[emoteDetailsFragment],
-			),
-			{ id: parts[2] },
-		);
-
+		const { emotes } = await send(emoteQuery, { id: parts[2] });
 		if (!emotes.emote) return;
 
 		return {

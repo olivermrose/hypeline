@@ -1,5 +1,5 @@
 import { RuneStore } from "@tauri-store/svelte";
-import type { User } from "./graphql/queries";
+import type { User } from "./graphql/twitch";
 
 export interface TimestampSettings {
 	show: boolean;

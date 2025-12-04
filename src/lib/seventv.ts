@@ -1,6 +1,6 @@
 import { app } from "./app.svelte";
 import { send7tv as send } from "./graphql";
-import { seventvGql as gql } from "./graphql/function";
+import { userIdQuery } from "./graphql/7tv";
 import { log } from "./log";
 
 interface EventObject {
@@ -149,18 +149,7 @@ export interface SevenTvEventMap {
 }
 
 export async function fetch7tvId(twitchId: string): Promise<string | null> {
-	const response = await send(
-		gql(
-			`query GetUser($id: String!) {
-				users {
-					userByConnection(platform: TWITCH, platformId: $id) {
-						id
-					}
-				}
-			}`,
-		),
-		{ id: twitchId },
-	).catch(() => null);
+	const response = await send(userIdQuery, { id: twitchId }).catch(() => null);
 
 	return response?.users.userByConnection?.id ?? null;
 }

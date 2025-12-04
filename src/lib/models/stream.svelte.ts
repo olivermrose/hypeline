@@ -1,7 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
-import { guestStarDetailsFragment } from "$lib/graphql/fragments";
-import type { Stream as ApiStream } from "$lib/graphql/fragments";
-import { twitchGql } from "$lib/graphql/function";
+import { guestsQuery } from "$lib/graphql/twitch";
+import type { Stream as ApiStream } from "$lib/graphql/twitch";
 import type { TwitchClient } from "$lib/twitch/client";
 
 export interface Guest {
@@ -66,17 +65,7 @@ export class Stream {
 	 * one active.
 	 */
 	public async fetchGuests() {
-		const { channel } = await this.client.send(
-			twitchGql(
-				`query GetGuests($id: ID!) {
-					channel(id: $id) {
-						...GuestStarDetails
-					}
-				}`,
-				[guestStarDetailsFragment],
-			),
-			{ id: this.channelId },
-		);
+		const { channel } = await this.client.send(guestsQuery, { id: this.channelId });
 
 		for (const { user } of channel?.guestStarSessionCall?.guests ?? []) {
 			this.addGuest({

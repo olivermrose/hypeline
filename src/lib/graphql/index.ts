@@ -4,10 +4,27 @@ import { print } from "graphql-web-lite";
 import { ApiError } from "$lib/errors/api-error";
 import { dedupe } from "$lib/util";
 
-// TODO: split this into a union for error handling
-export interface GqlResponse<T> {
-	data: T;
-}
+export type NonNullableDeep<T, P extends string> = P extends `${infer K}.${infer R}`
+	? K extends keyof T
+		? NonNullableDeep<NonNullable<T[K]>, R>
+		: K extends `${number}`
+			? T extends (infer U)[]
+				? NonNullableDeep<NonNullable<U>, R>
+				: never
+			: never
+	: P extends keyof T
+		? NonNullable<T[P]>
+		: never;
+
+type GqlResponse<T> =
+	| {
+			data: T;
+			errors?: never;
+	  }
+	| {
+			data?: never;
+			errors: { message: string }[];
+	  };
 
 export function sendTwitch<T, U>(query: TadaDocumentNode<T, U>, variables?: U) {
 	return send("https://gql.twitch.tv/gql", query, variables);
@@ -38,7 +55,14 @@ async function send<T, U>(url: string, query: TadaDocumentNode<T, U>, variables?
 		});
 
 		if (error) {
-			throw new ApiError(error.status, error.statusText);
+			throw new ApiError(error.status, error.message ?? error.statusText);
+		}
+
+		if (response.errors) {
+			throw new AggregateError(
+				response.errors.map((err) => new ApiError(400, err.message)),
+				"GraphQL request failed",
+			);
 		}
 
 		return response.data;

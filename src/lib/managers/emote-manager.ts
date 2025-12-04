@@ -4,9 +4,8 @@ import { app } from "$lib/app.svelte";
 import { transform7tvEmote, transformBttvEmote, transformFfzEmote } from "$lib/emotes";
 import type { BttvEmote, Emote, GlobalSet } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
-import { send7tv as send } from "$lib/graphql";
-import { emoteSetDetailsFragment } from "$lib/graphql/fragments";
-import { seventvGql as gql } from "$lib/graphql/function";
+import { send7tv } from "$lib/graphql";
+import { globalEmoteSetQuery } from "$lib/graphql/7tv";
 import { BaseEmoteManager } from "./base-emote-manager";
 
 export class EmoteManager extends BaseEmoteManager {
@@ -90,25 +89,14 @@ export class EmoteManager extends BaseEmoteManager {
 	 * Retrieves the list of global 7TV emotes.
 	 */
 	public override async fetch7tv() {
-		const { emoteSets } = await send(
-			gql(
-				`query {
-					emoteSets {
-						emoteSet(id: "01HKQT8EWR000ESSWF3625XCS4") {
-							...EmoteSetDetails
-						}
-					}
-				}`,
-				[emoteSetDetailsFragment],
-			),
-		);
+		const { emoteSets } = await send7tv(globalEmoteSetQuery);
 
-		const emotes = emoteSets.emoteSet!.emotes.items.map((item) =>
+		const emotes = emoteSets.global!.emotes.items.map((item) =>
 			transform7tvEmote(item.emote, item.alias),
 		);
 
-		app.emoteSets.set(emoteSets.emoteSet!.id, {
-			id: emoteSets.emoteSet!.id,
+		app.emoteSets.set(emoteSets.global!.id, {
+			id: emoteSets.global!.id,
 			name: "Global: 7TV",
 			owner: {
 				id: "7tv_global",
