@@ -4,6 +4,7 @@
 	import * as RadioGroup from "$lib/components/ui/radio-group";
 	import { Slider } from "$lib/components/ui/slider";
 	import { Switch } from "$lib/components/ui/switch";
+	import { settings } from "$lib/settings";
 	import FieldControl from "./FieldControl.svelte";
 	import type { BaseField, SettingsField } from "./types";
 
@@ -54,7 +55,7 @@
 			autocomplete="off"
 			disabled={field.disabled?.()}
 			placeholder={field.placeholder}
-			bind:value={field.binding.get, field.binding.set}
+			bind:value={settings.state[field.id]}
 		/>
 
 		{@render description(field.description)}
@@ -66,7 +67,7 @@
 		<RadioGroup.Root
 			id={field.id}
 			disabled={field.disabled?.()}
-			bind:value={field.binding.get, field.binding.set}
+			bind:value={settings.state[field.id]}
 		>
 			{#each field.items as option (option.value)}
 				<Field.Field orientation="horizontal">
@@ -93,14 +94,14 @@
 			max={field.max}
 			step={field.step}
 			disabled={field.disabled?.()}
-			bind:value={field.binding.get, field.binding.set}
+			bind:value={settings.state[field.id]}
 		/>
 	</Field.Field>
 {:else if field.type === "switch"}
 	<Field.Field orientation="horizontal">
 		{@render content(field)}
 
-		<Switch id={field.id} bind:checked={field.binding.get, field.binding.set} />
+		<Switch id={field.id} bind:checked={settings.state[field.id]} />
 	</Field.Field>
 {/if}
 

@@ -2,7 +2,6 @@ import Monitor from "~icons/ph/monitor";
 import { settings } from "$lib/settings";
 import Theme from "../custom/Theme.svelte";
 import type { SettingsCategory } from "../types";
-import { bind } from "./util";
 
 export default {
 	order: 10,
@@ -10,7 +9,7 @@ export default {
 	icon: Monitor,
 	fields: [
 		{
-			id: "theme",
+			id: "appearance.theme",
 			type: "custom",
 			label: "Theme",
 			component: Theme,
@@ -20,16 +19,12 @@ export default {
 			label: "Timestamps",
 			fields: [
 				{
-					id: "show-timestamps",
+					id: "appearance.timestamps.show",
 					type: "switch",
 					label: "Show timestamps next to messages",
-					binding: bind(
-						() => settings.state.appearance.timestamps.show,
-						(v) => (settings.state.appearance.timestamps.show = v),
-					),
 				},
 				{
-					id: "timestamp-format",
+					id: "appearance.timestamps.format",
 					type: "radio",
 					label: "Format",
 					items: [
@@ -38,24 +33,16 @@ export default {
 						{ label: "24-hour", value: "24" },
 						{ label: "Custom", value: "custom" },
 					],
-					disabled: () => !settings.state.appearance.timestamps.show,
-					binding: bind(
-						() => settings.state.appearance.timestamps.format,
-						(v) => (settings.state.appearance.timestamps.format = v),
-					),
+					disabled: () => !settings.state["appearance.timestamps.show"],
 				},
 				{
-					id: "timestamp-format-custom",
+					id: "appearance.timestamps.customFormat",
 					type: "input",
 					label: "Custom format",
 					description:
 						'Formats use the same <a href="https://day.js.org/docs/en/display/format" target="_blank">tokens</a> as <a href="https://day.js.org/en" target="_blank">Day.js</a>. Localized formats are not enabled.',
 					placeholder: "e.g. HH:mm:ss",
-					disabled: () => settings.state.appearance.timestamps.format !== "custom",
-					binding: bind(
-						() => settings.state.appearance.timestamps.customFormat,
-						(v) => (settings.state.appearance.timestamps.customFormat = v),
-					),
+					disabled: () => settings.state["appearance.timestamps.format"] !== "custom",
 				},
 			],
 		},

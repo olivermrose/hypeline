@@ -14,15 +14,15 @@ export abstract class BaseEmoteManager extends SvelteMap<string, Emote> {
 	public async fetch() {
 		const promises: Promise<Emote[]>[] = [];
 
-		if (settings.state.chat.emotes.ffz) {
+		if (settings.state["chat.emotes.ffz"]) {
 			promises.push(this.fetchFfz());
 		}
 
-		if (settings.state.chat.emotes.bttv) {
+		if (settings.state["chat.emotes.bttv"]) {
 			promises.push(this.fetchBttv());
 		}
 
-		if (settings.state.chat.emotes.seventv) {
+		if (settings.state["chat.emotes.seventv"]) {
 			promises.push(this.fetch7tv());
 		}
 

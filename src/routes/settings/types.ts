@@ -1,9 +1,5 @@
 import type { Component } from "svelte";
-
-export interface Binding<T> {
-	get: () => T;
-	set: (value: T) => void;
-}
+import type { UserSettings } from "$lib/settings";
 
 interface GroupField {
 	type: "group";
@@ -12,14 +8,10 @@ interface GroupField {
 }
 
 export interface BaseField {
-	id: string;
+	id: keyof UserSettings | (string & {});
 	label: string;
 	description?: string;
 	disabled?: () => boolean;
-}
-
-interface BindableField extends BaseField {
-	binding: Binding<any>;
 }
 
 interface CustomField extends BaseField {
@@ -28,7 +20,7 @@ interface CustomField extends BaseField {
 	component: Component;
 }
 
-interface InputField extends BindableField {
+interface InputField extends BaseField {
 	type: "input";
 	placeholder?: string;
 }
@@ -38,12 +30,12 @@ interface RadioItem {
 	value: string;
 }
 
-interface RadioField extends BindableField {
+interface RadioField extends BaseField {
 	type: "radio";
 	items: RadioItem[];
 }
 
-interface SliderField extends BindableField {
+interface SliderField extends BaseField {
 	type: "slider";
 	thumbLabel?: string;
 	tickLabel?: string;
@@ -52,7 +44,7 @@ interface SliderField extends BindableField {
 	step?: number | number[];
 }
 
-interface SwitchField extends BindableField {
+interface SwitchField extends BaseField {
 	type: "switch";
 }
 

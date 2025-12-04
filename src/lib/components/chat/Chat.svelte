@@ -72,7 +72,7 @@
 
 <div
 	class="group/chat relative h-full"
-	data-scrollbar={settings.state.chat.scrollbar}
+	data-scrollbar={!settings.state["chat.hideScrollbar"]}
 	{@attach (element) => {
 		observer.observe(element);
 
@@ -131,11 +131,11 @@
 
 			{@const next = chat.messages.at(i + 1)}
 
-			{#if message === lastRead && next && settings.state.chat.newSeparator}
+			{#if message === lastRead && next && settings.state["chat.newSeparator"]}
 				<Separator class="text-red-400">New messages</Separator>
 			{/if}
 
-			{#if message.recent && !next?.recent && settings.state.chat.messages.history.separator}
+			{#if message.recent && !next?.recent && settings.state["chat.messages.history.separator"]}
 				<Separator class="text-red-400">Live messages</Separator>
 			{/if}
 		{/snippet}

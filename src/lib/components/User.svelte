@@ -39,7 +39,7 @@
 	});
 
 	function getMentionStyle() {
-		switch (settings.state.chat.usernames.mentionStyle) {
+		switch (settings.state["chat.usernames.mentionStyle"]) {
 			case "none":
 				return null;
 			case "colored":

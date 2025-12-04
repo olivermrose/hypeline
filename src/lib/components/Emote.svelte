@@ -20,7 +20,7 @@
 				{...props}
 				class="-my-2 inline-grid align-middle"
 				type="button"
-				style:padding="{settings.state.chat.emotes.padding}px"
+				style:padding="{settings.state['chat.emotes.padding']}px"
 			>
 				<img
 					class="col-start-1 row-start-1 object-contain"

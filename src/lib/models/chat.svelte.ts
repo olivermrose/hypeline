@@ -244,7 +244,7 @@ export class Chat {
 
 		if (
 			!elevated &&
-			settings.state.chat.messages.duplicateBypass &&
+			settings.state["chat.messages.duplicateBypass"] &&
 			this.history.at(-1) === message
 		) {
 			this.#bypassNext = !this.#bypassNext;

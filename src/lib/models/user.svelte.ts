@@ -149,7 +149,7 @@ export class User {
 	 * if the user doesn't have a color set.
 	 */
 	public get color() {
-		return settings.state.chat.usernames.readable ? makeReadable(this.#color) : this.#color;
+		return settings.state["chat.usernames.readable"] ? makeReadable(this.#color) : this.#color;
 	}
 
 	public set color(color: string) {
@@ -162,7 +162,7 @@ export class User {
 	public get style() {
 		const color = `color: ${this.color};`;
 
-		if (this.paint && settings.state.chat.usernames.paint) {
+		if (this.paint && settings.state["chat.usernames.paint"]) {
 			return `${this.paint.css}; ${color}`;
 		}
 
@@ -178,7 +178,7 @@ export class User {
 	 * parentheses.
 	 */
 	public get displayName() {
-		if (settings.state.chat.usernames.localized && this.localizedName) {
+		if (settings.state["chat.usernames.localized"] && this.localizedName) {
 			return `${this.localizedName} (${this.username})`;
 		}
 

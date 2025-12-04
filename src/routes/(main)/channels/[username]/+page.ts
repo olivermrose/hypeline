@@ -17,7 +17,7 @@ export async function load({ params, parent }) {
 		if (channel.joined) {
 			app.focused = channel;
 		} else {
-			if (settings.state.advanced.singleConnection) {
+			if (settings.state["advanced.singleConnection"]) {
 				await app.focused?.leave();
 			}
 
