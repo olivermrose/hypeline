@@ -25,7 +25,9 @@
 
 	const user = mention?.data.user ?? message.author;
 
+	let loading = $state(false);
 	let showAllBadges = $state(false);
+
 	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
 	function getMentionStyle() {
@@ -41,7 +43,11 @@
 </script>
 
 <Popover.Root
-	onOpenChange={async () => {
+	onOpenChange={async (open) => {
+		if (!open) return;
+
+		loading = true;
+
 		if (user.partial) {
 			await user.fetch();
 		}
@@ -49,6 +55,8 @@
 		if (!relationship) {
 			await user.fetchRelationship(message.channel.user.username);
 		}
+
+		loading = false;
 	}}
 >
 	{#if mention}
@@ -113,15 +121,21 @@
 			<div class="flex items-center gap-1">
 				<Cake class="mr-1 size-3" />
 
-				<time datetime={user.createdAt.toISOString()}>
-					{dayjs(user.createdAt).format("LL")}
-				</time>
+				{#if loading}
+					Loading...
+				{:else}
+					<time datetime={user.createdAt.toISOString()}>
+						{dayjs(user.createdAt).format("LL")}
+					</time>
+				{/if}
 			</div>
 
 			<div class="flex items-center gap-1">
 				<Heart class="mr-1 size-3" />
 
-				{#if relationship?.followedAt}
+				{#if loading}
+					Loading...
+				{:else if relationship?.followedAt}
 					<time datetime={relationship.followedAt.toISOString()}>
 						{dayjs(relationship.followedAt).format("LL")}
 					</time>
@@ -137,7 +151,9 @@
 					<Star class="mr-1 size-3" />
 				{/if}
 
-				{#if !relationship?.subscription.hidden && relationship?.subscription.months}
+				{#if loading}
+					Loading...
+				{:else if !relationship?.subscription.hidden && relationship?.subscription.months}
 					{@const { tier, type, months } = relationship.subscription}
 					{@const noun = `month${months > 1 ? "s" : ""}`}
 
