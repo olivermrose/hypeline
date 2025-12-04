@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 	import type { Snippet } from "svelte";
 	import DotsThreeCircle from "~icons/ph/dots-three-circle";
 	import Users from "~icons/ph/users-bold";
-	import { goto } from "$app/navigation";
+	import { createChannelMenu } from "$lib/menus/channel-menu";
 	import type { Channel } from "$lib/models/channel.svelte";
+	import { openMenu } from "$lib/util";
 	import GuestList from "./GuestList.svelte";
 	import * as Tooltip from "./ui/tooltip";
 
@@ -15,42 +15,6 @@
 	}
 
 	const { children, channel, collapsed }: Props = $props();
-
-	async function createMenu() {
-		const separator = await PredefinedMenuItem.new({
-			item: "Separator",
-		});
-
-		const joinItem = await MenuItem.new({
-			id: "join",
-			text: "Join",
-			enabled: !channel.joined,
-			async action() {
-				await goto(`/channels/${channel.user.username}`);
-			},
-		});
-
-		const leaveItem = await MenuItem.new({
-			id: "leave",
-			text: "Leave",
-			enabled: channel.joined,
-			async action() {
-				await channel.leave();
-				await goto("/");
-			},
-		});
-
-		return Menu.new({
-			items: [joinItem, separator, leaveItem],
-		});
-	}
-
-	async function openContextMenu(event: MouseEvent) {
-		event.preventDefault();
-
-		const menu = await createMenu();
-		await menu.popup();
-	}
 </script>
 
 <Tooltip.Root>
@@ -59,7 +23,7 @@
 			<div
 				{...props}
 				class="hover:bg-accent relative flex items-center gap-2 rounded-lg p-1.5 transition-colors"
-				oncontextmenu={openContextMenu}
+				oncontextmenu={(event) => openMenu(event, () => createChannelMenu(channel))}
 			>
 				<a
 					class="absolute inset-0 z-10"

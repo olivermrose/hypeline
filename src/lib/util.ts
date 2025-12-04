@@ -1,3 +1,4 @@
+import type { Menu } from "@tauri-apps/api/menu";
 import chroma from "chroma-js";
 import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
@@ -153,4 +154,11 @@ export function dedupe<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
 	requests.set(key, promise);
 
 	return promise;
+}
+
+export async function openMenu(event: MouseEvent, menufn: () => Promise<Menu>) {
+	event.preventDefault();
+
+	const menu = await menufn();
+	await menu.popup();
 }
