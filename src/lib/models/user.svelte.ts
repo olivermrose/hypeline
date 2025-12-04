@@ -136,9 +136,9 @@ export class User {
 		this.affiliated = data.roles?.isAffiliate ?? false;
 		this.partnered = data.roles?.isPartner ?? false;
 
-		this.bio = data.description ?? "";
-		this.avatarUrl = data.profileImageURL ?? "";
-		this.bannerUrl = data.bannerImageURL ?? "";
+		this.bio = $state(data.description ?? "");
+		this.avatarUrl = $state(data.profileImageURL ?? "");
+		this.bannerUrl = $state(data.bannerImageURL ?? "");
 
 		this.badge = $derived(app.u2b.get(this.id));
 		this.paint = $derived(app.u2p.get(this.id));

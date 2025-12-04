@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Popover } from "bits-ui";
+	import { Avatar, Popover } from "bits-ui";
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
-	import { onMount } from "svelte";
 	import Cake from "~icons/ph/cake-fill";
 	import Heart from "~icons/ph/heart-fill";
 	import StarOutline from "~icons/ph/star";
 	import Star from "~icons/ph/star-fill";
+	import UserIcon from "~icons/ph/user-bold";
 	import type { MentionNode } from "$lib/models/message/parse";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { User } from "$lib/models/user.svelte";
@@ -25,18 +25,26 @@
 
 	const user = mention?.data.user ?? message.author;
 
+	let loading = $state(false);
 	let showAllBadges = $state(false);
+
 	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
-	onMount(async () => {
-		if (user.partial) {
-			await user.fetch();
-		}
+	async function fetchInfo() {
+		try {
+			loading = true;
 
-		if (!relationship) {
-			await user.fetchRelationship(message.channel.user.username);
+			if (user.partial) {
+				await user.fetch();
+			}
+
+			if (!relationship) {
+				await user.fetchRelationship(message.channel.user.username);
+			}
+		} finally {
+			loading = false;
 		}
-	});
+	}
 
 	function getMentionStyle() {
 		switch (settings.state["chat.usernames.mentionStyle"]) {
@@ -50,7 +58,11 @@
 	}
 </script>
 
-<Popover.Root>
+<Popover.Root
+	onOpenChange={async (open) => {
+		if (open) await fetchInfo();
+	}}
+>
 	{#if mention}
 		<Popover.Trigger
 			class="font-semibold wrap-break-word disabled:cursor-default"
@@ -97,27 +109,37 @@
 	</div>
 
 	<div class="relative border-t p-4">
-		<div class="-mt-14">
-			<img
-				class="border-popover bg-popover size-20 rounded-full border-4 text-sm"
-				src={user.avatarUrl}
-				alt={user.displayName}
-			/>
-		</div>
+		<Avatar.Root class="-mt-14">
+			<div
+				class="border-popover bg-primary flex size-20 items-center justify-center overflow-hidden rounded-full border-4"
+			>
+				<Avatar.Image src={user.avatarUrl} alt={user.displayName} />
+
+				<Avatar.Fallback>
+					<UserIcon class="text-primary-foreground size-10" />
+				</Avatar.Fallback>
+			</div>
+		</Avatar.Root>
 
 		<div class="text-muted-foreground absolute top-2 right-2 space-y-1 text-xs">
 			<div class="flex items-center gap-1">
 				<Cake class="mr-1 size-3" />
 
-				<time datetime={user.createdAt.toISOString()}>
-					{dayjs(user.createdAt).format("LL")}
-				</time>
+				{#if loading}
+					Loading...
+				{:else}
+					<time datetime={user.createdAt.toISOString()}>
+						{dayjs(user.createdAt).format("LL")}
+					</time>
+				{/if}
 			</div>
 
 			<div class="flex items-center gap-1">
 				<Heart class="mr-1 size-3" />
 
-				{#if relationship?.followedAt}
+				{#if loading}
+					Loading...
+				{:else if relationship?.followedAt}
 					<time datetime={relationship.followedAt.toISOString()}>
 						{dayjs(relationship.followedAt).format("LL")}
 					</time>
@@ -133,7 +155,9 @@
 					<Star class="mr-1 size-3" />
 				{/if}
 
-				{#if !relationship?.subscription.hidden && relationship?.subscription.months}
+				{#if loading}
+					Loading...
+				{:else if !relationship?.subscription.hidden && relationship?.subscription.months}
 					{@const { tier, type, months } = relationship.subscription}
 					{@const noun = `month${months > 1 ? "s" : ""}`}
 
