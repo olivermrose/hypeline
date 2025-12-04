@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { Popover } from "bits-ui";
+	import { Avatar, Popover } from "bits-ui";
 	import dayjs from "dayjs";
 	import localizedFormat from "dayjs/plugin/localizedFormat";
 	import Cake from "~icons/ph/cake-fill";
 	import Heart from "~icons/ph/heart-fill";
 	import StarOutline from "~icons/ph/star";
 	import Star from "~icons/ph/star-fill";
+	import UserIcon from "~icons/ph/user-bold";
 	import type { MentionNode } from "$lib/models/message/parse";
 	import { UserMessage } from "$lib/models/message/user-message";
 	import { User } from "$lib/models/user.svelte";
@@ -96,13 +97,17 @@
 	</div>
 
 	<div class="relative border-t p-4">
-		<div class="-mt-14">
-			<img
-				class="border-popover bg-popover size-20 rounded-full border-4 text-sm"
-				src={user.avatarUrl}
-				alt={user.displayName}
-			/>
-		</div>
+		<Avatar.Root class="-mt-14">
+			<div
+				class="border-popover bg-primary flex size-20 items-center justify-center overflow-hidden rounded-full border-4"
+			>
+				<Avatar.Image src={user.avatarUrl} alt={user.displayName} />
+
+				<Avatar.Fallback>
+					<UserIcon class="text-primary-foreground size-10" />
+				</Avatar.Fallback>
+			</div>
+		</Avatar.Root>
 
 		<div class="text-muted-foreground absolute top-2 right-2 space-y-1 text-xs">
 			<div class="flex items-center gap-1">
