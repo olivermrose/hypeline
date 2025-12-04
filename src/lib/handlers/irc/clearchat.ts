@@ -37,7 +37,7 @@ export default defineHandler({
 			};
 
 			if (!data.is_recent && target.id === app.user?.id) {
-				app.user.banned = true;
+				app.user.banned.add(channel.id);
 				message.context = { type: "banned" };
 			}
 		} else {

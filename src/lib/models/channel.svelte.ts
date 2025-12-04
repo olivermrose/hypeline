@@ -131,7 +131,7 @@ export class Channel {
 			settings.state.lastJoined = null;
 
 			if (app.user) {
-				app.user.banned = false;
+				app.user.banned.delete(this.id);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ export class Channel {
 		await invoke("rejoin", { channel: this.user.username });
 
 		if (app.user) {
-			app.user.banned = false;
+			app.user.banned.delete(this.id);
 		}
 	}
 

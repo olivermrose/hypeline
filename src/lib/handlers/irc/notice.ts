@@ -40,7 +40,7 @@ export default defineHandler({
 
 			case "msg_banned": {
 				if (app.user) {
-					app.user.banned = true;
+					app.user.banned.add(channel.id);
 				}
 
 				message.context = { type: "banned" };

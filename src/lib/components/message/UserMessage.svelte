@@ -90,7 +90,7 @@
 	aria-disabled={message.deleted}
 	oncontextmenu={(event) => openMenu(event, () => createMessageMenu(message))}
 >
-	{#if !message.deleted && !app.user?.banned}
+	{#if !message.deleted && !app.user?.banned.has(message.channel.id)}
 		<QuickActions
 			class="absolute top-0 right-2 -translate-y-1/2 not-group-hover:hidden"
 			{message}
