@@ -1,7 +1,7 @@
 import { SvelteMap } from "svelte/reactivity";
 import { ApiError } from "$lib/errors/api-error";
 import { ErrorMessage } from "$lib/errors/messages";
-import { userQuery } from "$lib/graphql/queries";
+import { userQuery } from "$lib/graphql/twitch";
 import { User } from "$lib/models/user.svelte";
 import type { TwitchClient } from "$lib/twitch/client";
 

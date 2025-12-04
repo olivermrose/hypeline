@@ -7,7 +7,7 @@ import { ChannelManager } from "./managers/channel-manager";
 import { EmoteManager } from "./managers/emote-manager";
 import { TwitchClient } from "./twitch/client";
 import type { EmoteSet } from "./emotes";
-import type { Badge } from "./graphql/fragments";
+import type { Badge } from "./graphql/twitch";
 import type { Channel } from "./models/channel.svelte";
 import type { CurrentUser } from "./models/current-user.svelte";
 import type { DispatchPayload, Paint } from "./seventv";

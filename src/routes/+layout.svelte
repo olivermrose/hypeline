@@ -17,6 +17,12 @@
 
 	addEventListener("unhandledrejection", (event) => {
 		log.error(`Unhandled promise rejection: ${event.reason}`);
+
+		if (event.reason instanceof AggregateError) {
+			for (const error of event.reason.errors) {
+				log.error(`\t- ${error.message}`);
+			}
+		}
 	});
 </script>
 

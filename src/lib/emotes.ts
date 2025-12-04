@@ -1,4 +1,4 @@
-import type { FragmentOf } from "gql.tada";
+import type { Emote as SevenTvEmote } from "./graphql/7tv";
 import type { User } from "./models/user.svelte";
 
 export type EmoteProvider = "Twitch" | "FrankerFaceZ" | "BetterTTV" | "7TV";
@@ -91,8 +91,6 @@ export interface BttvEmote {
 	width?: number;
 	height?: number;
 }
-
-export type SevenTvEmote = FragmentOf<typeof import("$lib/graphql/fragments").emoteDetailsFragment>;
 
 export function transformFfzEmote(emote: FfzEmote): Emote {
 	return {

@@ -1,7 +1,7 @@
 import { parse as parseTld } from "tldts";
 import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
-import type { CheermoteTier } from "$lib/graphql/fragments";
+import type { CheermoteTier } from "$lib/graphql/twitch";
 import type { Range } from "$lib/twitch/irc";
 import type { User } from "../user.svelte";
 import type { UserMessage } from "./user-message";

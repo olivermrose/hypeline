@@ -5,8 +5,8 @@
 	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
-	import { suggestionsQuery } from "$lib/graphql/queries";
-	import type { SearchSuggestionChannel } from "$lib/graphql/queries";
+	import { searchSuggestionsQuery } from "$lib/graphql/twitch";
+	import type { ChannelSuggestion } from "$lib/graphql/twitch";
 	import { debounce } from "$lib/util";
 	import { Button } from "./ui/button";
 	import * as Dialog from "./ui/dialog";
@@ -24,7 +24,7 @@
 	let loading = $state(false);
 	let value = $state("");
 	let error = $state<string | null>(null);
-	let suggestions = $state<SearchSuggestionChannel[]>([]);
+	let suggestions = $state<ChannelSuggestion[]>([]);
 
 	const suggest = debounce(search, 300);
 
@@ -42,7 +42,7 @@
 
 		if (!query) return;
 
-		const { searchSuggestions } = await app.twitch.send(suggestionsQuery, { query });
+		const { searchSuggestions } = await app.twitch.send(searchSuggestionsQuery, { query });
 
 		for (const edge of searchSuggestions?.edges ?? []) {
 			if (edge.node.content?.__typename !== "SearchSuggestionChannel") {

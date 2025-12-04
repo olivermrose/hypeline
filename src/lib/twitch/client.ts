@@ -1,11 +1,11 @@
 import * as cache from "tauri-plugin-cache-api";
 import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch as send } from "$lib/graphql";
-import { globalBadgesQuery } from "$lib/graphql/queries";
+import { globalBadgesQuery } from "$lib/graphql/twitch";
 import { UserManager } from "$lib/managers/user-manager";
 import { Stream } from "$lib/models/stream.svelte";
 import { dedupe } from "$lib/util";
-import type { Badge } from "../graphql/fragments";
+import type { Badge } from "../graphql/twitch";
 import type { Stream as HelixStream } from "./api";
 
 type QueryParams = Record<string, string | number | (string | number)[]>;

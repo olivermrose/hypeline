@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { app } from "$lib/app.svelte";
-	import type { Badge } from "$lib/graphql/fragments";
+	import type { Badge } from "$lib/graphql/twitch";
 	import type { LinkNode } from "$lib/models/message/parse";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { settings } from "$lib/settings";

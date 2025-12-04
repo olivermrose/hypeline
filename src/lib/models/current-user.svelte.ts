@@ -4,14 +4,9 @@ import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import { transform7tvEmote } from "$lib/emotes";
 import type { Emote, EmoteSet } from "$lib/emotes";
-import { send7tv as send } from "$lib/graphql";
-import {
-	emoteSetDetailsFragment,
-	guestStarDetailsFragment,
-	streamDetailsFragment,
-	userDetailsFragment,
-} from "$lib/graphql/fragments";
-import { seventvGql, twitchGql } from "$lib/graphql/function";
+import { send7tv } from "$lib/graphql";
+import { userEmoteSetsQuery } from "$lib/graphql/7tv";
+import { userFollowingQuery } from "$lib/graphql/twitch";
 import type { UserEmote } from "$lib/twitch/api";
 import { User } from "./user.svelte";
 import type { Whisper } from "./whisper.svelte";
@@ -78,53 +73,13 @@ export class CurrentUser extends User {
 	 * Retrieves the list of channels the current user is following.
 	 */
 	public async fetchFollowing() {
-		const { user } = await this.client.send(
-			twitchGql(
-				`query GetUserFollowing($id: ID!) {
-					user(id: $id) {
-						follows(first: 100) {
-							edges {
-								node {
-									...UserDetails
-									channel {
-										...GuestStarDetails
-									}
-									stream {
-										...StreamDetails
-									}
-								}
-							}
-						}
-					}
-				}`,
-				[userDetailsFragment, guestStarDetailsFragment, streamDetailsFragment],
-			),
-			{ id: this.id },
-		);
+		const { user } = await this.client.send(userFollowingQuery, { id: this.id });
 
 		return user?.follows?.edges?.flatMap((edge) => (edge?.node ? [edge.node] : [])) ?? [];
 	}
 
 	async #fetch7tvSets() {
-		const { users } = await send(
-			seventvGql(
-				`query GetUserEmoteSets($id: String!) {
-					users {
-						userByConnection(platform: TWITCH, platformId: $id) {
-							id
-							personalEmoteSet {
-								...EmoteSetDetails
-							}
-							specialEmoteSets {
-								...EmoteSetDetails
-							}
-						}
-					}
-				}`,
-				[emoteSetDetailsFragment],
-			),
-			{ id: this.id },
-		);
+		const { users } = await send7tv(userEmoteSetsQuery, { id: this.id });
 
 		this.seventvId = users.userByConnection?.id ?? null;
 

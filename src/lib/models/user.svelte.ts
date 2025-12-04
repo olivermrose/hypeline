@@ -3,10 +3,8 @@ import { SvelteMap } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
-import { badgeDetailsFragment } from "$lib/graphql/fragments";
-import type { Badge } from "$lib/graphql/fragments";
-import { twitchGql as gql } from "$lib/graphql/function";
-import type { User as ApiUser } from "$lib/graphql/queries";
+import { userBadgesQuery } from "$lib/graphql/twitch";
+import type { User as ApiUser, Badge } from "$lib/graphql/twitch";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
 import type { SubscriptionAge } from "$lib/twitch/api";
@@ -224,19 +222,7 @@ export class User {
 		const rel = this.relationships.get(channel);
 		if (rel) return rel;
 
-		const gqlRequest = this.client.send(
-			gql(
-				`query GetUserBadges($user: String!, $channel: String!) {
-					channelViewer(userLogin: $user, channelLogin: $channel) {
-						earnedBadges {
-							...BadgeDetails
-						}
-					}
-				}`,
-				[badgeDetailsFragment],
-			),
-			{ user: this.username, channel },
-		);
+		const gqlRequest = this.client.send(userBadgesQuery, { user: this.username, channel });
 
 		const params = `${this.username}/${channel}`;
 		const ivrRequest = dedupe(`ivr:${params}`, () =>
