@@ -1,10 +1,12 @@
 <script lang="ts">
 	import ArrowBendUpRight from "~icons/ph/arrow-bend-up-right";
 	import { app } from "$lib/app.svelte";
+	import { createMessageMenu } from "$lib/menus/message-menu";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
 	import type { HighlightType } from "$lib/settings";
+	import { openMenu } from "$lib/util";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
 	import QuickActions from "./QuickActions.svelte";
@@ -82,7 +84,12 @@
 	}
 </script>
 
-<div class="group relative aria-disabled:opacity-50" aria-disabled={message.deleted}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	class="group relative aria-disabled:opacity-50"
+	aria-disabled={message.deleted}
+	oncontextmenu={(event) => openMenu(event, () => createMessageMenu(message))}
+>
 	{#if !message.deleted && !app.user?.banned}
 		<QuickActions
 			class="absolute top-0 right-2 -translate-y-1/2 not-group-hover:hidden"
