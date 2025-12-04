@@ -17,6 +17,17 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
+	const remove = await MenuItem.new({
+		id: "remove",
+		text: "Remove",
+		enabled: channel.ephemeral,
+		async action() {
+			await channel.leave();
+			app.channels.delete(channel.id);
+			await goto("/");
+		},
+	});
+
 	const leave = await MenuItem.new({
 		id: "leave",
 		text: "Leave",
@@ -31,6 +42,6 @@ export async function createChannelMenu(channel: Channel) {
 	});
 
 	return Menu.new({
-		items: [join, separator, leave],
+		items: [join, leave, separator, remove],
 	});
 }

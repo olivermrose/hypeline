@@ -133,10 +133,6 @@ export class Channel {
 			if (app.user) {
 				app.user.banned = false;
 			}
-
-			if (this.ephemeral) {
-				app.channels.delete(this.id);
-			}
 		}
 	}
 
