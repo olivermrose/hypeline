@@ -133,7 +133,7 @@
 </script>
 
 <Popover.Root>
-	<Popover.Trigger disabled={app.user?.banned} aria-label="Open emote picker">
+	<Popover.Trigger disabled={app.user?.banned.has(channel.id)} aria-label="Open emote picker">
 		{#snippet child({ props })}
 			<InputGroup.Button class="size-9" size="icon-sm" {...props}>
 				<Smiley />

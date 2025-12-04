@@ -26,6 +26,7 @@
 	let historyIdx = $state(-1);
 	let error = $state<string>("");
 
+	const banned = $derived(app.user?.banned.has(chat.channel.id) ?? false);
 	const showSuggestions = $derived(!!completer?.suggestions.length && completer.prefixed);
 
 	$effect(() => {
@@ -168,9 +169,9 @@
 			type="text"
 			autocapitalize="off"
 			autocorrect="off"
-			disabled={app.user?.banned}
+			disabled={banned}
 			maxlength={500}
-			placeholder={app.user?.banned ? "You are banned from the channel" : "Send a message"}
+			placeholder={banned ? "You are banned from the channel" : "Send a message"}
 			oninput={() => completer?.search()}
 			onkeydown={send}
 			onmousedown={() => completer?.reset()}

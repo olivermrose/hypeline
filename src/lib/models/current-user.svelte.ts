@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { SvelteMap } from "svelte/reactivity";
+import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { app } from "$lib/app.svelte";
 import { transform7tvEmote } from "$lib/emotes";
 import type { Emote, EmoteSet } from "$lib/emotes";
@@ -13,7 +13,11 @@ import type { Whisper } from "./whisper.svelte";
 
 export class CurrentUser extends User {
 	public seventvId: string | null = null;
-	public banned = $state(false);
+
+	/**
+	 * The ids of the channels the current user is banned from.
+	 */
+	public readonly banned = new SvelteSet<string>();
 
 	/**
 	 * The ids of the channels the current user moderates for.
