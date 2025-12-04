@@ -57,7 +57,7 @@ export class Channel {
 	/**
 	 * Whether the channel is ephemeral.
 	 */
-	public ephemeral = false;
+	public ephemeral = $state(false);
 
 	/**
 	 * The id of the active 7TV emote set for the channel if any.
