@@ -15,19 +15,19 @@ jobs:
       matrix:
         include:
           - os: 'macos-latest'
-            args: '--target aarch64-apple-darwin --bundle dmg'
+            args: '--target aarch64-apple-darwin --bundles dmg'
             target: 'aarch64-apple-darwin'
           - os: 'macos-latest'
-            args: '--target x86_64-apple-darwin --bundle dmg'
+            args: '--target x86_64-apple-darwin --bundles dmg'
             target: 'x86_64-apple-darwin'
           - os: 'ubuntu-22.04'
-            args: '--target x86_64-unknown-linux-gnu --bundle appimage,deb'
+            args: '--target x86_64-unknown-linux-gnu --bundles appimage,deb'
             target: 'x86_64-unknown-linux-gnu'
           - os: 'windows-latest'
-            args: '--target aarch64-pc-windows-msvc --bundle nsis'
+            args: '--target aarch64-pc-windows-msvc --bundles nsis'
             target: 'aarch64-pc-windows-msvc'
           - os: 'windows-latest'
-            args: '--target x86_64-pc-windows-msvc --bundle nsis'
+            args: '--target x86_64-pc-windows-msvc --bundles nsis'
             target: 'x86_64-pc-windows-msvc'
 
     runs-on: ${{ matrix.os }}
