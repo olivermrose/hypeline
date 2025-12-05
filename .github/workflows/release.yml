@@ -15,15 +15,15 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest'
-            args: '--target aarch64-apple-darwin'
+            args: '--target aarch64-apple-darwin --bundle dmg'
           - platform: 'macos-latest'
-            args: '--target x86_64-apple-darwin'
+            args: '--target x86_64-apple-darwin --bundle dmg'
           - platform: 'ubuntu-22.04'
-            args: ''
+            args: '--bundle appimage,deb'
           - platform: 'ubuntu-22.04-arm'
-            args: ''
+            args: '--bundle appimage,deb'
           - platform: 'windows-latest'
-            args: ''
+            args: '--bundle nsis'
 
     runs-on: ${{ matrix.platform }}
     steps:
