@@ -14,13 +14,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest'
+          - os: 'macos-latest'
             args: '--target aarch64-apple-darwin --bundle dmg'
             target: 'aarch64-apple-darwin'
-          - platform: 'macos-latest'
+          - os: 'macos-latest'
             args: '--target x86_64-apple-darwin --bundle dmg'
             target: 'x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04'
+          - os: 'ubuntu-22.04'
             args: '--target x86_64-unknown-linux-gnu --bundle appimage,deb'
             target: 'x86_64-unknown-linux-gnu'
           - os: 'windows-latest'
@@ -30,12 +30,12 @@ jobs:
             args: '--target x86_64-pc-windows-msvc --bundle nsis'
             target: 'x86_64-pc-windows-msvc'
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies (Ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf pkg-config libssl-dev gcc-aarch64-linux-gnu
