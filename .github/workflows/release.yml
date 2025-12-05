@@ -16,14 +16,19 @@ jobs:
         include:
           - platform: 'macos-latest'
             args: '--target aarch64-apple-darwin --bundle dmg'
+            target: 'aarch64-apple-darwin'
           - platform: 'macos-latest'
             args: '--target x86_64-apple-darwin --bundle dmg'
+            target: 'x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: '--bundle appimage,deb'
-          - platform: 'ubuntu-22.04-arm'
-            args: '--bundle appimage,deb'
-          - platform: 'windows-latest'
-            args: '--bundle nsis'
+            args: '--target x86_64-unknown-linux-gnu --bundle appimage,deb'
+            target: 'x86_64-unknown-linux-gnu'
+          - os: 'windows-latest'
+            args: '--target aarch64-pc-windows-msvc --bundle nsis'
+            target: 'aarch64-pc-windows-msvc'
+          - os: 'windows-latest'
+            args: '--target x86_64-pc-windows-msvc --bundle nsis'
+            target: 'x86_64-pc-windows-msvc'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -48,7 +53,7 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly
         with:
           toolchain: nightly-2025-07-01
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.target }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
