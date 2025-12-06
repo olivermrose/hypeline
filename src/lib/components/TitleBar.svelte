@@ -4,6 +4,7 @@
 	import { platform as getPlatform } from "@tauri-apps/plugin-os";
 	import { onDestroy, onMount } from "svelte";
 	import type { HTMLButtonAttributes } from "svelte/elements";
+	import Logo from "~icons/local/logo";
 	import ArrowLeft from "~icons/ph/arrow-left";
 	import ArrowRight from "~icons/ph/arrow-right";
 	import Gear from "~icons/ph/gear";
@@ -23,7 +24,7 @@
 
 	let maximized = $state(false);
 	const { icon, title, guests } = $derived(
-		page.data.titleBar ?? { icon: "/favicon.png", title: "Hyperion" },
+		page.data.titleBar ?? { icon: Logo, title: "Hyperion" },
 	);
 
 	onMount(async () => {

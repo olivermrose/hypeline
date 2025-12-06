@@ -1,8 +1,9 @@
 import "unplugin-icons/types/svelte";
 import type { Component } from "svelte";
+import type { SVGAttributes } from "svelte/elements";
 
 interface TitleBar {
-	icon: string | Component;
+	icon: string | Component<SVGAttributes<SVGElement>>;
 	title: string;
 	guests?: number;
 }

@@ -60,7 +60,7 @@
 	onDestroy(() => unlisten?.());
 </script>
 
-<img class="size-14" src="/favicon.png" alt="Hyperion logo" />
+<img class="size-16" src="/logo.svg" alt="Hyperion logo" />
 
 <div class="space-y-2">
 	<h1 class="text-4xl font-semibold">Hyperion</h1>
