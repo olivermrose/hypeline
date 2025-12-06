@@ -12,11 +12,11 @@ use message::ServerMessage;
 use tauri::ipc::Channel;
 use tauri::{State, async_runtime};
 use tokio::sync::Mutex;
-use tracing::Instrument;
 
 use crate::AppState;
 use crate::api::get_access_token;
 use crate::error::Error as AppError;
+use crate::irc::message::IrcMessage;
 
 #[tracing::instrument(skip_all)]
 #[tauri::command]
@@ -37,16 +37,15 @@ pub async fn connect_irc(
 
     let (mut incoming, client) = IrcClient::new(config);
 
-    async_runtime::spawn(
-        async move {
-            while let Some(message) = incoming.recv().await {
-                tracing::trace!(?message, "Received {} message", message.raw().command);
+    async_runtime::spawn(async move {
+        while let Some(message) = incoming.recv().await {
+            let IrcMessage { tags, command, .. } = message.raw();
 
-                channel.send(message).unwrap();
-            }
+            tracing::trace!(?tags, "Received {command} message");
+
+            channel.send(message).unwrap();
         }
-        .in_current_span(),
-    );
+    });
 
     client.connect().await;
     guard.irc = Some(client);
