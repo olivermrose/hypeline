@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Field from "$lib/components/ui/field";
 	import { Input } from "$lib/components/ui/input";
+	import * as NativeSelect from "$lib/components/ui/native-select";
 	import * as RadioGroup from "$lib/components/ui/radio-group";
 	import { Slider } from "$lib/components/ui/slider";
 	import { Switch } from "$lib/components/ui/switch";
@@ -80,6 +81,22 @@
 			{/each}
 		</RadioGroup.Root>
 	</Field.Set>
+{:else if field.type === "select"}
+	<Field.Field>
+		<Field.Label for={field.id}>{field.label}</Field.Label>
+
+		<div class="max-w-52 *:data-[slot=native-select-wrapper]:w-full">
+			<NativeSelect.Root bind:value={settings.state[field.id]}>
+				{#each field.items as item (item.value)}
+					<NativeSelect.Option value={item.value}>
+						{item.label}
+					</NativeSelect.Option>
+				{/each}
+			</NativeSelect.Root>
+		</div>
+
+		{@render description(field.description)}
+	</Field.Field>
 {:else if field.type === "slider"}
 	<Field.Field>
 		{@render content(field)}

@@ -25,14 +25,19 @@ interface InputField extends BaseField {
 	placeholder?: string;
 }
 
-interface RadioItem {
+interface ChoiceItem {
 	label: string;
 	value: string;
 }
 
 interface RadioField extends BaseField {
 	type: "radio";
-	items: RadioItem[];
+	items: ChoiceItem[];
+}
+
+interface SelectField extends BaseField {
+	type: "select";
+	items: ChoiceItem[];
 }
 
 interface SliderField extends BaseField {
@@ -53,6 +58,7 @@ export type SettingsField =
 	| CustomField
 	| InputField
 	| RadioField
+	| SelectField
 	| SliderField
 	| SwitchField;
 

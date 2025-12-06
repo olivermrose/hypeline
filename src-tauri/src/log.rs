@@ -1,15 +1,16 @@
 use serde::Deserialize;
-use tauri::{App, Manager};
+use tauri::{App, Manager, State};
 use time::UtcOffset;
 use time::macros::format_description;
-use tracing_appender::non_blocking::WorkerGuard;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::fmt::time::OffsetTime;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::{EnvFilter, Layer, fmt};
+use tracing_subscriber::{EnvFilter, Layer, Registry, fmt, reload};
 
-pub fn init_tracing(app: &App) -> WorkerGuard {
+type LogHandle = reload::Handle<EnvFilter, Registry>;
+
+pub fn init_tracing(app: &App) {
     let time_format = format_description!(
         "[year]-[month padding:zero]-[day padding:zero] [hour]:[minute]:[second].[subsecond digits:3]"
     );
@@ -35,11 +36,14 @@ pub fn init_tracing(app: &App) -> WorkerGuard {
 
     let (writer, guard) = tracing_appender::non_blocking(appender);
 
+    let (file_filter, reload_handle) =
+        reload::Layer::new(EnvFilter::new("hyperion_lib=info,webview=info"));
+
     let file_layer = fmt::layer()
         .with_ansi(false)
         .with_timer(timer.clone())
         .with_writer(writer)
-        .with_filter(EnvFilter::new("hyperion_lib=trace,webview=trace"));
+        .with_filter(file_filter);
 
     let io_layer = fmt::layer()
         .with_ansi(true)
@@ -52,7 +56,8 @@ pub fn init_tracing(app: &App) -> WorkerGuard {
         .with(io_layer)
         .init();
 
-    guard
+    app.manage(reload_handle);
+    app.manage(guard);
 }
 
 #[derive(Debug)]
@@ -79,6 +84,22 @@ impl<'de> Deserialize<'de> for LogLevel {
             "error" => Ok(LogLevel::Error),
             _ => unreachable!(),
         }
+    }
+}
+
+#[tauri::command]
+#[tracing::instrument(skip(handle))]
+pub fn update_log_level(level: LogLevel, handle: State<LogHandle>) {
+    let filter = match level {
+        LogLevel::Trace => "hyperion_lib=trace,webview=trace",
+        LogLevel::Debug => "hyperion_lib=debug,webview=debug",
+        LogLevel::Info => "hyperion_lib=info,webview=info",
+        LogLevel::Warn => "hyperion_lib=warn,webview=warn",
+        LogLevel::Error => "hyperion_lib=error,webview=error",
+    };
+
+    if let Err(err) = handle.reload(EnvFilter::new(filter)) {
+        tracing::error!(%err, "Failed to update log level");
     }
 }
 

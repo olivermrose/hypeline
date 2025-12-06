@@ -1,10 +1,16 @@
 <script lang="ts">
 	import "../app.css";
+	import { invoke } from "@tauri-apps/api/core";
 	import { ModeWatcher } from "mode-watcher";
 	import TitleBar from "$lib/components/TitleBar.svelte";
 	import { log } from "$lib/log";
+	import { settings } from "$lib/settings";
 
 	const { children } = $props();
+
+	$effect(() => {
+		invoke("update_log_level", { level: settings.state["advanced.logs.level"] });
+	});
 
 	addEventListener("error", (event) => {
 		if (event.message.startsWith("ResizeObserver loop")) {

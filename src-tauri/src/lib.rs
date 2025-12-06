@@ -88,7 +88,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
-            let log_guard = log::init_tracing(app);
+            log::init_tracing(app);
+
             let app_handle = app.handle();
 
             async_runtime::block_on(async {
@@ -116,7 +117,6 @@ pub fn run() {
             });
 
             app.manage(Mutex::new(state));
-            app.manage(log_guard);
             app.manage(system);
 
             Ok(())
@@ -162,6 +162,7 @@ fn get_handler() -> impl Fn(Invoke) -> bool {
         eventsub::connect_eventsub,
         irc::connect_irc,
         log::log,
+        log::update_log_level,
         server::start_server,
         seventv::connect_seventv,
         seventv::resub_emote_set,

@@ -58,6 +58,7 @@ export interface UserSettings {
 	"highlights.keywords": KeywordHighlightConfig[];
 
 	"advanced.singleConnection": boolean;
+	"advanced.logs.level": "error" | "warn" | "info" | "debug" | "trace";
 }
 
 interface Settings extends UserSettings {
@@ -106,6 +107,7 @@ export const defaults: Settings = {
 	"highlights.viewers": { ...defaultHighlightTypes },
 	"highlights.keywords": [],
 	"advanced.singleConnection": false,
+	"advanced.logs.level": "info",
 };
 
 export const settings = new RuneStore<Settings>("settings", defaults);
