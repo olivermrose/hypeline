@@ -76,7 +76,7 @@ export class Completer {
 
 	public tab(shift: boolean) {
 		// Ignore if in the middle of a word
-		if (this.#input.value.charAt(this.#input.selectionStart ?? 0).trim() !== "") {
+		if (this.chat.value.charAt(this.#input.selectionStart ?? 0).trim() !== "") {
 			return;
 		}
 
@@ -101,16 +101,16 @@ export class Completer {
 
 	public complete(reset = true) {
 		const suggestion = this.suggestions[this.current];
-		let end = this.#input.value.lastIndexOf(this.query);
+		let end = this.chat.value.lastIndexOf(this.query);
 
 		if (this.query.startsWith("@")) {
 			end++;
 		}
 
-		const left = this.#input.value.slice(0, end);
-		const right = this.#input.value.slice(end + this.query.length);
+		const left = this.chat.value.slice(0, end);
+		const right = this.chat.value.slice(end + this.query.length);
 
-		this.#input.value = `${left + suggestion.display} ${right.trim()}`;
+		this.chat.value = `${left + suggestion.display} ${right.trim()}`;
 		this.#input.focus();
 
 		const endPos = end + suggestion.display.length + 1;
@@ -124,7 +124,7 @@ export class Completer {
 	}
 
 	public search(tab = false) {
-		const text = this.#input.value;
+		const text = this.chat.value;
 		const cursor = this.#input.selectionStart ?? text.length;
 
 		const left = text.slice(0, cursor);

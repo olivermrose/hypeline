@@ -104,10 +104,10 @@
 	function appendEmote(name: string) {
 		if (!channel.chat.input) return;
 
-		if (channel.chat.input.value.length > 0) {
-			channel.chat.input.value += ` ${name}`;
+		if (channel.chat.value.length > 0) {
+			channel.chat.value += ` ${name}`;
 		} else {
-			channel.chat.input.value = name;
+			channel.chat.value = name;
 		}
 	}
 

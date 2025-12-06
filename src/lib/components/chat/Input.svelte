@@ -21,7 +21,6 @@
 	let anchor = $state<HTMLElement | null>(null);
 	let input = $state<HTMLInputElement | null>(null);
 	let completer = $state<Completer>();
-	let value = $state("");
 
 	let historyIdx = $state(-1);
 	let error = $state<string>("");
@@ -67,10 +66,10 @@
 					historyIdx--;
 				}
 
-				input.value = chat.history[historyIdx];
+				chat.value = chat.history[historyIdx];
 
 				setTimeout(() => {
-					input.setSelectionRange(input.value.length, input.value.length);
+					input.setSelectionRange(chat.value.length, chat.value.length);
 				}, 0);
 			}
 		} else if (event.key === "ArrowDown") {
@@ -82,13 +81,13 @@
 
 				if (historyIdx < chat.history.length - 1) {
 					historyIdx++;
-					input.value = chat.history[historyIdx];
+					chat.value = chat.history[historyIdx];
 				} else {
 					historyIdx = -1;
-					input.value = "";
+					chat.value = "";
 				}
 
-				input.setSelectionRange(input.value.length, input.value.length);
+				input.setSelectionRange(chat.value.length, chat.value.length);
 			}
 		} else if (event.key === "Enter") {
 			event.preventDefault();
@@ -96,10 +95,10 @@
 			if (showSuggestions) {
 				completer.complete();
 			} else {
-				const message = input.value.trim();
+				const message = chat.value.trim();
 
 				if (!message) return;
-				if (!event.ctrlKey) input.value = "";
+				if (!event.ctrlKey) chat.value = "";
 
 				historyIdx = -1;
 				chat.history.push(message);
@@ -176,7 +175,7 @@
 			onkeydown={send}
 			onmousedown={() => completer?.reset()}
 			{...rest}
-			bind:value
+			bind:value={chat.value}
 			bind:ref={input}
 		/>
 
@@ -187,7 +186,7 @@
 
 	<div class="flex items-center justify-between px-1">
 		<div class="text-muted-foreground text-xs tabular-nums">
-			<span class:text-foreground={value.length === 500}>{value.length}</span>
+			<span class:text-foreground={chat.value.length === 500}>{chat.value.length}</span>
 			/ 500
 		</div>
 

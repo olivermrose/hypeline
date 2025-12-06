@@ -60,7 +60,9 @@ export class Chat {
 	 * An array of messages the current user has sent in the chat.
 	 */
 	public history: string[] = [];
+
 	public input = $state<HTMLInputElement | null>(null);
+	public value = $state("");
 
 	/**
 	 * The message the current user is replying to if any.
