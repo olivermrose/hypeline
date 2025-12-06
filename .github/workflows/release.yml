@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: 'macos-latest'
+            args: '--target aarch64-apple-darwin --bundles dmg'
+            target: 'aarch64-apple-darwin'
+          - os: 'macos-latest'
+            args: '--target x86_64-apple-darwin --bundles dmg'
+            target: 'x86_64-apple-darwin'
+          - os: 'ubuntu-22.04'
+            args: '--bundles appimage,deb'
+            target: ''
+          - os: 'windows-latest'
+            args: '--target aarch64-pc-windows-msvc --bundles nsis'
+            target: 'aarch64-pc-windows-msvc'
+          - os: 'windows-latest'
+            args: '--target x86_64-pc-windows-msvc --bundles nsis'
+            target: 'x86_64-pc-windows-msvc'
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf pkg-config libssl-dev gcc-aarch64-linux-gnu
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: nightly-2025-07-01
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: v__VERSION__
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          assetNamePattern: '[name]-v[version]-[arch][ext]'
+          prerelease: false
+          args: ${{ matrix.args }}
