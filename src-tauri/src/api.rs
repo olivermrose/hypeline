@@ -210,7 +210,7 @@ pub async fn rejoin(state: State<'_, Mutex<AppState>>, channel: String) -> Resul
 
 #[tracing::instrument(skip_all)]
 #[tauri::command]
-pub async fn get_user_emotes(app_handle: AppHandle) {
+pub async fn fetch_user_emotes(app_handle: AppHandle) {
     async_runtime::spawn(
         async move {
             let state = app_handle.state::<Mutex<AppState>>();

@@ -39,7 +39,7 @@ export class CurrentUser extends User {
 	}
 
 	public async fetchEmoteSets() {
-		await invoke("get_user_emotes");
+		await invoke("fetch_user_emotes");
 		await this.#fetch7tvSets();
 
 		await listen<UserEmote[]>("useremotes", async (event) => {

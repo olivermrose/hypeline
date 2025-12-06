@@ -118,7 +118,7 @@ export class Channel {
 		if (settings.state["chat.messages.history.enabled"]) {
 			await invoke("fetch_recent_messages", {
 				channel: this.user.username,
-				historyLimit: settings.state["chat.messages.history.limit"],
+				limit: settings.state["chat.messages.history.limit"],
 			});
 		}
 	}
