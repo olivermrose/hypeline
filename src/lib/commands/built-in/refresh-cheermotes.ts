@@ -6,5 +6,7 @@ export default defineCommand({
 	description: "Refresh cheermotes for the channel",
 	async exec(_, channel) {
 		await channel.fetchCheermotes(true);
+
+		channel.chat.addSystemMessage("Refreshed cheermotes.");
 	},
 });

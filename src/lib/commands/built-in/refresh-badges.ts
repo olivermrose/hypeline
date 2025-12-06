@@ -16,5 +16,7 @@ export default defineCommand({
 
 		await channel.client.fetchBadges(includeGlobal);
 		await channel.fetchBadges(true);
+
+		channel.chat.addSystemMessage("Refreshed badges.");
 	},
 });
