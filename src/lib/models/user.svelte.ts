@@ -7,6 +7,7 @@ import { userBadgesQuery } from "$lib/graphql/twitch";
 import type { User as ApiUser, Badge } from "$lib/graphql/twitch";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
+import { COLORS } from "$lib/twitch";
 import type { SubscriptionAge } from "$lib/twitch/api";
 import type { TwitchClient } from "$lib/twitch/client";
 import { dedupe, makeReadable } from "$lib/util";
@@ -123,7 +124,12 @@ export class User {
 		public readonly client: TwitchClient,
 		readonly data: ApiUser,
 	) {
-		this.#color = data.chatColor || "inherit";
+		if (!data.chatColor && settings.state["chat.usernames.randomColor"]) {
+			this.#color = COLORS[Math.floor(Math.random() * COLORS.length)];
+		} else {
+			this.#color = data.chatColor || "inherit";
+		}
+
 		this.#displayName = data.displayName;
 
 		this.id = data.id;

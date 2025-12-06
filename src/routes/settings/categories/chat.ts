@@ -49,6 +49,13 @@ export default {
 						"Lightens or darkens the color of usernames based on the current theme. This does not apply to 7TV paints.",
 				},
 				{
+					id: "chat.usernames.randomColor",
+					type: "switch",
+					label: "Assign random colors",
+					description:
+						"Assign a random Twitch color to usernames that do not have a color set.",
+				},
+				{
 					id: "chat.usernames.paint",
 					type: "switch",
 					label: "Paint usernames",

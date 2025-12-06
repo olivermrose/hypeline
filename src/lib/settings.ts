@@ -41,6 +41,7 @@ export interface UserSettings {
 	"chat.embeds": boolean;
 	"chat.usernames.localized": boolean;
 	"chat.usernames.readable": boolean;
+	"chat.usernames.randomColor": boolean;
 	"chat.usernames.paint": boolean;
 	"chat.usernames.mentionStyle": "none" | "colored" | "painted";
 	"chat.emotes.ffz": boolean;
@@ -90,6 +91,7 @@ export const defaults: Settings = {
 	"chat.embeds": true,
 	"chat.usernames.localized": true,
 	"chat.usernames.readable": true,
+	"chat.usernames.randomColor": false,
 	"chat.usernames.paint": true,
 	"chat.usernames.mentionStyle": "painted",
 	"chat.emotes.ffz": true,
