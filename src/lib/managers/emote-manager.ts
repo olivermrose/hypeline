@@ -8,6 +8,35 @@ import { send7tv } from "$lib/graphql";
 import { globalEmoteSetQuery } from "$lib/graphql/7tv";
 import { BaseEmoteManager } from "./base-emote-manager";
 
+// Still want to find a better way to do this
+const GLOBAL_SETS = {
+	ffz: {
+		name: "Global: FrankerFaceZ",
+		owner: {
+			id: "ffz_global",
+			displayName: "FrankerFaceZ Global",
+			avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
+		},
+	},
+	bttv: {
+		name: "Global: BetterTTV",
+		owner: {
+			id: "bttv_global",
+			displayName: "BetterTTV Global",
+			avatarUrl: "https://betterttv.com/favicon.png",
+		},
+	},
+	seventv: {
+		name: "Global: 7TV",
+		owner: {
+			id: "7tv_global",
+			displayName: "7TV Global",
+			avatarUrl:
+				"https://cdn.discordapp.com/icons/817075418054000661/a_a629673a6f485a3db5f5e1724904b2ce.png",
+		},
+	},
+};
+
 export class EmoteManager extends BaseEmoteManager {
 	public override async fetch(force = false) {
 		let emotes = await cache.get<Emote[]>("global_emotes");
@@ -18,6 +47,21 @@ export class EmoteManager extends BaseEmoteManager {
 			emotes = await super.fetch();
 			await cache.set("global_emotes", emotes, { ttl: 7 * 24 * 60 * 60 });
 		} else {
+			this.#addGlobalSet(
+				GLOBAL_SETS.ffz,
+				emotes.filter((e) => e.provider === "FrankerFaceZ"),
+			);
+
+			this.#addGlobalSet(
+				GLOBAL_SETS.bttv,
+				emotes.filter((e) => e.provider === "BetterTTV"),
+			);
+
+			this.#addGlobalSet(
+				GLOBAL_SETS.seventv,
+				emotes.filter((e) => e.provider === "7TV"),
+			);
+
 			this.addAll(emotes);
 		}
 
@@ -39,19 +83,9 @@ export class EmoteManager extends BaseEmoteManager {
 		// 3 is the global set id
 		const emotes = data.sets[3].emoticons.map(transformFfzEmote);
 
-		app.emoteSets.set("ffz_global", {
-			id: "ffz_global",
-			name: "Global: FrankerFaceZ",
-			owner: {
-				id: "ffz_global",
-				displayName: "FrankerFaceZ Global",
-				avatarUrl: "https://www.frankerfacez.com/static/images/cover/zreknarf.png",
-			},
-			global: true,
-			emotes,
-		});
-
+		this.#addGlobalSet(GLOBAL_SETS.ffz, emotes);
 		this.addAll(emotes);
+
 		return emotes;
 	}
 
@@ -69,19 +103,9 @@ export class EmoteManager extends BaseEmoteManager {
 
 		const emotes = data.map(transformBttvEmote);
 
-		app.emoteSets.set("bttv_global", {
-			id: "bttv_global",
-			name: "Global: BetterTTV",
-			owner: {
-				id: "bttv_global",
-				displayName: "BetterTTV Global",
-				avatarUrl: "https://betterttv.com/favicon.png",
-			},
-			global: true,
-			emotes,
-		});
-
+		this.#addGlobalSet(GLOBAL_SETS.bttv, emotes);
 		this.addAll(emotes);
+
 		return emotes;
 	}
 
@@ -95,20 +119,19 @@ export class EmoteManager extends BaseEmoteManager {
 			transform7tvEmote(item.emote, item.alias),
 		);
 
-		app.emoteSets.set(emoteSets.global!.id, {
-			id: emoteSets.global!.id,
-			name: "Global: 7TV",
-			owner: {
-				id: "7tv_global",
-				displayName: "7TV Global",
-				avatarUrl:
-					"https://cdn.discordapp.com/icons/817075418054000661/a_a629673a6f485a3db5f5e1724904b2ce.png",
-			},
+		this.#addGlobalSet(GLOBAL_SETS.seventv, emotes);
+		this.addAll(emotes);
+
+		return emotes;
+	}
+
+	#addGlobalSet(set: (typeof GLOBAL_SETS)[keyof typeof GLOBAL_SETS], emotes: Emote[]) {
+		app.emoteSets.set(set.owner.id, {
+			id: set.owner.id,
+			name: set.name,
+			owner: set.owner,
 			global: true,
 			emotes,
 		});
-
-		this.addAll(emotes);
-		return emotes;
 	}
 }
