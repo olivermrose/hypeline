@@ -30,18 +30,27 @@
 					"$APPCONFIG/**"
 				]
 			},
-			"csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'self' asset: http://asset.localhost"
+			"csp": "default-src 'self' https: ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline' asset: http://asset.localhost; img-src 'self' data: https:"
 		}
 	},
 	"bundle": {
 		"active": true,
 		"targets": "all",
 		"icon": [
+			"icons/icon.icns",
+			"icons/icon.ico",
 			"icons/32x32.png",
 			"icons/128x128.png",
 			"icons/128x128@2x.png",
-			"icons/icon.icns",
-			"icons/icon.ico"
+			"icons/icon.png",
+			"icons/Square30x30Logo.png",
+			"icons/Square44x44Logo.png",
+			"icons/Square71x71Logo.png",
+			"icons/Square89x89Logo.png",
+			"icons/Square150x150Logo.png",
+			"icons/Square284x284Logo.png",
+			"icons/Square310x310Logo.png",
+			"icons/StoreLogo.png"
 		]
 	}
 }
