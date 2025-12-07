@@ -30,7 +30,7 @@
 					"$APPCONFIG/**"
 				]
 			},
-			"csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'self' asset: http://asset.localhost"
+			"csp": "default-src 'self' https: ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline' asset: http://asset.localhost"
 		}
 	},
 	"bundle": {
