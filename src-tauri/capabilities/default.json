@@ -24,7 +24,7 @@
 			"identifier": "fs:scope",
 			"allow": [
 				{
-					"path": "$HOME/.config/hyperion/**/*"
+					"path": "$APPCONFIG/**"
 				}
 			]
 		},
@@ -38,7 +38,7 @@
 					"path": "$APPLOG"
 				},
 				{
-					"path": "$HOME/.config/hyperion/**/*"
+					"path": "$APPCONFIG/**"
 				}
 			]
 		}

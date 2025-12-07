@@ -1,5 +1,5 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { homeDir, join } from "@tauri-apps/api/path";
+import { appConfigDir, join } from "@tauri-apps/api/path";
 import * as fs from "@tauri-apps/plugin-fs";
 import { app } from "./app.svelte";
 import { log } from "./log";
@@ -22,7 +22,7 @@ let themePath: string | undefined;
 export async function getThemesDir() {
 	if (themePath) return themePath;
 
-	themePath = await join(await homeDir(), ".config", "hyperion", "themes");
+	themePath = await join(await appConfigDir(), "themes");
 	const exists = await fs.exists(themePath);
 
 	if (!exists) {
