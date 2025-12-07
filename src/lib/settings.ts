@@ -32,7 +32,7 @@ interface StoredUser {
 }
 
 export interface UserSettings {
-	theme: string;
+	"appearance.theme": string;
 
 	"chat.hideScrollbar": boolean;
 	"chat.newSeparator": boolean;
@@ -85,7 +85,7 @@ export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
 
-	theme: "",
+	"appearance.theme": "",
 	"chat.hideScrollbar": false,
 	"chat.newSeparator": false,
 	"chat.embeds": true,

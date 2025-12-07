@@ -1,23 +1,23 @@
-import Monitor from "~icons/ph/monitor";
+import Monitor from "~icons/ph/palette";
 import Custom from "../custom/theme/Custom.svelte";
 import Default from "../custom/theme/Default.svelte";
 import type { SettingsCategory } from "../types";
 
 export default {
 	order: 10,
-	label: "Theme",
+	label: "Apperance",
 	icon: Monitor,
 	fields: [
 		{
-			id: "theme.default",
+			id: "appearance.default",
 			type: "custom",
-			label: "Default",
+			label: "Default theme",
 			component: Default,
 		},
 		{
-			id: "theme.custom",
+			id: "appearance.theme",
 			type: "custom",
-			label: "Custom",
+			label: "Custom theme",
 			description:
 				"Completely customize the appearance of the application with CSS. Make your own or download themes created by the community.",
 			component: Custom,

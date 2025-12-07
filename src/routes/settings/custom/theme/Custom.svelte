@@ -9,7 +9,7 @@
 	import { getThemesDir, injectTheme, loadThemes } from "$lib/themes";
 
 	$effect(() => {
-		injectTheme(settings.state.theme);
+		injectTheme(settings.state["appearance.theme"]);
 	});
 
 	async function openThemeDir() {
@@ -24,7 +24,7 @@
 		size="sm"
 		variant="outline"
 		disabled={!app.themes.size}
-		onclick={() => (settings.state.theme = "")}
+		onclick={() => (settings.state["appearance.theme"] = "")}
 	>
 		Clear selection
 	</Button>
@@ -32,7 +32,7 @@
 	<Button size="sm" variant="outline" onclick={() => loadThemes()}>Reload themes</Button>
 </div>
 
-<RadioGroup.Root bind:value={settings.state.theme}>
+<RadioGroup.Root bind:value={settings.state["appearance.theme"]}>
 	{#each app.themes as [id, theme] (id)}
 		<Field.Label for={id}>
 			<Field.Field orientation="horizontal">

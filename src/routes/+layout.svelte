@@ -11,7 +11,7 @@
 	const { children } = $props();
 
 	onMount(() => {
-		injectTheme(settings.state.theme);
+		injectTheme(settings.state["appearance.theme"]);
 	});
 
 	$effect(() => {

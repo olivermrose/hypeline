@@ -7,8 +7,8 @@ export default defineCommand({
 	name: "reload-theme",
 	description: "Reload the current custom theme to apply any changes.",
 	async exec(_, channel) {
-		await loadThemes(settings.state.theme);
-		await injectTheme(settings.state.theme);
+		await loadThemes(settings.state["appearance.theme"]);
+		await injectTheme(settings.state["appearance.theme"]);
 
 		channel.chat.addSystemMessage("Reloaded theme.");
 	},
