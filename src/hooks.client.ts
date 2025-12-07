@@ -10,5 +10,5 @@ export async function init() {
 	await settings.start();
 	log.info("Settings synced");
 
-	loadThemes();
+	await loadThemes();
 }
