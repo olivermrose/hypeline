@@ -1,25 +1,36 @@
 <script lang="ts">
+	import { openPath } from "@tauri-apps/plugin-opener";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import * as Field from "$lib/components/ui/field";
 	import * as RadioGroup from "$lib/components/ui/radio-group";
 	import { Separator } from "$lib/components/ui/separator";
 	import { settings } from "$lib/settings";
-	import { injectTheme } from "$lib/themes";
+	import { getThemesDir, injectTheme, loadThemes } from "$lib/themes";
 
 	$effect(() => {
 		injectTheme(settings.state.theme);
 	});
+
+	async function openThemeDir() {
+		await openPath(await getThemesDir());
+	}
 </script>
 
-<Button
-	class="place-self-start"
-	size="sm"
-	disabled={!app.themes.size}
-	onclick={() => (settings.state.theme = "")}
->
-	Clear selection
-</Button>
+<div class="flex items-center gap-x-2">
+	<Button size="sm" disabled={!app.themes.size} onclick={openThemeDir}>Open folder</Button>
+
+	<Button
+		size="sm"
+		variant="outline"
+		disabled={!app.themes.size}
+		onclick={() => (settings.state.theme = "")}
+	>
+		Clear selection
+	</Button>
+
+	<Button size="sm" variant="outline" onclick={() => loadThemes()}>Reload themes</Button>
+</div>
 
 <RadioGroup.Root bind:value={settings.state.theme}>
 	{#each app.themes as [id, theme] (id)}

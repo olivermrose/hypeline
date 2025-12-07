@@ -19,7 +19,7 @@ export interface Theme extends ThemeManifest {
 
 let themePath: string | undefined;
 
-async function getThemesDir() {
+export async function getThemesDir() {
 	if (themePath) return themePath;
 
 	themePath = await join(await homeDir(), ".config", "hyperion", "themes");
@@ -75,6 +75,12 @@ export async function injectTheme(id: string) {
 
 	if (!id) {
 		link.href = "";
+		link.dataset.themeId = "";
+
+		return;
+	}
+
+	if (id === link.dataset.themeId) {
 		return;
 	}
 
@@ -85,4 +91,5 @@ export async function injectTheme(id: string) {
 
 	// Bypass cache with timestamp query parameter
 	link.href = `${convertFileSrc(cssPath)}?t=${Date.now()}`;
+	link.dataset.themeId = id;
 }

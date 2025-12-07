@@ -36,6 +36,9 @@
 			"allow": [
 				{
 					"path": "$APPLOG"
+				},
+				{
+					"path": "$HOME/.config/hyperion/**/*"
 				}
 			]
 		}
