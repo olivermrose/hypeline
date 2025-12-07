@@ -32,9 +32,7 @@ interface StoredUser {
 }
 
 export interface UserSettings {
-	"appearance.timestamps.show": boolean;
-	"appearance.timestamps.format": "auto" | "12" | "24" | "custom";
-	"appearance.timestamps.customFormat": string;
+	"appearance.theme": string;
 
 	"chat.hideScrollbar": boolean;
 	"chat.newSeparator": boolean;
@@ -52,6 +50,9 @@ export interface UserSettings {
 	"chat.messages.history.enabled": boolean;
 	"chat.messages.history.limit": number;
 	"chat.messages.history.separator": boolean;
+	"chat.messages.timestamps.show": boolean;
+	"chat.messages.timestamps.format": "auto" | "12" | "24" | "custom";
+	"chat.messages.timestamps.customFormat": string;
 
 	"highlights.enabled": boolean;
 	"highlights.viewers": Record<HighlightType, HighlightConfig>;
@@ -84,9 +85,7 @@ export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
 
-	"appearance.timestamps.show": true,
-	"appearance.timestamps.format": "auto",
-	"appearance.timestamps.customFormat": "",
+	"appearance.theme": "",
 	"chat.hideScrollbar": false,
 	"chat.newSeparator": false,
 	"chat.embeds": true,
@@ -103,6 +102,9 @@ export const defaults: Settings = {
 	"chat.messages.history.enabled": true,
 	"chat.messages.history.limit": 250,
 	"chat.messages.history.separator": true,
+	"chat.messages.timestamps.show": true,
+	"chat.messages.timestamps.format": "auto",
+	"chat.messages.timestamps.customFormat": "",
 	"highlights.enabled": true,
 	"highlights.viewers": { ...defaultHighlightTypes },
 	"highlights.keywords": [],

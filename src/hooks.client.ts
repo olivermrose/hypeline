@@ -1,6 +1,7 @@
 import { stats } from "tauri-plugin-cache-api";
 import { log } from "$lib/log";
 import { settings } from "$lib/settings";
+import { loadThemes } from "$lib/themes";
 
 export async function init() {
 	const { totalSize } = await stats();
@@ -8,4 +9,6 @@ export async function init() {
 
 	await settings.start();
 	log.info("Settings synced");
+
+	await loadThemes();
 }

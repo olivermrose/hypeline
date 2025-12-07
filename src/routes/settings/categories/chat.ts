@@ -153,6 +153,39 @@ export default {
 						},
 					],
 				},
+				{
+					type: "group",
+					label: "Timestamps",
+					fields: [
+						{
+							id: "chat.messages.timestamps.show",
+							type: "switch",
+							label: "Show timestamps next to messages",
+						},
+						{
+							id: "chat.messages.timestamps.format",
+							type: "radio",
+							label: "Format",
+							items: [
+								{ label: "Auto", value: "auto" },
+								{ label: "12-hour", value: "12" },
+								{ label: "24-hour", value: "24" },
+								{ label: "Custom", value: "custom" },
+							],
+							disabled: () => !settings.state["chat.messages.timestamps.show"],
+						},
+						{
+							id: "chat.messages.timestamps.customFormat",
+							type: "input",
+							label: "Custom format",
+							description:
+								'Formats use the same <a href="https://day.js.org/docs/en/display/format" target="_blank">tokens</a> as <a href="https://day.js.org/en" target="_blank">Day.js</a>. Localized formats are not enabled.',
+							placeholder: "e.g. HH:mm:ss",
+							disabled: () =>
+								settings.state["chat.messages.timestamps.format"] !== "custom",
+						},
+					],
+				},
 			],
 		},
 	],

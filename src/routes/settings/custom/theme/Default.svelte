@@ -12,7 +12,7 @@
 </script>
 
 <RadioGroup.Root
-	class="flex items-center gap-4"
+	class="flex flex-nowrap items-center gap-4"
 	bind:value={() => userPrefersMode.current, (value) => setMode(value)}
 >
 	{#each themes as theme (theme.value)}
