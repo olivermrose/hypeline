@@ -70,7 +70,8 @@ export async function injectTheme(id: string) {
 	const link = document.getElementById("hyperion-custom-theme") as HTMLLinkElement | null;
 
 	if (!link) {
-		throw new Error("Theme link element not found");
+		log.error("Theme <link /> element not found");
+		return;
 	}
 
 	if (!id) {
@@ -85,7 +86,11 @@ export async function injectTheme(id: string) {
 	}
 
 	const theme = app.themes.get(id);
-	if (!theme) return;
+
+	if (!theme) {
+		log.warn(`Theme with id "${id}" not found`);
+		return;
+	}
 
 	const cssPath = await join(theme.path, "main.css");
 
