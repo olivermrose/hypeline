@@ -32,28 +32,32 @@ async function getThemesDir() {
 	return themePath;
 }
 
-export async function loadThemes() {
-	app.themes.clear();
+export async function loadThemes(id?: string) {
+	if (id) {
+		app.themes.delete(id);
+	} else {
+		app.themes.clear();
+	}
 
 	const themesDir = await getThemesDir();
 	const entries = await fs.readDir(themesDir);
 
 	for (const entry of entries) {
-		if (!entry.isDirectory) continue;
+		if (!entry.isDirectory || (id && entry.name !== id)) continue;
 
 		try {
-			const manifest = await join(themesDir, entry.name, "manifest.json");
+			const manifestPath = await join(themesDir, entry.name, "manifest.json");
 
-			const content = await fs.readTextFile(manifest);
-			const metadata: ThemeManifest = JSON.parse(content);
+			const content = await fs.readTextFile(manifestPath);
+			const manifest: ThemeManifest = JSON.parse(content);
 
 			app.themes.set(entry.name, {
 				id: entry.name,
-				...metadata,
 				path: await join(themesDir, entry.name),
+				...manifest,
 			});
 
-			log.trace(`Loaded theme: ${JSON.stringify(metadata)}`);
+			log.trace(`Loaded theme: ${JSON.stringify(manifest)}`);
 		} catch {
 			log.warn(`Skipping invalid theme folder: ${entry.name}`);
 		}
@@ -78,5 +82,7 @@ export async function injectTheme(id: string) {
 	if (!theme) return;
 
 	const cssPath = await join(theme.path, "main.css");
-	link.href = convertFileSrc(cssPath);
+
+	// Bypass cache with timestamp query parameter
+	link.href = `${convertFileSrc(cssPath)}?t=${Date.now()}`;
 }
