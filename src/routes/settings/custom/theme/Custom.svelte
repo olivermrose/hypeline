@@ -18,7 +18,7 @@
 </script>
 
 <div class="flex items-center gap-x-2">
-	<Button size="sm" disabled={!app.themes.size} onclick={openThemeDir}>Open folder</Button>
+	<Button size="sm" onclick={openThemeDir}>Open folder</Button>
 
 	<Button
 		size="sm"
