@@ -82,11 +82,12 @@ pub fn run() {
             ..Default::default()
         }))
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_svelte::init())
-        .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_svelte::init())
+        .plugin(tauri_plugin_window_state::Builder::new().build())
         .setup(|app| {
             log::init_tracing(app);
 

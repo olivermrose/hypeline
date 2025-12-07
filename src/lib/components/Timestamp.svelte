@@ -9,11 +9,11 @@
 	const { date }: Props = $props();
 
 	const format = $derived.by(() => {
-		let format = settings.state["appearance.timestamps.format"];
+		let format = settings.state["chat.messages.timestamps.format"];
 
 		if (format === "custom") {
-			if (settings.state["appearance.timestamps.customFormat"]) {
-				return settings.state["appearance.timestamps.customFormat"];
+			if (settings.state["chat.messages.timestamps.customFormat"]) {
+				return settings.state["chat.messages.timestamps.customFormat"];
 			}
 
 			format = "auto";
@@ -32,7 +32,7 @@
 	const formatted = $derived(dayjs(date).format(format));
 </script>
 
-{#if settings.state["appearance.timestamps.show"]}
+{#if settings.state["chat.messages.timestamps.show"]}
 	<time class="text-muted-foreground text-xs tabular-nums" datetime={date.toISOString()}>
 		{formatted}
 	</time>

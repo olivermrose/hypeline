@@ -11,6 +11,7 @@ import type { Badge } from "./graphql/twitch";
 import type { Channel } from "./models/channel.svelte";
 import type { CurrentUser } from "./models/current-user.svelte";
 import type { DispatchPayload, Paint } from "./seventv";
+import type { Theme } from "./themes";
 import type { NotificationPayload } from "./twitch/eventsub";
 import type { IrcMessage } from "./twitch/irc";
 
@@ -31,6 +32,8 @@ class App {
 	 * The currently focused channel in {@linkcode channels}.
 	 */
 	public focused = $state<Channel | null>(null);
+
+	public readonly themes = new SvelteMap<string, Theme>();
 
 	/**
 	 * The channels the app is able to join.
