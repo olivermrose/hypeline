@@ -45,7 +45,11 @@
 
 {#snippet dropZone(dropper: ReturnType<typeof useDroppable>, className: string)}
 	<div
-		class={["absolute z-10", className, dropper.isDropTarget.current && "bg-primary/50"]}
+		class={[
+			"pointer-events-none absolute z-10",
+			className,
+			dropper.isDropTarget.current && "bg-primary/50",
+		]}
 		{@attach dropper.ref}
 	></div>
 {/snippet}
