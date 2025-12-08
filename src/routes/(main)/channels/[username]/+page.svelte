@@ -1,36 +1,33 @@
 <script lang="ts">
-	import { listen } from "@tauri-apps/api/event";
-	import type { UnlistenFn } from "@tauri-apps/api/event";
-	import { onDestroy, onMount } from "svelte";
-	import Chat from "$lib/components/chat/Chat.svelte";
-	import ChatInput from "$lib/components/chat/Input.svelte";
-	import StreamInfo from "$lib/components/StreamInfo.svelte";
-	import { handlers } from "$lib/handlers";
-	import type { IrcMessage } from "$lib/twitch/irc";
+	import { DragDropProvider, DragOverlay } from "@dnd-kit-svelte/svelte";
+	import { app } from "$lib/app.svelte.js";
+	import SplitNode from "$lib/components/split/SplitNode.svelte";
 
 	const { data } = $props();
 
-	let unlisten: UnlistenFn | undefined;
-
-	onMount(async () => {
-		unlisten = await listen<IrcMessage[]>("recentmessages", async (event) => {
-			for (const message of event.payload) {
-				await handlers.get(message.type)?.handle(message);
-			}
-		});
+	$effect(() => {
+		app.splits.root = data.channel.id;
 	});
-
-	onDestroy(() => unlisten?.());
 </script>
 
-<div class="flex h-full flex-col">
-	{#if data.channel.stream}
-		<StreamInfo stream={data.channel.stream} />
-	{/if}
+<div class="size-full">
+	<DragDropProvider onDragEnd={(event) => app.splits.handleDragEnd(event)}>
+		{#if app.splits.root}
+			<SplitNode node={app.splits.root} />
+		{:else}
+			<div class="text-muted-foreground flex h-full items-center justify-center">
+				Empty Split
+			</div>
+		{/if}
 
-	<Chat class="grow" chat={data.channel.chat} />
-
-	<div class="p-2">
-		<ChatInput chat={data.channel.chat} />
-	</div>
+		<DragOverlay>
+			{#snippet children(draggable)}
+				<div
+					class="custom-cursor pointer-events-none flex h-8 items-center justify-center rounded bg-blue-600 text-white opacity-90 shadow-2xl"
+				>
+					{draggable.id}
+				</div>
+			{/snippet}
+		</DragOverlay>
+	</DragDropProvider>
 </div>

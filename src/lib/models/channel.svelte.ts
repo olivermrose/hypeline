@@ -88,12 +88,14 @@ export class Channel {
 		this.pinned = $derived(settings.state.pinned.includes(this.id));
 	}
 
-	public async join() {
+	public async join(split = false) {
 		app.channels.set(this.id, this);
-		app.focused = this;
 		this.joined = true;
 
-		settings.state.lastJoined = this.ephemeral ? null : this.user.username;
+		if (!split) {
+			app.focused = this;
+			settings.state.lastJoined = this.ephemeral ? null : this.user.username;
+		}
 
 		if (!this.viewers.has(this.id)) {
 			const viewer = new Viewer(this, this.user);
