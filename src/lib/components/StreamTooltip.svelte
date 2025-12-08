@@ -1,20 +1,16 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
-	import DotsThreeCircle from "~icons/ph/dots-three-circle";
 	import Users from "~icons/ph/users-bold";
 	import { createChannelMenu } from "$lib/menus/channel-menu";
-	import type { Channel } from "$lib/models/channel.svelte";
 	import { openMenu } from "$lib/util";
+	import ChannelListItem from "./ChannelListItem.svelte";
 	import GuestList from "./GuestList.svelte";
+	import { getSidebarContext } from "./Sidebar.svelte";
 	import * as Tooltip from "./ui/tooltip";
+	import type { ChannelListItemProps } from "./ChannelListItem.svelte";
 
-	interface Props {
-		children: Snippet;
-		channel: Channel;
-		collapsed: boolean;
-	}
+	const sidebar = getSidebarContext();
 
-	const { children, channel, collapsed }: Props = $props();
+	const { channel }: ChannelListItemProps = $props();
 </script>
 
 <Tooltip.Root>
@@ -33,35 +29,19 @@
 				>
 				</a>
 
-				<img
-					class={["size-8 rounded-full object-cover", !channel.stream && "grayscale"]}
-					src={channel.user.avatarUrl}
-					alt={channel.user.displayName}
-					width="150"
-					height="150"
-				/>
-
-				{#if collapsed && channel.stream?.guests.size}
-					<div
-						class="bg-muted/70 absolute right-1 bottom-1 flex items-center justify-center rounded-full"
-					>
-						<DotsThreeCircle class="size-5" />
-					</div>
-				{/if}
-
-				{@render children()}
+				<ChannelListItem {channel} />
 			</div>
 		{/snippet}
 	</Tooltip.Trigger>
 
 	<Tooltip.Content
-		class={["max-w-64", !collapsed && !channel.stream && "hidden"]}
+		class={["max-w-64", !sidebar.collapsed && !channel.stream && "hidden"]}
 		side="right"
 		sideOffset={8}
 	>
 		{#if channel.stream}
 			<div class="space-y-0.5">
-				{#if collapsed}
+				{#if sidebar.collapsed}
 					<div
 						class="dark:text-twitch text-twitch-link overflow-hidden overflow-ellipsis whitespace-nowrap"
 					>
@@ -71,7 +51,7 @@
 
 				<p class="line-clamp-2">{channel.stream.title}</p>
 
-				{#if collapsed}
+				{#if sidebar.collapsed}
 					<div class="flex items-center text-red-400 dark:text-red-500">
 						<Users class="mr-1 size-3" />
 
@@ -85,7 +65,7 @@
 					<GuestList {channel} tooltip />
 				{/if}
 			</div>
-		{:else if collapsed}
+		{:else if sidebar.collapsed}
 			{channel.user.displayName}
 		{/if}
 	</Tooltip.Content>

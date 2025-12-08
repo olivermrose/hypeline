@@ -60,6 +60,11 @@ export class Channel {
 	public ephemeral = $state(false);
 
 	/**
+	 * Whether the channel is pinned.
+	 */
+	public pinned = $state(false);
+
+	/**
 	 * The id of the active 7TV emote set for the channel if any.
 	 */
 	public emoteSetId = $state<string | null>(null);
@@ -79,6 +84,8 @@ export class Channel {
 		this.chat = new Chat(this);
 		this.emotes = new ChannelEmoteManager(this);
 		this.viewers = new ViewerManager(this);
+
+		this.pinned = settings.state.pinned.includes(this.id);
 	}
 
 	public async join() {

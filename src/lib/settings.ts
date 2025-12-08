@@ -68,6 +68,7 @@ interface Settings extends UserSettings {
 	// Internal
 	user: StoredUser | null;
 	lastJoined: string | null;
+	pinned: string[];
 }
 
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
@@ -84,6 +85,7 @@ export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
+	pinned: [],
 
 	"appearance.theme": "",
 	"chat.hideScrollbar": false,
