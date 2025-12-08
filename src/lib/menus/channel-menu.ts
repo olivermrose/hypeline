@@ -1,7 +1,8 @@
-import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
+import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 import { goto } from "$app/navigation";
 import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
+import { settings } from "$lib/settings";
 
 export async function createChannelMenu(channel: Channel) {
 	const separator = await PredefinedMenuItem.new({
@@ -14,17 +15,6 @@ export async function createChannelMenu(channel: Channel) {
 		enabled: !channel.joined,
 		async action() {
 			await goto(`/channels/${channel.user.username}`);
-		},
-	});
-
-	const remove = await MenuItem.new({
-		id: "remove",
-		text: "Remove",
-		enabled: channel.ephemeral,
-		async action() {
-			await channel.leave();
-			app.channels.delete(channel.id);
-			await goto("/");
 		},
 	});
 
@@ -41,7 +31,34 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
+	const pin = await CheckMenuItem.new({
+		id: "pin",
+		text: "Pin",
+		enabled: !channel.ephemeral,
+		checked: channel.pinned,
+		async action() {
+			channel.pinned = !channel.pinned;
+
+			if (channel.pinned) {
+				settings.state.pinned.push(channel.id);
+			} else {
+				settings.state.pinned = settings.state.pinned.filter((id) => id !== channel.id);
+			}
+		},
+	});
+
+	const remove = await MenuItem.new({
+		id: "remove",
+		text: "Remove",
+		enabled: channel.ephemeral,
+		async action() {
+			await channel.leave();
+			app.channels.delete(channel.id);
+			await goto("/");
+		},
+	});
+
 	return Menu.new({
-		items: [join, leave, separator, remove],
+		items: [join, leave, pin, separator, remove],
 	});
 }

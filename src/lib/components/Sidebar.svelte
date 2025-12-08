@@ -1,3 +1,13 @@
+<script lang="ts" module>
+	import { createContext } from "svelte";
+
+	interface SidebarContext {
+		collapsed: boolean;
+	}
+
+	export const [getSidebarContext, setSidebarContext] = createContext<SidebarContext>();
+</script>
+
 <script lang="ts">
 	import { ScrollArea } from "bits-ui";
 	import { MediaQuery } from "svelte/reactivity";
@@ -14,7 +24,12 @@
 
 	const id = $props.id();
 
-	let collapsed = $state(new MediaQuery("(width < 48rem)").current);
+	const context = $state<SidebarContext>({
+		collapsed: new MediaQuery("(width < 48rem)").current,
+	});
+
+	setSidebarContext(context);
+
 	const unread = $derived(app.user?.whispers.values().reduce((sum, w) => sum + w.unread, 0));
 </script>
 
@@ -23,7 +38,7 @@
 		if (event.repeat) return;
 
 		if ((event.metaKey || event.ctrlKey) && event.key === "b") {
-			collapsed = !collapsed;
+			context.collapsed = !context.collapsed;
 		}
 	}}
 />
@@ -31,18 +46,18 @@
 <ScrollArea.Root
 	class={[
 		"group ease-out-quint shrink-0 transition-[width] duration-300",
-		collapsed ? "w-14" : "w-56 md:w-64 lg:w-72",
+		context.collapsed ? "w-14" : "w-56 md:w-64 lg:w-72",
 	]}
-	data-state={collapsed ? "collapsed" : "expanded"}
+	data-state={context.collapsed ? "collapsed" : "expanded"}
 >
 	<ScrollArea.Viewport class="h-full">
 		<div id="sidebar-actions" class="flex flex-col gap-1 px-1.5 py-1">
 			<Button class="relative" href="/whispers" variant="ghost">
-				<Chats class={[collapsed && unread && "animate-pulse"]} />
+				<Chats class={[context.collapsed && unread && "animate-pulse"]} />
 
 				<span class="group-data-[state=collapsed]:sr-only">Whispers</span>
 
-				{#if collapsed && unread}
+				{#if context.collapsed && unread}
 					<div
 						in:receive={{ key: id }}
 						out:send={{ key: id }}
@@ -65,17 +80,17 @@
 				<span class="group-data-[state=collapsed]:sr-only">Join a channel</span>
 			</JoinDialog>
 
-			<Button variant="ghost" onclick={() => (collapsed = !collapsed)}>
+			<Button variant="ghost" onclick={() => (context.collapsed = !context.collapsed)}>
 				<Sidebar />
 
 				<span class="group-data-[state=collapsed]:sr-only">
-					{collapsed ? "Expand" : "Collapse"} sidebar
+					{context.collapsed ? "Expand" : "Collapse"} sidebar
 				</span>
 			</Button>
 		</div>
 
 		<nav class="space-y-1.5 pb-3">
-			<ChannelList {collapsed} />
+			<ChannelList />
 		</nav>
 	</ScrollArea.Viewport>
 
