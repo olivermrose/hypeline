@@ -34,6 +34,7 @@ export async function createChannelMenu(channel: Channel) {
 	const pin = await CheckMenuItem.new({
 		id: "pin",
 		text: "Pin",
+		accelerator: "CmdOrCtrl+P",
 		enabled: !channel.ephemeral,
 		checked: channel.pinned,
 		async action() {
