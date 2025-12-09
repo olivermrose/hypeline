@@ -11,7 +11,7 @@
 	const { channel }: Props = $props();
 
 	const { ref, isDragging } = useDraggable({
-		id: () => channel.id,
+		id: () => `${channel.id}:channel-list`,
 		type: "channel-list-item",
 	});
 </script>

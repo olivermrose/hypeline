@@ -101,35 +101,28 @@ export class SplitManager {
 
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {
 		const { source, target } = event.operation;
+		if (!source || !target || source.id === target.id) return;
 
-		if (source && target && source.id !== target.id) {
-			const sourceId = source.id.toString();
-			const [targetId, position] = target.id.toString().split(":");
+		const [sourceId] = source.id.toString().split(":");
+		const [targetId, position] = target.id.toString().split(":");
 
-			if (sourceId === targetId) return;
+		if (sourceId === targetId) return;
 
-			this.remove(sourceId);
+		this.remove(sourceId);
 
-			if (position === "center") {
-				this.replace(targetId, sourceId);
-				return;
-			}
-
-			let direction: PaneGroupProps["direction"] = "horizontal";
-			let first = targetId;
-			let second = sourceId;
-
-			if (position === "up" || position === "down") {
-				direction = "vertical";
-			}
-
-			if (position === "up" || position === "left") {
-				first = sourceId;
-				second = targetId;
-			}
-
-			this.insert(targetId, sourceId, { axis: direction, first, second });
+		if (position === "center") {
+			this.replace(targetId, sourceId);
+			return;
 		}
+
+		const isVertical = position === "up" || position === "down";
+		const isFirst = position === "up" || position === "left";
+
+		this.insert(targetId, sourceId, {
+			axis: isVertical ? "vertical" : "horizontal",
+			first: isFirst ? sourceId : targetId,
+			second: isFirst ? targetId : sourceId,
+		});
 	}
 
 	#find(node: SplitNode, target: string, path: SplitPath[] = []): SplitPath[] | null {

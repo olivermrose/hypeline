@@ -12,7 +12,7 @@
 	const { channel, index }: Props = $props();
 
 	const { ref, isDragging } = useSortable({
-		id: () => channel.id,
+		id: () => `${channel.id}:channel-list/pinned`,
 		type: "channel-list-item",
 		index: () => index,
 	});
