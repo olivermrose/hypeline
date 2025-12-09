@@ -19,9 +19,7 @@
 	let unlisten: UnlistenFn | undefined;
 
 	onMount(async () => {
-		if (!channel.joined) {
-			await channel.join();
-		}
+		await channel.join();
 
 		unlisten = await listen<IrcMessage[]>("recentmessages", async (event) => {
 			for (const message of event.payload) {

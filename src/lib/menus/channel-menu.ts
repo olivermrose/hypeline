@@ -2,7 +2,7 @@ import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/a
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
-import type { SplitDirection, SplitParent } from "$lib/managers/split-manager.svelte";
+import type { SplitBranch, SplitDirection } from "$lib/managers/split-manager.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
 
@@ -12,16 +12,14 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 		text: `Split ${direction.charAt(0).toUpperCase() + direction.slice(1)}`,
 		enabled: !settings.state["advanced.singleConnection"],
 		async action() {
-			if (!channel.joined) {
-				await channel.join(true);
-			}
+			await channel.join(true);
 
 			if (!app.focused) return;
 
 			app.splits.root ??= app.focused.id;
 
-			const node: SplitParent = {
-				direction: direction === "up" || direction === "down" ? "vertical" : "horizontal",
+			const node: SplitBranch = {
+				axis: direction === "up" || direction === "down" ? "vertical" : "horizontal",
 				first: channel.id,
 				second: app.focused.id,
 			};

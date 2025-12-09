@@ -2,16 +2,17 @@ import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
 import { settings } from "$lib/settings";
 
+export type SplitAxis = PaneGroupProps["direction"];
 export type SplitDirection = "up" | "down" | "left" | "right";
 
-export interface SplitParent {
-	direction: PaneGroupProps["direction"];
+export interface SplitBranch {
+	axis: SplitAxis;
 	first: SplitNode;
 	second: SplitNode;
 	size?: number;
 }
 
-export type SplitNode = SplitParent | string;
+export type SplitNode = SplitBranch | string;
 
 type SplitPath = "first" | "second";
 
@@ -24,7 +25,7 @@ export class SplitManager {
 		settings.state.layout = value;
 	}
 
-	public insert(target: string, newNode: string, data: SplitParent) {
+	public insert(target: string, newNode: string, branch: SplitBranch) {
 		if (!this.root) {
 			this.root = target;
 			return;
@@ -35,11 +36,11 @@ export class SplitManager {
 
 		this.root = this.#update(this.root, path, (node) => {
 			if (typeof node === "string") {
-				return { ...data, size: 50 };
+				return { ...branch, size: 50 };
 			}
 
 			return {
-				direction: data.direction,
+				axis: branch.axis,
 				first: node,
 				second: newNode,
 				size: 50,
@@ -47,11 +48,11 @@ export class SplitManager {
 		});
 	}
 
-	public insertEmpty(target: string, direction: PaneGroupProps["direction"]) {
+	public insertEmpty(target: string, axis: SplitAxis) {
 		const id = `split-${crypto.randomUUID()}`;
 
 		this.insert(target, id, {
-			direction,
+			axis,
 			first: target,
 			second: id,
 		});
@@ -127,7 +128,7 @@ export class SplitManager {
 				second = targetId;
 			}
 
-			this.insert(targetId, sourceId, { direction, first, second });
+			this.insert(targetId, sourceId, { axis: direction, first, second });
 		}
 	}
 

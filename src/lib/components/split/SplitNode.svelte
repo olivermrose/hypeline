@@ -14,7 +14,7 @@
 {#if typeof node === "string"}
 	<SplitView id={node} />
 {:else}
-	<PaneGroup class="size-full" direction={node.direction}>
+	<PaneGroup class="size-full" direction={node.axis}>
 		<Pane defaultSize={node.size ?? 50}>
 			<Self node={node.first} />
 		</Pane>
@@ -22,9 +22,7 @@
 		<PaneResizer
 			class={[
 				"bg-muted relative flex items-center justify-center transition-colors hover:bg-blue-400",
-				node.direction === "horizontal"
-					? "w-0.5 cursor-col-resize"
-					: "h-0.5 cursor-row-resize",
+				node.axis === "horizontal" ? "w-0.5 cursor-col-resize" : "h-0.5 cursor-row-resize",
 			]}
 		/>
 

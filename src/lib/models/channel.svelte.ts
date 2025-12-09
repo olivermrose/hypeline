@@ -89,6 +89,8 @@ export class Channel {
 	}
 
 	public async join(split = false) {
+		if (this.joined) return;
+
 		app.channels.set(this.id, this);
 		this.joined = true;
 
