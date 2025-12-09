@@ -22,9 +22,7 @@
 </script>
 
 <div class="relative flex size-full flex-col overflow-hidden" {@attach ref}>
-	{#if channel}
-		<SplitHeader {channel} {handleRef} />
-	{/if}
+	<SplitHeader {id} {handleRef} />
 
 	<div class={["relative flex-1", isDragging.current && "opacity-50"]}>
 		{#if channel}
@@ -36,10 +34,13 @@
 		{/if}
 
 		{@render dropZone(dropCenter, "inset-0")}
-		{@render dropZone(dropUp, "top-0 inset-x-0 h-1/3")}
-		{@render dropZone(dropDown, "bottom-0 inset-x-0 h-1/3")}
-		{@render dropZone(dropLeft, "left-0 inset-y-0 w-1/3")}
-		{@render dropZone(dropRight, "right-0 inset-y-0 w-1/3")}
+
+		{#if channel}
+			{@render dropZone(dropUp, "top-0 inset-x-0 h-1/3")}
+			{@render dropZone(dropDown, "bottom-0 inset-x-0 h-1/3")}
+			{@render dropZone(dropLeft, "left-0 inset-y-0 w-1/3")}
+			{@render dropZone(dropRight, "right-0 inset-y-0 w-1/3")}
+		{/if}
 	</div>
 </div>
 
@@ -48,7 +49,7 @@
 		class={[
 			"pointer-events-none absolute z-10",
 			className,
-			dropper.isDropTarget.current && "bg-primary/50",
+			dropper.isDropTarget.current && "bg-primary/30",
 		]}
 		{@attach dropper.ref}
 	></div>

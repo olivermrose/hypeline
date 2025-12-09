@@ -44,6 +44,16 @@ export class SplitManager {
 		});
 	}
 
+	public insertEmpty(target: string, direction: PaneGroupProps["direction"]) {
+		const id = `split-${crypto.randomUUID()}`;
+
+		this.insert(target, id, {
+			direction,
+			first: target,
+			second: id,
+		});
+	}
+
 	public remove(target: string) {
 		if (!this.root) return;
 
@@ -70,6 +80,21 @@ export class SplitManager {
 		this.root = this.#replace(this.root, target);
 	}
 
+	public replace(target: string, replacement: string) {
+		if (!this.root || target === replacement) return;
+
+		const path = this.#find(this.root, target);
+		if (!path) return;
+
+		this.root = this.#update(this.root, path, (node) => {
+			if (typeof node === "string") {
+				return replacement;
+			}
+
+			return node;
+		});
+	}
+
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {
 		const { source, target } = event.operation;
 
@@ -77,11 +102,14 @@ export class SplitManager {
 			const sourceId = source.id.toString();
 			const [targetId, position] = target.id.toString().split(":");
 
-			if (!position || sourceId === targetId) {
+			if (sourceId === targetId) return;
+
+			this.remove(sourceId);
+
+			if (position === "center") {
+				this.replace(targetId, sourceId);
 				return;
 			}
-
-			this.remove(source.id.toString());
 
 			let direction: PaneGroupProps["direction"] = "horizontal";
 			let first = targetId;
@@ -89,16 +117,11 @@ export class SplitManager {
 
 			if (position === "up" || position === "down") {
 				direction = "vertical";
-			} else if (position === "left" || position === "right") {
-				direction = "horizontal";
 			}
 
 			if (position === "up" || position === "left") {
 				first = sourceId;
 				second = targetId;
-			} else {
-				first = targetId;
-				second = sourceId;
 			}
 
 			this.insert(targetId, sourceId, { direction, first, second });

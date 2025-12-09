@@ -4,15 +4,16 @@
 	import SquareHalf from "~icons/ph/square-half-fill";
 	import X from "~icons/ph/x";
 	import { app } from "$lib/app.svelte";
-	import type { Channel } from "$lib/models/channel.svelte";
 	import { Button } from "../ui/button";
 
 	interface Props {
-		channel: Channel;
-		handleRef: Attachment<Element>;
+		id: string;
+		handleRef?: Attachment<Element>;
 	}
 
-	const { channel, handleRef }: Props = $props();
+	const { id, handleRef }: Props = $props();
+
+	const channel = $derived(app.channels.get(id));
 </script>
 
 <div class="z-20 flex items-center justify-between border-b p-1">
@@ -20,7 +21,9 @@
 		class="flex h-full flex-1 cursor-grab items-center gap-x-2 overflow-hidden px-1 active:cursor-grabbing"
 		{@attach handleRef}
 	>
-		<span class="truncate text-sm font-medium select-none">{channel.user.displayName}</span>
+		{#if channel}
+			<span class="truncate text-sm font-medium select-none">{channel.user.displayName}</span>
+		{/if}
 	</div>
 
 	<div class="flex shrink-0 items-center gap-x-1">
@@ -29,11 +32,7 @@
 			size="icon-sm"
 			variant="ghost"
 			onclick={() => {
-				app.splits.insert(channel.id, `Window ${Date.now()}`, {
-					direction: "horizontal",
-					first: channel.id,
-					second: `Window ${Date.now()}`,
-				});
+				app.splits.insertEmpty(id, "horizontal");
 			}}
 		>
 			<SquareHalf />
@@ -44,11 +43,7 @@
 			size="icon-sm"
 			variant="ghost"
 			onclick={() => {
-				app.splits.insert(channel.id, `Window ${Date.now()}`, {
-					direction: "vertical",
-					first: channel.id,
-					second: `Window ${Date.now()}`,
-				});
+				app.splits.insertEmpty(id, "vertical");
 			}}
 		>
 			<SquareHalfBottom />
@@ -59,7 +54,7 @@
 			size="icon-sm"
 			variant="ghost"
 			onclick={async () => {
-				app.splits.remove(channel.id);
+				app.splits.remove(id);
 				await channel?.leave();
 			}}
 		>
