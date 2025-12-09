@@ -32,15 +32,15 @@ export class SplitManager {
 
 		this.root = this.#update(this.root, path, (node) => {
 			if (typeof node === "string") {
-				return {
-					direction: data.direction,
-					first: node,
-					second: newNode,
-					size: 50,
-				};
+				return { ...data, size: 50 };
 			}
 
-			return { ...data, size: 50 };
+			return {
+				direction: data.direction,
+				first: node,
+				second: newNode,
+				size: 50,
+			};
 		});
 	}
 
