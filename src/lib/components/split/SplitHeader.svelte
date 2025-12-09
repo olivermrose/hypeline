@@ -17,17 +17,19 @@
 	const channel = $derived(app.channels.get(id));
 
 	async function closeSplit() {
-		app.splits.remove(id);
-
-		if (!app.splits.root) {
+		if (app.splits.root === id) {
 			if (channel) {
 				await goto(`/channels/${channel.user.username}`);
+				app.splits.root = null;
 			} else {
 				await goto("/");
 			}
-		} else {
-			await channel?.leave();
+
+			return;
 		}
+
+		app.splits.remove(id);
+		await channel?.leave();
 	}
 </script>
 
