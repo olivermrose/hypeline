@@ -11,7 +11,7 @@ use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
 use tauri::{Manager, WindowEvent};
 use tauri_plugin_cache::{CacheConfig, CompressionMethod};
-use tauri_plugin_svelte::ManagerExt;
+use tauri_plugin_svelte::{ManagerExt, PrettyJsonMarshaler};
 use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 
@@ -86,7 +86,11 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_svelte::init())
+        .plugin(
+            tauri_plugin_svelte::Builder::new()
+                .marshaler(Box::new(PrettyJsonMarshaler))
+                .build(),
+        )
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .setup(|app| {
             log::init_tracing(app);
