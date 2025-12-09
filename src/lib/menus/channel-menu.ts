@@ -5,20 +5,6 @@ import type { SplitDirection, SplitParent } from "$lib/managers/split-manager.sv
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
 
-// function findSplit(splits: Split[], id: string): Split | undefined {
-// 	for (const split of splits) {
-// 		if (split.id === id) return split;
-// 		const found = findSplit(split.splits, id);
-// 		if (found) return found;
-// 	}
-// }
-
-// function removeSplit(splits: Split[], id: string): Split[] {
-// 	return splits
-// 		.filter((s) => s.id !== id)
-// 		.map((s) => ({ ...s, splits: removeSplit(s.splits, id) }));
-// }
-
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	return MenuItem.new({
 		id: `split-${direction}`,
@@ -43,20 +29,6 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 			}
 
 			app.splits.insert(app.focused.id, channel.id, node);
-			// // If we are splitting a channel that is already in a split, add to its splits
-			// if (app.focused && app.focused.id !== channel.id) {
-			// 	const parent = findSplit(settings.state.splits, app.focused.id);
-
-			// 	if (parent) {
-			// 		parent.splits.push(split);
-			// 		settings.state.splits = [...settings.state.splits];
-
-			// 		return;
-			// 	}
-			// }
-
-			// // Otherwise split the main view
-			// settings.state.splits.push(split);
 		},
 	});
 }
@@ -81,8 +53,6 @@ export async function createChannelMenu(channel: Channel) {
 		enabled: channel.joined,
 		async action() {
 			await channel.leave();
-
-			// settings.state.splits = removeSplit(settings.state.splits, channel.id);
 
 			if (app.focused === channel) {
 				await goto("/");
@@ -116,7 +86,6 @@ export async function createChannelMenu(channel: Channel) {
 		enabled: channel.ephemeral,
 		async action() {
 			await channel.leave();
-			// settings.state.splits = removeSplit(settings.state.splits, channel.id);
 			app.channels.delete(channel.id);
 			await goto("/");
 		},
