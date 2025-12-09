@@ -20,13 +20,13 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 
 			const node: SplitBranch = {
 				axis: direction === "up" || direction === "down" ? "vertical" : "horizontal",
-				first: channel.id,
-				second: app.focused.id,
+				before: channel.id,
+				after: app.focused.id,
 			};
 
 			if (direction === "down" || direction === "right") {
-				node.first = app.focused.id;
-				node.second = channel.id;
+				node.before = app.focused.id;
+				node.after = channel.id;
 			}
 
 			app.splits.insert(app.focused.id, channel.id, node);

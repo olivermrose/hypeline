@@ -16,7 +16,7 @@
 {:else}
 	<PaneGroup class="size-full" direction={node.axis}>
 		<Pane defaultSize={node.size ?? 50}>
-			<Self node={node.first} />
+			<Self node={node.before} />
 		</Pane>
 
 		<PaneResizer
@@ -27,7 +27,7 @@
 		/>
 
 		<Pane defaultSize={100 - (node.size ?? 50)}>
-			<Self node={node.second} />
+			<Self node={node.after} />
 		</Pane>
 	</PaneGroup>
 {/if}

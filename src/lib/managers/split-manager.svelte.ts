@@ -7,14 +7,14 @@ export type SplitDirection = "up" | "down" | "left" | "right";
 
 export interface SplitBranch {
 	axis: SplitAxis;
-	first: SplitNode;
-	second: SplitNode;
 	size?: number;
+	before: SplitNode;
+	after: SplitNode;
 }
 
 export type SplitNode = SplitBranch | string;
 
-type SplitPath = "first" | "second";
+type SplitPath = ("before" | "after")[];
 
 export class SplitManager {
 	public get root() {
@@ -31,18 +31,15 @@ export class SplitManager {
 			return;
 		}
 
-		const path = this.#find(this.root, target);
-		if (!path) return;
-
-		this.root = this.#update(this.root, path, (node) => {
+		this.#update(target, (node) => {
 			if (typeof node === "string") {
 				return { ...branch, size: 50 };
 			}
 
 			return {
 				axis: branch.axis,
-				first: node,
-				second: newNode,
+				before: node,
+				after: newNode,
 				size: 50,
 			};
 		});
@@ -53,8 +50,8 @@ export class SplitManager {
 
 		this.insert(target, id, {
 			axis,
-			first: target,
-			second: id,
+			before: target,
+			after: id,
 		});
 	}
 
@@ -66,37 +63,25 @@ export class SplitManager {
 			return;
 		}
 
-		const path = this.#find(this.root, target);
-		if (!path) return;
+		if (typeof this.root !== "string") {
+			if (this.root.before === target) {
+				this.root = this.root.after;
+				return;
+			}
 
-		const parentPath = path.slice(0, -1);
-		const sideToRemove = path.at(-1);
-
-		if (!parentPath.length) {
-			if (typeof this.root === "string") return;
-
-			const otherSide = sideToRemove === "first" ? "second" : "first";
-			this.root = this.root[otherSide];
-
-			return;
+			if (this.root.after === target) {
+				this.root = this.root.before;
+				return;
+			}
 		}
 
-		this.root = this.#replace(this.root, target);
+		this.root = this.#remove(this.root, target);
 	}
 
 	public replace(target: string, replacement: string) {
 		if (!this.root || target === replacement) return;
 
-		const path = this.#find(this.root, target);
-		if (!path) return;
-
-		this.root = this.#update(this.root, path, (node) => {
-			if (typeof node === "string") {
-				return replacement;
-			}
-
-			return node;
-		});
+		this.#update(target, () => replacement);
 	}
 
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {
@@ -120,62 +105,62 @@ export class SplitManager {
 
 		this.insert(targetId, sourceId, {
 			axis: isVertical ? "vertical" : "horizontal",
-			first: isFirst ? sourceId : targetId,
-			second: isFirst ? targetId : sourceId,
+			before: isFirst ? sourceId : targetId,
+			after: isFirst ? targetId : sourceId,
 		});
 	}
 
-	#find(node: SplitNode, target: string, path: SplitPath[] = []): SplitPath[] | null {
+	#find(node: SplitNode, target: string): SplitPath | null {
 		if (typeof node === "string") {
-			return node === target ? path : null;
+			return node === target ? [] : null;
 		}
 
-		const pathFirst = this.#find(node.first, target, [...path, "first"]);
-		if (pathFirst) return pathFirst;
+		const bPath = this.#find(node.before, target);
+		if (bPath) return ["before", ...bPath];
 
-		const pathSecond = this.#find(node.second, target, [...path, "second"]);
-		if (pathSecond) return pathSecond;
+		const aPath = this.#find(node.after, target);
+		if (aPath) return ["after", ...aPath];
 
 		return null;
 	}
 
-	#update(
+	#update(target: string, updater: (node: SplitNode) => SplitNode) {
+		const path = this.#find(this.root!, target);
+
+		if (path) {
+			this.root = this.#applyUpdate(this.root!, path, updater);
+		}
+	}
+
+	#applyUpdate(
 		node: SplitNode,
-		path: SplitPath[],
+		path: SplitPath,
 		updater: (node: SplitNode) => SplitNode,
 	): SplitNode {
-		if (!path.length) {
-			return updater(node);
-		}
+		if (!path.length) return updater(node);
 
 		if (typeof node === "string") {
-			throw new TypeError("Split path continues but node is a leaf");
+			throw new TypeError("Path continues but node is a leaf");
 		}
 
-		const [side] = path;
+		const [side, ...rest] = path;
 
 		return {
 			...node,
-			[side]: this.#update(node[side], path.slice(1), updater),
+			[side]: this.#applyUpdate(node[side], rest, updater),
 		};
 	}
 
-	#replace(node: SplitNode, target: string): SplitNode {
-		if (typeof node === "string") {
-			if (node === target) {
-				throw new Error("Cannot remove root node");
-			}
+	#remove(node: SplitNode, target: string): SplitNode {
+		if (typeof node === "string") return node;
 
-			return node;
-		}
-
-		if (node.first === target) return node.second;
-		if (node.second === target) return node.first;
+		if (node.before === target) return node.after;
+		if (node.after === target) return node.before;
 
 		return {
 			...node,
-			first: this.#replace(node.first, target),
-			second: this.#replace(node.second, target),
+			before: this.#remove(node.before, target),
+			after: this.#remove(node.after, target),
 		};
 	}
 }
