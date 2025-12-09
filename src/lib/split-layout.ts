@@ -16,7 +16,7 @@ export type SplitNode = SplitBranch | string;
 
 type SplitPath = ("before" | "after")[];
 
-export class SplitManager {
+export class SplitLayout {
 	public get root() {
 		return settings.state.layout;
 	}

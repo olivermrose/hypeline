@@ -1,6 +1,6 @@
 import { RuneStore } from "@tauri-store/svelte";
 import type { User } from "./graphql/twitch";
-import type { SplitNode } from "./managers/split-manager.svelte";
+import type { SplitNode } from "./split-layout";
 
 export type HighlightType =
 	| "mention"

@@ -2,9 +2,9 @@ import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/a
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
-import type { SplitBranch, SplitDirection } from "$lib/managers/split-manager.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
+import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	return MenuItem.new({

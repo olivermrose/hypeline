@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Pane, PaneGroup, PaneResizer } from "paneforge";
-	import type { SplitNode } from "$lib/managers/split-manager.svelte";
+	import type { SplitNode } from "$lib/split-layout";
 	import Self from "./SplitNode.svelte";
 	import SplitView from "./SplitView.svelte";
 
