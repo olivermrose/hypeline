@@ -18,7 +18,11 @@
 			await app.user.fetchEmoteSets();
 		}
 
-		if (settings.state.lastJoined) {
+		if (settings.state.layout) {
+			app.splits.root = settings.state.layout;
+
+			await goto("/channels/split");
+		} else if (settings.state.lastJoined) {
 			await goto(`/channels/${settings.state.lastJoined}`);
 		}
 

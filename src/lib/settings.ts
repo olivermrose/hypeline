@@ -1,5 +1,6 @@
 import { RuneStore } from "@tauri-store/svelte";
 import type { User } from "./graphql/twitch";
+import type { SplitNode } from "./managers/split-manager.svelte";
 
 export type HighlightType =
 	| "mention"
@@ -69,6 +70,7 @@ interface Settings extends UserSettings {
 	user: StoredUser | null;
 	lastJoined: string | null;
 	pinned: string[];
+	layout: SplitNode | null;
 }
 
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
@@ -86,6 +88,7 @@ export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
 	pinned: [],
+	layout: null,
 
 	"appearance.theme": "",
 	"chat.hideScrollbar": false,

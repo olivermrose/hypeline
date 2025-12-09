@@ -1,5 +1,6 @@
 import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
+import { settings } from "$lib/settings";
 
 export type SplitDirection = "up" | "down" | "left" | "right";
 
@@ -15,10 +16,12 @@ export type SplitNode = SplitParent | string;
 type SplitPath = "first" | "second";
 
 export class SplitManager {
-	public root = $state<SplitNode | null>(null);
+	public get root() {
+		return settings.state.layout;
+	}
 
-	public constructor(root?: SplitNode) {
-		this.root = root ?? null;
+	public set root(value: SplitNode | null) {
+		settings.state.layout = value;
 	}
 
 	public insert(target: string, newNode: string, data: SplitParent) {
