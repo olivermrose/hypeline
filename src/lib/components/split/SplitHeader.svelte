@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Attachment } from "svelte/attachments";
-	import DotsSixVertical from "~icons/ph/dots-six-vertical";
 	import SquareHalfBottom from "~icons/ph/square-half-bottom-fill";
 	import SquareHalf from "~icons/ph/square-half-fill";
 	import X from "~icons/ph/x";
@@ -17,8 +16,10 @@
 </script>
 
 <div class="z-20 flex items-center justify-between border-b p-1">
-	<div class="flex h-full flex-1 items-center gap-x-2 overflow-hidden px-1">
-		<DotsSixVertical class="cursor-grab active:cursor-grabbing" {@attach handleRef} />
+	<div
+		class="flex h-full flex-1 cursor-grab items-center gap-x-2 overflow-hidden px-1 active:cursor-grabbing"
+		{@attach handleRef}
+	>
 		<span class="truncate text-sm font-medium select-none">{channel.user.displayName}</span>
 	</div>
 
