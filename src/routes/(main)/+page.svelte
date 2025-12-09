@@ -18,7 +18,8 @@
 			await app.user.fetchEmoteSets();
 		}
 
-		if (settings.state.layout) {
+		// Only navigate to split view if there's more than one split
+		if (settings.state.layout && typeof settings.state.layout !== "string") {
 			app.splits.root = settings.state.layout;
 
 			await goto("/channels/split");

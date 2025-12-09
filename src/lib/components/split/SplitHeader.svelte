@@ -3,6 +3,7 @@
 	import SquareHalfBottom from "~icons/ph/square-half-bottom-fill";
 	import SquareHalf from "~icons/ph/square-half-fill";
 	import X from "~icons/ph/x";
+	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "../ui/button";
 
@@ -14,6 +15,20 @@
 	const { id, handleRef }: Props = $props();
 
 	const channel = $derived(app.channels.get(id));
+
+	async function closeSplit() {
+		app.splits.remove(id);
+
+		if (!app.splits.root) {
+			if (channel) {
+				await goto(`/channels/${channel.user.username}`);
+			} else {
+				await goto("/");
+			}
+		} else {
+			await channel?.leave();
+		}
+	}
 </script>
 
 <div class="z-20 flex items-center justify-between border-b p-1">
@@ -49,15 +64,7 @@
 			<SquareHalfBottom />
 		</Button>
 
-		<Button
-			class="size-min p-1"
-			size="icon-sm"
-			variant="ghost"
-			onclick={async () => {
-				app.splits.remove(id);
-				await channel?.leave();
-			}}
-		>
+		<Button class="size-min p-1" size="icon-sm" variant="ghost" onclick={closeSplit}>
 			<X />
 		</Button>
 	</div>
