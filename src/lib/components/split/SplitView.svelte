@@ -10,7 +10,9 @@
 
 	const { id }: Props = $props();
 
-	const { ref, handleRef, isDragging } = useDraggable({ id: () => id });
+	const { ref, handleRef, isDragging } = useDraggable({
+		id: () => `${id}:${crypto.randomUUID()}`,
+	});
 
 	const dropCenter = useDroppable({ id: () => `${id}:center` });
 	const dropUp = useDroppable({ id: () => `${id}:up` });
