@@ -77,7 +77,9 @@ export class SplitManager {
 			const sourceId = source.id.toString();
 			const [targetId, position] = target.id.toString().split(":");
 
-			if (!position) return;
+			if (!position || sourceId === targetId) {
+				return;
+			}
 
 			this.remove(source.id.toString());
 
