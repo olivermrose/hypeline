@@ -21,12 +21,12 @@
 	const channel = $derived(app.channels.get(id));
 </script>
 
-<div class="relative flex size-full flex-col overflow-hidden">
+<div class="relative flex size-full flex-col overflow-hidden" {@attach ref}>
 	{#if channel}
 		<SplitHeader {channel} {handleRef} />
 	{/if}
 
-	<div class={["relative flex-1", isDragging.current && "opacity-50"]} {@attach ref}>
+	<div class={["relative flex-1", isDragging.current && "opacity-50"]}>
 		{#if channel}
 			<Channel {channel} />
 		{:else}
