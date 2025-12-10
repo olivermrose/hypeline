@@ -8,7 +8,7 @@
 
 	settings.state.lastJoined = null;
 
-	async function handleSplit(event: KeyboardEvent) {
+	async function navigateSplit(event: KeyboardEvent) {
 		if (!app.focused || !(event.metaKey || event.ctrlKey)) return;
 
 		let direction: SplitDirection;
@@ -26,11 +26,6 @@
 			case "ArrowRight":
 				direction = "right";
 				break;
-			case "\\":
-				event.preventDefault();
-				app.splits.insertEmpty(app.focused.id, "horizontal");
-
-				return;
 			default:
 				return;
 		}
@@ -51,7 +46,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleSplit} />
+<svelte:window onkeydown={navigateSplit} />
 
 <div class="h-full">
 	{#if app.splits.root}

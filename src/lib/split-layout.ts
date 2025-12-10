@@ -1,5 +1,6 @@
 import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
+import { page } from "$app/state";
 import { layout } from "./stores";
 
 export type SplitDirection = "up" | "down" | "left" | "right";
@@ -26,6 +27,10 @@ interface SplitRect {
 }
 
 export class SplitLayout {
+	public get active() {
+		return page.route.id === "/(main)/channels/split";
+	}
+
 	public get root() {
 		return layout.state.root;
 	}

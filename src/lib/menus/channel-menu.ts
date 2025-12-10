@@ -1,6 +1,5 @@
 import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 import { goto } from "$app/navigation";
-import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
@@ -31,7 +30,7 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 
 			app.splits.insert(app.focused.id, channel.id, node);
 
-			if (page.route.id !== "/(main)/channels/split") {
+			if (!app.splits.active) {
 				await goto("/channels/split");
 			}
 		},
