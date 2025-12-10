@@ -1,6 +1,5 @@
 import { RuneStore } from "@tauri-store/svelte";
 import type { User } from "./graphql/twitch";
-import type { SplitNode } from "./split-layout";
 
 export type HighlightType =
 	| "mention"
@@ -70,7 +69,6 @@ interface Settings extends UserSettings {
 	user: StoredUser | null;
 	lastJoined: string | null;
 	pinned: string[];
-	layout: SplitNode | null;
 }
 
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
@@ -88,7 +86,6 @@ export const defaults: Settings = {
 	user: null,
 	lastJoined: null,
 	pinned: [],
-	layout: null,
 
 	"appearance.theme": "",
 	"chat.hideScrollbar": false,
@@ -117,14 +114,4 @@ export const defaults: Settings = {
 	"advanced.logs.level": "info",
 };
 
-export const settings = new RuneStore<Settings>("settings", defaults, {
-	hooks: {
-		beforeBackendSync(state) {
-			if (typeof state.layout === "string") {
-				state.layout = null;
-			}
-
-			return state;
-		},
-	},
-});
+export const settings = new RuneStore<Settings>("settings", defaults, { autoStart: true });

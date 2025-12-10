@@ -8,6 +8,7 @@
 	import { buttonVariants } from "$lib/components/ui/button";
 	import * as Empty from "$lib/components/ui/empty";
 	import { settings } from "$lib/settings";
+	import { layout } from "$lib/stores";
 
 	let loading = $state(true);
 
@@ -18,8 +19,8 @@
 			await app.user.fetchEmoteSets();
 		}
 
-		if (settings.state.layout) {
-			app.splits.root = settings.state.layout;
+		if (layout.state.root) {
+			app.splits.root = layout.state.root;
 
 			await goto("/channels/split");
 		} else if (settings.state.lastJoined) {

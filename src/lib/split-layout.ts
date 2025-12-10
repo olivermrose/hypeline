@@ -1,9 +1,8 @@
 import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
-import { settings } from "$lib/settings";
+import { layout } from "./stores";
 
-export type SplitAxis = PaneGroupProps["direction"];
-export type SplitDirection = "up" | "down" | "left" | "right";
+type SplitAxis = PaneGroupProps["direction"];
 
 export interface SplitBranch {
 	axis: SplitAxis;
@@ -18,11 +17,11 @@ type SplitPath = ("before" | "after")[];
 
 export class SplitLayout {
 	public get root() {
-		return settings.state.layout;
+		return layout.state.root;
 	}
 
 	public set root(value: SplitNode | null) {
-		settings.state.layout = value;
+		layout.state.root = value;
 	}
 
 	public insert(target: string, newNode: string, branch: SplitBranch) {
