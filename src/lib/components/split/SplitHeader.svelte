@@ -33,12 +33,21 @@
 	}
 </script>
 
-<div class="z-20 flex items-center justify-between border-b p-1">
+<div class="bg-sidebar z-20 flex items-center justify-between border-b p-1">
 	<div
 		class="flex h-full flex-1 cursor-grab items-center gap-x-2 overflow-hidden px-1 active:cursor-grabbing"
 		{@attach handleRef}
 	>
 		{#if channel}
+			<img
+				class="size-5 rounded-full"
+				src={channel.user.avatarUrl}
+				alt={channel.user.displayName}
+				width="150"
+				height="150"
+				draggable="false"
+			/>
+
 			<span class="truncate text-sm font-medium select-none">{channel.user.displayName}</span>
 		{/if}
 	</div>
