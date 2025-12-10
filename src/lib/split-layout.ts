@@ -2,6 +2,8 @@ import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
 import { layout } from "./stores";
 
+export type SplitDirection = "up" | "down" | "left" | "right";
+
 type SplitAxis = PaneGroupProps["direction"];
 
 export interface SplitBranch {
@@ -14,6 +16,14 @@ export interface SplitBranch {
 export type SplitNode = SplitBranch | string;
 
 type SplitPath = ("before" | "after")[];
+
+interface SplitRect {
+	id: string;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
 
 export class SplitLayout {
 	public get root() {
@@ -81,6 +91,60 @@ export class SplitLayout {
 		if (!this.root || target === replacement) return;
 
 		this.#update(target, () => replacement);
+	}
+
+	public navigate(startId: string, direction: SplitDirection) {
+		if (!this.root || this.root === startId) return null;
+
+		const rects = this.#getLayoutRects(this.root);
+		const current = rects.find((r) => r.id === startId);
+		if (!current) return null;
+
+		const threshold = 0.001;
+
+		const candidates = rects.filter((rect) => {
+			if (rect.id === startId) return false;
+
+			switch (direction) {
+				case "up": {
+					return rect.y + rect.height <= current.y + threshold;
+				}
+
+				case "down": {
+					return rect.y >= current.y + current.height - threshold;
+				}
+
+				case "left": {
+					return rect.x + rect.width <= current.x + threshold;
+				}
+
+				case "right": {
+					return rect.x >= current.x + current.width - threshold;
+				}
+
+				default: {
+					return false;
+				}
+			}
+		});
+
+		if (!candidates.length) return null;
+
+		const [best] = candidates.sort((a, b) => {
+			const distA = this.#getDistance(current, a, direction);
+			const distB = this.#getDistance(current, b, direction);
+
+			if (Math.abs(distA - distB) > threshold) {
+				return distA - distB;
+			}
+
+			return (
+				this.#getAlignmentScore(current, b, direction) -
+				this.#getAlignmentScore(current, a, direction)
+			);
+		});
+
+		return best.id;
 	}
 
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {
@@ -161,5 +225,70 @@ export class SplitLayout {
 			before: this.#remove(node.before, target),
 			after: this.#remove(node.after, target),
 		};
+	}
+
+	#getLayoutRects(
+		node: SplitNode,
+		{ x, y, width, height }: Omit<SplitRect, "id"> = { x: 0, y: 0, width: 1, height: 1 },
+	): SplitRect[] {
+		if (typeof node === "string") {
+			return [{ id: node, x, y, width, height }];
+		}
+
+		const isRow = node.axis === "horizontal";
+		const ratio = (node.size ?? 50) / 100;
+
+		const sizeFirst = isRow ? width * ratio : height * ratio;
+		const sizeSecond = isRow ? width * (1 - ratio) : height * (1 - ratio);
+
+		return [
+			...this.#getLayoutRects(node.before, {
+				x,
+				y,
+				width: isRow ? sizeFirst : width,
+				height: !isRow ? sizeFirst : height,
+			}),
+			...this.#getLayoutRects(node.after, {
+				x: isRow ? x + sizeFirst : x,
+				y: !isRow ? y + sizeFirst : y,
+				width: isRow ? sizeSecond : width,
+				height: !isRow ? sizeSecond : height,
+			}),
+		];
+	}
+
+	#getDistance(from: SplitRect, to: SplitRect, direction: SplitDirection) {
+		switch (direction) {
+			case "up": {
+				return from.y - (to.y + to.height);
+			}
+
+			case "down": {
+				return to.y - (from.y + from.height);
+			}
+
+			case "left": {
+				return from.x - (to.x + to.width);
+			}
+
+			case "right": {
+				return to.x - (from.x + from.width);
+			}
+		}
+	}
+
+	#getAlignmentScore(from: SplitRect, to: SplitRect, direction: SplitDirection) {
+		const isVerticalMove = direction === "up" || direction === "down";
+
+		const startSrc = isVerticalMove ? from.x : from.y;
+		const endSrc = isVerticalMove ? from.x + from.width : from.y + from.height;
+
+		const startTgt = isVerticalMove ? to.x : to.y;
+		const endTgt = isVerticalMove ? to.x + to.width : to.y + to.height;
+
+		const overlapStart = Math.max(startSrc, startTgt);
+		const overlapEnd = Math.min(endSrc, endTgt);
+
+		return Math.max(0, overlapEnd - overlapStart);
 	}
 }

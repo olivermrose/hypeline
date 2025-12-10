@@ -4,9 +4,7 @@ import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
-import type { SplitBranch } from "$lib/split-layout";
-
-type SplitDirection = "up" | "down" | "left" | "right";
+import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	return MenuItem.new({
