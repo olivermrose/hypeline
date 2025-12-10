@@ -15,7 +15,7 @@
 	<SplitView id={node} />
 {:else}
 	<PaneGroup class="size-full" direction={node.axis}>
-		<Pane defaultSize={node.size ?? 50}>
+		<Pane defaultSize={node.size ?? 50} onResize={(size) => (node.size = size)}>
 			<Self node={node.before} />
 		</Pane>
 
@@ -26,7 +26,7 @@
 			]}
 		/>
 
-		<Pane defaultSize={100 - (node.size ?? 50)}>
+		<Pane defaultSize={100 - (node.size ?? 50)} onResize={(size) => (node.size = 100 - size)}>
 			<Self node={node.after} />
 		</Pane>
 	</PaneGroup>
