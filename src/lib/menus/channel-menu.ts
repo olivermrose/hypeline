@@ -6,10 +6,15 @@ import { settings } from "$lib/settings";
 import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
+	const enabled =
+		app.focused !== null &&
+		app.focused.id !== channel.id &&
+		!app.splits.contains(app.splits.root!, channel.id);
+
 	return MenuItem.new({
 		id: `split-${direction}`,
 		text: `Split ${direction.charAt(0).toUpperCase() + direction.slice(1)}`,
-		enabled: !settings.state["advanced.singleConnection"],
+		enabled,
 		async action() {
 			await channel.join(true);
 
@@ -64,10 +69,15 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
-	const splitUp = await splitItem(channel, "up");
-	const splitDown = await splitItem(channel, "down");
-	const splitLeft = await splitItem(channel, "left");
-	const splitRight = await splitItem(channel, "right");
+	const openInSplit = await MenuItem.new({
+		id: "open-in-split",
+		text: "Open in Split View",
+		enabled: !settings.state["advanced.singleConnection"] && !app.splits.active,
+		async action() {
+			app.splits.root = channel.id;
+			await goto("/channels/split");
+		},
+	});
 
 	const pin = await CheckMenuItem.new({
 		id: "pin",
@@ -87,7 +97,6 @@ export async function createChannelMenu(channel: Channel) {
 	const remove = await MenuItem.new({
 		id: "remove",
 		text: "Remove",
-		enabled: channel.ephemeral,
 		async action() {
 			await channel.leave();
 			app.channels.delete(channel.id);
@@ -95,18 +104,22 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
-	return Menu.new({
-		items: [
-			join,
-			leave,
-			pin,
-			separator,
-			splitUp,
-			splitDown,
-			splitLeft,
-			splitRight,
-			separator,
-			remove,
-		],
-	});
+	const items = [join, leave, pin, separator, openInSplit];
+
+	if (app.splits.active && !settings.state["advanced.singleConnection"]) {
+		const splitItems = await Promise.all([
+			splitItem(channel, "up"),
+			splitItem(channel, "down"),
+			splitItem(channel, "left"),
+			splitItem(channel, "right"),
+		]);
+
+		items.push(separator, ...splitItems);
+	}
+
+	if (channel.ephemeral) {
+		items.push(separator, remove);
+	}
+
+	return Menu.new({ items });
 }

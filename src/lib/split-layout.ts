@@ -152,6 +152,14 @@ export class SplitLayout {
 		return best.id;
 	}
 
+	public contains(node: SplitNode, id: string): boolean {
+		if (typeof node === "string") {
+			return node === id;
+		}
+
+		return this.contains(node.before, id) || this.contains(node.after, id);
+	}
+
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {
 		const { source, target } = event.operation;
 		if (!source || !target || source.id === target.id) return;
