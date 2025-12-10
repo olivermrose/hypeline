@@ -33,7 +33,7 @@
 	}
 </script>
 
-<div class="bg-sidebar z-20 flex items-center justify-between border-b p-1">
+<div class="bg-sidebar flex items-center justify-between border-b p-1">
 	<div
 		class="flex h-full flex-1 cursor-grab items-center gap-x-2 overflow-hidden px-1 active:cursor-grabbing"
 		{@attach handleRef}
