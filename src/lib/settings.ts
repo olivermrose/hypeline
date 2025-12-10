@@ -117,4 +117,14 @@ export const defaults: Settings = {
 	"advanced.logs.level": "info",
 };
 
-export const settings = new RuneStore<Settings>("settings", defaults);
+export const settings = new RuneStore<Settings>("settings", defaults, {
+	hooks: {
+		beforeBackendSync(state) {
+			if (typeof state.layout === "string") {
+				state.layout = null;
+			}
+
+			return state;
+		},
+	},
+});

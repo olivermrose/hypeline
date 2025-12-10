@@ -20,11 +20,11 @@
 		if (app.splits.root === id) {
 			if (channel) {
 				await goto(`/channels/${channel.user.username}`);
-				app.splits.root = null;
 			} else {
 				await goto("/");
 			}
 
+			app.splits.root = null;
 			return;
 		}
 
