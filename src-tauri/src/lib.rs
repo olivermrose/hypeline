@@ -86,16 +86,18 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
-        .plugin(
-            tauri_plugin_svelte::Builder::new()
-                .marshaler(Box::new(PrettyJsonMarshaler))
-                .build(),
-        )
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .setup(|app| {
             log::init_tracing(app);
 
             let app_handle = app.handle();
+
+            let svelte = tauri_plugin_svelte::Builder::new()
+                .path(app_handle.path().app_data_dir()?)
+                .marshaler(Box::new(PrettyJsonMarshaler))
+                .build();
+
+            app_handle.plugin(svelte)?;
 
             async_runtime::block_on(async {
                 let stored_token = app_handle
