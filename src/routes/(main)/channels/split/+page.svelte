@@ -55,7 +55,7 @@
 
 <div class="h-full">
 	{#if app.splits.root}
-		<SplitNode node={app.splits.root} />
+		<SplitNode bind:node={app.splits.root} />
 	{:else}
 		<SplitView id="blank" />
 	{/if}

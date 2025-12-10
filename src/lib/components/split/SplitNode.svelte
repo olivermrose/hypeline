@@ -8,7 +8,7 @@
 		node: SplitNode;
 	}
 
-	const { node }: Props = $props();
+	let { node = $bindable() }: Props = $props();
 </script>
 
 {#if typeof node === "string"}
@@ -16,7 +16,7 @@
 {:else}
 	<PaneGroup class="size-full" direction={node.axis}>
 		<Pane defaultSize={node.size ?? 50} onResize={(size) => (node.size = size)}>
-			<Self node={node.before} />
+			<Self bind:node={node.before} />
 		</Pane>
 
 		<PaneResizer
@@ -27,7 +27,7 @@
 		/>
 
 		<Pane defaultSize={100 - (node.size ?? 50)} onResize={(size) => (node.size = 100 - size)}>
-			<Self node={node.after} />
+			<Self bind:node={node.after} />
 		</Pane>
 	</PaneGroup>
 {/if}
