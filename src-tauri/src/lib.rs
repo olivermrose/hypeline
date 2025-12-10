@@ -11,7 +11,7 @@ use tauri::async_runtime::{self, Mutex};
 use tauri::ipc::Invoke;
 use tauri::{Manager, WindowEvent};
 use tauri_plugin_cache::{CacheConfig, CompressionMethod};
-use tauri_plugin_svelte::{ManagerExt, PrettyJsonMarshaler};
+use tauri_plugin_svelte::ManagerExt;
 use twitch_api::HelixClient;
 use twitch_api::twitch_oauth2::{AccessToken, UserToken};
 
@@ -20,6 +20,7 @@ mod commands;
 mod error;
 mod eventsub;
 mod irc;
+mod json;
 mod log;
 mod server;
 mod seventv;
@@ -94,7 +95,7 @@ pub fn run() {
 
             let svelte = tauri_plugin_svelte::Builder::new()
                 .path(app_handle.path().app_data_dir()?)
-                .marshaler(Box::new(PrettyJsonMarshaler))
+                .marshaler(Box::new(json::JsonMarshaler))
                 .build();
 
             app_handle.plugin(svelte)?;
