@@ -4,9 +4,9 @@
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import Sidebar from "$lib/components/Sidebar.svelte";
-	import SplitHeader from "$lib/components/split/SplitHeader.svelte";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { settings } from "$lib/settings";
+	import SplitHeader from "./channels/split/SplitHeader.svelte";
 
 	const { children } = $props();
 </script>

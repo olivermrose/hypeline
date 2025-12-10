@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { tick } from "svelte";
 	import { app } from "$lib/app.svelte.js";
-	import SplitNode from "$lib/components/split/SplitNode.svelte";
-	import SplitView from "$lib/components/split/SplitView.svelte";
 	import { settings } from "$lib/settings";
 	import type { SplitDirection } from "$lib/split-layout";
+	import SplitNode from "./SplitNode.svelte";
+	import SplitView from "./SplitView.svelte";
 
 	settings.state.lastJoined = null;
 
@@ -52,6 +52,6 @@
 	{#if app.splits.root}
 		<SplitNode bind:node={app.splits.root} />
 	{:else}
-		<SplitView id="blank" />
+		<SplitView id="split-root-blank" />
 	{/if}
 </div>

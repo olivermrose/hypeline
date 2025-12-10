@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
+	import { settings } from "$lib/settings";
 
 	const { children } = $props();
 
@@ -15,7 +16,7 @@
 				await goto("/channels/split");
 			}
 
-			app.splits.insertEmpty(app.focused.id, "horizontal");
+			app.splits.insertEmpty(app.focused.id, settings.state["splits.defaultOrientation"]);
 		}
 	}
 </script>

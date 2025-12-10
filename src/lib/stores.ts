@@ -1,4 +1,5 @@
 import { RuneStore } from "@tauri-store/svelte";
+import { settings } from "./settings";
 import type { SplitNode } from "./split-layout";
 
 interface Layout {
@@ -13,7 +14,10 @@ export const layout = new RuneStore<Layout>(
 		autoStart: true,
 		hooks: {
 			beforeBackendSync(state) {
-				if (typeof state.root === "string") {
+				if (
+					typeof state.root === "string" &&
+					settings.state["splits.singleRestoreBehavior"] === "remove"
+				) {
 					state.root = null;
 				}
 

@@ -5,7 +5,8 @@
 	import X from "~icons/ph/x";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
-	import { Button } from "../ui/button";
+	import { Button } from "$lib/components/ui/button";
+	import { settings } from "$lib/settings";
 
 	interface Props {
 		id: string;
@@ -16,9 +17,23 @@
 
 	const channel = $derived(app.channels.get(id));
 
-	async function closeSplit() {
-		if (app.splits.root === id) {
-			if (channel) {
+	async function closeSplit(event: MouseEvent) {
+		const preserve =
+			settings.state["splits.closeBehavior"] === "preserve" &&
+			!(id.startsWith("split-") || event.shiftKey);
+
+		if (app.splits.root === id || id.includes("blank")) {
+			if (preserve) {
+				app.splits.remove(id);
+
+				if (settings.state["splits.leaveOnClose"]) {
+					await channel?.leave();
+				}
+
+				return;
+			}
+
+			if (channel && settings.state["splits.goToChannelAfterClose"]) {
 				await goto(`/channels/${channel.user.username}`);
 			} else {
 				await goto("/");
@@ -28,8 +43,16 @@
 			return;
 		}
 
-		app.splits.remove(id);
-		await channel?.leave();
+		if (preserve) {
+			const newId = `split-${crypto.randomUUID()}`;
+			app.splits.replace(id, newId);
+		} else {
+			app.splits.remove(id);
+		}
+
+		if (settings.state["splits.leaveOnClose"]) {
+			await channel?.leave();
+		}
 	}
 </script>
 

@@ -20,10 +20,23 @@
 		}
 
 		if (layout.state.root) {
-			app.splits.root = layout.state.root;
+			const restoreBehavior = settings.state["splits.singleRestoreBehavior"];
+			const isBranch = typeof layout.state.root !== "string";
 
-			await goto("/channels/split");
-		} else if (settings.state.lastJoined) {
+			if (isBranch || restoreBehavior === "preserve") {
+				app.splits.root = layout.state.root;
+				await goto("/channels/split");
+
+				return;
+			}
+
+			if (restoreBehavior === "redirect") {
+				const channel = app.channels.get(layout.state.root as string);
+				settings.state.lastJoined = channel?.user.username ?? null;
+			}
+		}
+
+		if (settings.state.lastJoined) {
 			await goto(`/channels/${settings.state.lastJoined}`);
 		}
 

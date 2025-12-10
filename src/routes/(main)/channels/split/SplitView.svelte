@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { useDraggable, useDroppable } from "@dnd-kit-svelte/svelte";
 	import { app } from "$lib/app.svelte";
-	import Channel from "../Channel.svelte";
+	import Channel from "$lib/components/Channel.svelte";
 	import SplitHeader from "./SplitHeader.svelte";
 
 	interface Props {
