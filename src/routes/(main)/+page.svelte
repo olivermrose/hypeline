@@ -5,7 +5,7 @@
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
 	import JoinDialog from "$lib/components/JoinDialog.svelte";
-	import { buttonVariants } from "$lib/components/ui/button";
+	import { Button, buttonVariants } from "$lib/components/ui/button";
 	import * as Empty from "$lib/components/ui/empty";
 	import { settings } from "$lib/settings";
 	import { layout } from "$lib/stores";
@@ -66,7 +66,11 @@
 		</Empty.Header>
 
 		<Empty.Content>
-			<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
+			<div class="flex items-center gap-2">
+				<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
+
+				<Button href="/channels/split" variant="secondary">Open split view</Button>
+			</div>
 		</Empty.Content>
 	</Empty.Root>
 {/if}
