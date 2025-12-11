@@ -31,19 +31,18 @@
 		if (dropRight.isDropTarget.current) return "top-0 left-1/2 w-1/2 h-full";
 		if (dropCenter.isDropTarget.current) return "top-0 left-0 size-full";
 	});
+
+	function setFocus() {
+		app.splits.focused = id;
+	}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="relative flex size-full flex-col"
-	onclick={() => (app.splits.focused = id)}
-	onfocusin={() => (app.splits.focused = id)}
-	{@attach ref}
->
+<div class="relative flex size-full flex-col" onfocusin={setFocus} {@attach ref}>
 	<SplitHeader {id} {handleRef} />
 
-	<div class="relative h-full">
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="relative h-full" onclick={setFocus}>
 		<div class={["h-full", isDragging.current && "opacity-50"]}>
 			{#if channel}
 				<Channel {channel} />
