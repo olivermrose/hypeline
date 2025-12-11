@@ -5,7 +5,7 @@ import type { SettingsCategory } from "../types";
 
 export default {
 	order: 10,
-	label: "Apperance",
+	label: "Appearance",
 	icon: Monitor,
 	fields: [
 		{
