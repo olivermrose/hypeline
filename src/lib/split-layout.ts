@@ -183,7 +183,7 @@ export class SplitLayout {
 
 		this.remove(sourceId);
 
-		if (targetId.includes("blank")) {
+		if (targetId.includes("empty")) {
 			this.root = sourceId;
 			return;
 		}

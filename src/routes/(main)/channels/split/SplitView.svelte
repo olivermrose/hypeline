@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { useDraggable, useDroppable } from "@dnd-kit-svelte/svelte";
+	import Layout from "~icons/ph/layout";
 	import { app } from "$lib/app.svelte";
 	import Channel from "$lib/components/Channel.svelte";
+	import * as Empty from "$lib/components/ui/empty";
 	import SplitHeader from "./SplitHeader.svelte";
 
 	interface Props {
@@ -43,9 +45,19 @@
 			{#if channel}
 				<Channel {channel} />
 			{:else}
-				<div class="text-muted-foreground flex h-full items-center justify-center">
-					Empty Split
-				</div>
+				<Empty.Root class="h-full">
+					<Empty.Header>
+						<Empty.Media variant="icon">
+							<Layout />
+						</Empty.Media>
+
+						<Empty.Title>Empty split</Empty.Title>
+
+						<Empty.Description>
+							Drag a channel from the channel list to add it as a split.
+						</Empty.Description>
+					</Empty.Header>
+				</Empty.Root>
 			{/if}
 		</div>
 

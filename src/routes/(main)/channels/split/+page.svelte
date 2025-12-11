@@ -50,6 +50,6 @@
 	{#if app.splits.root}
 		<SplitNode bind:node={app.splits.root} />
 	{:else}
-		<SplitView id="split-root-blank" />
+		<SplitView id="split-root-empty" />
 	{/if}
 </div>

@@ -22,7 +22,7 @@
 			settings.state["splits.closeBehavior"] === "preserve" &&
 			!(id.startsWith("split-") || event.shiftKey);
 
-		if (app.splits.root === id || id.includes("blank")) {
+		if (app.splits.root === id || id.includes("empty")) {
 			if (preserve) {
 				app.splits.remove(id);
 
