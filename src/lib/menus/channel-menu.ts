@@ -44,6 +44,8 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 }
 
 export async function createChannelMenu(channel: Channel) {
+	const singleConnection = settings.state["advanced.singleConnection"];
+
 	const separator = await PredefinedMenuItem.new({
 		item: "Separator",
 	});
@@ -70,10 +72,12 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
+	const isEmpty = typeof app.splits.root === "string" && app.splits.root.startsWith("split-");
+
 	const openInSplit = await MenuItem.new({
 		id: "open-in-split",
 		text: "Open in Split View",
-		enabled: !settings.state["advanced.singleConnection"] && !app.splits.active,
+		enabled: !singleConnection && (!app.splits.active || isEmpty),
 		async action() {
 			app.splits.root = channel.id;
 			await goto("/channels/split");
@@ -107,7 +111,7 @@ export async function createChannelMenu(channel: Channel) {
 
 	const items = [join, leave, pin, separator, openInSplit];
 
-	if (app.splits.active && !settings.state["advanced.singleConnection"]) {
+	if (app.splits.active && !singleConnection) {
 		const splitItems = await Promise.all([
 			splitItem(channel, "up"),
 			splitItem(channel, "down"),
