@@ -10,14 +10,18 @@
 
 		switch (event.key) {
 			case "t": {
-				if (!app.focused) return;
-
-				if (!app.splits.active) {
+				if (!app.splits.active && app.focused) {
 					app.splits.root = app.focused.id;
 					await goto("/channels/split");
 				}
 
-				app.splits.insertEmpty(app.focused.id, settings.state["splits.defaultOrientation"]);
+				if (app.splits.focused) {
+					app.splits.insertEmpty(
+						app.splits.focused,
+						settings.state["splits.defaultOrientation"],
+					);
+				}
+
 				break;
 			}
 
