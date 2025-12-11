@@ -5,11 +5,11 @@
 	import { onDestroy } from "svelte";
 	import { flip } from "svelte/animate";
 	import { app } from "$lib/app.svelte";
+	import { getSidebarContext } from "$lib/context";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import { settings } from "$lib/settings";
 	import Draggable from "./Draggable.svelte";
 	import Droppable from "./Droppable.svelte";
-	import { getSidebarContext } from "./Sidebar.svelte";
 	import StreamTooltip from "./StreamTooltip.svelte";
 	import { Separator } from "./ui/separator";
 

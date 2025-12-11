@@ -7,8 +7,8 @@
 <script lang="ts">
 	import DotsThreeCircle from "~icons/ph/dots-three-circle";
 	import Users from "~icons/ph/users-bold";
+	import { getSidebarContext } from "$lib/context";
 	import type { Channel } from "$lib/models/channel.svelte";
-	import { getSidebarContext } from "./Sidebar.svelte";
 
 	const sidebar = getSidebarContext();
 
