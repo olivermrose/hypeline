@@ -38,6 +38,10 @@ export class SplitLayout {
 	}
 
 	public set root(value: SplitNode | null) {
+		if (typeof value === "string") {
+			this.#focused = value;
+		}
+
 		layout.state.root = value;
 	}
 

@@ -8,10 +8,6 @@
 	app.focused = null;
 	settings.state.lastJoined = null;
 
-	if (typeof app.splits.root === "string") {
-		app.splits.focused = app.splits.root;
-	}
-
 	async function navigateSplit(event: KeyboardEvent) {
 		if (!app.splits.focused || !(event.metaKey || event.ctrlKey)) return;
 
