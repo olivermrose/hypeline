@@ -183,6 +183,11 @@ export class SplitLayout {
 
 		this.remove(sourceId);
 
+		if (targetId.includes("blank")) {
+			this.root = sourceId;
+			return;
+		}
+
 		if (position === "center") {
 			this.replace(targetId, sourceId);
 			return;
