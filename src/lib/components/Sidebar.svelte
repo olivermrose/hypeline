@@ -1,13 +1,3 @@
-<script lang="ts" module>
-	import { createContext } from "svelte";
-
-	interface SidebarContext {
-		collapsed: boolean;
-	}
-
-	export const [getSidebarContext, setSidebarContext] = createContext<SidebarContext>();
-</script>
-
 <script lang="ts">
 	import { ScrollArea } from "bits-ui";
 	import { MediaQuery } from "svelte/reactivity";
@@ -16,6 +6,8 @@
 	import Plus from "~icons/ph/plus";
 	import Sidebar from "~icons/ph/sidebar";
 	import { app } from "$lib/app.svelte";
+	import { setSidebarContext } from "$lib/context";
+	import type { SidebarContext } from "$lib/context";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
 	import { Button, buttonVariants } from "./ui/button";

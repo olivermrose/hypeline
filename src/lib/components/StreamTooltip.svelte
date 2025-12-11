@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Users from "~icons/ph/users-bold";
+	import { getSidebarContext } from "$lib/context";
 	import { createChannelMenu } from "$lib/menus/channel-menu";
 	import { openMenu } from "$lib/util";
 	import ChannelListItem from "./ChannelListItem.svelte";
 	import GuestList from "./GuestList.svelte";
-	import { getSidebarContext } from "./Sidebar.svelte";
 	import * as Tooltip from "./ui/tooltip";
 	import type { ChannelListItemProps } from "./ChannelListItem.svelte";
 
