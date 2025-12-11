@@ -21,23 +21,41 @@
 	const dropRight = useDroppable({ id: () => `${id}:right` });
 
 	const channel = $derived(app.channels.get(id));
+
+	const activeClass = $derived.by(() => {
+		if (dropUp.isDropTarget.current) return "top-0 left-0 w-full h-1/2";
+		if (dropDown.isDropTarget.current) return "top-1/2 left-0 w-full h-1/2";
+		if (dropLeft.isDropTarget.current) return "top-0 left-0 w-1/2 h-full";
+		if (dropRight.isDropTarget.current) return "top-0 left-1/2 w-1/2 h-full";
+		if (dropCenter.isDropTarget.current) return "top-0 left-0 size-full";
+	});
 </script>
 
 <div
-	class="relative flex size-full flex-col overflow-hidden"
+	class="relative flex size-full flex-col"
 	onfocusin={() => (app.splits.focused = id)}
 	{@attach ref}
 >
 	<SplitHeader {id} {handleRef} />
 
-	<div class={["relative flex-1", isDragging.current && "opacity-50"]}>
-		{#if channel}
-			<Channel {channel} />
-		{:else}
-			<div class="text-muted-foreground flex h-full items-center justify-center">
-				Empty Split
-			</div>
-		{/if}
+	<div class="relative h-full">
+		<div class={["h-full", isDragging.current && "opacity-50"]}>
+			{#if channel}
+				<Channel {channel} />
+			{:else}
+				<div class="text-muted-foreground flex h-full items-center justify-center">
+					Empty Split
+				</div>
+			{/if}
+		</div>
+
+		<div
+			class={[
+				"bg-primary/50 pointer-events-none absolute z-20 size-full brightness-50 transition-all duration-75 ease-out",
+				activeClass ? "opacity-100" : "opacity-0",
+				activeClass,
+			]}
+		></div>
 
 		{@render dropZone(dropCenter, "inset-0")}
 
@@ -51,12 +69,5 @@
 </div>
 
 {#snippet dropZone(dropper: ReturnType<typeof useDroppable>, className: string)}
-	<div
-		class={[
-			"pointer-events-none absolute z-10",
-			className,
-			dropper.isDropTarget.current && "bg-primary/30",
-		]}
-		{@attach dropper.ref}
-	></div>
+	<div class={["pointer-events-none absolute z-10 flex", className]} {@attach dropper.ref}></div>
 {/snippet}
