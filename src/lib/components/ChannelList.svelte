@@ -100,11 +100,13 @@
 		{/if}
 
 		{#if group.type === "Pinned"}
-			<Droppable id="pinned-channels" class="space-y-1.5">
-				{#each group.channels as channel, i (channel.user.id)}
-					<Draggable id={channel.id} index={i} {channel} />
-				{/each}
-			</Droppable>
+			{#key settings.state.pinned.length}
+				<Droppable id="pinned-channels" class="space-y-1.5">
+					{#each group.channels as channel, i (channel.user.id)}
+						<Draggable {channel} index={i} />
+					{/each}
+				</Droppable>
+			{/key}
 		{:else}
 			{#each group.channels as channel (channel.user.id)}
 				<div class="px-1.5" animate:flip={{ duration: 500 }}>
