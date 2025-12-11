@@ -24,8 +24,9 @@
 				<a
 					class="absolute inset-0 z-10"
 					href="/channels/{channel.user.username}"
-					data-sveltekit-preload-data="off"
+					draggable="false"
 					aria-label="Join {channel.user.displayName}"
+					data-sveltekit-preload-data="off"
 				>
 				</a>
 

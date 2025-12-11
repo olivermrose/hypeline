@@ -1,13 +1,20 @@
 <script lang="ts">
 	import { useSortable } from "@dnd-kit-svelte/svelte/sortable";
-	import type { UseSortableInput } from "@dnd-kit-svelte/svelte/sortable";
+	import type { Channel } from "$lib/models/channel.svelte";
 	import ChannelListItem from "./ChannelListItem.svelte";
 	import StreamTooltip from "./StreamTooltip.svelte";
-	import type { ChannelListItemProps } from "./ChannelListItem.svelte";
 
-	const { channel, ...rest }: UseSortableInput & ChannelListItemProps = $props();
+	interface Props {
+		channel: Channel;
+		index: number;
+	}
 
-	const { ref, isDragging } = useSortable(rest);
+	const { channel, index }: Props = $props();
+
+	const { ref, isDragging } = useSortable({
+		id: () => channel.id,
+		index: () => index,
+	});
 </script>
 
 <div class="relative px-1.5" {@attach ref}>
