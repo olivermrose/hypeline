@@ -179,7 +179,7 @@ export default {
 							type: "input",
 							label: "Custom format",
 							description:
-								'Formats use the same <a href="https://day.js.org/docs/en/display/format" target="_blank">tokens</a> as <a href="https://day.js.org/en" target="_blank">Day.js</a>. Localized formats are not enabled.',
+								'Formats use the same <a href="https://day.js.org/docs/en/display/format" target="_blank">tokens</a> as <a href="https://day.js.org/en" target="_blank">Day.js</a>. Localized formats are also enabled.',
 							placeholder: "e.g. HH:mm:ss",
 							disabled: () =>
 								settings.state["chat.messages.timestamps.format"] !== "custom",
