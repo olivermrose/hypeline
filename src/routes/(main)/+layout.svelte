@@ -6,7 +6,6 @@
 	import Sidebar from "$lib/components/Sidebar.svelte";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { settings } from "$lib/settings";
-	import SplitHeader from "./channels/split/SplitHeader.svelte";
 
 	const { children } = $props();
 </script>
@@ -43,10 +42,21 @@
 	</Tooltip.Provider>
 
 	<DragOverlay>
-		{#snippet children(draggable)}
-			{#if draggable.type !== "channel-list-item"}
-				<SplitHeader id={draggable.id.toString()} />
-			{/if}
+		{#snippet children(source)}
+			{@const id = source.id.toString().split(":")[0]}
+			{@const channel = app.channels.get(id)}
+
+			<div class="bg-muted/90 flex items-center justify-center gap-x-1 rounded py-2">
+				{#if channel}
+					<img
+						src={channel.user.avatarUrl}
+						alt={channel.user.username}
+						class="size-5 rounded-full object-cover"
+					/>
+				{/if}
+
+				<span class="text-sm font-medium">{channel?.user.displayName ?? "Empty"}</span>
+			</div>
 		{/snippet}
 	</DragOverlay>
 </DragDropProvider>

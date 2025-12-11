@@ -56,7 +56,7 @@
 	}
 </script>
 
-<div class="bg-sidebar flex items-center justify-between border-b p-1">
+<div class="bg-sidebar flex items-center justify-between border-b p-1" data-slot="split-header">
 	<div
 		class="flex h-full flex-1 cursor-grab items-center gap-x-2 overflow-hidden px-1 active:cursor-grabbing"
 		{@attach handleRef}
@@ -75,7 +75,7 @@
 		{/if}
 	</div>
 
-	<div class="flex shrink-0 items-center gap-x-1">
+	<div class="text-muted-foreground flex shrink-0 items-center gap-x-1">
 		<Button
 			class="size-min p-1"
 			size="icon-sm"
@@ -103,3 +103,9 @@
 		</Button>
 	</div>
 </div>
+
+<style>
+	[data-slot="split-header"] :global(button:hover) {
+		color: var(--color-foreground);
+	}
+</style>
