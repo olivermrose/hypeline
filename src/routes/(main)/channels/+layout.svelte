@@ -6,17 +6,34 @@
 	const { children } = $props();
 
 	async function handleKeydown(event: KeyboardEvent) {
-		if (!app.focused || !(event.metaKey || event.ctrlKey)) return;
+		if (!(event.metaKey || event.ctrlKey)) return;
 
-		if (event.key === "\\") {
-			event.preventDefault();
+		switch (event.key) {
+			case "t": {
+				if (!app.focused) return;
 
-			if (!app.splits.active) {
-				app.splits.root = app.focused.id;
-				await goto("/channels/split");
+				if (!app.splits.active) {
+					app.splits.root = app.focused.id;
+					await goto("/channels/split");
+				}
+
+				app.splits.insertEmpty(app.focused.id, settings.state["splits.defaultOrientation"]);
+				break;
 			}
 
-			app.splits.insertEmpty(app.focused.id, settings.state["splits.defaultOrientation"]);
+			case "w": {
+				if (app.splits.active && app.splits.focused) {
+					event.preventDefault();
+					app.splits.remove(app.splits.focused);
+				} else if (app.focused) {
+					event.preventDefault();
+
+					await app.focused.leave();
+					await goto("/");
+				}
+
+				break;
+			}
 		}
 	}
 </script>

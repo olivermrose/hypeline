@@ -2,7 +2,6 @@
 	import { listen } from "@tauri-apps/api/event";
 	import type { UnlistenFn } from "@tauri-apps/api/event";
 	import { onDestroy, onMount } from "svelte";
-	import { app } from "$lib/app.svelte";
 	import Chat from "$lib/components/chat/Chat.svelte";
 	import ChatInput from "$lib/components/chat/Input.svelte";
 	import StreamInfo from "$lib/components/StreamInfo.svelte";
@@ -31,9 +30,7 @@
 	onDestroy(() => unlisten?.());
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="flex h-full flex-col" onclick={() => (app.focused = channel)}>
+<div class="flex h-full flex-col">
 	{#if channel.stream}
 		<StreamInfo stream={channel.stream} />
 	{/if}

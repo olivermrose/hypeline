@@ -23,7 +23,11 @@
 	const channel = $derived(app.channels.get(id));
 </script>
 
-<div class="relative flex size-full flex-col overflow-hidden" {@attach ref}>
+<div
+	class="relative flex size-full flex-col overflow-hidden"
+	onfocusin={() => (app.splits.focused = id)}
+	{@attach ref}
+>
 	<SplitHeader {id} {handleRef} />
 
 	<div class={["relative flex-1", isDragging.current && "opacity-50"]}>

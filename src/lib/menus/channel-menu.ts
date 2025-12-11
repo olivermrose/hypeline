@@ -7,8 +7,8 @@ import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	const enabled =
-		app.focused !== null &&
-		app.focused.id !== channel.id &&
+		app.splits.focused !== null &&
+		app.splits.focused !== channel.id &&
 		!app.splits.contains(app.splits.root!, channel.id);
 
 	return MenuItem.new({
@@ -18,22 +18,22 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 		async action() {
 			await channel.join(true);
 
-			if (!app.focused) return;
+			if (!app.splits.focused) return;
 
-			app.splits.root ??= app.focused.id;
+			app.splits.root ??= app.splits.focused;
 
 			const node: SplitBranch = {
 				axis: direction === "up" || direction === "down" ? "vertical" : "horizontal",
 				before: channel.id,
-				after: app.focused.id,
+				after: app.splits.focused,
 			};
 
 			if (direction === "down" || direction === "right") {
-				node.before = app.focused.id;
+				node.before = app.splits.focused;
 				node.after = channel.id;
 			}
 
-			app.splits.insert(app.focused.id, channel.id, node);
+			app.splits.insert(app.splits.focused, channel.id, node);
 
 			if (!app.splits.active) {
 				await goto("/channels/split");
@@ -63,7 +63,7 @@ export async function createChannelMenu(channel: Channel) {
 		async action() {
 			await channel.leave();
 
-			if (app.focused === channel) {
+			if (!app.splits.active && app.focused === channel) {
 				await goto("/");
 			}
 		},

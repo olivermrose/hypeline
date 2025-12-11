@@ -27,12 +27,22 @@ interface SplitRect {
 }
 
 export class SplitLayout {
+	#focused: string | null = null;
+
 	public get active() {
 		return page.route.id === "/(main)/channels/split";
 	}
 
 	public get root() {
 		return layout.state.root;
+	}
+
+	public get focused() {
+		return this.#focused;
+	}
+
+	public set focused(value: string | null) {
+		this.#focused = value;
 	}
 
 	public set root(value: SplitNode | null) {
@@ -67,6 +77,8 @@ export class SplitLayout {
 			before: target,
 			after: id,
 		});
+
+		this.focused = id;
 	}
 
 	public remove(target: string) {

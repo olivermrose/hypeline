@@ -32,6 +32,8 @@
 
 			if (restoreBehavior === "redirect") {
 				const channel = app.channels.get(layout.state.root as string);
+
+				layout.state.root = null;
 				settings.state.lastJoined = channel?.user.username ?? null;
 			}
 		}

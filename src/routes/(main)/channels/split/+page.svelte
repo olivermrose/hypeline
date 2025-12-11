@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tick } from "svelte";
 	import { app } from "$lib/app.svelte.js";
 	import { settings } from "$lib/settings";
 	import type { SplitDirection } from "$lib/split-layout";
@@ -9,7 +8,7 @@
 	settings.state.lastJoined = null;
 
 	async function navigateSplit(event: KeyboardEvent) {
-		if (!app.focused || !(event.metaKey || event.ctrlKey)) return;
+		if (!app.splits.focused || !(event.metaKey || event.ctrlKey)) return;
 
 		let direction: SplitDirection;
 
@@ -32,15 +31,14 @@
 
 		event.preventDefault();
 
-		const targetId = app.splits.navigate(app.focused.id, direction);
+		const targetId = app.splits.navigate(app.splits.focused, direction);
 
 		if (targetId) {
 			const channel = app.channels.get(targetId);
 
 			if (channel) {
-				app.focused = channel;
-				await tick();
-				app.focused.chat.input?.focus();
+				app.splits.focused = channel.id;
+				channel.chat.input?.focus();
 			}
 		}
 	}
