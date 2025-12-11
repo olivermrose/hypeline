@@ -7,6 +7,7 @@
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { settings } from "$lib/settings";
+	import { SplitLayout } from "$lib/split-layout";
 
 	interface Props {
 		id: string;
@@ -20,9 +21,10 @@
 	async function closeSplit(event: MouseEvent) {
 		const preserve =
 			settings.state["splits.closeBehavior"] === "preserve" &&
-			!(id.startsWith("split-") || event.shiftKey);
+			!id.startsWith("split-") &&
+			!event.shiftKey;
 
-		if (app.splits.root === id || id.includes("empty")) {
+		if (app.splits.root === id || id === SplitLayout.EMPTY_ROOT_ID) {
 			if (preserve) {
 				app.splits.remove(id);
 

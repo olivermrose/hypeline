@@ -7,6 +7,7 @@
 	import JoinDialog from "$lib/components/JoinDialog.svelte";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
 	import * as Empty from "$lib/components/ui/empty";
+	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
 	import { layout } from "$lib/stores";
 
@@ -32,6 +33,12 @@
 
 			if (restoreBehavior === "redirect") {
 				const channel = app.channels.get(layout.state.root as string);
+
+				if (!channel) {
+					log.warn(
+						`Could not restore single split: channel with id ${layout.state.root} not found`,
+					);
+				}
 
 				layout.state.root = null;
 				settings.state.lastJoined = channel?.user.username ?? null;

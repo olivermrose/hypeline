@@ -27,6 +27,8 @@ interface SplitRect {
 }
 
 export class SplitLayout {
+	public static readonly EMPTY_ROOT_ID = "split-root-empty";
+
 	#focused: string | null = null;
 
 	public get active() {
@@ -187,7 +189,7 @@ export class SplitLayout {
 
 		this.remove(sourceId);
 
-		if (targetId.includes("empty")) {
+		if (targetId === SplitLayout.EMPTY_ROOT_ID) {
 			this.root = sourceId;
 			return;
 		}

@@ -9,7 +9,8 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 	const enabled =
 		app.splits.focused !== null &&
 		app.splits.focused !== channel.id &&
-		!app.splits.contains(app.splits.root!, channel.id);
+		app.splits.root !== null &&
+		!app.splits.contains(app.splits.root, channel.id);
 
 	return MenuItem.new({
 		id: `split-${direction}`,

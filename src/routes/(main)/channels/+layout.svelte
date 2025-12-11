@@ -6,7 +6,7 @@
 	const { children } = $props();
 
 	async function handleKeydown(event: KeyboardEvent) {
-		if (!(event.metaKey || event.ctrlKey)) return;
+		if ((!event.metaKey && !event.ctrlKey) || event.repeat) return;
 
 		switch (event.key) {
 			case "t": {

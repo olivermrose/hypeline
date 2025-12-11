@@ -59,7 +59,7 @@ export default {
 					label: "Preserve",
 					value: "preserve",
 					description:
-						"Preserve the existing layout by replacing it with an empty split. If the split is already empty, it will be removed. Splits can be force closed with this option by shift clicking close.",
+						"Preserve the existing layout by replacing it with an empty split. If the split is already empty, it will be removed. Splits can be force closed with this option by Shift clicking close.",
 				},
 				{
 					label: "Remove",
