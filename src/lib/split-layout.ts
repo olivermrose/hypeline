@@ -37,16 +37,16 @@ export class SplitLayout {
 		return layout.state.root;
 	}
 
+	public set root(value: SplitNode | null) {
+		layout.state.root = value;
+	}
+
 	public get focused() {
 		return this.#focused;
 	}
 
 	public set focused(value: string | null) {
 		this.#focused = value;
-	}
-
-	public set root(value: SplitNode | null) {
-		layout.state.root = value;
 	}
 
 	public insert(target: string, newNode: string, branch: SplitBranch) {
