@@ -62,7 +62,7 @@ export class Channel {
 	/**
 	 * Whether the channel is pinned.
 	 */
-	public pinned = $state(false);
+	public readonly pinned: boolean;
 
 	/**
 	 * The id of the active 7TV emote set for the channel if any.
@@ -85,7 +85,7 @@ export class Channel {
 		this.emotes = new ChannelEmoteManager(this);
 		this.viewers = new ViewerManager(this);
 
-		this.pinned = settings.state.pinned.includes(this.id);
+		this.pinned = $derived(settings.state.pinned.includes(this.id));
 	}
 
 	public async join() {

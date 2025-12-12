@@ -38,12 +38,10 @@ export async function createChannelMenu(channel: Channel) {
 		enabled: !channel.ephemeral,
 		checked: channel.pinned,
 		async action() {
-			channel.pinned = !channel.pinned;
-
 			if (channel.pinned) {
-				settings.state.pinned.push(channel.id);
-			} else {
 				settings.state.pinned = settings.state.pinned.filter((id) => id !== channel.id);
+			} else {
+				settings.state.pinned.push(channel.id);
 			}
 		},
 	});
