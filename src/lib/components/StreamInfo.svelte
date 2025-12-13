@@ -1,56 +1,70 @@
 <script lang="ts">
-	import dayjs from "dayjs";
-	import duration from "dayjs/plugin/duration";
-	import { onDestroy } from "svelte";
-	import Clock from "~icons/ph/clock";
-	import Users from "~icons/ph/users";
-	import type { Stream } from "$lib/models/stream.svelte";
-
-	dayjs.extend(duration);
+	import DotsThreeCircle from "~icons/ph/dots-three-circle";
+	import Users from "~icons/ph/users-bold";
+	import { getSidebarContext } from "$lib/context";
+	import type { Channel } from "$lib/models/channel.svelte";
 
 	interface Props {
-		stream: Stream;
+		channel: Channel;
 	}
 
-	const { stream }: Props = $props();
+	const { channel }: Props = $props();
 
-	let uptime = $state(getUptime());
+	const sidebar = getSidebarContext();
 
-	let interval: ReturnType<typeof setInterval> | undefined;
+	function formatViewers(viewers: number) {
+		if (viewers >= 1000) {
+			return `${(viewers / 1000).toFixed(1)}K`;
+		}
 
-	const timeout = setTimeout(() => {
-		interval = setInterval(() => {
-			uptime = getUptime();
-		}, 1000);
-	}, 1000 - new Date().getMilliseconds());
-
-	onDestroy(() => {
-		clearTimeout(timeout);
-		clearInterval(interval);
-	});
-
-	function getUptime() {
-		const diff = dayjs.duration(dayjs().diff(dayjs(stream.createdAt)));
-		const hours = Math.floor(diff.asHours()).toString().padStart(2, "0");
-
-		return `${hours}:${diff.format("mm:ss")}`;
+		return viewers.toString();
 	}
 </script>
 
-<div
-	class="bg-muted text-muted-foreground flex items-center justify-between overflow-hidden p-2 text-xs shadow"
->
-	<p class="truncate" title={stream.title}>{stream.title}</p>
+<img
+	class={["size-8 rounded-full object-cover", !channel.stream && "grayscale"]}
+	src={channel.user.avatarUrl}
+	alt={channel.user.displayName}
+	width="150"
+	height="150"
+	draggable="false"
+/>
 
-	<div class="ml-[3ch] flex items-center gap-x-2.5">
-		<div class="flex items-center">
-			<Users class="mr-1" />
-			<span>{stream.viewers}</span>
-		</div>
-
-		<div class="flex items-center">
-			<Clock class="mr-1" />
-			<span class="tabular-nums">{uptime}</span>
-		</div>
+{#if sidebar.collapsed && channel.stream?.guests.size}
+	<div
+		class="bg-muted/70 absolute right-1 bottom-1 flex items-center justify-center rounded-full"
+	>
+		<DotsThreeCircle class="size-5" />
 	</div>
-</div>
+{/if}
+
+{#if !sidebar.collapsed}
+	{#if channel.stream}
+		<div class="min-w-0 flex-1">
+			<div class="flex items-center justify-between">
+				<div
+					class="text-sidebar-foreground flex items-center gap-x-1 truncate text-sm font-medium"
+				>
+					{channel.user.displayName}
+
+					{#if channel.stream.guests.size}
+						<span class="text-xs">+{channel.stream.guests.size}</span>
+					{/if}
+				</div>
+
+				<div class="flex items-center gap-1 text-xs font-medium text-red-400">
+					<Users />
+					{formatViewers(channel.stream.viewers)}
+				</div>
+			</div>
+
+			<p class="text-muted-foreground truncate text-xs">
+				{channel.stream.game}
+			</p>
+		</div>
+	{:else}
+		<span class="text-muted-foreground truncate text-sm font-medium">
+			{channel.user.displayName}
+		</span>
+	{/if}
+{/if}
