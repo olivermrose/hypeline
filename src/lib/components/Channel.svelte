@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import Chat from "$lib/components/chat/Chat.svelte";
 	import ChatInput from "$lib/components/chat/Input.svelte";
-	import StreamInfo from "$lib/components/StreamInfo.svelte";
+	import StreamHeader from "$lib/components/StreamHeader.svelte";
 	import { handlers } from "$lib/handlers";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import type { IrcMessage } from "$lib/twitch/irc";
@@ -32,7 +32,7 @@
 
 <div class="flex h-full flex-col">
 	{#if channel.stream}
-		<StreamInfo stream={channel.stream} />
+		<StreamHeader stream={channel.stream} />
 	{/if}
 
 	<Chat class="grow" chat={channel.chat} />

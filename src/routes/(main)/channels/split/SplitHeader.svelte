@@ -11,7 +11,7 @@
 
 	interface Props {
 		id: string;
-		handleRef?: Attachment<Element>;
+		handleRef?: Attachment;
 	}
 
 	const { id, handleRef }: Props = $props();

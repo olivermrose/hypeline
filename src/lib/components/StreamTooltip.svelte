@@ -4,8 +4,8 @@
 	import { createChannelMenu } from "$lib/menus/channel-menu";
 	import type { Channel } from "$lib/models/channel.svelte";
 	import { openMenu } from "$lib/util";
-	import ChannelListItem from "./ChannelListItem.svelte";
 	import GuestList from "./GuestList.svelte";
+	import StreamInfo from "./StreamInfo.svelte";
 	import * as Tooltip from "./ui/tooltip";
 
 	interface Props {
@@ -34,7 +34,7 @@
 				>
 				</a>
 
-				<ChannelListItem {channel} />
+				<StreamInfo {channel} />
 			</div>
 		{/snippet}
 	</Tooltip.Trigger>

@@ -6,8 +6,8 @@
 	import type { Channel } from "$lib/models/channel.svelte";
 	import { settings } from "$lib/settings";
 	import Draggable from "./Draggable.svelte";
-	import DraggableChannel from "./DraggableChannel.svelte";
 	import Droppable from "./Droppable.svelte";
+	import Sortable from "./Sortable.svelte";
 	import { Separator } from "./ui/separator";
 
 	const sidebar = getSidebarContext();
@@ -89,14 +89,14 @@
 		{#key settings.state.pinned.length}
 			<Droppable id="pinned-channels" class="space-y-1.5">
 				{#each group.channels as channel, i (channel.user.id)}
-					<Draggable {channel} index={i} />
+					<Sortable {channel} index={i} />
 				{/each}
 			</Droppable>
 		{/key}
 	{:else}
 		{#each group.channels as channel (channel.user.id)}
 			<div animate:flip={{ duration: 500 }}>
-				<DraggableChannel {channel} />
+				<Draggable {channel} />
 			</div>
 		{/each}
 	{/if}
