@@ -10,6 +10,10 @@ export default defineHandler({
 
 		const message = new UserMessage(channel, data);
 
+		message.author.color = data.name_color;
+		message.author.username = data.sender.login;
+		message.author.displayName = data.sender.name;
+
 		if (message.event?.type === "raid" && !data.is_recent && channel.stream) {
 			channel.stream.viewers += message.event.viewer_count;
 		}

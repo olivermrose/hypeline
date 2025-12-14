@@ -124,12 +124,7 @@ export class User {
 		public readonly client: TwitchClient,
 		readonly data: ApiUser,
 	) {
-		if (!data.chatColor && settings.state["chat.usernames.randomColor"]) {
-			this.#color = COLORS[Math.floor(Math.random() * COLORS.length)];
-		} else {
-			this.#color = data.chatColor || "inherit";
-		}
-
+		this.#color = this.#resolveColor(data.chatColor);
 		this.#displayName = data.displayName;
 
 		this.id = data.id;
@@ -159,7 +154,7 @@ export class User {
 	}
 
 	public set color(color: string) {
-		this.#color = color;
+		this.#color = this.#resolveColor(color);
 	}
 
 	/**
@@ -258,5 +253,13 @@ export class User {
 
 	public toJSON() {
 		return this.data;
+	}
+
+	#resolveColor(color: string | null) {
+		if (!color && settings.state["chat.usernames.randomColor"]) {
+			return COLORS[Math.floor(Math.random() * COLORS.length)];
+		}
+
+		return color || "inherit";
 	}
 }
