@@ -23,12 +23,15 @@
 	let unlisten: UnlistenFn | undefined;
 
 	let maximized = $state(false);
+
 	const { icon, title, guests } = $derived(
 		page.data.titleBar ?? { icon: Logo, title: "Hyperion" },
 	);
 
 	onMount(async () => {
 		if (!currentWindow) return;
+
+		maximized = await currentWindow.isMaximized();
 
 		unlisten = await currentWindow.onResized(async () => {
 			maximized = await currentWindow.isMaximized();
@@ -66,7 +69,7 @@
 	<div
 		class={[
 			"text-muted-foreground flex items-center gap-0.5",
-			platform === "macos" && "pl-18",
+			platform === "macos" && (maximized ? "pl-3" : "pl-18"),
 			["windows", "linux"].includes(platform) && "pl-3",
 		]}
 		data-tauri-drag-region
