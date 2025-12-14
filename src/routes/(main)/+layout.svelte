@@ -43,10 +43,10 @@
 
 	<DragOverlay>
 		{#snippet children(source)}
-			{@const id = source.id.toString().split(":")[0]}
+			{@const [id] = source.id.toString().split(":")}
 			{@const channel = app.channels.get(id)}
 
-			<div class="bg-muted/90 flex items-center justify-center gap-x-1 rounded py-2">
+			<div class="bg-muted/90 flex w-44 items-center justify-center gap-x-1 rounded-md py-2">
 				{#if channel}
 					<img
 						src={channel.user.avatarUrl}

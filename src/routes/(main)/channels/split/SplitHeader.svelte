@@ -46,8 +46,7 @@
 		}
 
 		if (preserve) {
-			const newId = `split-${crypto.randomUUID()}`;
-			app.splits.replace(id, newId);
+			app.splits.replace(id, `split-${crypto.randomUUID()}`);
 		} else {
 			app.splits.remove(id);
 		}

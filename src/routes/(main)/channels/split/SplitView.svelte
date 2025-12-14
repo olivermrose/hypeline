@@ -45,7 +45,9 @@
 	<div class="relative h-full" onclick={setFocus}>
 		<div class={["h-full", isDragging.current && "opacity-50"]}>
 			{#if channel}
-				<Channel {channel} />
+				{#key channel.id}
+					<Channel {channel} />
+				{/key}
 			{:else}
 				<Empty.Root class="h-full">
 					<Empty.Header>

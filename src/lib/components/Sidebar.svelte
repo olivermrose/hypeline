@@ -79,7 +79,7 @@
 				disabled={app.splits.active}
 				variant="ghost"
 				onclick={() => {
-					if (page.route.id === "/(main)/channels/[username]") {
+					if (page.route.id === "/(main)/channels/[username]" && !app.splits.root) {
 						app.splits.activate();
 					} else {
 						goto("/channels/split");

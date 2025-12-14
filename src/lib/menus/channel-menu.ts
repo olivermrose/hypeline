@@ -66,7 +66,13 @@ export async function createChannelMenu(channel: Channel) {
 		async action() {
 			await channel.leave();
 
-			if (!app.splits.active && app.focused === channel) {
+			if (
+				app.splits.active &&
+				app.splits.root &&
+				app.splits.contains(app.splits.root, channel.id)
+			) {
+				app.splits.replace(channel.id, `split-${crypto.randomUUID()}`);
+			} else if (app.focused === channel) {
 				await goto("/");
 			}
 		},
@@ -78,10 +84,7 @@ export async function createChannelMenu(channel: Channel) {
 		id: "open-in-split",
 		text: "Open in Split View",
 		enabled: !singleConnection && (!app.splits.active || isEmpty),
-		async action() {
-			app.splits.root = channel.id;
-			await goto("/channels/split");
-		},
+		action: () => app.splits.activate(),
 	});
 
 	const pin = await CheckMenuItem.new({
