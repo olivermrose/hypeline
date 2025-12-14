@@ -3,8 +3,11 @@
 	import { MediaQuery } from "svelte/reactivity";
 	import { crossfade } from "svelte/transition";
 	import Chats from "~icons/ph/chats";
+	import Layout from "~icons/ph/layout";
 	import Plus from "~icons/ph/plus";
 	import Sidebar from "~icons/ph/sidebar";
+	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
 	import { setSidebarContext } from "$lib/context";
 	import type { SidebarContext } from "$lib/context";
@@ -71,6 +74,22 @@
 
 				<span class="group-data-[state=collapsed]:sr-only">Join a channel</span>
 			</JoinDialog>
+
+			<Button
+				disabled={app.splits.active}
+				variant="ghost"
+				onclick={() => {
+					if (page.route.id === "/(main)/channels/[username]") {
+						app.splits.activate();
+					} else {
+						goto("/channels/split");
+					}
+				}}
+			>
+				<Layout />
+
+				<span class="group-data-[state=collapsed]:sr-only">Open split view</span>
+			</Button>
 
 			<Button variant="ghost" onclick={() => (context.collapsed = !context.collapsed)}>
 				<Sidebar />

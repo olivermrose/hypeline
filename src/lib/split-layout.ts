@@ -1,6 +1,8 @@
 import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
+import { goto } from "$app/navigation";
 import { page } from "$app/state";
+import { app } from "./app.svelte";
 import { layout } from "./stores";
 
 export type SplitDirection = "up" | "down" | "left" | "right";
@@ -176,6 +178,13 @@ export class SplitLayout {
 		}
 
 		return this.contains(node.before, id) || this.contains(node.after, id);
+	}
+
+	public async activate() {
+		if (!this.active && app.focused) {
+			app.splits.root = app.focused.id;
+			await goto("/channels/split");
+		}
 	}
 
 	public handleDragEnd(event: Parameters<DragDropEvents["dragend"]>[0]) {

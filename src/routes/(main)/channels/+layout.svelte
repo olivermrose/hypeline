@@ -10,10 +10,7 @@
 
 		switch (event.key) {
 			case "t": {
-				if (!app.splits.active && app.focused) {
-					app.splits.root = app.focused.id;
-					await goto("/channels/split");
-				}
+				await app.splits.activate();
 
 				if (app.splits.focused) {
 					app.splits.insertEmpty(
