@@ -28,6 +28,7 @@ interface InputField extends BaseField {
 interface ChoiceItem {
 	label: string;
 	value: string;
+	description?: string;
 }
 
 interface RadioField extends BaseField {
@@ -51,6 +52,7 @@ interface SliderField extends BaseField {
 
 interface SwitchField extends BaseField {
 	type: "switch";
+	onchange?: (value: boolean) => void;
 }
 
 export type SettingsField =

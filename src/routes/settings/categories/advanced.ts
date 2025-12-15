@@ -1,4 +1,5 @@
 import Toolbox from "~icons/ph/toolbox";
+import { app } from "$lib/app.svelte";
 import ClearCache from "../custom/ClearCache.svelte";
 import type { SettingsCategory } from "../types";
 
@@ -12,7 +13,19 @@ export default {
 			type: "switch",
 			label: "Only join one channel at a time",
 			description:
-				"Limit the application to joining only one channel at a time to reduce resource usage. Enable this if you are experiencing performance issues.",
+				"Limit the application to joining only one channel at a time to reduce resource usage. Enable this if you are experiencing performance issues. Split view will be disabled when this is active.",
+			async onchange(value) {
+				if (!value) return;
+
+				app.splits.root = null;
+
+				await Promise.all(
+					app.channels
+						.values()
+						.filter((c) => c.joined)
+						.map((c) => c.leave()),
+				);
+			},
 		},
 		{
 			type: "group",
