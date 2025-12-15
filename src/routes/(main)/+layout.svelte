@@ -1,5 +1,13 @@
 <script lang="ts">
 	import { DragDropProvider, DragOverlay } from "@dnd-kit-svelte/svelte";
+	import {
+		Accessibility,
+		Cursor,
+		Feedback,
+		PreventSelection,
+		Scroller,
+		ScrollListener,
+	} from "@dnd-kit/dom";
 	import { move } from "@dnd-kit/helpers";
 	import { goto } from "$app/navigation";
 	import { app } from "$lib/app.svelte";
@@ -20,6 +28,17 @@
 />
 
 <DragDropProvider
+	plugins={[
+		// It doesn't seem like there's currently a way to disable the
+		// AutoScroller plugin other than not including it.
+		// https://github.com/clauderic/dnd-kit/issues/1790
+		Accessibility,
+		Cursor,
+		Feedback,
+		PreventSelection,
+		Scroller,
+		ScrollListener,
+	]}
 	onDragOver={(event) => {
 		if (event.operation.target?.id === "pinned-channels") {
 			settings.state.pinned = move(settings.state.pinned, event);

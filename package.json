@@ -28,6 +28,7 @@
 		"@dnd-kit-svelte/svelte": "^0.1.5",
 		"@dnd-kit/abstract": "^0.1.21",
 		"@dnd-kit/collision": "^0.1.21",
+		"@dnd-kit/dom": "^0.1.21",
 		"@dnd-kit/helpers": "^0.1.21",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tauri-apps/api": "^2.9.1",
