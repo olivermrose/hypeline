@@ -37,18 +37,13 @@ export async function load({ url }) {
 	if (!app.user.moderating.size) {
 		app.user.moderating.add(app.user.id);
 
-		if (!settings.state.user.moderating.length) {
-			const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
-				"/moderation/channels",
-				{ user_id: app.user.id, first: 100 },
-			);
+		const { data } = await app.twitch.get<Prefix<BasicUser, "broadcaster">[]>(
+			"/moderation/channels",
+			{ user_id: app.user.id, first: 100 },
+		);
 
-			settings.state.user.moderating = data.map((channel) => channel.broadcaster_id);
-			await settings.saveNow();
-		}
-
-		for (const id of settings.state.user.moderating) {
-			app.user.moderating.add(id);
+		for (const channel of data) {
+			app.user.moderating.add(channel.broadcaster_id);
 		}
 	}
 

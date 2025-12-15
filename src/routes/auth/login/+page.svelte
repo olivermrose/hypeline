@@ -47,7 +47,6 @@
 				id: event.payload.user_id,
 				token: event.payload.access_token,
 				data: user.data,
-				moderating: [],
 			};
 
 			app.user = new CurrentUser(user);

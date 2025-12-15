@@ -28,7 +28,6 @@ interface StoredUser {
 	id: string;
 	token: string;
 	data: User;
-	moderating: string[];
 }
 
 export interface UserSettings {
