@@ -164,14 +164,15 @@ impl EventSubClient {
         tokio::spawn(
             async move {
                 let mut ws_uri = TWITCH_EVENTSUB_WS_URI.to_string();
-                tracing::info!("Connecting to EventSub at {ws_uri}");
 
                 loop {
+                    tracing::info!("Connecting to EventSub at {ws_uri}");
+
                     let mut stream = match connect_async(&ws_uri).await {
                         Ok((stream, _)) => stream,
-                        Err(e) => {
-                            tracing::error!("Failed to connect to EventSub: {e}");
-                            return Err::<(), _>(Error::WebSocket(e));
+                        Err(err) => {
+                            tracing::error!(%err, "Failed to connect to EventSub");
+                            return Err::<(), _>(Error::WebSocket(err));
                         }
                     };
 
