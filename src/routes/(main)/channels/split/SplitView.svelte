@@ -46,7 +46,7 @@
 		<div class={["h-full", isDragging.current && "opacity-50"]}>
 			{#if channel}
 				{#key channel.id}
-					<Channel {channel} />
+					<Channel {channel} split />
 				{/key}
 			{:else}
 				<Empty.Root class="h-full">

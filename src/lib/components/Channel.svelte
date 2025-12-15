@@ -11,14 +11,15 @@
 
 	interface Props {
 		channel: Channel;
+		split?: boolean;
 	}
 
-	const { channel }: Props = $props();
+	const { channel, split = false }: Props = $props();
 
 	let unlisten: UnlistenFn | undefined;
 
 	onMount(async () => {
-		await channel.join();
+		await channel.join(split);
 
 		unlisten = await listen<IrcMessage[]>("recentmessages", async (event) => {
 			for (const message of event.payload) {
