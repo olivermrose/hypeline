@@ -11,6 +11,7 @@
 	import { app } from "$lib/app.svelte";
 	import { setSidebarContext } from "$lib/context";
 	import type { SidebarContext } from "$lib/context";
+	import { settings } from "$lib/settings";
 	import ChannelList from "./ChannelList.svelte";
 	import JoinDialog from "./JoinDialog.svelte";
 	import { Button, buttonVariants } from "./ui/button";
@@ -76,7 +77,7 @@
 			</JoinDialog>
 
 			<Button
-				disabled={app.splits.active}
+				disabled={app.splits.active || settings.state["advanced.singleConnection"]}
 				variant="ghost"
 				onclick={() => {
 					if (page.route.id === "/(main)/channels/[username]" && !app.splits.root) {

@@ -52,6 +52,7 @@ interface SliderField extends BaseField {
 
 interface SwitchField extends BaseField {
 	type: "switch";
+	onchange?: (value: boolean) => void;
 }
 
 export type SettingsField =

@@ -76,7 +76,13 @@
 			<div class="flex items-center gap-2">
 				<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
 
-				<Button href="/channels/split" variant="secondary">Open split view</Button>
+				<Button
+					href="/channels/split"
+					disabled={settings.state["advanced.singleConnection"]}
+					variant="secondary"
+				>
+					Open split view
+				</Button>
 			</div>
 		</Empty.Content>
 	</Empty.Root>

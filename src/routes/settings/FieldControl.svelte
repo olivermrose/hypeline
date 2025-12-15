@@ -125,7 +125,11 @@
 	<Field.Field orientation="horizontal">
 		{@render content(field)}
 
-		<Switch id={field.id} bind:checked={settings.state[field.id]} />
+		<Switch
+			id={field.id}
+			onCheckedChange={field.onchange}
+			bind:checked={settings.state[field.id]}
+		/>
 	</Field.Field>
 {/if}
 

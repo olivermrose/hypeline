@@ -15,8 +15,9 @@ export const layout = new RuneStore<Layout>(
 		hooks: {
 			beforeBackendSync(state) {
 				if (
-					typeof state.root === "string" &&
-					settings.state["splits.singleRestoreBehavior"] === "remove"
+					settings.state["advanced.singleConnection"] ||
+					(typeof state.root === "string" &&
+						settings.state["splits.singleRestoreBehavior"] === "remove")
 				) {
 					state.root = null;
 				}

@@ -135,6 +135,8 @@ export class Channel {
 	}
 
 	public async leave() {
+		if (!this.joined) return;
+
 		try {
 			await invoke("leave", { channel: this.user.username });
 		} finally {

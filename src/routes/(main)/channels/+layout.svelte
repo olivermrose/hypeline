@@ -10,6 +10,8 @@
 
 		switch (event.key) {
 			case "t": {
+				if (settings.state["advanced.singleConnection"]) return;
+
 				await app.splits.activate();
 
 				if (app.splits.focused) {
