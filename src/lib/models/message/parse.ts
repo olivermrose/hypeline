@@ -59,7 +59,6 @@ export function parse(message: UserMessage): Node[] {
 	const boundaries = translateBoundaries(message);
 
 	for (const match of message.text.matchAll(/\S+|\s+/g)) {
-		const prevNode = nodes.at(-1);
 		let marked = false;
 
 		const part = match[0];
@@ -170,8 +169,18 @@ export function parse(message: UserMessage): Node[] {
 			const foundIdx = ircEmotes.indexOf(ircEmote);
 			ircEmotes.splice(foundIdx, 1);
 		} else if (emote) {
-			if (emote.zeroWidth && prevNode?.type === "emote") {
-				prevNode.data.layers.push(emote);
+			if (emote.zeroWidth) {
+				let prevNode = nodes.at(-1);
+				let index = -1;
+
+				while (prevNode?.type === "text" && !prevNode.data.trim()) {
+					index--;
+					prevNode = nodes.at(index);
+				}
+
+				if (prevNode?.type === "emote") {
+					prevNode.data.layers.push(emote);
+				}
 			} else {
 				nodes.push({
 					...base,
