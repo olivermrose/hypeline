@@ -62,7 +62,7 @@ export function parseDuration(arg: string | undefined): number | null {
 	if (!match) return null;
 
 	const value = Number(match[1]);
-	const unit = match[2].toLowerCase() ?? "s";
+	const unit = match[2]?.toLowerCase() ?? "s";
 
 	return value * unitMap[unit];
 }
