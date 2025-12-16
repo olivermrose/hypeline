@@ -9,6 +9,7 @@ import type {
 	UserNoticeMessage,
 } from "$lib/twitch/irc";
 import { extractEmotes } from "$lib/util";
+import { Badge } from "../badge";
 import { User } from "../user.svelte";
 import { Viewer } from "../viewer.svelte";
 import type { Channel } from "../channel.svelte";
@@ -71,9 +72,9 @@ export class UserMessage extends Message {
 	public readonly shared: boolean;
 
 	/**
-	 * The badges sent with the message. This is in the form of `setID:version`.
+	 * The badges sent with the message.
 	 */
-	public readonly badges: string[];
+	public readonly badges: Badge[] = [];
 
 	/**
 	 * The amount of bits sent with the message if it was a cheer.
@@ -123,13 +124,12 @@ export class UserMessage extends Message {
 		this.highlighted = "is_highlighted" in data && data.is_highlighted;
 		this.shared = data.source != null;
 
-		const { badges } = data.source ?? data;
-		this.badges = badges.map((b) => `${b.name}:${b.version}`);
-
 		this.bits = "bits" in data ? (data.bits ?? 0) : 0;
 		this.event = "event" in data ? data.event : null;
 		this.reply = "reply" in data ? data.reply : null;
 		this.source = this.channel;
+
+		this.#populateBadges();
 	}
 
 	/**
@@ -240,6 +240,37 @@ export class UserMessage extends Message {
 	 */
 	public async deny() {
 		await this.#updateHeldMessage(false);
+	}
+
+	#populateBadges() {
+		if (this.shared) {
+			const { user } = this.source;
+
+			this.badges.push(
+				new Badge({
+					setId: "shared-chat",
+					version: user.id,
+					title: user.displayName,
+					description: user.displayName,
+					imageUrl: user.avatarUrl,
+				}),
+			);
+		}
+
+		for (const badge of (this.data.source ?? this.data).badges) {
+			const id = `${badge.name}:${badge.version}`;
+
+			const chatBadge = this.source.badges.get(id);
+			const globalBadge = app.badges.get(id);
+
+			const resolved = chatBadge ?? globalBadge;
+
+			if (resolved) {
+				this.badges.push(resolved);
+			}
+		}
+
+		this.badges.push(...(app.badges.users.get(this.author.id) ?? []));
 	}
 
 	async #updateHeldMessage(allow: boolean) {

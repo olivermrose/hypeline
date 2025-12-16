@@ -3,6 +3,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { handlers } from "./handlers";
 import { History } from "./history.svelte";
 import { log } from "./log";
+import { BadgeManager } from "./managers/badge-manager";
 import { ChannelManager } from "./managers/channel-manager";
 import { EmoteManager } from "./managers/emote-manager";
 import { SplitLayout } from "./split-layout";
@@ -64,7 +65,7 @@ class App {
 	/**
 	 * Provider-specific global badges.
 	 */
-	public readonly badges = new Map<string, Badge>();
+	public readonly badges = new BadgeManager();
 
 	/**
 	 * 7TV paints.
