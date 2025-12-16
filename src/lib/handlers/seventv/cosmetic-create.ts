@@ -1,4 +1,5 @@
 import { app } from "$lib/app.svelte";
+import { Badge } from "$lib/models/badge";
 import { defineHandler } from "../helper";
 
 function toRgb(decimal: number) {
@@ -16,13 +17,16 @@ export default defineHandler({
 		if (cosmetic.kind === "BADGE") {
 			const file = cosmetic.data.host.files.find((f) => f.name.startsWith("4x"))!;
 
-			app.badges.set(cosmetic.id, {
-				setID: cosmetic.id,
-				version: "1",
-				title: cosmetic.data.name,
-				description: cosmetic.data.tooltip,
-				imageURL: `https:${cosmetic.data.host.url}/${file.name}`,
-			});
+			app.badges.set(
+				cosmetic.id,
+				new Badge({
+					setId: cosmetic.id,
+					version: "1",
+					title: cosmetic.data.name,
+					description: cosmetic.data.tooltip,
+					imageUrl: `https:${cosmetic.data.host.url}/${file.name}`,
+				}),
+			);
 
 			return;
 		}

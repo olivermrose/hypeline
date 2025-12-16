@@ -1,6 +1,6 @@
 import { app } from "$lib/app.svelte";
-import type { Badge } from "$lib/graphql/twitch";
 import type { TwitchClient } from "$lib/twitch/client";
+import type { Badge } from "./badge";
 import type { User } from "./user.svelte";
 
 export interface WhisperMessage {

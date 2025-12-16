@@ -1,6 +1,7 @@
 import { page } from "$app/state";
 import { app } from "$lib/app.svelte";
 import { Whisper } from "$lib/models/whisper.svelte";
+import { getOrInsertComputed } from "$lib/util";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -10,17 +11,17 @@ export default defineHandler({
 
 		const sender = await app.twitch.users.fetch(data.sender.id);
 
-		if (!app.user.whispers.has(sender.id)) {
-			app.user.whispers.set(sender.id, new Whisper(app.twitch, sender));
-		}
-
-		const whisper = app.user.whispers.get(sender.id)!;
+		const whisper = getOrInsertComputed(
+			app.user.whispers,
+			sender.id,
+			() => new Whisper(app.twitch, sender),
+		);
 
 		whisper.messages.push({
 			id: data.message_id,
 			createdAt: new Date(),
 			badges: data.badges
-				.map((b) => app.twitch.badges.get(`${b.name}:${b.version}`))
+				.map((b) => app.badges.get(`${b.name}:${b.version}`))
 				.filter((b) => b != null),
 			user: sender,
 			text: data.message_text,

@@ -4,13 +4,14 @@ import { app } from "$lib/app.svelte";
 import type { Emote } from "$lib/emotes";
 import { ApiError } from "$lib/errors/api-error";
 import { userBadgesQuery } from "$lib/graphql/twitch";
-import type { User as ApiUser, Badge } from "$lib/graphql/twitch";
+import type { User as ApiUser } from "$lib/graphql/twitch";
 import { settings } from "$lib/settings";
 import type { Paint } from "$lib/seventv";
 import { COLORS } from "$lib/twitch";
 import type { SubscriptionAge } from "$lib/twitch/api";
 import type { TwitchClient } from "$lib/twitch/client";
 import { dedupe, makeReadable } from "$lib/util";
+import { Badge } from "./badge";
 
 export interface RelationshipSubscription {
 	/**
@@ -106,11 +107,6 @@ export class User {
 	public username: string;
 
 	/**
-	 * The 7TV badge for the user if they have one set.
-	 */
-	public readonly badge?: Badge;
-
-	/**
 	 * The 7TV paint for the user if they have one set.
 	 */
 	public readonly paint?: Paint;
@@ -141,7 +137,7 @@ export class User {
 		this.avatarUrl = $state(data.profileImageURL ?? "");
 		this.bannerUrl = $state(data.bannerImageURL ?? "");
 
-		this.badge = $derived(app.u2b.get(this.id));
+		// this.badge = $derived(app.u2b.get(this.id));
 		this.paint = $derived(app.u2p.get(this.id));
 	}
 
@@ -237,7 +233,7 @@ export class User {
 		}
 
 		const relationship = {
-			badges: channelViewer?.earnedBadges ?? [],
+			badges: channelViewer?.earnedBadges?.map(Badge.fromGql) ?? [],
 			followedAt: data.followedAt ? new Date(data.followedAt) : null,
 			subscription: {
 				hidden: data.statusHidden,

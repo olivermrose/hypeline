@@ -1,21 +1,30 @@
-import { CommandError } from "$lib/errors/command-error";
-import { ErrorMessage } from "$lib/errors/messages";
-import { defineCommand, parseBool } from "../util";
+import { app } from "$lib/app.svelte";
+import { defineCommand } from "../util";
 
 export default defineCommand({
 	provider: "Built-in",
 	name: "reload-badges",
-	description: "Reload all badges for the channel and optionally global badges",
-	args: ["include-global"],
+	description:
+		"Reload all badges for the channel and optionally badges from a comma-separated list of providers",
+	args: ["providers"],
 	async exec(args, channel) {
-		const includeGlobal = parseBool(args[0]);
+		const providers = args[0]?.split(",") ?? [];
 
-		if (includeGlobal === null) {
-			throw new CommandError(ErrorMessage.INVALID_BOOL_ARG);
+		const promises: Promise<unknown>[] = [channel.fetchBadges(true)];
+
+		if (providers.includes("twitch")) {
+			promises.push(app.badges.fetchTwitch(true));
 		}
 
-		await channel.client.fetchBadges(includeGlobal);
-		await channel.fetchBadges(true);
+		if (providers.includes("bttv")) {
+			promises.push(app.badges.fetchBttv(true));
+		}
+
+		if (providers.includes("chatterino")) {
+			promises.push(app.badges.fetchChatterino(true));
+		}
+
+		await Promise.all(promises);
 
 		channel.chat.addSystemMessage("Reloaded badges.");
 	},

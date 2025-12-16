@@ -78,7 +78,7 @@ export async function load({ url }) {
 		await app.emotes.fetch();
 	}
 
-	if (!app.twitch.badges.size) {
-		await app.twitch.fetchBadges();
+	if (!app.badges.size) {
+		await app.badges.fetch();
 	}
 }

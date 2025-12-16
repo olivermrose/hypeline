@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import * as cache from "tauri-plugin-cache-api";
 import { channelBadgesQuery, cheermoteQuery, streamQuery } from "$lib/graphql/twitch";
-import type { Badge, Cheermote } from "$lib/graphql/twitch";
+import type { Cheermote } from "$lib/graphql/twitch";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
 import { fetch7tvId } from "$lib/seventv";
 import { storage } from "$lib/stores";
@@ -10,6 +10,7 @@ import { ViewerManager } from "../managers/viewer-manager";
 import { settings } from "../settings";
 import type { StreamMarker } from "../twitch/api";
 import type { TwitchClient } from "../twitch/client";
+import { Badge } from "./badge";
 import { Chat } from "./chat.svelte";
 import { Stream } from "./stream.svelte";
 import { Viewer } from "./viewer.svelte";
@@ -178,13 +179,13 @@ export class Channel {
 			if (force) this.badges.clear();
 
 			const { user } = await this.client.send(channelBadgesQuery, { id: this.id });
+			badges = user?.broadcastBadges?.flatMap((b) => (b ? [Badge.fromGql(b)] : [])) ?? [];
 
-			badges = user?.broadcastBadges?.filter((b) => b != null) ?? [];
 			await cache.set(`badges:${this.id}`, badges);
 		}
 
 		for (const badge of badges) {
-			this.badges.set(`${badge.setID}:${badge.version}`, badge);
+			this.badges.set(badge.id, badge);
 		}
 
 		return this.badges;
