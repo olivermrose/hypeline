@@ -163,11 +163,10 @@ impl EventSubClient {
 
         tokio::spawn(
             async move {
-                let mut ws_uri = TWITCH_EVENTSUB_WS_URI.to_string();
+                let ws_uri = TWITCH_EVENTSUB_WS_URI.to_string();
+				tracing::info!("Connecting to EventSub at {ws_uri}");
 
                 loop {
-                    tracing::info!("Connecting to EventSub at {ws_uri}");
-
                     let mut stream = match connect_async(&ws_uri).await {
                         Ok((stream, _)) => stream,
                         Err(err) => {
@@ -179,8 +178,6 @@ impl EventSubClient {
                     tracing::info!("Connected to EventSub");
                     self.set_connected(true);
 
-                    let mut reconnect_url: Option<String> = None;
-
                     while let Some(Ok(message)) = stream.next().await {
                         let this = Arc::clone(&this);
 
@@ -190,10 +187,41 @@ impl EventSubClient {
                             }
                             Message::Text(data) => {
                                 if let Ok(msg) = serde_json::from_str(data.as_str()) {
-                                    match this.handle_message(msg).await? {
+                                    match this.clone().handle_message(msg).await? {
                                         Some(url) => {
-                                            reconnect_url = Some(url);
-                                            break;
+                                            tracing::info!("Reconnecting to EventSub at {url}");
+
+                                            match connect_async(&url).await {
+                                                Ok((mut new_stream, _)) => {
+                                                    match new_stream.next().await {
+                                                        Some(Ok(Message::Text(data))) => {
+                                                            if let Ok(msg) = serde_json::from_str::<WebSocketMessage>(data.as_str())
+                                                                && let WebSocketMessage::Welcome(_) = msg {
+                                                                    this.handle_message(msg).await?;
+
+                                                                    tracing::info!("Switched to new EventSub connection");
+                                                                    stream = new_stream;
+
+                                                                    continue;
+                                                                }
+
+                                                            tracing::error!("Received unexpected message on new connection");
+                                                        }
+                                                        Some(Ok(_)) => {
+                                                            tracing::error!("Received non-text message on new connection");
+                                                        }
+                                                        Some(Err(err)) => {
+                                                            tracing::error!(%err, "Error reading from new connection");
+                                                        }
+                                                        None => {
+                                                            tracing::error!("New connection closed immediately");
+                                                        }
+                                                    }
+                                                }
+                                                Err(err) => {
+                                                    tracing::error!(%err, "Failed to connect to reconnect URL");
+                                                }
+                                            }
                                         }
                                         None => continue,
                                     }
@@ -214,9 +242,7 @@ impl EventSubClient {
                     self.set_connected(false);
                     *self.session_id.lock().await = None;
 
-                    if let Some(url) = reconnect_url {
-                        ws_uri = url;
-                    }
+
                 }
             }
             .in_current_span(),
