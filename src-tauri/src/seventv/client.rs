@@ -23,6 +23,7 @@ struct WebSocketMessage {
 }
 
 pub struct SeventTvClient {
+    session_id: Arc<Mutex<Option<String>>>,
     subscriptions: Arc<Mutex<HashMap<String, serde_json::Value>>>,
     sender: mpsc::UnboundedSender<serde_json::Value>,
     connected: AtomicBool,
@@ -37,6 +38,7 @@ impl SeventTvClient {
 
         let client = Self {
             subscriptions: Arc::new(Mutex::new(HashMap::new())),
+            session_id: Arc::new(Mutex::new(None)),
             sender,
             connected: AtomicBool::default(),
             message_tx,
@@ -72,6 +74,25 @@ impl SeventTvClient {
 
 				tracing::info!("Connected to 7TV Event API");
 
+                {
+                    let session_id = this.session_id.lock().await;
+
+                    if let Some(id) = &*session_id {
+                        tracing::info!(%id, "Resuming 7TV session");
+
+                        let payload = json!({
+                            "op": 34,
+                            "d": {
+                                "session_id": id
+                            }
+                        });
+
+                        if let Err(err) = stream.send(Message::Text(payload.to_string().into())).await {
+                             tracing::error!(%err, "Error sending resume message");
+                        }
+                    }
+                }
+
                 self.connected.store(true, Ordering::Relaxed);
 
                 'recv: loop {
@@ -79,20 +100,48 @@ impl SeventTvClient {
 
                     tokio::select! {
                         Some(data) = message_rx.recv() => {
-                            if let Err(e) = stream.send(data).await {
-                                tracing::error!("Error sending message: {e}");
+                            if let Err(err) = stream.send(data).await {
+                                tracing::error!(%err, "Error sending message");
                                 break 'recv;
                             }
                         }
                         Some(Ok(message)) = stream.next() => {
                             match message {
                                 Message::Text(text) => {
-                                    if let Ok(msg) = serde_json::from_str::<WebSocketMessage>(&text)
-                                        && msg.op == 0 {
-                                            this.sender.send(msg.d).unwrap();
+                                    if let Ok(msg) = serde_json::from_str::<WebSocketMessage>(&text) {
+                                        match msg.op {
+                                            0 => {
+                                                if let Err(err) = this.sender.send(msg.d) {
+                                                    tracing::error!(%err, "Error sending payload");
+                                                }
+                                            }
+                                            1 => {
+                                                if let Some(id) = msg.d.get("session_id").and_then(|v| v.as_str()) {
+                                                    let mut session = this.session_id.lock().await;
+                                                    *session = Some(id.to_string());
+
+                                                    tracing::info!(%id, "Event API session id stored");
+                                                }
+                                            }
+											7 => {
+												tracing::info!(payload = ?msg.d, "End of stream reached");
+
+												if let Some(code) = msg.d.get("code").and_then(|v| v.as_u64())
+													&& matches!(code, 4000 | 4006 | 4008)
+												{
+													tracing::warn!("Resuming Event API session");
+													break 'recv;
+												}
+											}
+                                            _ => {}
                                         }
+                                    }
                                 }
-                                Message::Close(_) => {
+                                Message::Close(cf) => {
+									if let Some(frame) = cf {
+										tracing::warn!(%frame, "Event API connection closed");
+									}
+
                                     this.connected.store(false, Ordering::Relaxed);
                                     break 'recv;
                                 }
