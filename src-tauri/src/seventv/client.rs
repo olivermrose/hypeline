@@ -125,13 +125,6 @@ impl SeventTvClient {
                                             }
 											7 => {
 												tracing::info!(payload = ?msg.d, "End of stream reached");
-
-												if let Some(code) = msg.d.get("code").and_then(|v| v.as_u64())
-													&& matches!(code, 4000 | 4006 | 4008)
-												{
-													tracing::warn!("Resuming Event API session");
-													break 'recv;
-												}
 											}
                                             _ => {}
                                         }
