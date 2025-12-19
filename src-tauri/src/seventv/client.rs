@@ -23,6 +23,7 @@ struct WebSocketMessage {
 }
 
 pub struct SeventTvClient {
+    session_id: Arc<Mutex<Option<String>>>,
     subscriptions: Arc<Mutex<HashMap<String, serde_json::Value>>>,
     sender: mpsc::UnboundedSender<serde_json::Value>,
     connected: AtomicBool,
@@ -37,6 +38,7 @@ impl SeventTvClient {
 
         let client = Self {
             subscriptions: Arc::new(Mutex::new(HashMap::new())),
+            session_id: Arc::new(Mutex::new(None)),
             sender,
             connected: AtomicBool::default(),
             message_tx,
@@ -60,17 +62,36 @@ impl SeventTvClient {
 
         tokio::spawn(async move {
             loop {
-				tracing::info!("Connecting to 7TV Event API");
+                tracing::info!("Connecting to 7TV Event API");
 
                 let mut stream = match connect_async(SEVENTV_WS_URI).await {
                     Ok((stream, _)) => stream,
                     Err(err) => {
-						tracing::error!(%err, "Failed to connect to 7TV Event API");
-						return Err::<(), _>(Error::WebSocket(err))
-					},
+                        tracing::error!(%err, "Failed to connect to 7TV Event API");
+                        return Err::<(), _>(Error::WebSocket(err))
+                    },
                 };
 
-				tracing::info!("Connected to 7TV Event API");
+                tracing::info!("Connected to 7TV Event API");
+
+                {
+                    let session_id = this.session_id.lock().await;
+
+                    if let Some(id) = &*session_id {
+                        tracing::info!(%id, "Resuming 7TV session");
+
+                        let payload = json!({
+                            "op": 34,
+                            "d": {
+                                "session_id": id
+                            }
+                        });
+
+                        if let Err(err) = stream.send(Message::Text(payload.to_string().into())).await {
+                            tracing::error!(%err, "Error sending resume message");
+                        }
+                    }
+                }
 
                 self.connected.store(true, Ordering::Relaxed);
 
@@ -79,20 +100,63 @@ impl SeventTvClient {
 
                     tokio::select! {
                         Some(data) = message_rx.recv() => {
-                            if let Err(e) = stream.send(data).await {
-                                tracing::error!("Error sending message: {e}");
+                            if let Err(err) = stream.send(data).await {
+                                tracing::error!(%err, "Error sending message");
                                 break 'recv;
                             }
                         }
                         Some(Ok(message)) = stream.next() => {
                             match message {
                                 Message::Text(text) => {
-                                    if let Ok(msg) = serde_json::from_str::<WebSocketMessage>(&text)
-                                        && msg.op == 0 {
-                                            this.sender.send(msg.d).unwrap();
+                                    if let Ok(msg) = serde_json::from_str::<WebSocketMessage>(&text) {
+                                        match msg.op {
+                                            0 => {
+                                                if let Err(err) = this.sender.send(msg.d) {
+                                                    tracing::error!(%err, "Error sending payload");
+                                                }
+                                            }
+                                            1 => {
+                                                if let Some(id) = msg.d["session_id"].as_str() {
+                                                    let mut session = this.session_id.lock().await;
+                                                    *session = Some(id.to_string());
+
+                                                    tracing::info!(%id, "Hello received, session established");
+                                                }
+                                            }
+                                            5 => {
+                                                tracing::debug!(payload = ?msg.d.to_string(), "Opcode acknowledged");
+
+                                                if let Some(success) = msg.d["data"]["success"].as_bool() && !success {
+                                                    let to_renew: Vec<_> = {
+                                                        let mut subscriptions = this.subscriptions.lock().await;
+
+                                                        tracing::warn!(
+                                                            "Resume unsuccessful, re-subscribing to {} events",
+                                                            subscriptions.len()
+                                                        );
+
+                                                        subscriptions.drain().collect()
+                                                    };
+
+                                                    for (key, condition) in to_renew {
+                                                        let (channel, event) = key.split_once(':').unwrap();
+
+                                                        self.subscribe(channel, event, &condition).await;
+                                                    }
+                                                }
+                                            }
+                                            7 => {
+                                                tracing::info!(payload = ?msg.d.to_string(), "End of stream reached");
+                                            }
+                                            _ => {}
                                         }
+                                    }
                                 }
-                                Message::Close(_) => {
+                                Message::Close(cf) => {
+                                    if let Some(frame) = cf {
+                                        tracing::warn!(%frame, "Event API connection closed");
+                                    }
+
                                     this.connected.store(false, Ordering::Relaxed);
                                     break 'recv;
                                 }
