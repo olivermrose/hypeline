@@ -24,8 +24,6 @@ export interface KeywordHighlightConfig extends HighlightConfig {
 }
 
 export interface Settings {
-	[key: string]: any;
-
 	"appearance.theme": string;
 
 	"splits.defaultOrientation": "horizontal" | "vertical";
@@ -106,4 +104,6 @@ export const defaults: Settings = {
 	"advanced.logs.level": "info",
 };
 
-export const settings = new RuneStore<Settings>("settings", defaults, { autoStart: true });
+export const settings = new RuneStore<Settings & Record<string, any>>("settings", defaults, {
+	autoStart: true,
+});
