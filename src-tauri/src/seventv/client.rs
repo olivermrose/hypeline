@@ -127,14 +127,18 @@ impl SeventTvClient {
                                                 tracing::debug!(payload = ?msg.d.to_string(), "Opcode acknowledged");
 
                                                 if let Some(success) = msg.d["data"]["success"].as_bool() && !success {
-                                                    let mut subscriptions = this.subscriptions.lock().await;
+                                                    let to_renew: Vec<_> = {
+                                                        let mut subscriptions = this.subscriptions.lock().await;
 
-                                                    tracing::warn!(
-                                                        "Resume unsuccessful, re-subscribing to {} events",
-                                                        subscriptions.len()
-                                                    );
+                                                        tracing::warn!(
+                                                            "Resume unsuccessful, re-subscribing to {} events",
+                                                            subscriptions.len()
+                                                        );
 
-                                                    for (key, condition) in subscriptions.drain() {
+                                                        subscriptions.drain().collect()
+                                                    };
+
+                                                    for (key, condition) in to_renew {
                                                         let (channel, event) = key.split_once(':').unwrap();
 
                                                         self.subscribe(channel, event, &condition).await;
