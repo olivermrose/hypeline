@@ -4,7 +4,7 @@
 	import { app } from "$lib/app.svelte";
 	import { getSidebarContext } from "$lib/context";
 	import type { Channel } from "$lib/models/channel.svelte";
-	import { settings } from "$lib/settings";
+	import { storage } from "$lib/stores";
 	import Draggable from "./Draggable.svelte";
 	import Droppable from "./Droppable.svelte";
 	import Sortable from "./Sortable.svelte";
@@ -32,8 +32,8 @@
 		const pinnedChannels = sorted
 			.filter((c) => c.pinned)
 			.sort((a, b) => {
-				const indexA = settings.state.pinned.indexOf(a.id);
-				const indexB = settings.state.pinned.indexOf(b.id);
+				const indexA = storage.state.pinned.indexOf(a.id);
+				const indexB = storage.state.pinned.indexOf(b.id);
 
 				return indexA - indexB;
 			});
@@ -86,7 +86,7 @@
 	{/if}
 
 	{#if group.type === "Pinned"}
-		{#key settings.state.pinned.length}
+		{#key storage.state.pinned.length}
 			<Droppable id="pinned-channels" class="space-y-1.5">
 				{#each group.channels as channel, i (channel.user.id)}
 					<Sortable {channel} index={i} />

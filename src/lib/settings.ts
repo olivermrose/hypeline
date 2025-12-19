@@ -1,5 +1,4 @@
 import { RuneStore } from "@tauri-store/svelte";
-import type { User } from "./graphql/twitch";
 
 export type HighlightType =
 	| "mention"
@@ -24,13 +23,7 @@ export interface KeywordHighlightConfig extends HighlightConfig {
 	matchCase: boolean;
 }
 
-interface StoredUser {
-	id: string;
-	token: string;
-	data: User;
-}
-
-export interface UserSettings {
+export interface Settings {
 	"appearance.theme": string;
 
 	"splits.defaultOrientation": "horizontal" | "vertical";
@@ -67,15 +60,6 @@ export interface UserSettings {
 	"advanced.logs.level": "error" | "warn" | "info" | "debug" | "trace";
 }
 
-interface Settings extends UserSettings {
-	[key: string]: any;
-
-	// Internal
-	user: StoredUser | null;
-	lastJoined: string | null;
-	pinned: string[];
-}
-
 export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 	mention: { enabled: true, color: "#adadb8", style: "background" },
 	new: { enabled: true, color: "#ff75e6", style: "default" },
@@ -88,10 +72,6 @@ export const defaultHighlightTypes: Record<HighlightType, HighlightConfig> = {
 };
 
 export const defaults: Settings = {
-	user: null,
-	lastJoined: null,
-	pinned: [],
-
 	"appearance.theme": "",
 	"splits.defaultOrientation": "horizontal",
 	"splits.singleRestoreBehavior": "redirect",
@@ -124,4 +104,6 @@ export const defaults: Settings = {
 	"advanced.logs.level": "info",
 };
 
-export const settings = new RuneStore<Settings>("settings", defaults, { autoStart: true });
+export const settings = new RuneStore<Settings & Record<string, any>>("settings", defaults, {
+	autoStart: true,
+});

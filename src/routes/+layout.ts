@@ -5,7 +5,7 @@ import { Channel } from "$lib/models/channel.svelte";
 import { CurrentUser } from "$lib/models/current-user.svelte";
 import { Stream } from "$lib/models/stream.svelte";
 import { User } from "$lib/models/user.svelte";
-import { settings } from "$lib/settings";
+import { storage } from "$lib/stores";
 import type { BasicUser } from "$lib/twitch/irc";
 import type { Prefix } from "$lib/util";
 
@@ -16,7 +16,7 @@ export async function load({ url }) {
 		return { detached: true };
 	}
 
-	if (!settings.state.user) {
+	if (!storage.state.user) {
 		if (url.pathname !== "/auth/login") {
 			log.info("User not authenticated, redirecting to login");
 			redirect(302, "/auth/login");
@@ -25,10 +25,10 @@ export async function load({ url }) {
 		return;
 	}
 
-	app.twitch.token ??= settings.state.user.token;
+	app.twitch.token ??= storage.state.user.token;
 
 	if (!app.user) {
-		const user = new User(app.twitch, settings.state.user.data);
+		const user = new User(app.twitch, storage.state.user.data);
 		app.twitch.users.set(user.id, user);
 
 		app.user = new CurrentUser(user);

@@ -9,7 +9,7 @@
 	import * as Empty from "$lib/components/ui/empty";
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
-	import { layout } from "$lib/stores";
+	import { layout, storage } from "$lib/stores";
 
 	let loading = $state(true);
 
@@ -41,12 +41,12 @@
 				}
 
 				layout.state.root = null;
-				settings.state.lastJoined = channel?.user.username ?? null;
+				storage.state.lastJoined = channel?.user.username ?? null;
 			}
 		}
 
-		if (settings.state.lastJoined) {
-			await goto(`/channels/${settings.state.lastJoined}`);
+		if (storage.state.lastJoined) {
+			await goto(`/channels/${storage.state.lastJoined}`);
 		}
 
 		loading = false;

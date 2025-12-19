@@ -13,7 +13,7 @@
 	import { app } from "$lib/app.svelte";
 	import Sidebar from "$lib/components/Sidebar.svelte";
 	import * as Tooltip from "$lib/components/ui/tooltip";
-	import { settings } from "$lib/settings";
+	import { storage } from "$lib/stores";
 
 	const { children } = $props();
 </script>
@@ -41,7 +41,7 @@
 	]}
 	onDragOver={(event) => {
 		if (event.operation.target?.id === "pinned-channels") {
-			settings.state.pinned = move(settings.state.pinned, event);
+			storage.state.pinned = move(storage.state.pinned, event);
 		}
 	}}
 	onDragEnd={(event) => {
@@ -50,11 +50,11 @@
 >
 	<Tooltip.Provider delayDuration={100}>
 		<div class="flex grow overflow-hidden">
-			{#if settings.state.user}
+			{#if storage.state.user}
 				<Sidebar />
 			{/if}
 
-			<main class={["bg-accent/15 grow overflow-hidden", settings.state.user && "border-l"]}>
+			<main class={["bg-accent/15 grow overflow-hidden", storage.state.user && "border-l"]}>
 				{@render children()}
 			</main>
 		</div>

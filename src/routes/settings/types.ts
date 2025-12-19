@@ -1,5 +1,5 @@
 import type { Component } from "svelte";
-import type { UserSettings } from "$lib/settings";
+import type { Settings } from "$lib/settings";
 
 interface GroupField {
 	type: "group";
@@ -8,7 +8,7 @@ interface GroupField {
 }
 
 export interface BaseField {
-	id: keyof UserSettings | (string & {});
+	id: keyof Settings | (string & {});
 	label: string;
 	description?: string;
 	disabled?: () => boolean;
