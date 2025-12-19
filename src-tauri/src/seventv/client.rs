@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use anyhow::anyhow;
+use futures::future::join_all;
 use futures::{SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::json;
@@ -111,7 +112,7 @@ impl SeventTvClient {
     }
 
     #[tracing::instrument(name = "7tv_subscribe", skip(self, condition), fields(%condition))]
-    pub async fn subscribe(&self, event: &str, condition: &serde_json::Value) {
+    pub async fn subscribe(&self, channel: &str, event: &str, condition: &serde_json::Value) {
         let payload = json!({
             "op": 35,
             "d": {
@@ -126,7 +127,7 @@ impl SeventTvClient {
         {
             Ok(_) => {
                 let mut subscriptions = self.subscriptions.lock().await;
-                subscriptions.insert(event.to_string(), condition.clone());
+                subscriptions.insert(format!("{channel}:{event}"), condition.clone());
 
                 tracing::trace!("Subscription created");
             }
@@ -136,10 +137,10 @@ impl SeventTvClient {
         }
     }
 
-    pub async fn unsubscribe(&self, event: &str) {
+    pub async fn unsubscribe(&self, channel: &str, event: &str) {
         let mut subscriptions = self.subscriptions.lock().await;
 
-        if let Some(condition) = subscriptions.remove(event) {
+        if let Some(condition) = subscriptions.remove(&format!("{channel}:{event}")) {
             let payload = json!({
                 "op": 36,
                 "d": {
@@ -154,21 +155,21 @@ impl SeventTvClient {
         }
     }
 
-    pub async fn unsubscribe_all(&self) {
-        let mut subscriptions = self.subscriptions.lock().await;
+    pub async fn unsubscribe_all(&self, channel: &str) {
+        let prefix = format!("{channel}:");
 
-        for (event, condition) in subscriptions.drain() {
-            let payload = json!({
-                "op": 36,
-                "d": {
-                    "type": event,
-                    "condition": condition
-                }
-            });
+        let events = {
+            let subscriptions = self.subscriptions.lock().await;
 
-            let _ = self
-                .message_tx
-                .send(Message::Text(payload.to_string().into()));
-        }
+            subscriptions
+                .keys()
+                .filter(|k| k.starts_with(&prefix))
+                .map(|k| k.strip_prefix(&prefix).unwrap().to_string())
+                .collect::<Vec<_>>()
+        };
+
+        let futures = events.iter().map(|event| self.unsubscribe(channel, event));
+
+        join_all(futures).await;
     }
 }

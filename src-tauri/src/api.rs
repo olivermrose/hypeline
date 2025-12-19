@@ -139,18 +139,23 @@ pub async fn join(
                     "id": id_clone
                 });
 
-                seventv.subscribe("cosmetic.create", &channel_cond).await;
-                seventv.subscribe("entitlement.create", &channel_cond).await;
+                seventv
+                    .subscribe(&login_clone, "cosmetic.create", &channel_cond)
+                    .await;
+
+                seventv
+                    .subscribe(&login_clone, "entitlement.create", &channel_cond)
+                    .await;
 
                 if let Some(ref set_id) = set_id {
                     seventv
-                        .subscribe("emote_set.*", &json!({ "object_id": set_id }))
+                        .subscribe(&login_clone, "emote_set.*", &json!({ "object_id": set_id }))
                         .await;
                 }
 
                 if let Some(ref stv_id) = stv_id {
                     seventv
-                        .subscribe("user.update", &json!({ "object_id": stv_id }))
+                        .subscribe(&login_clone, "user.update", &json!({ "object_id": stv_id }))
                         .await;
                 }
             }
@@ -174,7 +179,7 @@ pub async fn leave(state: State<'_, Mutex<AppState>>, channel: String) -> Result
     }
 
     if let Some(ref seventv) = state.seventv {
-        seventv.unsubscribe_all().await;
+        seventv.unsubscribe_all(&channel).await;
     }
 
     if let Some(ref irc) = state.irc {
