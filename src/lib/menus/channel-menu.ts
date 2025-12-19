@@ -4,6 +4,7 @@ import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
 import type { SplitBranch, SplitDirection } from "$lib/split-layout";
+import { storage } from "$lib/stores";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	const enabled =
@@ -95,9 +96,9 @@ export async function createChannelMenu(channel: Channel) {
 		checked: channel.pinned,
 		async action() {
 			if (channel.pinned) {
-				settings.state.pinned = settings.state.pinned.filter((id) => id !== channel.id);
+				storage.state.pinned = storage.state.pinned.filter((id) => id !== channel.id);
 			} else {
-				settings.state.pinned.push(channel.id);
+				storage.state.pinned.push(channel.id);
 			}
 		},
 	});

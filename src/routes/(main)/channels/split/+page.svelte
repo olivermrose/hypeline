@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { app } from "$lib/app.svelte.js";
-	import { settings } from "$lib/settings";
 	import type { SplitDirection } from "$lib/split-layout";
+	import { storage } from "$lib/stores";
 	import SplitNode from "./SplitNode.svelte";
 	import SplitView from "./SplitView.svelte";
 
 	app.focused = null;
-	settings.state.lastJoined = null;
+	storage.state.lastJoined = null;
 
 	async function navigateSplit(event: KeyboardEvent) {
 		if (!app.splits.focused || !(event.metaKey || event.ctrlKey)) return;

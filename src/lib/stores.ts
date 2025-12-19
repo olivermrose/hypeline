@@ -1,6 +1,32 @@
 import { RuneStore } from "@tauri-store/svelte";
 import { settings } from "./settings";
+import type { User } from "./graphql/twitch";
 import type { SplitNode } from "./split-layout";
+
+interface AccountUser {
+	id: string;
+	token: string;
+	data: User;
+}
+
+interface Storage {
+	[key: string]: unknown;
+	user: AccountUser | null;
+	accounts: AccountUser[];
+	lastJoined: string | null;
+	pinned: string[];
+}
+
+export const storage = new RuneStore<Storage>(
+	"storage",
+	{
+		user: null,
+		accounts: [],
+		lastJoined: null,
+		pinned: [],
+	},
+	{ autoStart: true },
+);
 
 interface Layout {
 	[key: string]: unknown;

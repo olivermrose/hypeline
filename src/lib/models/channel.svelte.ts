@@ -4,6 +4,7 @@ import { channelBadgesQuery, cheermoteQuery, streamQuery } from "$lib/graphql/tw
 import type { Badge, Cheermote } from "$lib/graphql/twitch";
 import { ChannelEmoteManager } from "$lib/managers/channel-emote-manager";
 import { fetch7tvId } from "$lib/seventv";
+import { storage } from "$lib/stores";
 import { app } from "../app.svelte";
 import { ViewerManager } from "../managers/viewer-manager";
 import { settings } from "../settings";
@@ -85,7 +86,7 @@ export class Channel {
 		this.emotes = new ChannelEmoteManager(this);
 		this.viewers = new ViewerManager(this);
 
-		this.pinned = $derived(settings.state.pinned.includes(this.id));
+		this.pinned = $derived(storage.state.pinned.includes(this.id));
 	}
 
 	public async join(split = false) {
@@ -96,7 +97,7 @@ export class Channel {
 
 		if (!split) {
 			app.focused = this;
-			settings.state.lastJoined = this.ephemeral ? null : this.user.username;
+			storage.state.lastJoined = this.ephemeral ? null : this.user.username;
 		}
 
 		if (!this.viewers.has(this.id)) {
@@ -141,7 +142,7 @@ export class Channel {
 			await invoke("leave", { channel: this.user.username });
 		} finally {
 			this.reset();
-			settings.state.lastJoined = null;
+			storage.state.lastJoined = null;
 
 			if (app.user) {
 				app.user.banned.delete(this.id);

@@ -10,7 +10,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { log } from "$lib/log";
 	import { CurrentUser } from "$lib/models/current-user.svelte";
-	import { settings } from "$lib/settings";
+	import { storage } from "$lib/stores";
 	import { SCOPES } from "$lib/twitch";
 	import { TwitchClient } from "$lib/twitch/client";
 
@@ -43,7 +43,7 @@
 
 			const user = await app.twitch.users.fetch(event.payload.user_id);
 
-			settings.state.user = {
+			storage.state.user = {
 				id: event.payload.user_id,
 				token: event.payload.access_token,
 				data: user.data,
@@ -51,7 +51,7 @@
 
 			app.user = new CurrentUser(user);
 
-			await settings.save();
+			await storage.saveNow();
 			await goto("/");
 		});
 	});
