@@ -116,15 +116,31 @@ impl SeventTvClient {
                                                 }
                                             }
                                             1 => {
-                                                if let Some(id) = msg.d.get("session_id").and_then(|v| v.as_str()) {
+                                                if let Some(id) = msg.d["session_id"].as_str() {
                                                     let mut session = this.session_id.lock().await;
                                                     *session = Some(id.to_string());
 
-                                                    tracing::info!(%id, "Event API session id stored");
+                                                    tracing::info!(%id, "Hello received, session established");
                                                 }
                                             }
+											5 => {
+												tracing::debug!(payload = ?msg.d.to_string(), "Opcode acknowledged");
+
+												if let Some(success) = msg.d["data"]["success"].as_bool() && !success {
+													let mut subscriptions = this.subscriptions.lock().await;
+
+													tracing::warn!(
+														"Resume unsuccessful, re-subscribing to {} events",
+														subscriptions.len()
+													);
+
+													for (event, condition) in subscriptions.drain() {
+														self.subscribe(&event, &condition).await;
+													}
+												}
+											}
 											7 => {
-												tracing::info!(payload = ?msg.d, "End of stream reached");
+												tracing::info!(payload = ?msg.d.to_string(), "End of stream reached");
 											}
                                             _ => {}
                                         }
