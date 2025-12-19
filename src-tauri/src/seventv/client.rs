@@ -62,17 +62,17 @@ impl SeventTvClient {
 
         tokio::spawn(async move {
             loop {
-				tracing::info!("Connecting to 7TV Event API");
+                tracing::info!("Connecting to 7TV Event API");
 
                 let mut stream = match connect_async(SEVENTV_WS_URI).await {
                     Ok((stream, _)) => stream,
                     Err(err) => {
-						tracing::error!(%err, "Failed to connect to 7TV Event API");
-						return Err::<(), _>(Error::WebSocket(err))
-					},
+                        tracing::error!(%err, "Failed to connect to 7TV Event API");
+                        return Err::<(), _>(Error::WebSocket(err))
+                    },
                 };
 
-				tracing::info!("Connected to 7TV Event API");
+                tracing::info!("Connected to 7TV Event API");
 
                 {
                     let session_id = this.session_id.lock().await;
@@ -88,7 +88,7 @@ impl SeventTvClient {
                         });
 
                         if let Err(err) = stream.send(Message::Text(payload.to_string().into())).await {
-                             tracing::error!(%err, "Error sending resume message");
+                            tracing::error!(%err, "Error sending resume message");
                         }
                     }
                 }
@@ -123,33 +123,35 @@ impl SeventTvClient {
                                                     tracing::info!(%id, "Hello received, session established");
                                                 }
                                             }
-											5 => {
-												tracing::debug!(payload = ?msg.d.to_string(), "Opcode acknowledged");
+                                            5 => {
+                                                tracing::debug!(payload = ?msg.d.to_string(), "Opcode acknowledged");
 
-												if let Some(success) = msg.d["data"]["success"].as_bool() && !success {
-													let mut subscriptions = this.subscriptions.lock().await;
+                                                if let Some(success) = msg.d["data"]["success"].as_bool() && !success {
+                                                    let mut subscriptions = this.subscriptions.lock().await;
 
-													tracing::warn!(
-														"Resume unsuccessful, re-subscribing to {} events",
-														subscriptions.len()
-													);
+                                                    tracing::warn!(
+                                                        "Resume unsuccessful, re-subscribing to {} events",
+                                                        subscriptions.len()
+                                                    );
 
-													for (event, condition) in subscriptions.drain() {
-														self.subscribe(&event, &condition).await;
-													}
-												}
-											}
-											7 => {
-												tracing::info!(payload = ?msg.d.to_string(), "End of stream reached");
-											}
+                                                    for (key, condition) in subscriptions.drain() {
+                                                        let (channel, event) = key.split_once(':').unwrap();
+
+                                                        self.subscribe(channel, event, &condition).await;
+                                                    }
+                                                }
+                                            }
+                                            7 => {
+                                                tracing::info!(payload = ?msg.d.to_string(), "End of stream reached");
+                                            }
                                             _ => {}
                                         }
                                     }
                                 }
                                 Message::Close(cf) => {
-									if let Some(frame) = cf {
-										tracing::warn!(%frame, "Event API connection closed");
-									}
+                                    if let Some(frame) = cf {
+                                        tracing::warn!(%frame, "Event API connection closed");
+                                    }
 
                                     this.connected.store(false, Ordering::Relaxed);
                                     break 'recv;
