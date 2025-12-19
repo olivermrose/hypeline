@@ -112,6 +112,15 @@ impl SeventTvClient {
 
     #[tracing::instrument(name = "7tv_subscribe", skip(self, condition), fields(%condition))]
     pub async fn subscribe(&self, event: &str, condition: &serde_json::Value) {
+        let Some(id) = condition
+            .get("id")
+            .or(condition.get("object_id"))
+            .and_then(|v| v.as_str())
+        else {
+            tracing::warn!("Condition is missing an identifiable field");
+            return;
+        };
+
         let payload = json!({
             "op": 35,
             "d": {
@@ -126,7 +135,7 @@ impl SeventTvClient {
         {
             Ok(_) => {
                 let mut subscriptions = self.subscriptions.lock().await;
-                subscriptions.insert(event.to_string(), condition.clone());
+                subscriptions.insert(format!("{id}:{event}"), condition.clone());
 
                 tracing::trace!("Subscription created");
             }
@@ -136,10 +145,10 @@ impl SeventTvClient {
         }
     }
 
-    pub async fn unsubscribe(&self, event: &str) {
+    pub async fn unsubscribe(&self, event: &str, id: &str) {
         let mut subscriptions = self.subscriptions.lock().await;
 
-        if let Some(condition) = subscriptions.remove(event) {
+        if let Some(condition) = subscriptions.remove(&format!("{id}:{event}")) {
             let payload = json!({
                 "op": 36,
                 "d": {
@@ -157,7 +166,9 @@ impl SeventTvClient {
     pub async fn unsubscribe_all(&self) {
         let mut subscriptions = self.subscriptions.lock().await;
 
-        for (event, condition) in subscriptions.drain() {
+        for (key, condition) in subscriptions.drain() {
+            let (_, event) = key.split_once(':').unwrap();
+
             let payload = json!({
                 "op": 36,
                 "d": {

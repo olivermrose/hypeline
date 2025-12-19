@@ -60,7 +60,7 @@ pub async fn resub_emote_set(
         return Ok(());
     };
 
-    seventv.unsubscribe("emote_set.*").await;
+    seventv.unsubscribe("emote_set.*", &set_id).await;
     seventv
         .subscribe("emote_set.*", &json!({ "object_id": set_id }))
         .await;
