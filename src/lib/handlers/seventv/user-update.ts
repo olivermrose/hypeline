@@ -40,7 +40,10 @@ export default defineHandler({
 			};
 
 			await channel.emotes.fetch7tv();
-			await invoke("resub_emote_set", { setId: channel.emoteSetId });
+			await invoke("resub_emote_set", {
+				channel: channel.user.username,
+				setId: channel.emoteSetId,
+			});
 		}
 
 		channel.chat.addMessage(message);

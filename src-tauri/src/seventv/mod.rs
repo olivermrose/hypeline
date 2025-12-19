@@ -52,6 +52,7 @@ pub async fn connect_seventv(
 #[tauri::command]
 pub async fn resub_emote_set(
     state: State<'_, Mutex<AppState>>,
+    channel: String,
     set_id: String,
 ) -> Result<(), Error> {
     let state = state.lock().await;
@@ -60,9 +61,9 @@ pub async fn resub_emote_set(
         return Ok(());
     };
 
-    seventv.unsubscribe("emote_set.*").await;
+    seventv.unsubscribe(&channel, "emote_set.*").await;
     seventv
-        .subscribe("emote_set.*", &json!({ "object_id": set_id }))
+        .subscribe(&channel, "emote_set.*", &json!({ "object_id": set_id }))
         .await;
 
     Ok(())
