@@ -8,9 +8,10 @@ use futures::{SinkExt, StreamExt};
 use serde::de::{DeserializeOwned, Error as DeError};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::json;
+use tokio::net::TcpStream;
 use tokio::sync::{Mutex, mpsc};
-use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, connect_async};
 use tracing::Instrument;
 use twitch_api::HelixClient;
 use twitch_api::eventsub::{EventSubSubscription, EventType};
@@ -163,115 +164,8 @@ impl EventSubClient {
 
         tokio::spawn(
             async move {
-                let ws_uri = TWITCH_EVENTSUB_WS_URI.to_string();
-				tracing::info!("Connecting to EventSub at {ws_uri}");
-
-                loop {
-                    let mut stream = match connect_async(&ws_uri).await {
-                        Ok((stream, _)) => stream,
-                        Err(err) => {
-                            tracing::error!(%err, "Failed to connect to EventSub");
-                            return Err::<(), _>(Error::WebSocket(err));
-                        }
-                    };
-
-                    tracing::info!("Connected to EventSub");
-                    self.set_connected(true);
-
-                    loop {
-                        match stream.next().await {
-                            Some(Ok(message)) => {
-                                let this = Arc::clone(&this);
-
-                                match message {
-                                    Message::Ping(data) => {
-                                        stream.send(Message::Pong(data)).await?;
-                                    }
-                                    Message::Text(data) => {
-                                        if let Ok(msg) = serde_json::from_str(data.as_str()) {
-                                            match this.clone().handle_message(msg).await? {
-                                                Some(url) => {
-                                                    tracing::info!("Reconnecting to EventSub at {url}");
-
-                                                    match connect_async(&url).await {
-                                                        Ok((mut new_stream, _)) => {
-                                                            match new_stream.next().await {
-                                                                Some(Ok(Message::Text(data))) => {
-                                                                    if let Ok(msg) =
-                                                                        serde_json::from_str::<WebSocketMessage>(data.as_str())
-                                                                    {
-                                                                        if let WebSocketMessage::Welcome(_) = msg {
-                                                                            this.handle_message(msg).await?;
-
-                                                                            tracing::info!(
-                                                                                "Switched to new EventSub connection"
-                                                                            );
-                                                                            stream = new_stream;
-
-                                                                            continue;
-                                                                        }
-                                                                    }
-
-                                                                    tracing::error!(
-                                                                        "Received unexpected message on new connection"
-                                                                    );
-                                                                }
-                                                                Some(Ok(_)) => {
-                                                                    tracing::error!(
-                                                                        "Received non-text message on new connection"
-                                                                    );
-                                                                }
-                                                                Some(Err(err)) => {
-                                                                    tracing::error!(
-                                                                        %err,
-                                                                        "Error reading from new connection"
-                                                                    );
-                                                                }
-                                                                None => {
-                                                                    tracing::error!(
-                                                                        "New connection closed immediately"
-                                                                    );
-                                                                }
-                                                            }
-                                                        }
-                                                        Err(err) => {
-                                                            tracing::error!(
-                                                                %err,
-                                                                "Failed to connect to reconnect URL"
-                                                            );
-                                                        }
-                                                    }
-                                                }
-                                                None => continue,
-                                            }
-                                        }
-                                    }
-                                    Message::Close(Some(frame)) => {
-                                        tracing::warn!(%frame, "EventSub connection closed");
-                                        break;
-                                    }
-                                    Message::Close(None) => {
-                                        tracing::warn!("EventSub connection closed");
-                                        break;
-                                    }
-                                    _ => (),
-                                }
-                            }
-                            Some(Err(err)) => {
-                                tracing::error!(%err, "EventSub connection error");
-                                break;
-                            }
-                            None => {
-                                tracing::warn!("EventSub connection closed (EOF)");
-                                break;
-                            }
-                        }
-                    }
-
-                    self.set_connected(false);
-                    *self.session_id.lock().await = None;
-
-
+                if let Err(err) = this.run().await {
+                    tracing::error!(%err, "EventSub client stopped");
                 }
             }
             .in_current_span(),
@@ -299,23 +193,23 @@ impl EventSubClient {
                 {
                     tracing::info!("Initial connection to EventSub established");
 
-                    let mut subs_to_restore = Vec::new();
+                    let mut to_restore = Vec::new();
 
                     {
                         let mut map = self.subscriptions.lock().await;
 
                         if !map.is_empty() {
                             tracing::info!("Restoring {} subscriptions", map.len());
-                            for (k, v) in map.iter() {
-                                if let Some((username, _)) = k.split_once(':') {
-                                    subs_to_restore.push((
+
+                            for (key, sub) in map.drain() {
+                                if let Some((username, _)) = key.split_once(':') {
+                                    to_restore.push((
                                         username.to_string(),
-                                        v.kind.clone(),
-                                        v.condition.clone(),
+                                        sub.kind,
+                                        sub.condition,
                                     ));
                                 }
                             }
-                            map.clear();
                         }
                     }
 
@@ -326,15 +220,13 @@ impl EventSubClient {
                     )
                     .await?;
 
-                    for (username, kind, condition) in subs_to_restore {
-                        if kind == EventType::UserUpdate
-                            && condition["user_id"] == self.token.user_id.as_str()
-                        {
+                    for (username, kind, condition) in to_restore {
+                        if kind == EventType::UserUpdate {
                             continue;
                         }
 
-                        if let Err(e) = self.subscribe(&username, kind, condition).await {
-                            tracing::error!(%e, "Failed to restore subscription");
+                        if let Err(err) = self.subscribe(&username, kind, condition).await {
+                            tracing::error!(%err, "Failed to restore {kind} subscription");
                         }
                     }
                 } else {
@@ -378,6 +270,111 @@ impl EventSubClient {
         }
 
         Ok(None)
+    }
+
+    async fn reconnect(
+        self: Arc<Self>,
+        url: &str,
+    ) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>, Error> {
+        let (mut stream, _) = connect_async(url).await.map_err(Error::WebSocket)?;
+
+        match stream.next().await {
+            Some(Ok(Message::Text(data))) => {
+                let msg = serde_json::from_str::<WebSocketMessage>(&data)
+                    .map_err(|e| Error::Generic(anyhow::anyhow!(e)))?;
+
+                if let WebSocketMessage::Welcome(_) = msg {
+                    self.handle_message(msg).await?;
+
+                    tracing::info!("Switched to new EventSub connection");
+                    return Ok(stream);
+                }
+
+                Err(Error::Generic(anyhow!(
+                    "Received unexpected message on new connection"
+                )))
+            }
+            Some(Err(e)) => Err(Error::WebSocket(e)),
+            None => Err(Error::Generic(anyhow!("New connection closed immediately"))),
+            _ => Err(Error::Generic(anyhow!(
+                "Unexpected message type during reconnect"
+            ))),
+        }
+    }
+
+    async fn handle_text_message(
+        self: Arc<Self>,
+        data: &str,
+    ) -> Result<Option<WebSocketStream<MaybeTlsStream<TcpStream>>>, Error> {
+        if let Ok(msg) = serde_json::from_str(data)
+            && let Some(url) = self.clone().handle_message(msg).await?
+        {
+            tracing::info!("Reconnecting to EventSub at {url}");
+            return Ok(Some(self.reconnect(&url).await?));
+        }
+
+        Ok(None)
+    }
+
+    async fn process_stream(
+        self: Arc<Self>,
+        mut stream: WebSocketStream<MaybeTlsStream<TcpStream>>,
+    ) -> Result<(), Error> {
+        loop {
+            match stream.next().await {
+                Some(Ok(message)) => match message {
+                    Message::Ping(data) => {
+                        stream.send(Message::Pong(data)).await?;
+                    }
+                    Message::Text(data) => {
+                        if let Some(new_stream) = self.clone().handle_text_message(&data).await? {
+                            stream = new_stream;
+                        }
+                    }
+                    Message::Close(frame) => {
+                        if let Some(frame) = frame {
+                            tracing::warn!(%frame, "EventSub connection closed");
+                        } else {
+                            tracing::warn!("EventSub connection closed");
+                        }
+                        break;
+                    }
+                    _ => (),
+                },
+                Some(Err(err)) => {
+                    tracing::error!(%err, "EventSub connection error");
+                    break;
+                }
+                None => {
+                    tracing::warn!("EventSub connection closed, end of stream reached");
+                    break;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    async fn run(self: Arc<Self>) -> Result<(), Error> {
+        let ws_uri = TWITCH_EVENTSUB_WS_URI.to_string();
+        tracing::info!("Connecting to EventSub");
+
+        loop {
+            let stream = match connect_async(&ws_uri).await {
+                Ok((stream, _)) => stream,
+                Err(err) => {
+                    tracing::error!(%err, "Failed to connect to EventSub");
+                    return Err(Error::WebSocket(err));
+                }
+            };
+
+            tracing::info!("Connected to EventSub");
+            self.set_connected(true);
+
+            let _ = self.clone().process_stream(stream).await;
+
+            self.set_connected(false);
+            *self.session_id.lock().await = None;
+        }
     }
 
     pub fn connected(&self) -> bool {
