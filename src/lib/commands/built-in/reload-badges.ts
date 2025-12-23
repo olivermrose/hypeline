@@ -10,21 +10,25 @@ export default defineCommand({
 	async exec(args, channel) {
 		const providers = args[0]?.split(",") ?? [];
 
-		const promises: Promise<unknown>[] = [channel.fetchBadges(true)];
+		if (providers.includes("all")) {
+			await app.badges.fetch(true);
+		} else {
+			const promises: Promise<unknown>[] = [channel.fetchBadges(true)];
 
-		if (providers.includes("twitch")) {
-			promises.push(app.badges.fetchTwitch(true));
+			if (providers.includes("twitch")) {
+				promises.push(app.badges.fetchTwitch(true));
+			}
+
+			if (providers.includes("bttv")) {
+				promises.push(app.badges.fetchBttv(true));
+			}
+
+			if (providers.includes("chatterino")) {
+				promises.push(app.badges.fetchChatterino(true));
+			}
+
+			await Promise.all(promises);
 		}
-
-		if (providers.includes("bttv")) {
-			promises.push(app.badges.fetchBttv(true));
-		}
-
-		if (providers.includes("chatterino")) {
-			promises.push(app.badges.fetchChatterino(true));
-		}
-
-		await Promise.all(promises);
 
 		channel.chat.addSystemMessage("Reloaded badges.");
 	},

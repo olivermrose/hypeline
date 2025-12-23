@@ -5,12 +5,17 @@ import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/twitch";
 import { Badge } from "$lib/models/badge";
-import type { BttvBadge, ChatterinoBadge } from "$lib/models/badge";
+import type { BttvBadge, ChatterinoBadge, FfzBadge } from "$lib/models/badge";
 import { getOrInsert, getOrInsertComputed } from "$lib/util";
 
 interface BttvUser {
 	providerId: string;
 	badge: BttvBadge;
+}
+
+interface FfzResponse {
+	badges: FfzBadge[];
+	users: Record<string, number[]>;
 }
 
 export class BadgeManager extends SvelteMap<string, Badge> {
@@ -20,9 +25,12 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 	public readonly users = new SvelteMap<string, Badge[]>();
 
 	public async fetch(force = false) {
-		await this.fetchTwitch(force);
-		await this.fetchBttv(force);
-		await this.fetchChatterino(force);
+		await Promise.all([
+			this.fetchTwitch(force),
+			this.fetchBttv(force),
+			this.fetchChatterino(force),
+			this.fetchFfz(force),
+		]);
 	}
 
 	/**
@@ -31,7 +39,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 	public async fetchTwitch(force = false) {
 		let badges = await cache.get<Badge[]>("global_badges");
 
-		if (force || !badges) {
+		if (!badges || force) {
 			if (force) this.clear();
 
 			const { badges: data } = await sendTwitch(globalBadgesQuery);
@@ -52,7 +60,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 	public async fetchBttv(force = false) {
 		let response = await cache.get<BttvUser[]>("bttv_badges");
 
-		if (force || !response) {
+		if (!response || force) {
 			if (force) {
 				await cache.remove("bttv_badges");
 			}
@@ -89,7 +97,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 	public async fetchChatterino(force = false) {
 		let badges = await cache.get<ChatterinoBadge[]>("chatterino_badges");
 
-		if (force || !badges) {
+		if (!badges || force) {
 			if (force) {
 				await cache.remove("chatterino_badges");
 			}
@@ -119,6 +127,54 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 
 			for (const id of data.users) {
 				getOrInsert(this.users, id, []).push(badge);
+			}
+		}
+	}
+
+	public async fetchFfz(force = false) {
+		let response = await cache.get<FfzResponse>("ffz_badges");
+
+		if (!response || force) {
+			if (force) {
+				await cache.remove("ffz_badges");
+			}
+
+			const { data, error } = await fetch<FfzResponse>(
+				"https://api.frankerfacez.com/v1/badges/ids",
+			);
+
+			if (error) {
+				throw new ApiError(error.status, error.message ?? error.statusText);
+			}
+
+			response = data;
+			await cache.set("ffz_badges", response);
+		}
+
+		const badges: Record<string, Badge> = {};
+
+		for (const data of response.badges) {
+			if (data.id === 2) continue;
+
+			const version = data.id.toString();
+
+			badges[version] = new Badge({
+				setId: "ffz",
+				version,
+				title: data.title,
+				description: data.title,
+				color: data.color,
+				imageUrl: data.urls["4"],
+			});
+		}
+
+		for (const [badgeId, users] of Object.entries(response.users)) {
+			if (badgeId === "2") continue;
+
+			const badge = badges[badgeId];
+
+			for (const id of users) {
+				getOrInsert(this.users, id.toString(), []).push(badge);
 			}
 		}
 	}

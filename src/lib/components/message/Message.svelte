@@ -35,11 +35,12 @@
 			{#snippet child({ props })}
 				<img
 					{...props}
-					class="inline-block align-middle"
+					class={["inline-block align-middle", badge.color && "rounded-xs"]}
 					src={badge.imageUrl}
 					alt={badge.description}
 					width="18"
 					height="18"
+					style:background-color={badge.color}
 				/>
 			{/snippet}
 		</Tooltip.Trigger>

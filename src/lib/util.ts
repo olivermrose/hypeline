@@ -165,8 +165,8 @@ export async function openMenu(event: MouseEvent, menufn: () => Promise<Menu>) {
 
 // https://github.com/tc39/proposal-upsert
 export function getOrInsert<K, V>(map: Map<K, V>, key: K, defaultValue: V): V {
-	for (const [k, v] of map) {
-		if (k === key) return v;
+	if (map.has(key)) {
+		return map.get(key)!;
 	}
 
 	map.set(key, defaultValue);
@@ -174,8 +174,8 @@ export function getOrInsert<K, V>(map: Map<K, V>, key: K, defaultValue: V): V {
 }
 
 export function getOrInsertComputed<K, V>(map: Map<K, V>, key: K, defaultValue: () => V): V {
-	for (const [k, v] of map) {
-		if (k === key) return v;
+	if (map.has(key)) {
+		return map.get(key)!;
 	}
 
 	const value = defaultValue();
