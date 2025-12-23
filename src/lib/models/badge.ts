@@ -80,7 +80,7 @@ export class Badge {
 	}
 
 	public static fromGql(data: ApiBadge) {
-		return new this({
+		return new Badge({
 			setId: data.setID,
 			version: data.version,
 			title: data.title,
