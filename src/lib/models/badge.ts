@@ -14,11 +14,20 @@ export interface ChatterinoBadge {
 	users: string[];
 }
 
+export interface FfzBadge {
+	id: number;
+	name: string;
+	title: string;
+	color: string;
+	urls: Record<string, string>;
+}
+
 interface BadgeData {
 	setId: string;
 	version: string;
 	title: string;
 	description: string;
+	color?: string;
 	imageUrl: string;
 }
 
@@ -51,6 +60,11 @@ export class Badge {
 	public readonly description: string;
 
 	/**
+	 * The background color of the badge if any.
+	 */
+	public readonly color?: string;
+
+	/**
 	 * The url of the badge image.
 	 */
 	public readonly imageUrl: string;
@@ -61,6 +75,7 @@ export class Badge {
 		this.version = data.version;
 		this.title = data.title;
 		this.description = data.description;
+		this.color = data.color;
 		this.imageUrl = data.imageUrl;
 	}
 
