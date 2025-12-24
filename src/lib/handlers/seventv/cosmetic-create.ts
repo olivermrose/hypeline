@@ -20,8 +20,8 @@ export default defineHandler({
 			app.badges.set(
 				cosmetic.id,
 				new Badge({
-					setId: cosmetic.id,
-					version: "1",
+					setId: "7tv",
+					version: cosmetic.id,
 					title: cosmetic.data.name,
 					description: cosmetic.data.tooltip,
 					imageUrl: `https:${cosmetic.data.host.url}/${file.name}`,
