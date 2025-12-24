@@ -103,7 +103,7 @@ pub fn run() {
             async_runtime::block_on(async {
                 let stored_token = app_handle
                     .svelte()
-                    .get_raw("settings", "user")
+                    .get_raw("storage", "user")
                     .and_then(|user| user["token"].as_str().map(|t| t.to_string()));
 
                 let access_token = if let Some(token) = stored_token {
