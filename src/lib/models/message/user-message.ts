@@ -270,7 +270,24 @@ export class UserMessage extends Message {
 			}
 		}
 
-		this.badges.push(...(app.badges.users.get(this.author.id) ?? []));
+		const providerBadges = app.badges.users.get(this.author.id);
+
+		if (providerBadges) {
+			function getPriority(id: string) {
+				if (id.startsWith("chatterino")) return 0;
+				if (id === "ffz") return 1;
+				if (id === "bttv") return 2;
+				if (id === "7tv") return 3;
+
+				return 4;
+			}
+
+			providerBadges.sort((a, b) => {
+				return getPriority(a.setId) - getPriority(b.setId);
+			});
+
+			this.badges.push(...providerBadges);
+		}
 	}
 
 	async #updateHeldMessage(allow: boolean) {
