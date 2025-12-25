@@ -9,16 +9,17 @@ export default defineHandler({
 		if (!channel) return;
 
 		const message = new UserMessage(channel, data);
+		const badges = (data.source ?? data).badges;
 
 		message.author.color = data.name_color;
 		message.author.username = data.sender.login;
 		message.author.displayName = data.sender.name;
 
 		message.viewer ??= await channel.viewers.fetch(data.sender.id);
-		message.viewer.broadcaster = message.badges.some((b) => b.startsWith("broadcaster"));
+		message.viewer.broadcaster = badges.some((b) => b.name.startsWith("broadcaster"));
 		message.viewer.moderator = message.viewer.broadcaster || data.is_mod;
 		message.viewer.subscriber = data.is_subscriber;
-		message.viewer.vip = message.badges.some((b) => b.startsWith("vip"));
+		message.viewer.vip = badges.some((b) => b.name.startsWith("vip"));
 		message.viewer.returning = data.is_returning_chatter;
 		message.viewer.new = data.is_first_msg;
 

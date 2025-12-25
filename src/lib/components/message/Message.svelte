@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { app } from "$lib/app.svelte";
-	import type { Badge } from "$lib/graphql/twitch";
 	import type { LinkNode } from "$lib/models/message/parse";
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import { settings } from "$lib/settings";
@@ -17,35 +15,7 @@
 
 	const { message, nested = false }: Props = $props();
 
-	const badges: Badge[] = [];
 	const linkNodes = $derived(message.nodes.filter((n) => n.type === "link"));
-
-	if (message.shared) {
-		const { user } = message.source;
-
-		badges.push({
-			setID: user.id,
-			version: "1",
-			title: user.displayName,
-			description: user.displayName,
-			imageURL: user.avatarUrl,
-		});
-	}
-
-	for (const badge of message.badges) {
-		const chatBadge = message.source.badges.get(badge);
-		const globalBadge = app.twitch.badges.get(badge);
-
-		const resolved = chatBadge ?? globalBadge;
-
-		if (resolved) {
-			badges.push(resolved);
-		}
-	}
-
-	if (message.author.badge) {
-		badges.push(message.author.badge);
-	}
 
 	function canEmbed(node: LinkNode) {
 		return (
@@ -59,17 +29,18 @@
 
 <Timestamp date={message.timestamp} />
 
-{#each badges as badge (badge.title)}
+{#each message.badges as badge (badge.id)}
 	<Tooltip.Root>
 		<Tooltip.Trigger>
 			{#snippet child({ props })}
 				<img
 					{...props}
-					class="inline-block align-middle"
-					src={badge.imageURL}
+					class={["inline-block align-middle", badge.color && "rounded-xs"]}
+					src={badge.imageUrl}
 					alt={badge.description}
 					width="18"
 					height="18"
+					style:background-color={badge.color}
 				/>
 			{/snippet}
 		</Tooltip.Trigger>
