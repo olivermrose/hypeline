@@ -227,7 +227,16 @@ impl EventSubClient {
                 },
                 Some(Err(err)) => {
                     tracing::error!(%err, "EventSub connection error");
-                    break;
+
+                    match self.clone().reconnect(TWITCH_EVENTSUB_WS_URI).await {
+                        Ok(new_stream) => {
+                            stream = new_stream;
+                        }
+                        Err(reconnect_err) => {
+                            tracing::error!(%reconnect_err, "Failed to reconnect to EventSub");
+                            break;
+                        }
+                    }
                 }
                 None => {
                     tracing::warn!("EventSub connection closed, end of stream reached");
