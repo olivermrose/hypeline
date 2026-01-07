@@ -23,6 +23,10 @@ export default defineCommand({
 				promises.push(app.badges.fetchBttv(true));
 			}
 
+			if (providers.includes("ffz")) {
+				promises.push(app.badges.fetchFfz(true));
+			}
+
 			await Promise.all(promises);
 		}
 
