@@ -35,8 +35,6 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 		let badges = await cache.get<Badge[]>("global_badges");
 
 		if (!badges || force) {
-			if (force) this.clear();
-
 			const { badges: data } = await sendTwitch(globalBadgesQuery);
 			badges = data?.flatMap((b) => (b ? [Badge.fromGql(b)] : [])) ?? [];
 
@@ -56,10 +54,6 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 		let response = await cache.get<BttvUser[]>("bttv_badges");
 
 		if (!response || force) {
-			if (force) {
-				await cache.remove("bttv_badges");
-			}
-
 			const { data, error } = await fetch<BttvUser[]>(
 				"https://api.betterttv.net/3/cached/badges",
 			);
@@ -93,10 +87,6 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 		let response = await cache.get<FfzResponse>("ffz_badges");
 
 		if (!response || force) {
-			if (force) {
-				await cache.remove("ffz_badges");
-			}
-
 			const { data, error } = await fetch<FfzResponse>(
 				"https://api.frankerfacez.com/v1/badges/ids",
 			);
@@ -124,6 +114,8 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 				color: data.color,
 				imageUrl: data.urls["4"],
 			});
+
+			this.set(`ffz:${version}`, badges[version]);
 		}
 
 		for (const [badgeId, users] of Object.entries(response.users)) {
