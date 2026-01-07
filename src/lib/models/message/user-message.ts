@@ -274,14 +274,6 @@ export class UserMessage extends Message {
 		const providerBadges = app.badges.users.get(this.author.id);
 
 		if (providerBadges) {
-			function getPriority(id: string) {
-				if (id === "ffz") return 0;
-				if (id === "bttv") return 1;
-				if (id === "7tv") return 2;
-
-				return 3;
-			}
-
 			const external = providerBadges
 				.filter((b) => {
 					if (b.setId === "ffz" && !settings.state["chat.badges.ffz"]) return false;
@@ -290,7 +282,7 @@ export class UserMessage extends Message {
 
 					return true;
 				})
-				.sort((a, b) => getPriority(a.setId) - getPriority(b.setId));
+				.sort((a, b) => b.setId.localeCompare(a.setId));
 
 			this.badges.push(...external);
 		}
