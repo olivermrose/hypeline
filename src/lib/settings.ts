@@ -35,6 +35,9 @@ export interface Settings {
 	"chat.hideScrollbar": boolean;
 	"chat.newSeparator": boolean;
 	"chat.embeds": boolean;
+	"chat.badges.ffz": boolean;
+	"chat.badges.bttv": boolean;
+	"chat.badges.seventv": boolean;
 	"chat.usernames.localized": boolean;
 	"chat.usernames.readable": boolean;
 	"chat.usernames.randomColor": boolean;
@@ -81,6 +84,9 @@ export const defaults: Settings = {
 	"chat.hideScrollbar": false,
 	"chat.newSeparator": false,
 	"chat.embeds": true,
+	"chat.badges.ffz": true,
+	"chat.badges.bttv": true,
+	"chat.badges.seventv": true,
 	"chat.usernames.localized": true,
 	"chat.usernames.readable": true,
 	"chat.usernames.randomColor": false,

@@ -1,4 +1,5 @@
 import { app } from "$lib/app.svelte";
+import { settings } from "$lib/settings";
 import type { AutoModMetadata, StructuredMessage } from "$lib/twitch/eventsub";
 import type {
 	BasicUser,
@@ -281,11 +282,17 @@ export class UserMessage extends Message {
 				return 3;
 			}
 
-			providerBadges.sort((a, b) => {
-				return getPriority(a.setId) - getPriority(b.setId);
-			});
+			const external = providerBadges
+				.filter((b) => {
+					if (b.setId === "ffz" && !settings.state["chat.badges.ffz"]) return false;
+					if (b.setId === "bttv" && !settings.state["chat.badges.bttv"]) return false;
+					if (b.setId === "7tv" && !settings.state["chat.badges.seventv"]) return false;
 
-			this.badges.push(...providerBadges);
+					return true;
+				})
+				.sort((a, b) => getPriority(a.setId) - getPriority(b.setId));
+
+			this.badges.push(...external);
 		}
 	}
 
