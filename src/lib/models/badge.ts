@@ -6,14 +6,6 @@ export interface BttvBadge {
 	svg: string;
 }
 
-export interface ChatterinoBadge {
-	tooltip: string;
-	image1: string;
-	image2: string;
-	image3: string;
-	users: string[];
-}
-
 export interface FfzBadge {
 	id: number;
 	name: string;

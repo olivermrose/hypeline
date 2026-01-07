@@ -274,12 +274,11 @@ export class UserMessage extends Message {
 
 		if (providerBadges) {
 			function getPriority(id: string) {
-				if (id.startsWith("chatterino")) return 0;
-				if (id === "ffz") return 1;
-				if (id === "bttv") return 2;
-				if (id === "7tv") return 3;
+				if (id === "ffz") return 0;
+				if (id === "bttv") return 1;
+				if (id === "7tv") return 2;
 
-				return 4;
+				return 3;
 			}
 
 			providerBadges.sort((a, b) => {

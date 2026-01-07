@@ -5,7 +5,7 @@ import { ApiError } from "$lib/errors/api-error";
 import { sendTwitch } from "$lib/graphql";
 import { globalBadgesQuery } from "$lib/graphql/twitch";
 import { Badge } from "$lib/models/badge";
-import type { BttvBadge, ChatterinoBadge, FfzBadge } from "$lib/models/badge";
+import type { BttvBadge, FfzBadge } from "$lib/models/badge";
 import { getOrInsert, getOrInsertComputed } from "$lib/util";
 
 interface BttvUser {
@@ -25,12 +25,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 	public readonly users = new SvelteMap<string, Badge[]>();
 
 	public async fetch(force = false) {
-		await Promise.all([
-			this.fetchTwitch(force),
-			this.fetchBttv(force),
-			this.fetchChatterino(force),
-			this.fetchFfz(force),
-		]);
+		await Promise.all([this.fetchTwitch(force), this.fetchBttv(force), this.fetchFfz(force)]);
 	}
 
 	/**
@@ -91,43 +86,6 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 			});
 
 			getOrInsert(this.users, user.providerId, []).push(badge);
-		}
-	}
-
-	public async fetchChatterino(force = false) {
-		let badges = await cache.get<ChatterinoBadge[]>("chatterino_badges");
-
-		if (!badges || force) {
-			if (force) {
-				await cache.remove("chatterino_badges");
-			}
-
-			const { data, error } = await fetch<{ badges: ChatterinoBadge[] }>(
-				"https://api.chatterino.com/badges",
-			);
-
-			if (error) {
-				throw new ApiError(error.status, error.message ?? error.statusText);
-			}
-
-			badges = data.badges;
-			await cache.set("chatterino_badges", badges);
-		}
-
-		for (const data of badges) {
-			const setId = data.tooltip.toLowerCase().replace(/\s+/g, "-");
-
-			const badge = new Badge({
-				setId,
-				version: "1",
-				title: data.tooltip,
-				description: data.tooltip,
-				imageUrl: data.image3,
-			});
-
-			for (const id of data.users) {
-				getOrInsert(this.users, id, []).push(badge);
-			}
 		}
 	}
 

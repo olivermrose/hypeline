@@ -23,10 +23,6 @@ export default defineCommand({
 				promises.push(app.badges.fetchBttv(true));
 			}
 
-			if (providers.includes("chatterino")) {
-				promises.push(app.badges.fetchChatterino(true));
-			}
-
 			await Promise.all(promises);
 		}
 
