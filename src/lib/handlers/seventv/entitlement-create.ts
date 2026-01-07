@@ -1,4 +1,5 @@
 import { app } from "$lib/app.svelte";
+import { getOrInsert } from "$lib/util";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -11,7 +12,10 @@ export default defineHandler({
 
 		switch (data.kind) {
 			case "BADGE": {
-				app.u2b.set(user.id, app.badges.get(data.ref_id));
+				const badge = app.badges.get(data.ref_id);
+				if (!badge) return;
+
+				getOrInsert(app.badges.users, user.id, []).push(badge);
 				break;
 			}
 

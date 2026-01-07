@@ -32,6 +32,33 @@ export default {
 		},
 		{
 			type: "group",
+			label: "Badges",
+			fields: [
+				{
+					id: "chat.badges.ffz",
+					type: "switch",
+					label: "Enable FrankerFaceZ badges",
+					description:
+						'Show badges from <a href="https://www.frankerfacez.com/" target="_blank">FrankerFaceZ</a>.',
+				},
+				{
+					id: "chat.badges.bttv",
+					type: "switch",
+					label: "Enable BetterTTV badges",
+					description:
+						'Show badges from <a href="https://betterttv.com/" target="_blank">BetterTTV</a>.',
+				},
+				{
+					id: "chat.badges.seventv",
+					type: "switch",
+					label: "Enable 7TV badges",
+					description:
+						'Show badges from <a href="https://7tv.app/" target="_blank">7TV</a>.',
+				},
+			],
+		},
+		{
+			type: "group",
 			label: "Usernames",
 			fields: [
 				{

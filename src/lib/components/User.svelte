@@ -182,12 +182,12 @@
 					: relationship.badges.slice(0, 10)}
 
 				<div class="flex flex-wrap items-center gap-1">
-					{#each badges as badge (`${badge.setID}:${badge.version}`)}
+					{#each badges as badge (badge.id)}
 						<img
 							class="size-4"
-							src={badge.imageURL}
-							alt={badge.title}
 							title={badge.title}
+							src={badge.imageUrl}
+							alt={badge.description}
 						/>
 					{/each}
 
