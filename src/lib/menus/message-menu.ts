@@ -54,5 +54,15 @@ export async function createMessageMenu(message: UserMessage) {
 		items.push(separator, deleteMsg, timeout, ban);
 	}
 
+	const copyId = await MenuItem.new({
+		id: "copy-id",
+		text: "Copy Message ID",
+		action() {
+			navigator.clipboard.writeText(message.id);
+		},
+	});
+
+	items.push(separator, copyId);
+
 	return Menu.new({ items });
 }

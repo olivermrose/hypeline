@@ -79,15 +79,6 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
-	const isEmpty = typeof app.splits.root === "string" && app.splits.root.startsWith("split-");
-
-	const openInSplit = await MenuItem.new({
-		id: "open-in-split",
-		text: "Open in Split View",
-		enabled: !singleConnection && (!app.splits.active || isEmpty),
-		action: () => app.splits.activate(),
-	});
-
 	const pin = await CheckMenuItem.new({
 		id: "pin",
 		text: "Pin",
@@ -103,14 +94,13 @@ export async function createChannelMenu(channel: Channel) {
 		},
 	});
 
-	const remove = await MenuItem.new({
-		id: "remove",
-		text: "Remove",
-		async action() {
-			await channel.leave();
-			app.channels.delete(channel.id);
-			await goto("/");
-		},
+	const isEmpty = typeof app.splits.root === "string" && app.splits.root.startsWith("split-");
+
+	const openInSplit = await MenuItem.new({
+		id: "open-in-split",
+		text: "Open in Split View",
+		enabled: !singleConnection && (!app.splits.active || isEmpty),
+		action: () => app.splits.activate(),
 	});
 
 	const items = [join, leave, pin, separator, openInSplit];
@@ -127,8 +117,28 @@ export async function createChannelMenu(channel: Channel) {
 	}
 
 	if (channel.ephemeral) {
+		const remove = await MenuItem.new({
+			id: "remove",
+			text: "Remove",
+			async action() {
+				await channel.leave();
+				app.channels.delete(channel.id);
+				await goto("/");
+			},
+		});
+
 		items.push(separator, remove);
 	}
+
+	const copyId = await MenuItem.new({
+		id: "copy-id",
+		text: "Copy Channel ID",
+		action() {
+			navigator.clipboard.writeText(channel.id);
+		},
+	});
+
+	items.push(separator, copyId);
 
 	return Menu.new({ items });
 }
