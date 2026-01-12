@@ -1,5 +1,5 @@
 import type { Channel } from "../channel.svelte";
-import { Message } from "./message.svelte";
+import { TextualMessage } from "./textual-message.svelte";
 import type { MessageContext } from "./context";
 
 export interface SystemMessageData {
@@ -12,7 +12,7 @@ export interface SystemMessageData {
  * System messages are messages constructed internally and sent to relay
  * information to the user.
  */
-export class SystemMessage extends Message {
+export class SystemMessage extends TextualMessage {
 	public override readonly id = crypto.randomUUID();
 	public override text = "";
 

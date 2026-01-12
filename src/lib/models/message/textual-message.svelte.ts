@@ -1,16 +1,14 @@
 import type { BaseUserMessage } from "$lib/twitch/irc";
 import type { Channel } from "../channel.svelte";
+import type { Message } from "../chat.svelte";
 import type { SystemMessage, SystemMessageData } from "./system-message";
 import type { UserMessage } from "./user-message";
 
 export type MessageData = BaseUserMessage | SystemMessageData;
 
-export abstract class Message {
+export abstract class TextualMessage implements Message {
 	readonly #system: boolean;
 
-	/**
-	 * The id (stored as a UUID) of the message.
-	 */
 	public abstract readonly id: string;
 
 	/**
@@ -18,9 +16,6 @@ export abstract class Message {
 	 */
 	public abstract text: string;
 
-	/**
-	 * The timestamp at which the message was sent at.
-	 */
 	public readonly timestamp: Date;
 
 	/**

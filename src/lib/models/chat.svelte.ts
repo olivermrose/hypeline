@@ -1,3 +1,4 @@
+import type { Component, ComponentProps } from "svelte";
 import { app } from "$lib/app.svelte";
 import type { Command } from "$lib/commands";
 import { log } from "$lib/log";
@@ -5,15 +6,28 @@ import { settings } from "$lib/settings";
 import { sendPresence } from "$lib/seventv";
 import type { SentMessage } from "$lib/twitch/api";
 import { commands } from "../commands";
+import { ComponentMessage } from "./message/component-message";
 import { SystemMessage } from "./message/system-message";
+import { TextualMessage } from "./message/textual-message.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Channel } from "./channel.svelte";
 import type { MessageContext } from "./message/context";
-import type { Message } from "./message/message.svelte";
 import type { UserMessage } from "./message/user-message";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
+
+export interface Message {
+	/**
+	 * The id (stored as a UUID) of the message.
+	 */
+	readonly id: string;
+
+	/**
+	 * The timestamp at which the message was sent at.
+	 */
+	readonly timestamp: Date;
+}
 
 export interface ChatMode {
 	unique: boolean;
@@ -86,7 +100,15 @@ export class Chat {
 		this.addCommands(commands);
 	}
 
-	public addMessage(message: Message) {
+	public addComponent<C extends Component<any>>(
+		component: C,
+		props: ComponentProps<C> = {} as never,
+	) {
+		this.messages.push(new ComponentMessage(component, props));
+		return this;
+	}
+
+	public addMessage(message: TextualMessage) {
 		if (this.messages.some((m) => m.id === message.id)) {
 			return this;
 		}
@@ -129,7 +151,11 @@ export class Chat {
 
 	public deleteMessages(id?: string) {
 		for (const message of this.messages) {
-			if (message.isUser() && (!id || message.author.id === id)) {
+			if (
+				message instanceof TextualMessage &&
+				message.isUser() &&
+				(!id || message.author.id === id)
+			) {
 				message.deleted = true;
 			}
 		}
