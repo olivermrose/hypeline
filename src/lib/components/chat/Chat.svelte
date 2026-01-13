@@ -2,7 +2,6 @@
 	import { VList } from "virtua/svelte";
 	import { Chat } from "$lib/models/chat.svelte";
 	import type { Message } from "$lib/models/message/message";
-	import { TextualMessage } from "$lib/models/message/textual-message.svelte";
 	import { settings } from "$lib/settings";
 	import AutoMod from "../message/AutoMod.svelte";
 	import Notification from "../message/Notification.svelte";
@@ -24,7 +23,7 @@
 	let list = $state<VList<Message>>();
 	let scrollingPaused = $state(false);
 	let countSnapshot = $state(0);
-	let lastRead = $state<TextualMessage | null>(null);
+	let lastRead = $state<Message | null>(null);
 
 	const observer = new ResizeObserver(() => {
 		if (!scrollingPaused) scrollToEnd();
@@ -62,7 +61,7 @@
 
 <svelte:window
 	onblur={() => {
-		lastRead = chat.messages.findLast((message) => message instanceof TextualMessage) ?? null;
+		lastRead = chat.messages.at(-1) ?? null;
 	}}
 	onfocus={() => {
 		if (lastRead === chat.messages.at(-1)) {
