@@ -14,8 +14,8 @@ import { Badge } from "../badge";
 import { User } from "../user.svelte";
 import { Viewer } from "../viewer.svelte";
 import type { Channel } from "../channel.svelte";
-import { Message } from "./message.svelte";
 import { parse } from "./parse";
+import { TextualMessage } from "./textual-message.svelte";
 import type { Node } from "./parse";
 
 function createPartialUser(channel: Channel, sender: BasicUser, color: string) {
@@ -41,11 +41,13 @@ function createPartialUser(channel: Channel, sender: BasicUser, color: string) {
  * User messages are either messages received by `PRIVMSG` commands or
  * notifications received by `USERNOTICE` commands.
  */
-export class UserMessage extends Message {
+export class UserMessage extends TextualMessage {
 	#nodes: Node[] = [];
 
 	public override readonly id: string;
 	public override readonly text: string;
+
+	public readonly [Symbol.toStringTag] = "UserMessage";
 
 	/**
 	 * The user who sent the message.

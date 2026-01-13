@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { VList } from "virtua/svelte";
-	import type { Chat } from "$lib/models/chat.svelte";
-	import type { Message } from "$lib/models/message/message.svelte";
+	import { Chat } from "$lib/models/chat.svelte";
+	import type { Message } from "$lib/models/message/message";
 	import { settings } from "$lib/settings";
 	import AutoMod from "../message/AutoMod.svelte";
 	import Notification from "../message/Notification.svelte";
@@ -101,42 +101,47 @@
 		bind:this={list}
 	>
 		{#snippet children(message, i)}
-			{@const prev = chat.messages[i - 1]}
-			{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
+			{#if message.isSystem() || message.isUser()}
+				{@const prev = chat.messages[i - 1]}
+				{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
-			{#if isNewDay}
-				<Separator>
-					<time
-						class="text-muted-foreground/90"
-						datetime={message.timestamp.toISOString()}
-					>
-						{message.timestamp.toLocaleDateString(navigator.languages, {
-							dateStyle: "long",
-						})}
-					</time>
-				</Separator>
-			{/if}
-
-			{#if message.isSystem()}
-				<SystemMessage {message} context={message.context} />
-			{:else if message.isUser()}
-				{#if message.event}
-					<Notification {message} />
-				{:else if message.autoMod}
-					<AutoMod {message} metadata={message.autoMod} />
-				{:else}
-					<UserMessage {message} />
+				{#if isNewDay}
+					<Separator>
+						<time
+							class="text-muted-foreground/90"
+							datetime={message.timestamp.toISOString()}
+						>
+							{message.timestamp.toLocaleDateString(navigator.languages, {
+								dateStyle: "long",
+							})}
+						</time>
+					</Separator>
 				{/if}
-			{/if}
 
-			{@const next = chat.messages.at(i + 1)}
+				{#if message.isSystem()}
+					<SystemMessage {message} context={message.context} />
+				{:else if message.isUser()}
+					{#if message.event}
+						<Notification {message} />
+					{:else if message.autoMod}
+						<AutoMod {message} metadata={message.autoMod} />
+					{:else}
+						<UserMessage {message} />
+					{/if}
+				{/if}
 
-			{#if message === lastRead && next && settings.state["chat.newSeparator"]}
-				<Separator class="text-red-400">New messages</Separator>
-			{/if}
+				{@const next = chat.messages.at(i + 1)}
 
-			{#if message.recent && !next?.recent && settings.state["chat.messages.history.separator"]}
-				<Separator class="text-red-400">Live messages</Separator>
+				{#if message === lastRead && next && settings.state["chat.newSeparator"]}
+					<Separator class="text-red-400">New messages</Separator>
+				{/if}
+
+				{/* @ts-ignore */ null}
+				{#if message.recent && !next?.recent && settings.state["chat.messages.history.separator"]}
+					<Separator class="text-red-400">Live messages</Separator>
+				{/if}
+			{:else if message.isComponent()}
+				<message.component {...message.props} />
 			{/if}
 		{/snippet}
 	</VList>

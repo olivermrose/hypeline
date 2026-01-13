@@ -12,6 +12,7 @@ export default defineHandler({
 		const message = channel.chat.messages.find(
 			(m): m is UserMessage => m.isUser() && m.id === data.message_id,
 		);
+
 		if (!message) return;
 
 		message.deleted = true;
