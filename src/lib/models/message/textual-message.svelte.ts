@@ -1,14 +1,11 @@
 import type { BaseUserMessage } from "$lib/twitch/irc";
 import type { Channel } from "../channel.svelte";
-import type { Message } from "../chat.svelte";
-import type { SystemMessage, SystemMessageData } from "./system-message";
-import type { UserMessage } from "./user-message";
+import { Message } from "./message";
+import type { SystemMessageData } from "./system-message";
 
 export type MessageData = BaseUserMessage | SystemMessageData;
 
-export abstract class TextualMessage implements Message {
-	readonly #system: boolean;
-
+export abstract class TextualMessage extends Message {
 	public abstract readonly id: string;
 
 	/**
@@ -34,20 +31,11 @@ export abstract class TextualMessage implements Message {
 		 */
 		public readonly channel: Channel,
 		public readonly data: MessageData,
-		system = false,
 	) {
-		this.#system = system;
+		super();
 
 		this.timestamp = new Date(this.data.server_timestamp);
 		this.deleted = data.deleted;
 		this.recent = data.is_recent;
-	}
-
-	public isSystem(): this is SystemMessage {
-		return this.#system;
-	}
-
-	public isUser(): this is UserMessage {
-		return !this.#system;
 	}
 }

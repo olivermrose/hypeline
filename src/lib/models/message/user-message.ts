@@ -47,6 +47,8 @@ export class UserMessage extends TextualMessage {
 	public override readonly id: string;
 	public override readonly text: string;
 
+	public readonly [Symbol.toStringTag] = "UserMessage";
+
 	/**
 	 * The user who sent the message.
 	 */

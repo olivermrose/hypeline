@@ -1,4 +1,5 @@
 import { app } from "$lib/app.svelte";
+import type { UserMessage } from "$lib/models/message/user-message";
 import { defineHandler } from "../helper";
 
 export default defineHandler({
@@ -10,7 +11,10 @@ export default defineHandler({
 		const viewer = await channel.viewers.fetch(data.user_id);
 		const moderator = await channel.viewers.fetch(data.moderator_user_id);
 
-		const message = channel.chat.messages.find((m) => m.id === data.message_id);
+		const message = channel.chat.messages.find(
+			(m): m is UserMessage => m.id === data.message_id,
+		);
+
 		if (message) message.deleted = true;
 
 		channel.chat.addSystemMessage({

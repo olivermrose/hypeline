@@ -12,22 +12,11 @@ import { TextualMessage } from "./message/textual-message.svelte";
 import { Viewer } from "./viewer.svelte";
 import type { Channel } from "./channel.svelte";
 import type { MessageContext } from "./message/context";
+import type { Message } from "./message/message";
 import type { UserMessage } from "./message/user-message";
 
 const RATE_LIMIT_WINDOW = 30 * 1000;
 const RATE_LIMIT_GRACE = 1000;
-
-export interface Message {
-	/**
-	 * The id (stored as a UUID) of the message.
-	 */
-	readonly id: string;
-
-	/**
-	 * The timestamp at which the message was sent at.
-	 */
-	readonly timestamp: Date;
-}
 
 export interface ChatMode {
 	unique: boolean;

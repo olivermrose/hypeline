@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { VList } from "virtua/svelte";
-	import type { Chat, Message } from "$lib/models/chat.svelte";
-	import { ComponentMessage } from "$lib/models/message/component-message";
+	import { Chat } from "$lib/models/chat.svelte";
+	import type { Message } from "$lib/models/message/message";
 	import { TextualMessage } from "$lib/models/message/textual-message.svelte";
 	import { settings } from "$lib/settings";
 	import AutoMod from "../message/AutoMod.svelte";
@@ -102,7 +102,7 @@
 		bind:this={list}
 	>
 		{#snippet children(message, i)}
-			{#if message instanceof TextualMessage}
+			{#if message.isSystem() || message.isUser()}
 				{@const prev = chat.messages[i - 1]}
 				{@const isNewDay = prev && prev.timestamp.getDate() !== message.timestamp.getDate()}
 
@@ -141,7 +141,7 @@
 				{#if message.recent && !next?.recent && settings.state["chat.messages.history.separator"]}
 					<Separator class="text-red-400">Live messages</Separator>
 				{/if}
-			{:else if message instanceof ComponentMessage}
+			{:else if message.isComponent()}
 				<message.component {...message.props} />
 			{/if}
 		{/snippet}
