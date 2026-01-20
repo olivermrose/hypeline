@@ -4,11 +4,11 @@
 	import SquareHalf from "~icons/ph/square-half-fill";
 	import X from "~icons/ph/x";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { settings } from "$lib/settings";
 	import { SplitLayout } from "$lib/split-layout";
-	import { resolve } from "$app/paths";
 
 	interface Props {
 		id: string;

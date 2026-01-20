@@ -10,11 +10,11 @@
 	import Gear from "~icons/ph/gear";
 	import User from "~icons/ph/user";
 	import { afterNavigate, goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
 	import GuestList from "./GuestList.svelte";
 	import { Button } from "./ui/button";
-	import { resolve } from "$app/paths";
 
 	type ControlType = "minimize" | "maximize" | "close";
 

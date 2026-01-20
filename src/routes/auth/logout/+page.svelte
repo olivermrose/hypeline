@@ -2,9 +2,9 @@
 	import { Tween } from "svelte/motion";
 	import CheckCircle from "~icons/ph/check-circle";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { Label } from "$lib/components/ui/label";
 	import { Progress } from "$lib/components/ui/progress";
-	import { resolve } from "$app/paths";
 
 	const id = $props.id();
 

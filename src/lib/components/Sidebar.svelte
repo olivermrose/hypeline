@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
 	import { ScrollArea } from "bits-ui";
 	import { MediaQuery } from "svelte/reactivity";
 	import { crossfade } from "svelte/transition";
@@ -8,6 +7,7 @@
 	import Plus from "~icons/ph/plus";
 	import Sidebar from "~icons/ph/sidebar";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
 	import { setSidebarContext } from "$lib/context";

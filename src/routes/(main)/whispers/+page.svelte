@@ -3,8 +3,8 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { Attachment } from "svelte/attachments";
 	import ChatDots from "~icons/ph/chat-dots";
-	import * as Empty from "$lib/components/ui/empty";
 	import { resolve } from "$app/paths";
+	import * as Empty from "$lib/components/ui/empty";
 
 	dayjs.extend(relativeTime);
 

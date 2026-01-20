@@ -6,6 +6,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import Twitch from "~icons/local/twitch";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { log } from "$lib/log";
@@ -13,7 +14,6 @@
 	import { storage } from "$lib/stores";
 	import { SCOPES } from "$lib/twitch";
 	import { TwitchClient } from "$lib/twitch/client";
-	import { resolve } from "$app/paths";
 
 	interface TokenInfo {
 		user_id: string;

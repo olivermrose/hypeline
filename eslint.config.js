@@ -12,7 +12,7 @@ export default antfu({
 		"perfectionist/sort-imports": [
 			"error",
 			{
-				newlinesBetween: "never",
+				newlinesBetween: 0,
 				groups: [
 					"side-effect",
 					"side-effect-style",
@@ -21,14 +21,13 @@ export default antfu({
 					"icons",
 					"sveltekit",
 					"internal",
-					"internal-type",
+					"type-internal",
 					"parent",
-					"parent-type",
+					"type-parent",
 					"sibling",
-					"sibling-type",
+					"type-sibling",
 					"index",
-					"index-type",
-					"object",
+					"type-index",
 					"unknown",
 				],
 				customGroups: [

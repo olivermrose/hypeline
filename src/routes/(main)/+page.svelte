@@ -3,6 +3,7 @@
 	import ChatDots from "~icons/ph/chat-dots";
 	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import JoinDialog from "$lib/components/JoinDialog.svelte";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
@@ -10,7 +11,6 @@
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
 	import { layout, storage } from "$lib/stores";
-	import { resolve } from "$app/paths";
 
 	let loading = $state(true);
 

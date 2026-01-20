@@ -1,10 +1,10 @@
 import type { DragDropEvents } from "@dnd-kit-svelte/svelte";
 import type { PaneGroupProps } from "paneforge";
 import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 import { page } from "$app/state";
 import { app } from "./app.svelte";
 import { layout } from "./stores";
-import { resolve } from "$app/paths";
 
 export type SplitDirection = "up" | "down" | "left" | "right";
 

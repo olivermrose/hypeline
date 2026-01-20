@@ -4,6 +4,7 @@
 	import type { Snippet } from "svelte";
 	import Spinner from "~icons/ph/spinner";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import { searchSuggestionsQuery } from "$lib/graphql/twitch";
 	import type { ChannelSuggestion } from "$lib/graphql/twitch";
@@ -12,7 +13,6 @@
 	import * as Dialog from "./ui/dialog";
 	import * as Field from "./ui/field";
 	import { Input } from "./ui/input";
-	import { resolve } from "$app/paths";
 
 	interface Props {
 		children: Snippet;

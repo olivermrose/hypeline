@@ -10,11 +10,11 @@
 	} from "@dnd-kit/dom";
 	import { move } from "@dnd-kit/helpers";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import Sidebar from "$lib/components/Sidebar.svelte";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { storage } from "$lib/stores";
-	import { resolve } from "$app/paths";
 
 	const { children } = $props();
 </script>

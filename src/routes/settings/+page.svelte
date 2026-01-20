@@ -3,6 +3,7 @@
 	import SignOut from "~icons/ph/sign-out";
 	import X from "~icons/ph/x";
 	import { beforeNavigate, goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { app } from "$lib/app.svelte";
 	import { Button } from "$lib/components/ui/button";
@@ -12,7 +13,6 @@
 	import Category from "./Category.svelte";
 	import SidebarActions from "./SidebarActions.svelte";
 	import type { SettingsCategory } from "./types";
-	import { resolve } from "$app/paths";
 
 	const imports = import.meta.glob<SettingsCategory>(
 		["./categories/*.ts", "!./categories/util.ts"],

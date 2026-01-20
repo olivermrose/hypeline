@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Users from "~icons/ph/users-bold";
+	import { resolve } from "$app/paths";
 	import { getSidebarContext } from "$lib/context";
 	import { createChannelMenu } from "$lib/menus/channel-menu";
 	import type { Channel } from "$lib/models/channel.svelte";
@@ -7,7 +8,6 @@
 	import GuestList from "./GuestList.svelte";
 	import StreamInfo from "./StreamInfo.svelte";
 	import * as Tooltip from "./ui/tooltip";
-	import { resolve } from "$app/paths";
 
 	interface Props {
 		channel: Channel;

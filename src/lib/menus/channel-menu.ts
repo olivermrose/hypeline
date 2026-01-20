@@ -1,11 +1,11 @@
 import { CheckMenuItem, Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 import { app } from "$lib/app.svelte";
 import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
 import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 import { storage } from "$lib/stores";
-import { resolve } from "$app/paths";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	const enabled =
