@@ -123,7 +123,7 @@
 			{#if app.user}
 				<Button
 					class="hover:text-foreground size-min p-1"
-					href={resolve(`/(main)/channels/[username]`, {
+					href={resolve("/(main)/channels/[username]", {
 						username: app.user.username,
 					})}
 					size="icon"

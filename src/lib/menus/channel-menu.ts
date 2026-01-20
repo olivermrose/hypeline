@@ -58,7 +58,7 @@ export async function createChannelMenu(channel: Channel) {
 		enabled: !channel.joined,
 		async action() {
 			await goto(
-				resolve(`/(main)/channels/[username]`, {
+				resolve("/(main)/channels/[username]", {
 					username: channel.user.username,
 				}),
 			);
