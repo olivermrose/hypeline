@@ -4,6 +4,7 @@
 	import type { Attachment } from "svelte/attachments";
 	import ChatDots from "~icons/ph/chat-dots";
 	import * as Empty from "$lib/components/ui/empty";
+	import { resolve } from "$app/paths";
 
 	dayjs.extend(relativeTime);
 
@@ -41,7 +42,7 @@
 		>
 			<a
 				class="absolute inset-0 z-1"
-				href="/whispers/{id}"
+				href={resolve("/(main)/whispers/[id]", { id })}
 				aria-label="Go to whisper with {whisper.sender.displayName}"
 				data-sveltekit-preload-data="off"
 			></a>

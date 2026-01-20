@@ -1,4 +1,5 @@
 import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 import { defineCommand } from "../util";
 
 export default defineCommand({
@@ -7,6 +8,6 @@ export default defineCommand({
 	description: "Leave the current channel",
 	async exec(_, channel) {
 		await channel.leave();
-		await goto("/");
+		await goto(resolve("/"));
 	},
 });

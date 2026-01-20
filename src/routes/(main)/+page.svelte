@@ -10,6 +10,7 @@
 	import { log } from "$lib/log";
 	import { settings } from "$lib/settings";
 	import { layout, storage } from "$lib/stores";
+	import { resolve } from "$app/paths";
 
 	let loading = $state(true);
 
@@ -26,7 +27,7 @@
 
 			if (isBranch || restoreBehavior === "preserve") {
 				app.splits.root = layout.state.root;
-				await goto("/channels/split");
+				await goto(resolve("/channels/split"));
 
 				return;
 			}
@@ -46,7 +47,11 @@
 		}
 
 		if (storage.state.lastJoined) {
-			await goto(`/channels/${storage.state.lastJoined}`);
+			await goto(
+				resolve("/(main)/channels/[username]", {
+					username: storage.state.lastJoined,
+				}),
+			);
 		}
 
 		loading = false;
@@ -77,7 +82,7 @@
 				<JoinDialog class={buttonVariants()}>Search channels</JoinDialog>
 
 				<Button
-					href="/channels/split"
+					href={resolve("/channels/split")}
 					disabled={settings.state["advanced.singleConnection"]}
 					variant="secondary"
 				>

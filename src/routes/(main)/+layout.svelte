@@ -14,6 +14,7 @@
 	import Sidebar from "$lib/components/Sidebar.svelte";
 	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { storage } from "$lib/stores";
+	import { resolve } from "$app/paths";
 
 	const { children } = $props();
 </script>
@@ -22,7 +23,7 @@
 	onkeydown={async (event) => {
 		if ((event.metaKey || event.ctrlKey) && event.key === ",") {
 			event.preventDefault();
-			await goto("/settings");
+			await goto(resolve("/settings"));
 		}
 	}}
 />

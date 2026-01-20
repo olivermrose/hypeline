@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { app } from "$lib/app.svelte";
 	import { settings } from "$lib/settings";
 
@@ -32,7 +33,7 @@
 					event.preventDefault();
 
 					await app.focused.leave();
-					await goto("/");
+					await goto(resolve("/"));
 				}
 
 				break;

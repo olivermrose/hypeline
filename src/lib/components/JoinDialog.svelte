@@ -12,6 +12,7 @@
 	import * as Dialog from "./ui/dialog";
 	import * as Field from "./ui/field";
 	import { Input } from "./ui/input";
+	import { resolve } from "$app/paths";
 
 	interface Props {
 		children: Snippet;
@@ -69,7 +70,11 @@
 				app.channels.set(channel.id, channel);
 			}
 
-			await goto(`/channels/${channel.user.username}`);
+			await goto(
+				resolve("/(main)/channels/[username]", {
+					username: channel.user.username,
+				}),
+			);
 
 			open = false;
 			reset();

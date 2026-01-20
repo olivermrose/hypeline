@@ -4,6 +4,7 @@ import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import { app } from "./app.svelte";
 import { layout } from "./stores";
+import { resolve } from "$app/paths";
 
 export type SplitDirection = "up" | "down" | "left" | "right";
 
@@ -183,7 +184,7 @@ export class SplitLayout {
 	public async activate() {
 		if (!this.active && app.focused) {
 			app.splits.root = app.focused.id;
-			await goto("/channels/split");
+			await goto(resolve("/channels/split"));
 		}
 	}
 

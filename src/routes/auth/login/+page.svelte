@@ -13,6 +13,7 @@
 	import { storage } from "$lib/stores";
 	import { SCOPES } from "$lib/twitch";
 	import { TwitchClient } from "$lib/twitch/client";
+	import { resolve } from "$app/paths";
 
 	interface TokenInfo {
 		user_id: string;
@@ -52,7 +53,7 @@
 			app.user = new CurrentUser(user);
 
 			await storage.saveNow();
-			await goto("/");
+			await goto(resolve("/"));
 		});
 	});
 

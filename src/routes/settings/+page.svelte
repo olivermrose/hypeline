@@ -12,6 +12,7 @@
 	import Category from "./Category.svelte";
 	import SidebarActions from "./SidebarActions.svelte";
 	import type { SettingsCategory } from "./types";
+	import { resolve } from "$app/paths";
 
 	const imports = import.meta.glob<SettingsCategory>(
 		["./categories/*.ts", "!./categories/util.ts"],
@@ -60,7 +61,11 @@
 
 		<Separator />
 
-		<Button class="text-muted-foreground" variant="ghost" onclick={() => goto("/auth/logout")}>
+		<Button
+			class="text-muted-foreground"
+			variant="ghost"
+			onclick={() => goto(resolve("/auth/logout"))}
+		>
 			<SignOut />
 			<span class="text-sm">Log out</span>
 		</Button>

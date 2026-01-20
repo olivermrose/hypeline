@@ -7,6 +7,7 @@
 	import GuestList from "./GuestList.svelte";
 	import StreamInfo from "./StreamInfo.svelte";
 	import * as Tooltip from "./ui/tooltip";
+	import { resolve } from "$app/paths";
 
 	interface Props {
 		channel: Channel;
@@ -27,7 +28,9 @@
 			>
 				<a
 					class="absolute inset-0 z-10"
-					href="/channels/{channel.user.username}"
+					href={resolve("/(main)/channels/[username]", {
+						username: channel.user.username,
+					})}
 					draggable="false"
 					aria-label="Join {channel.user.displayName}"
 					data-sveltekit-preload-data="off"

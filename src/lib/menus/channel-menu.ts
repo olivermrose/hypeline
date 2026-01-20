@@ -5,6 +5,7 @@ import type { Channel } from "$lib/models/channel.svelte";
 import { settings } from "$lib/settings";
 import type { SplitBranch, SplitDirection } from "$lib/split-layout";
 import { storage } from "$lib/stores";
+import { resolve } from "$app/paths";
 
 async function splitItem(channel: Channel, direction: SplitDirection) {
 	const enabled =
@@ -38,7 +39,7 @@ async function splitItem(channel: Channel, direction: SplitDirection) {
 			app.splits.insert(app.splits.focused, channel.id, node);
 
 			if (!app.splits.active) {
-				await goto("/channels/split");
+				await goto(resolve("/channels/split"));
 			}
 		},
 	});
@@ -56,7 +57,11 @@ export async function createChannelMenu(channel: Channel) {
 		text: "Join",
 		enabled: !channel.joined,
 		async action() {
-			await goto(`/channels/${channel.user.username}`);
+			await goto(
+				resolve("/(main)/channels/[username]", {
+					username: channel.user.username,
+				}),
+			);
 		},
 	});
 
@@ -74,7 +79,7 @@ export async function createChannelMenu(channel: Channel) {
 			) {
 				app.splits.replace(channel.id, `split-${crypto.randomUUID()}`);
 			} else if (app.focused === channel) {
-				await goto("/");
+				await goto(resolve("/"));
 			}
 		},
 	});
@@ -123,7 +128,7 @@ export async function createChannelMenu(channel: Channel) {
 			async action() {
 				await channel.leave();
 				app.channels.delete(channel.id);
-				await goto("/");
+				await goto(resolve("/"));
 			},
 		});
 
