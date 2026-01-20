@@ -14,6 +14,7 @@
 	import { app } from "$lib/app.svelte";
 	import GuestList from "./GuestList.svelte";
 	import { Button } from "./ui/button";
+	import { resolve } from "$app/paths";
 
 	type ControlType = "minimize" | "maximize" | "close";
 
@@ -59,7 +60,7 @@
 		if (settingsWindow) {
 			await settingsWindow.setFocus();
 		} else {
-			await goto("/settings");
+			await goto(resolve("/settings"));
 		}
 	}
 </script>
@@ -122,7 +123,9 @@
 			{#if app.user}
 				<Button
 					class="hover:text-foreground size-min p-1"
-					href="/channels/{app.user.username}"
+					href={resolve(`/(main)/channels/[username]`, {
+						username: app.user.username,
+					})}
 					size="icon"
 					variant="ghost"
 					aria-label="Go to your channel"

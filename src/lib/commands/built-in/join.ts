@@ -1,4 +1,5 @@
 import { goto } from "$app/navigation";
+import { resolve } from "$app/paths";
 import { app } from "$lib/app.svelte";
 import { ApiError } from "$lib/errors/api-error";
 import { CommandError } from "$lib/errors/command-error";
@@ -32,6 +33,10 @@ export default defineCommand({
 			}
 		}
 
-		await goto(`/channels/${args[0]}`);
+		await goto(
+			resolve("/(main)/channels/[username]", {
+				username: args[0],
+			}),
+		);
 	},
 });

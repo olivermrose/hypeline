@@ -8,6 +8,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { settings } from "$lib/settings";
 	import { SplitLayout } from "$lib/split-layout";
+	import { resolve } from "$app/paths";
 
 	interface Props {
 		id: string;
@@ -36,9 +37,13 @@
 			}
 
 			if (channel && settings.state["splits.goToChannelAfterClose"]) {
-				await goto(`/channels/${channel.user.username}`);
+				await goto(
+					resolve("/(main)/channels/[username]", {
+						username: channel.user.username,
+					}),
+				);
 			} else {
-				await goto("/");
+				await goto(resolve("/"));
 			}
 
 			app.splits.root = null;

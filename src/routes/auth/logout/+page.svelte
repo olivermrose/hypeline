@@ -4,6 +4,7 @@
 	import { goto } from "$app/navigation";
 	import { Label } from "$lib/components/ui/label";
 	import { Progress } from "$lib/components/ui/progress";
+	import { resolve } from "$app/paths";
 
 	const id = $props.id();
 
@@ -12,7 +13,7 @@
 
 	$effect(() => {
 		if (progress.current === 0) {
-			goto("/auth/login");
+			goto(resolve("/auth/login"));
 		}
 	});
 </script>

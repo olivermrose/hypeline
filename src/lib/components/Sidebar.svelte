@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { ScrollArea } from "bits-ui";
 	import { MediaQuery } from "svelte/reactivity";
 	import { crossfade } from "svelte/transition";
@@ -48,7 +49,7 @@
 >
 	<ScrollArea.Viewport class="h-full">
 		<div id="sidebar-actions" class="flex flex-col gap-1 px-1.5 py-1">
-			<Button class="relative" href="/whispers" variant="ghost">
+			<Button class="relative" href={resolve("/whispers")} variant="ghost">
 				<Chats class={[context.collapsed && unread && "animate-pulse"]} />
 
 				<span class="group-data-[state=collapsed]:sr-only">Whispers</span>
@@ -83,7 +84,7 @@
 					if (page.route.id === "/(main)/channels/[username]" && !app.splits.root) {
 						app.splits.activate();
 					} else {
-						goto("/channels/split");
+						goto(resolve("/channels/split"));
 					}
 				}}
 			>
