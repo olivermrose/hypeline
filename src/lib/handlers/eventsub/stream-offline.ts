@@ -7,7 +7,6 @@ export default defineHandler({
 		const channel = app.channels.get(data.broadcaster_user_id);
 		if (!channel) return;
 
-		const broadcaster = await channel.viewers.fetch(data.broadcaster_user_id);
 		channel.stream = null;
 
 		channel.chat.addSystemMessage({
