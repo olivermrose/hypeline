@@ -12,7 +12,11 @@ publish = false
 name = "hyperion_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[profile.release]
+lto = "fat"
+
 [profile.dev]
+debug = false
 incremental = true
 
 [build-dependencies]
