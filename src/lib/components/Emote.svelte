@@ -10,7 +10,7 @@
 
 	const { emote, layers = [] }: Props = $props();
 
-	const srcset = emote.srcset.join(", ");
+	const srcset = $derived(emote.srcset.join(", "));
 </script>
 
 <Tooltip.Root>

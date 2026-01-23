@@ -29,16 +29,8 @@
 
 	const { message, context: ctx }: Props = $props();
 
-	// Make these nonreactive
-	// svelte-ignore non_reactive_update
-	let monitored = false;
-	// svelte-ignore non_reactive_update
-	let restricted = false;
-
-	if (ctx?.type === "suspicionStatus") {
-		monitored = ctx.viewer.monitored;
-		restricted = ctx.viewer.restricted;
-	}
+	const monitored = $derived(ctx?.type === "suspicionStatus" ? ctx.viewer.monitored : false);
+	const restricted = $derived(ctx?.type === "suspicionStatus" ? ctx.viewer.restricted : false);
 
 	const snippetMap = {
 		autoMod,

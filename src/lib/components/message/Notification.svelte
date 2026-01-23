@@ -14,13 +14,13 @@
 
 	const { message }: Props = $props();
 
-	const colors: Record<string, string[]> = {
+	const colors = $derived<Record<string, string[]>>({
 		PRIMARY: [message.source.user.color, message.source.user.color],
 		BLUE: ["#00d6d6", "#9146ff"],
 		GREEN: ["#00db84", "#57bee6"],
 		ORANGE: ["#ffb31a", "#e0e000"],
 		PURPLE: ["#9146ff", "#ff75e6"],
-	};
+	});
 
 	function formatCurrency(value: number, code: string) {
 		const formatter = new Intl.NumberFormat(navigator.languages, {

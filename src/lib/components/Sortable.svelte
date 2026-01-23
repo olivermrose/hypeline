@@ -13,7 +13,7 @@
 	const { ref, isDragging } = useSortable({
 		id: () => `${channel.id}:channel-list/pinned`,
 		type: "channel-list-item",
-		index,
+		index: () => index,
 	});
 </script>
 

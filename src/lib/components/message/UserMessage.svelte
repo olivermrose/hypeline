@@ -5,7 +5,6 @@
 	import type { UserMessage } from "$lib/models/message/user-message";
 	import type { Viewer } from "$lib/models/viewer.svelte";
 	import { settings } from "$lib/settings";
-	import type { HighlightType } from "$lib/settings";
 	import { openMenu } from "$lib/util";
 	import Highlight from "./Highlight.svelte";
 	import Message from "./Message.svelte";
@@ -16,9 +15,6 @@
 	}
 
 	const { message }: Props = $props();
-
-	let hlType = $state<HighlightType>();
-	let info = $state<string>();
 
 	const customMatched = $derived(
 		settings.state["highlights.keywords"].find((cfg) => {
@@ -34,37 +30,30 @@
 		}),
 	);
 
-	const isSelf = message.author.id === app.user?.id;
-	const hasMention = message.text.toLowerCase().includes(`@${app.user?.username}`);
+	const hlType = $derived.by(() => {
+		const hasMention = message.text.toLowerCase().includes(`@${app.user?.username}`);
+		if (hasMention) return "mention";
 
-	if (message.viewer) {
-		if (hasMention) {
-			hlType = "mention";
-		} else if (message.viewer.new) {
-			hlType = "new";
-		} else if (message.viewer.returning) {
-			hlType = "returning";
-		} else if (message.viewer.broadcaster) {
-			hlType = "broadcaster";
-		} else if (message.viewer.moderator) {
-			hlType = "moderator";
-		} else if (message.viewer.suspicious) {
-			hlType = "suspicious";
+		if (message.viewer?.new) return "new";
+		if (message.viewer?.returning) return "returning";
+		if (message.viewer?.broadcaster) return "broadcaster";
+		if (message.viewer?.moderator) return "moderator";
+		if (message.viewer?.suspicious) return "suspicious";
+		if (message.viewer?.vip) return "vip";
+		if (message.viewer?.subscriber) return "subscriber";
+	});
 
-			const likelihood = message.viewer.banEvasion;
+	function getSuspicionInfo() {
+		if (!message.viewer?.suspicious) return;
 
-			if (message.viewer.monitored) {
-				info = "Monitoring";
-			} else if (message.viewer.restricted) {
-				info = "Restricted";
-			} else if (likelihood !== "unknown") {
-				const status = likelihood[0].toUpperCase() + likelihood.slice(1);
-				info = `${status} Ban Evader`;
-			}
-		} else if (message.viewer.vip) {
-			hlType = "vip";
-		} else if (message.viewer.subscriber) {
-			hlType = "subscriber";
+		const likelihood = message.viewer.banEvasion;
+
+		if (message.viewer.monitored) return "Monitoring";
+		if (message.viewer.restricted) return "Restricted";
+
+		if (likelihood !== "unknown") {
+			const status = likelihood[0].toUpperCase() + likelihood.slice(1);
+			return `${status} Ban Evader`;
 		}
 	}
 
@@ -106,10 +95,10 @@
 		{@const config = hlType ? settings.state["highlights.viewers"][hlType] : null}
 
 		{#if config && config.enabled}
-			<Highlight type={hlType!} {info} {config}>
+			<Highlight type={hlType!} info={getSuspicionInfo()} {config}>
 				{@render content(config.style !== "background")}
 			</Highlight>
-		{:else if customMatched?.enabled && !isSelf}
+		{:else if customMatched?.enabled && message.author.id !== app.user?.id}
 			<Highlight type="custom" config={customMatched}>
 				{@render content(customMatched.style !== "background")}
 			</Highlight>

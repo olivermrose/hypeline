@@ -23,11 +23,10 @@
 
 	const { message, nested = false, mention }: Props = $props();
 
-	const user = mention?.data.user ?? message.author;
-
 	let loading = $state(false);
 	let showAllBadges = $state(false);
 
+	const user = $derived(mention?.data.user ?? message.author);
 	const relationship = $derived(user.relationships.get(message.channel.user.username));
 
 	async function fetchInfo() {
