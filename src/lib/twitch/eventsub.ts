@@ -110,10 +110,9 @@ export interface WarnMetadata extends WithBasicUser {
 	chat_rules_cited: string[] | null;
 }
 
-export interface AutoModTermsAction
-	extends BaseAction<
-		"add_blocked_term" | "add_permitted_term" | "remove_blocked_term" | "remove_permitted_term"
-	> {
+export interface AutoModTermsAction extends BaseAction<
+	"add_blocked_term" | "add_permitted_term" | "remove_blocked_term" | "remove_permitted_term"
+> {
 	automod_terms: AutoModTermsMetadata;
 }
 
@@ -155,8 +154,9 @@ export interface UnbanAction extends BaseAction<"unban"> {
 	unban: WithBasicUser;
 }
 
-export interface UnbanRequestAction
-	extends BaseAction<"approve_unban_request" | "deny_unban_request"> {
+export interface UnbanRequestAction extends BaseAction<
+	"approve_unban_request" | "deny_unban_request"
+> {
 	unban_request: UnbanRequestMetadata;
 }
 
@@ -298,9 +298,7 @@ export interface ChannelUnbanRequestCreate extends WithBroadcaster, WithBasicUse
 }
 
 export interface ChannelUnbanRequestResolve
-	extends WithBasicUser,
-		WithBroadcaster,
-		Nullable<WithModerator> {
+	extends WithBasicUser, WithBroadcaster, Nullable<WithModerator> {
 	id: string;
 	resolution_text: string | null;
 	status: "approved" | "denied" | "cancelled";
