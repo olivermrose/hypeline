@@ -131,7 +131,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 
 	#insert(id: string, badge: Badge) {
 		const badges = getOrInsert(this.users, id, []);
-		const idx = badges.findIndex((b) => b.id === id);
+		const idx = badges.findIndex((b) => b.id === badge.id);
 
 		if (idx === -1) {
 			badges.push(badge);
