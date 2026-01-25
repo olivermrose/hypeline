@@ -79,7 +79,7 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 				});
 			});
 
-			getOrInsert(this.users, user.providerId, []).push(badge);
+			this.#insert(user.providerId, badge);
 		}
 	}
 
@@ -124,8 +124,19 @@ export class BadgeManager extends SvelteMap<string, Badge> {
 			const badge = badges[badgeId];
 
 			for (const id of users) {
-				getOrInsert(this.users, id.toString(), []).push(badge);
+				this.#insert(id.toString(), badge);
 			}
+		}
+	}
+
+	#insert(id: string, badge: Badge) {
+		const badges = getOrInsert(this.users, id, []);
+		const idx = badges.findIndex((b) => b.id === badge.id);
+
+		if (idx === -1) {
+			badges.push(badge);
+		} else {
+			badges[idx] = badge;
 		}
 	}
 }

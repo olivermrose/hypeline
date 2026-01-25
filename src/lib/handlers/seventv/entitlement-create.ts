@@ -15,7 +15,12 @@ export default defineHandler({
 				const badge = app.badges.get(data.ref_id);
 				if (!badge) return;
 
-				getOrInsert(app.badges.users, user.id, []).push(badge);
+				const badges = getOrInsert(app.badges.users, user.id, []);
+
+				if (!badges.some((b) => b.id === badge.id)) {
+					badges.push(badge);
+				}
+
 				break;
 			}
 
